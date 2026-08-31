@@ -1,0 +1,30 @@
+{
+  "$id": "https://smart-agri-eco.local/skills/schema.json",
+  "title": "AgriSkill",
+  "type": "object",
+  "required": ["id", "name", "description", "domain", "inputs", "outputs", "data_sources"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z_]+$", "description": "唯一标识符"},
+    "name": {"type": "string", "description": "技能名称"},
+    "version": {"type": "string", "default": "1.0"},
+    "description": {"type": "string", "description": "用途说明"},
+    "domain": {"type": "string", "enum": ["climate", "crop", "growth", "pest", "eco", "logistics", "soil"]},
+    "inputs": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "outputs": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "data_sources": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "confidence_method": {"type": "string", "description": "置信度评估方法"},
+    "safety_boundary": {"type": "string", "description": "安全边界"},
+    "reuse_value": {"type": "string", "description": "复用价值"},
+    "dependencies": {"type": "array", "items": {"type": "string"}, "default": []},
+    "agent": {"type": "string", "description": "所属 Agent（Climate/Crop/Growth/Eco）"}
+  }
+}

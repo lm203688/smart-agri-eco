@@ -1,0 +1,15 @@
+{
+  "id": "climate_match",
+  "name": "农业分区气候匹配",
+  "version": "1.0",
+  "description": "根据地块经纬度匹配 Köppen-Geiger 气候带 + FAO 农业分区，输出分区元数据和关键环境约束（温度/降水/土壤/pH/霜冻风险）。支持微气候修正（阳台朝向/楼层/遮蔽）。",
+  "domain": "climate",
+  "agent": "ClimateAgent",
+  "inputs": ["lat (float)", "lon (float)", "scene (str)", "floor (int)", "orientation (str)", "city (str)"],
+  "outputs": ["zone_id (str)", "zone_name (str)", "koppen_class (str)", "temperature_range (dict)", "precipitation_mm_yr (int)", "soil_constraint (dict)", "frost_risk (bool)", "growing_season_days (int)", "confidence (dict)"],
+  "data_sources": ["WorldClim 2.1", "FAO GAEZ", "ISRIC SoilGrids", "NASA POWER"],
+  "confidence_method": "基于数据覆盖度 + 数据新鲜度 + 分区精度综合评分",
+  "safety_boundary": "不替代专业农业气象咨询；极区/极端气候区需人工复核",
+  "reuse_value": "是整个系统的地理基准层，所有作物推荐/生长计划/设备建议均依赖此 Skill 的输出",
+  "dependencies": []
+}

@@ -1,0 +1,90 @@
+# 智慧农业生态 · CI
+# 触发：push / pull_request 到 main；也可手动 workflow_dispatch。
+# 作用：每次改动自动跑单测 + 端到端验证 + 数据自检，防止回归。
+#
+# 注意：本项目零第三方依赖（纯 Python 标准库），无需 pip install。
+# 需要 PAT 含 Workflows:write 才能在 GitHub 上创建/更新本文件。
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "agent/**"
+      - "core/**"
+      - "engine/**"
+      - "data/**"
+      - "skills/**"
+      - "app/**"
+      - "scripts/**"
+      - "tests/**"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: 单测 + 端到端验证 (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 缓存 pip（本项目无第三方依赖，仅保留以防未来扩展）
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}
+
+      - name: 运行单元测试
+        run: python -m unittest scripts.test_agents -v
+
+      - name: 端到端验证（多城市 pipeline + Trust 证书）
+        run: python scripts/verify_all.py
+
+      - name: Trust 层证书签发验证
+        run: python -m core.trust_layer
+
+      - name: 反馈闭环示例
+        run: python -m engine.flywheel
+
+      - name: Skill 注册表合法性
+        run: |
+          python -c "import json,glob,pathlib
+          for p in sorted(glob.glob('skills/registry/*.json')):
+              json.load(open(p, encoding='utf-8'))
+          print('all registry JSON valid')"
+
+      - name: 数据自检（JSON 合法性 + 每带作物数）
+        run: |
+          python -c "import json
+          d=json.load(open('data/crop_adapt_db.json', encoding='utf-8'))
+          total=sum(len(v['crops']) for v in d['zones'].values())
+          print('crops:', total)
+          for z,v in d['zones'].items():
+              n=len(v['crops']); assert n>=18, f'{z} 只有 {n} 种 (<18)'; print(f'  {z}: {n}')
+          print('data OK')"
+
+      - name: 产物汇总
+        if: always()
+        run: |
+          echo "### CI 结果" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Python: ${{ matrix.python-version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 单测 / verify_all / trust_layer / flywheel / 数据自检 全部通过" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,15 @@
+{
+  "id": "growth_plan",
+  "name": "生长周期管理与种植计划",
+  "version": "1.0",
+  "description": "根据选定作物 + 分区数据 + 种植场景生成完整种植计划（播种→定植→管理→采收），含关键事件、风险提示、兜底救活方案。",
+  "domain": "growth",
+  "agent": "GrowthAgent",
+  "inputs": ["crop (str)", "zone_data (dict)", "start_date (str)", "scene (str)"],
+  "outputs": ["phases (list of {phase, day_range, actions})", "key_events (list)", "risk_alerts (list)", "rescue_plan (str)"],
+  "data_sources": ["FAO FAOSTAT 作物统计", "中国农业技术知识图谱", "USDA Crop Production"],
+  "confidence_method": "基于作物-场景-季节组合的知识覆盖率评分",
+  "safety_boundary": "不替代农艺师现场指导；特殊作物（药用/珍稀）需专业复核",
+  "reuse_value": "面向 C 端用户的核心体验 Skill，直接决定用户种植成功率",
+  "dependencies": ["climate_match", "crop_adapt"]
+}

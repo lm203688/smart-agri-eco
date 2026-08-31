@@ -1,0 +1,2943 @@
+{
+  "meta": {
+    "description": "全球分区作物适配数据库（基于 FAO CropInfo + 中国农业技术通识）",
+    "version": "1.1",
+    "data_sources": [
+      "FAO CropInfo",
+      "中国作物栽培数据库",
+      "USDA Plant Guides",
+      "IPNI"
+    ],
+    "last_updated": "2026-08-27",
+    "total_entries": 110,
+    "note": "v1.1 由 scripts/enrich_crop_data.py 补充各带适生作物；新增条目 calibrated:false 待 flywheel 实测校准",
+    "enriched_at": "2026-08-30"
+  },
+  "zones": {
+    "tropical_rainforest": {
+      "zone_name": "热带雨林带",
+      "crops": [
+        {
+          "crop": "香蕉",
+          "latin": "Musa acuminata",
+          "family": "芭蕉科",
+          "adapt_score": 0.95,
+          "growth_days": 365,
+          "temp_range_c": [
+            25,
+            35
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 500,
+          "suitable_scenes": [
+            "garden",
+            "container_large"
+          ],
+          "key_risks": [
+            "茎象鼻虫",
+            "叶斑病"
+          ],
+          "fallback_variety": "超矮蕉"
+        },
+        {
+          "crop": "木瓜",
+          "latin": "Carica papaya",
+          "family": "番木瓜科",
+          "adapt_score": 0.93,
+          "growth_days": 120,
+          "temp_range_c": [
+            22,
+            32
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 400,
+          "suitable_scenes": [
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "花叶病毒",
+            "日灼"
+          ],
+          "fallback_variety": "红心抗毒品种"
+        },
+        {
+          "crop": "生姜",
+          "latin": "Zingiber officinale",
+          "family": "姜科",
+          "adapt_score": 0.92,
+          "growth_days": 180,
+          "temp_range_c": [
+            20,
+            30
+          ],
+          "ph_range": [
+            5.5,
+            6.5
+          ],
+          "water_ml_day": 300,
+          "suitable_scenes": [
+            "garden",
+            "balcony_shade",
+            "container"
+          ],
+          "key_risks": [
+            "姜瘟",
+            "根结线虫"
+          ],
+          "fallback_variety": "小黄姜（抗病）"
+        },
+        {
+          "crop": "芋头",
+          "latin": "Colocasia esculenta",
+          "family": "天南星科",
+          "adapt_score": 0.9,
+          "growth_days": 150,
+          "temp_range_c": [
+            22,
+            30
+          ],
+          "ph_range": [
+            5.0,
+            6.5
+          ],
+          "water_ml_day": 500,
+          "suitable_scenes": [
+            "garden",
+            "water_container"
+          ],
+          "key_risks": [
+            "病毒病",
+            "叶斑病"
+          ],
+          "fallback_variety": "红芽芋"
+        },
+        {
+          "crop": "辣椒",
+          "latin": "Capsicum annuum",
+          "family": "茄科",
+          "adapt_score": 0.88,
+          "growth_days": 90,
+          "temp_range_c": [
+            18,
+            32
+          ],
+          "ph_range": [
+            5.5,
+            6.8
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "炭疽病",
+            "病毒病",
+            "蚜虫"
+          ],
+          "fallback_variety": "线椒（抗病广适）"
+        },
+        {
+          "crop": "空心菜",
+          "latin": "Ipomoea aquatica",
+          "family": "旋花科",
+          "adapt_score": 0.95,
+          "growth_days": 30,
+          "temp_range_c": [
+            20,
+            35
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 300,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden",
+            "water_grow"
+          ],
+          "key_risks": [
+            "菜青虫",
+            "根腐病"
+          ],
+          "fallback_variety": "藤藤菜（速生）"
+        },
+        {
+          "crop": "红薯叶",
+          "latin": "Ipomoea batatas",
+          "family": "旋花科",
+          "adapt_score": 0.94,
+          "growth_days": 45,
+          "temp_range_c": [
+            18,
+            32
+          ],
+          "ph_range": [
+            5.0,
+            7.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "卷叶蛾",
+            "白粉病"
+          ],
+          "fallback_variety": "红茎品种（耐旱）"
+        },
+        {
+          "crop": "秋葵",
+          "latin": "Abelmoschus esculentus",
+          "family": "锦葵科",
+          "adapt_score": 0.9,
+          "growth_days": 60,
+          "temp_range_c": [
+            20,
+            35
+          ],
+          "ph_range": [
+            6.0,
+            6.8
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "蚜虫",
+            "炭疽病"
+          ],
+          "fallback_variety": "翠绿秋葵"
+        },
+        {
+          "crop": "香草（柠檬草）",
+          "latin": "Cymbopogon citratus",
+          "family": "禾本科",
+          "adapt_score": 0.96,
+          "growth_days": 90,
+          "temp_range_c": [
+            20,
+            35
+          ],
+          "ph_range": [
+            5.0,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "根腐病（过湿）"
+          ],
+          "fallback_variety": "印尼柠檬草（更耐湿）"
+        },
+        {
+          "crop": "芒果",
+          "latin": "Mangifera indica",
+          "family": "漆树科",
+          "adapt_score": 0.85,
+          "growth_days": 1095,
+          "temp_range_c": [
+            22,
+            35
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 600,
+          "suitable_scenes": [
+            "garden",
+            "tree_container"
+          ],
+          "key_risks": [
+            "炭疽病",
+            "蓟马"
+          ],
+          "fallback_variety": "台农一号（矮化盆栽）"
+        },
+        {
+          "crop": "百香果",
+          "latin": "Passiflora edulis",
+          "family": "西番莲科",
+          "adapt_score": 0.93,
+          "growth_days": 120,
+          "temp_range_c": [
+            20,
+            32
+          ],
+          "ph_range": [
+            6.0,
+            6.8
+          ],
+          "water_ml_day": 300,
+          "suitable_scenes": [
+            "balcony_rail",
+            "garden_fence",
+            "container"
+          ],
+          "key_risks": [
+            "根结线虫",
+            "白粉病"
+          ],
+          "fallback_variety": "黄金百香果（抗病）"
+        },
+        {
+          "crop": "玉米",
+          "latin": "Zea mays",
+          "family": "禾本科",
+          "adapt_score": 0.82,
+          "growth_days": 90,
+          "temp_range_c": [
+            18,
+            32
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 400,
+          "suitable_scenes": [
+            "garden",
+            "container_large"
+          ],
+          "key_risks": [
+            "蚜虫",
+            "穗腐病"
+          ],
+          "fallback_variety": "甜玉米（速生型）"
+        },
+        {
+          "crop": "木薯",
+          "latin": "Manihot esculenta",
+          "family": "Euphorbiaceae",
+          "adapt_score": 0.8,
+          "growth_days": 240,
+          "temp_range_c": [
+            25,
+            35
+          ],
+          "ph_range": [
+            5.5,
+            6.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "field"
+          ],
+          "key_risks": [
+            "蟋蟀害",
+            "根腐"
+          ],
+          "fallback_variety": "华南9号",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "菠萝",
+          "latin": "Ananas comosus",
+          "family": "Bromeliaceae",
+          "adapt_score": 0.82,
+          "growth_days": 365,
+          "temp_range_c": [
+            24,
+            32
+          ],
+          "ph_range": [
+            4.5,
+            6.5
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "心腐病",
+            "凋萎"
+          ],
+          "fallback_variety": "金钻菠萝",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "火龙果",
+          "latin": "Selenicereus undatus",
+          "family": "Cactaceae",
+          "adapt_score": 0.84,
+          "growth_days": 300,
+          "temp_range_c": [
+            25,
+            35
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "茎腐病",
+            "蚂蚁"
+          ],
+          "fallback_variety": "红心火龙果",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "可可",
+          "latin": "Theobroma cacao",
+          "family": "Malvaceae",
+          "adapt_score": 0.7,
+          "growth_days": 365,
+          "temp_range_c": [
+            24,
+            32
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 300,
+          "suitable_scenes": [
+            "garden",
+            "field"
+          ],
+          "key_risks": [
+            "炭疽病",
+            "黑荚病"
+          ],
+          "fallback_variety": "亚马逊种",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "咖啡",
+          "latin": "Coffea arabica",
+          "family": "Rubiaceae",
+          "adapt_score": 0.75,
+          "growth_days": 300,
+          "temp_range_c": [
+            18,
+            28
+          ],
+          "ph_range": [
+            5.5,
+            6.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "锈病",
+            "天牛"
+          ],
+          "fallback_variety": "小粒种",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "香茅",
+          "latin": "Cymbopogon flexuosus",
+          "family": "Poaceae",
+          "adapt_score": 0.9,
+          "growth_days": 120,
+          "temp_range_c": [
+            22,
+            32
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "极少"
+          ],
+          "fallback_variety": "柠檬香茅",
+          "calibrated": false,
+          "source": "seed-supplement"
+        }
+      ]
+    },
+    "subtropical_wet": {
+      "zone_name": "亚热带湿润带",
+      "crops": [
+        {
+          "crop": "生菜",
+          "latin": "Lactuca sativa",
+          "family": "菊科",
+          "adapt_score": 0.767,
+          "growth_days": 45,
+          "temp_range_c": [
+            10,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "夏季高温抽苔",
+            "蚜虫"
+          ],
+          "fallback_variety": "罗马生菜（耐热）",
+          "seed_adapt_score": 0.92,
+          "measured_calibration": {
+            "n_feedback": 4,
+            "calibrated_score": 0.767,
+            "last_survival_rate": 0.7,
+            "last_yield_rating": 3.0,
+            "last_user_rating": 3.5,
+            "last_issues": [
+              "夏季高温抽苔，提前采收"
+            ],
+            "last_updated": "2026-08-30T23:05:16"
+          },
+          "calibrated": true
+        },
+        {
+          "crop": "番茄",
+          "latin": "Solanum lycopersicum",
+          "family": "茄科",
+          "adapt_score": 0.88,
+          "growth_days": 75,
+          "temp_range_c": [
+            15,
+            30
+          ],
+          "ph_range": [
+            6.0,
+            6.8
+          ],
+          "water_ml_day": 300,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "早疫",
+            "晚疫",
+            "青枯病"
+          ],
+          "fallback_variety": "小番茄（抗病易管）"
+        },
+        {
+          "crop": "黄瓜",
+          "latin": "Cucumis sativus",
+          "family": "葫芦科",
+          "adapt_score": 0.9,
+          "growth_days": 50,
+          "temp_range_c": [
+            18,
+            28
+          ],
+          "ph_range": [
+            5.8,
+            6.5
+          ],
+          "water_ml_day": 400,
+          "suitable_scenes": [
+            "balcony",
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "白粉病",
+            "霜霉病"
+          ],
+          "fallback_variety": "水果黄瓜（抗病）"
+        },
+        {
+          "crop": "豆角",
+          "latin": "Vigna radiata",
+          "family": "豆科",
+          "adapt_score": 0.94,
+          "growth_days": 45,
+          "temp_range_c": [
+            20,
+            32
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "balcony",
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "锈病",
+            "豆荚螟"
+          ],
+          "fallback_variety": "四季豆（广适）"
+        },
+        {
+          "crop": "茄子",
+          "latin": "Solanum melongena",
+          "family": "茄科",
+          "adapt_score": 0.87,
+          "growth_days": 60,
+          "temp_range_c": [
+            20,
+            30
+          ],
+          "ph_range": [
+            5.5,
+            6.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "balcony",
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "黄化曲叶病毒",
+            "红粉病"
+          ],
+          "fallback_variety": "圆茄（早熟）"
+        },
+        {
+          "crop": "辣椒",
+          "latin": "Capsicum annuum",
+          "family": "茄科",
+          "adapt_score": 0.95,
+          "growth_days": 80,
+          "temp_range_c": [
+            18,
+            32
+          ],
+          "ph_range": [
+            5.5,
+            6.8
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "炭疽病",
+            "病毒病"
+          ],
+          "fallback_variety": "杭椒（广适）"
+        },
+        {
+          "crop": "萝卜",
+          "latin": "Raphanus sativus",
+          "family": "十字花科",
+          "adapt_score": 0.93,
+          "growth_days": 35,
+          "temp_range_c": [
+            10,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "根结线虫",
+            "跳甲"
+          ],
+          "fallback_variety": "樱桃萝卜（速生）"
+        },
+        {
+          "crop": "小白菜",
+          "latin": "Brassica rapa var. parachinensis",
+          "family": "十字花科",
+          "adapt_score": 0.945,
+          "growth_days": 30,
+          "temp_range_c": [
+            10,
+            28
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office",
+            "car_greens"
+          ],
+          "key_risks": [
+            "菜青虫",
+            "霜霉病"
+          ],
+          "fallback_variety": "快菜（D15 采收）",
+          "seed_adapt_score": 0.96,
+          "measured_calibration": {
+            "n_feedback": 2,
+            "calibrated_score": 0.945,
+            "last_survival_rate": 0.9,
+            "last_yield_rating": 4.5,
+            "last_user_rating": 5.0,
+            "last_issues": [
+              "demo冒烟"
+            ],
+            "last_updated": "2026-08-30T22:15:34"
+          },
+          "calibrated": true
+        },
+        {
+          "crop": "香菜",
+          "latin": "Coriandrum sativum",
+          "family": "伞形科",
+          "adapt_score": 0.9,
+          "growth_days": 40,
+          "temp_range_c": [
+            10,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "抽苔早",
+            "蚜虫"
+          ],
+          "fallback_variety": "荷兰香菜（晚抽苔）"
+        },
+        {
+          "crop": "大蒜",
+          "latin": "Allium sativum",
+          "family": "百合科",
+          "adapt_score": 0.94,
+          "growth_days": 90,
+          "temp_range_c": [
+            5,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "茎腐病",
+            "蒜蛆"
+          ],
+          "fallback_variety": "蒜苗（D30 割叶）"
+        },
+        {
+          "crop": "紫苏",
+          "latin": "Perilla frutescens",
+          "family": "唇形科",
+          "adapt_score": 0.95,
+          "growth_days": 35,
+          "temp_range_c": [
+            15,
+            32
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "白粉病"
+          ],
+          "fallback_variety": "绿苏（更耐湿）"
+        },
+        {
+          "crop": "薄荷",
+          "latin": "Mentha haplocalyx",
+          "family": "唇形科",
+          "adapt_score": 0.96,
+          "growth_days": 30,
+          "temp_range_c": [
+            10,
+            30
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "烂根（过湿）"
+          ],
+          "fallback_variety": "留兰香（更耐湿）"
+        },
+        {
+          "crop": "草莓",
+          "latin": "Fragaria × ananassa",
+          "family": "蔷薇科",
+          "adapt_score": 0.88,
+          "growth_days": 90,
+          "temp_range_c": [
+            10,
+            25
+          ],
+          "ph_range": [
+            5.5,
+            6.5
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "balcony",
+            "hanging_container"
+          ],
+          "key_risks": [
+            "白粉病",
+            "炭疽病"
+          ],
+          "fallback_variety": "章姬（抗病广适）"
+        },
+        {
+          "crop": "芹菜",
+          "latin": "Apium graveolens",
+          "family": "Apiaceae",
+          "adapt_score": 0.82,
+          "growth_days": 90,
+          "temp_range_c": [
+            15,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "旱涝不均易裂茎",
+            "高温抽苔"
+          ],
+          "fallback_variety": "西芹耐热种",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "茼蒿",
+          "latin": "Chrysanthemum coronarium",
+          "family": "Asteraceae",
+          "adapt_score": 0.9,
+          "growth_days": 40,
+          "temp_range_c": [
+            15,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "高温抽苔"
+          ],
+          "fallback_variety": "大叶茼蒿",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "苦瓜",
+          "latin": "Momordica charantia",
+          "family": "Cucurbitaceae",
+          "adapt_score": 0.83,
+          "growth_days": 80,
+          "temp_range_c": [
+            20,
+            30
+          ],
+          "ph_range": [
+            6.0,
+            6.8
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "白粉病",
+            "瓜实蝇"
+          ],
+          "fallback_variety": "翠绿苦瓜",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "丝瓜",
+          "latin": "Luffa aegyptiaca",
+          "family": "Cucurbitaceae",
+          "adapt_score": 0.84,
+          "growth_days": 70,
+          "temp_range_c": [
+            22,
+            30
+          ],
+          "ph_range": [
+            6.0,
+            6.8
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "balcony"
+          ],
+          "key_risks": [
+            "瓜绢螟"
+          ],
+          "fallback_variety": "短棒丝瓜",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "冬瓜",
+          "latin": "Benincasa hispida",
+          "family": "Cucurbitaceae",
+          "adapt_score": 0.83,
+          "growth_days": 100,
+          "temp_range_c": [
+            22,
+            32
+          ],
+          "ph_range": [
+            6.0,
+            6.8
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "balcony"
+          ],
+          "key_risks": [
+            "白粉病",
+            "日灼"
+          ],
+          "fallback_variety": "小冬瓜",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "南瓜",
+          "latin": "Cucurbita moschata",
+          "family": "Cucurbitaceae",
+          "adapt_score": 0.85,
+          "growth_days": 100,
+          "temp_range_c": [
+            18,
+            30
+          ],
+          "ph_range": [
+            6.0,
+            6.8
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "balcony",
+            "community"
+          ],
+          "key_risks": [
+            "白粉病",
+            "蚜虫"
+          ],
+          "fallback_variety": "贝贝南瓜",
+          "calibrated": false,
+          "source": "seed-supplement"
+        }
+      ]
+    },
+    "temperate_continental": {
+      "zone_name": "温带大陆性带",
+      "crops": [
+        {
+          "crop": "生菜",
+          "latin": "Lactuca sativa",
+          "family": "菊科",
+          "adapt_score": 0.94,
+          "growth_days": 40,
+          "temp_range_c": [
+            10,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "夏季高温需遮阳"
+          ],
+          "fallback_variety": "结球生菜（耐热）"
+        },
+        {
+          "crop": "番茄",
+          "latin": "Solanum lycopersicum",
+          "family": "茄科",
+          "adapt_score": 0.9,
+          "growth_days": 70,
+          "temp_range_c": [
+            15,
+            28
+          ],
+          "ph_range": [
+            6.0,
+            6.8
+          ],
+          "water_ml_day": 300,
+          "suitable_scenes": [
+            "balcony",
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "早疫",
+            "低温障碍"
+          ],
+          "fallback_variety": "牛心番茄（抗寒）"
+        },
+        {
+          "crop": "黄瓜",
+          "latin": "Cucumis sativus",
+          "family": "葫芦科",
+          "adapt_score": 0.88,
+          "growth_days": 50,
+          "temp_range_c": [
+            18,
+            28
+          ],
+          "ph_range": [
+            5.8,
+            6.5
+          ],
+          "water_ml_day": 400,
+          "suitable_scenes": [
+            "balcony",
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "白粉病",
+            "低温障碍"
+          ],
+          "fallback_variety": "温室黄瓜（耐低温）"
+        },
+        {
+          "crop": "土豆",
+          "latin": "Solanum tuberosum",
+          "family": "茄科",
+          "adapt_score": 0.96,
+          "growth_days": 90,
+          "temp_range_c": [
+            8,
+            22
+          ],
+          "ph_range": [
+            5.0,
+            6.0
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "container_large"
+          ],
+          "key_risks": [
+            "晚疫病",
+            "线虫"
+          ],
+          "fallback_variety": "荷兰十五（抗病）"
+        },
+        {
+          "crop": "萝卜",
+          "latin": "Raphanus sativus",
+          "family": "十字花科",
+          "adapt_score": 0.95,
+          "growth_days": 40,
+          "temp_range_c": [
+            8,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "跳甲",
+            "根肿病"
+          ],
+          "fallback_variety": "樱桃萝卜"
+        },
+        {
+          "crop": "白菜",
+          "latin": "Brassica rapa",
+          "family": "十字花科",
+          "adapt_score": 0.94,
+          "growth_days": 50,
+          "temp_range_c": [
+            8,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "软腐病",
+            "菜青虫"
+          ],
+          "fallback_variety": "快菜（D20 采收）"
+        },
+        {
+          "crop": "胡萝卜",
+          "latin": "Daucus carota",
+          "family": "伞形科",
+          "adapt_score": 0.92,
+          "growth_days": 70,
+          "temp_range_c": [
+            10,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "garden",
+            "container_deep"
+          ],
+          "key_risks": [
+            " carrot fly",
+            "根结线虫"
+          ],
+          "fallback_variety": "短根胡萝卜（适合盆栽）"
+        },
+        {
+          "crop": "洋葱",
+          "latin": "Allium cepa",
+          "family": "百合科",
+          "adapt_score": 0.9,
+          "growth_days": 90,
+          "temp_range_c": [
+            10,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "garden",
+            "container",
+            "balcony"
+          ],
+          "key_risks": [
+            "紫斑病",
+            "葱蝇"
+          ],
+          "fallback_variety": "分葱（可割叶采收）"
+        },
+        {
+          "crop": "韭菜",
+          "latin": "Allium tuberosum",
+          "family": "百合科",
+          "adapt_score": 0.97,
+          "growth_days": 30,
+          "temp_range_c": [
+            5,
+            28
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden",
+            "office"
+          ],
+          "key_risks": [
+            "锈病",
+            "韭蛆"
+          ],
+          "fallback_variety": "宽叶韭菜（高产）"
+        },
+        {
+          "crop": "葱",
+          "latin": "Allium fistulosum",
+          "family": "百合科",
+          "adapt_score": 0.96,
+          "growth_days": 25,
+          "temp_range_c": [
+            5,
+            28
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "锈病"
+          ],
+          "fallback_variety": "香葱（速生）"
+        },
+        {
+          "crop": "菠菜",
+          "latin": "Spinacia oleracea",
+          "family": "苋科",
+          "adapt_score": 0.93,
+          "growth_days": 30,
+          "temp_range_c": [
+            5,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "抽苔早（高温）",
+            "霜霉病"
+          ],
+          "fallback_variety": "大叶菠菜（耐抽苔）"
+        },
+        {
+          "crop": "茄子",
+          "latin": "Solanum melongena",
+          "family": "茄科",
+          "adapt_score": 0.85,
+          "growth_days": 65,
+          "temp_range_c": [
+            20,
+            30
+          ],
+          "ph_range": [
+            5.5,
+            6.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "container",
+            "balcony"
+          ],
+          "key_risks": [
+            "低温障碍",
+            "病毒病"
+          ],
+          "fallback_variety": "早茄（短季型）"
+        },
+        {
+          "crop": "薄荷",
+          "latin": "Mentha haplocalyx",
+          "family": "唇形科",
+          "adapt_score": 0.95,
+          "growth_days": 25,
+          "temp_range_c": [
+            8,
+            28
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "烂根"
+          ],
+          "fallback_variety": "胡椒薄荷"
+        },
+        {
+          "crop": "玉米",
+          "latin": "Zea mays",
+          "family": "禾本科",
+          "adapt_score": 0.9,
+          "growth_days": 85,
+          "temp_range_c": [
+            18,
+            30
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 400,
+          "suitable_scenes": [
+            "garden",
+            "container_large"
+          ],
+          "key_risks": [
+            "穗腐",
+            "蚜虫"
+          ],
+          "fallback_variety": "甜玉米（D75）"
+        },
+        {
+          "crop": "小麦",
+          "latin": "Triticum aestivum",
+          "family": "Poaceae",
+          "adapt_score": 0.88,
+          "growth_days": 230,
+          "temp_range_c": [
+            12,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "field",
+            "community"
+          ],
+          "key_risks": [
+            "条锈病",
+            "白粉病"
+          ],
+          "fallback_variety": "冬小麦",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "大豆",
+          "latin": "Glycine max",
+          "family": "Fabaceae",
+          "adapt_score": 0.84,
+          "growth_days": 110,
+          "temp_range_c": [
+            20,
+            28
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "field",
+            "community"
+          ],
+          "key_risks": [
+            "孢囊线虫",
+            "霜霉"
+          ],
+          "fallback_variety": "中黄13",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "向日葵",
+          "latin": "Helianthus annuus",
+          "family": "Asteraceae",
+          "adapt_score": 0.85,
+          "growth_days": 100,
+          "temp_range_c": [
+            18,
+            30
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "balcony",
+            "community"
+          ],
+          "key_risks": [
+            "菌核病",
+            "葵螟"
+          ],
+          "fallback_variety": "矮大头",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "大葱",
+          "latin": "Allium fistulosum",
+          "family": "Amaryllidaceae",
+          "adapt_score": 0.9,
+          "growth_days": 120,
+          "temp_range_c": [
+            15,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden",
+            "community"
+          ],
+          "key_risks": [
+            "紫斑病",
+            "葱蓟马"
+          ],
+          "fallback_variety": "章丘大葱",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "大蒜",
+          "latin": "Allium sativum",
+          "family": "Amaryllidaceae",
+          "adapt_score": 0.9,
+          "growth_days": 220,
+          "temp_range_c": [
+            12,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 120,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "叶枯病",
+            "蒜蛆"
+          ],
+          "fallback_variety": "紫皮蒜",
+          "calibrated": false,
+          "source": "seed-supplement"
+        }
+      ]
+    },
+    "mediterranean": {
+      "zone_name": "地中海带",
+      "crops": [
+        {
+          "crop": "番茄",
+          "latin": "Solanum lycopersicum",
+          "family": "茄科",
+          "adapt_score": 0.93,
+          "growth_days": 70,
+          "temp_range_c": [
+            15,
+            32
+          ],
+          "ph_range": [
+            6.0,
+            6.8
+          ],
+          "water_ml_day": 350,
+          "suitable_scenes": [
+            "balcony",
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "夏季缺水",
+            "早疫"
+          ],
+          "fallback_variety": "耐旱番茄品种"
+        },
+        {
+          "crop": "香草（迷迭香）",
+          "latin": "Rosmarinus officinalis",
+          "family": "唇形科",
+          "adapt_score": 0.97,
+          "growth_days": 60,
+          "temp_range_c": [
+            10,
+            35
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 30,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "过湿烂根"
+          ],
+          "fallback_variety": "匍匐迷迭香"
+        },
+        {
+          "crop": "香草（百里香）",
+          "latin": "Thymus vulgaris",
+          "family": "唇形科",
+          "adapt_score": 0.96,
+          "growth_days": 45,
+          "temp_range_c": [
+            10,
+            32
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 30,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "过湿烂根"
+          ],
+          "fallback_variety": "柠檬百里香"
+        },
+        {
+          "crop": "香草（罗勒）",
+          "latin": "Ocimum basilicum",
+          "family": "唇形科",
+          "adapt_score": 0.94,
+          "growth_days": 30,
+          "temp_range_c": [
+            18,
+            30
+          ],
+          "ph_range": [
+            5.5,
+            6.8
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "白粉病",
+            "蚜虫"
+          ],
+          "fallback_variety": "泰国罗勒（更耐热）"
+        },
+        {
+          "crop": "黄瓜",
+          "latin": "Cucumis sativus",
+          "family": "葫芦科",
+          "adapt_score": 0.86,
+          "growth_days": 50,
+          "temp_range_c": [
+            18,
+            28
+          ],
+          "ph_range": [
+            5.8,
+            6.5
+          ],
+          "water_ml_day": 450,
+          "suitable_scenes": [
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "夏季高温缺水",
+            "白粉病"
+          ],
+          "fallback_variety": "耐旱黄瓜"
+        },
+        {
+          "crop": "茄子",
+          "latin": "Solanum melongena",
+          "family": "茄科",
+          "adapt_score": 0.92,
+          "growth_days": 60,
+          "temp_range_c": [
+            20,
+            32
+          ],
+          "ph_range": [
+            5.5,
+            6.5
+          ],
+          "water_ml_day": 300,
+          "suitable_scenes": [
+            "garden",
+            "container",
+            "balcony"
+          ],
+          "key_risks": [
+            "夏季缺水"
+          ],
+          "fallback_variety": "希腊茄（耐旱）"
+        },
+        {
+          "crop": "辣椒",
+          "latin": "Capsicum annuum",
+          "family": "茄科",
+          "adapt_score": 0.95,
+          "growth_days": 80,
+          "temp_range_c": [
+            18,
+            32
+          ],
+          "ph_range": [
+            5.5,
+            6.8
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "夏季干旱",
+            "炭疽病"
+          ],
+          "fallback_variety": "地中海品种辣椒"
+        },
+        {
+          "crop": "生菜",
+          "latin": "Lactuca sativa",
+          "family": "菊科",
+          "adapt_score": 0.88,
+          "growth_days": 35,
+          "temp_range_c": [
+            10,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "夏季高温抽苔",
+            "缺水"
+          ],
+          "fallback_variety": "结球生菜（耐热）"
+        },
+        {
+          "crop": "豌豆苗",
+          "latin": "Pisum sativum",
+          "family": "豆科",
+          "adapt_score": 0.9,
+          "growth_days": 15,
+          "temp_range_c": [
+            10,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office",
+            "car_greens"
+          ],
+          "key_risks": [
+            "夏季高温失败"
+          ],
+          "fallback_variety": "无"
+        },
+        {
+          "crop": "大蒜",
+          "latin": "Allium sativum",
+          "family": "百合科",
+          "adapt_score": 0.94,
+          "growth_days": 90,
+          "temp_range_c": [
+            5,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "garden",
+            "container",
+            "balcony"
+          ],
+          "key_risks": [
+            "夏季干旱需灌溉"
+          ],
+          "fallback_variety": "蒜苗"
+        },
+        {
+          "crop": "胡萝卜",
+          "latin": "Daucus carota",
+          "family": "伞形科",
+          "adapt_score": 0.9,
+          "growth_days": 70,
+          "temp_range_c": [
+            10,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "garden",
+            "container_deep"
+          ],
+          "key_risks": [
+            "夏季缺水影响品质"
+          ],
+          "fallback_variety": "短根胡萝卜"
+        },
+        {
+          "crop": "橄榄",
+          "latin": "Olea europaea",
+          "family": "木犀科",
+          "adapt_score": 0.96,
+          "growth_days": 1825,
+          "temp_range_c": [
+            0,
+            35
+          ],
+          "ph_range": [
+            6.5,
+            8.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "garden",
+            "tree_container"
+          ],
+          "key_risks": [
+            "冬季低温（< -10℃）"
+          ],
+          "fallback_variety": "矮化盆栽橄榄"
+        },
+        {
+          "crop": "葡萄",
+          "latin": "Vitis vinifera",
+          "family": "葡萄科",
+          "adapt_score": 0.94,
+          "growth_days": 180,
+          "temp_range_c": [
+            10,
+            35
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 300,
+          "suitable_scenes": [
+            "garden_fence",
+            "container_large"
+          ],
+          "key_risks": [
+            "白粉病",
+            "霜霉病"
+          ],
+          "fallback_variety": "无核葡萄（易管）"
+        },
+        {
+          "crop": "无花果",
+          "latin": "Ficus carica",
+          "family": "Moraceae",
+          "adapt_score": 0.85,
+          "growth_days": 180,
+          "temp_range_c": [
+            18,
+            30
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "container",
+            "tree_container"
+          ],
+          "key_risks": [
+            "锈病",
+            "天牛"
+          ],
+          "fallback_variety": "波姬红",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "朝鲜蓟",
+          "latin": "Cynara cardunculus",
+          "family": "Asteraceae",
+          "adapt_score": 0.8,
+          "growth_days": 150,
+          "temp_range_c": [
+            15,
+            25
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "field"
+          ],
+          "key_risks": [
+            "根腐",
+            "蚜虫"
+          ],
+          "fallback_variety": "绿球",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "芝麻菜",
+          "latin": "Eruca vesicaria",
+          "family": "Brassicaceae",
+          "adapt_score": 0.92,
+          "growth_days": 35,
+          "temp_range_c": [
+            12,
+            24
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 120,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden",
+            "car_greens"
+          ],
+          "key_risks": [
+            "蚜虫",
+            "跳甲"
+          ],
+          "fallback_variety": "野苣",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "开心果",
+          "latin": "Pistacia vera",
+          "family": "Anacardiaceae",
+          "adapt_score": 0.78,
+          "growth_days": 365,
+          "temp_range_c": [
+            15,
+            30
+          ],
+          "ph_range": [
+            7.0,
+            7.8
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "field",
+            "tree_container"
+          ],
+          "key_risks": [
+            "黄萎病",
+            "虫害"
+          ],
+          "fallback_variety": "加州种",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "油莎豆",
+          "latin": "Cyperus esculentus",
+          "family": "Cyperaceae",
+          "adapt_score": 0.8,
+          "growth_days": 180,
+          "temp_range_c": [
+            20,
+            30
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "field"
+          ],
+          "key_risks": [
+            "极少"
+          ],
+          "fallback_variety": "油莎豆",
+          "calibrated": false,
+          "source": "seed-supplement"
+        }
+      ]
+    },
+    "arid": {
+      "zone_name": "干旱带",
+      "crops": [
+        {
+          "crop": "芦荟",
+          "latin": "Aloe vera",
+          "family": "阿福花科",
+          "adapt_score": 0.96,
+          "growth_days": 180,
+          "temp_range_c": [
+            10,
+            35
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 20,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "过湿烂根",
+            "冬季低温"
+          ],
+          "fallback_variety": "库拉索芦荟"
+        },
+        {
+          "crop": "仙人掌",
+          "latin": "Opuntia ficus-indica",
+          "family": "仙人掌科",
+          "adapt_score": 0.97,
+          "growth_days": 365,
+          "temp_range_c": [
+            5,
+            40
+          ],
+          "ph_range": [
+            5.0,
+            8.0
+          ],
+          "water_ml_day": 10,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "冻害",
+            "过湿烂根"
+          ],
+          "fallback_variety": "梨果仙人掌"
+        },
+        {
+          "crop": "耐旱香草（牛至）",
+          "latin": "Origanum vulgare",
+          "family": "唇形科",
+          "adapt_score": 0.93,
+          "growth_days": 45,
+          "temp_range_c": [
+            10,
+            35
+          ],
+          "ph_range": [
+            6.0,
+            8.0
+          ],
+          "water_ml_day": 40,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "过湿烂根"
+          ],
+          "fallback_variety": "希腊牛至"
+        },
+        {
+          "crop": "耐旱香草（鼠尾草）",
+          "latin": "Salvia officinalis",
+          "family": "唇形科",
+          "adapt_score": 0.92,
+          "growth_days": 45,
+          "temp_range_c": [
+            10,
+            35
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 40,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "过湿"
+          ],
+          "fallback_variety": "白鼠尾草"
+        },
+        {
+          "crop": "耐旱香草（迷迭香）",
+          "latin": "Rosmarinus officinalis",
+          "family": "唇形科",
+          "adapt_score": 0.95,
+          "growth_days": 60,
+          "temp_range_c": [
+            10,
+            35
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 30,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "过湿"
+          ],
+          "fallback_variety": "匍匐迷迭香"
+        },
+        {
+          "crop": "红薯",
+          "latin": "Ipomoea batatas",
+          "family": "旋花科",
+          "adapt_score": 0.88,
+          "growth_days": 90,
+          "temp_range_c": [
+            20,
+            32
+          ],
+          "ph_range": [
+            5.0,
+            6.5
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "干旱减产",
+            "线虫"
+          ],
+          "fallback_variety": "紫薯（耐旱）"
+        },
+        {
+          "crop": "绿豆",
+          "latin": "Vigna radiata",
+          "family": "豆科",
+          "adapt_score": 0.85,
+          "growth_days": 60,
+          "temp_range_c": [
+            20,
+            35
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "干旱",
+            "锈病"
+          ],
+          "fallback_variety": "绿豆芽（室内）"
+        },
+        {
+          "crop": "花生",
+          "latin": "Arachis hypogaea",
+          "family": "豆科",
+          "adapt_score": 0.87,
+          "growth_days": 100,
+          "temp_range_c": [
+            22,
+            32
+          ],
+          "ph_range": [
+            5.5,
+            6.8
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "garden",
+            "container_large"
+          ],
+          "key_risks": [
+            "干旱",
+            "根腐"
+          ],
+          "fallback_variety": "小花生（早熟）"
+        },
+        {
+          "crop": "仙人掌果",
+          "latin": "Opuntia ficus-indica",
+          "family": "仙人掌科",
+          "adapt_score": 0.94,
+          "growth_days": 1095,
+          "temp_range_c": [
+            5,
+            40
+          ],
+          "ph_range": [
+            5.0,
+            8.0
+          ],
+          "water_ml_day": 10,
+          "suitable_scenes": [
+            "garden",
+            "tree_container"
+          ],
+          "key_risks": [
+            "冻害"
+          ],
+          "fallback_variety": "红心仙人掌果"
+        },
+        {
+          "crop": "沙漠玫瑰",
+          "latin": "Adenium obesum",
+          "family": "夹竹桃科",
+          "adapt_score": 0.91,
+          "growth_days": 180,
+          "temp_range_c": [
+            15,
+            40
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 15,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "过湿烂根",
+            "低温"
+          ],
+          "fallback_variety": "迷你沙漠玫瑰"
+        },
+        {
+          "crop": "鹰嘴豆",
+          "latin": "Cicer arietinum",
+          "family": "豆科",
+          "adapt_score": 0.84,
+          "growth_days": 90,
+          "temp_range_c": [
+            15,
+            30
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "garden",
+            "container"
+          ],
+          "key_risks": [
+            "高温障碍",
+            "锈病"
+          ],
+          "fallback_variety": "速生鹰嘴豆"
+        },
+        {
+          "crop": "沙棘",
+          "latin": "Hippophae rhamnoides",
+          "family": "胡颓子科",
+          "adapt_score": 0.89,
+          "growth_days": 730,
+          "temp_range_c": [
+            -20,
+            35
+          ],
+          "ph_range": [
+            6.0,
+            8.0
+          ],
+          "water_ml_day": 50,
+          "suitable_scenes": [
+            "garden"
+          ],
+          "key_risks": [
+            "夏季干旱需补充灌溉"
+          ],
+          "fallback_variety": "矮化沙棘"
+        },
+        {
+          "crop": "棉花",
+          "latin": "Gossypium hirsutum",
+          "family": "Malvaceae",
+          "adapt_score": 0.82,
+          "growth_days": 150,
+          "temp_range_c": [
+            22,
+            32
+          ],
+          "ph_range": [
+            6.5,
+            8.0
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "field"
+          ],
+          "key_risks": [
+            "枯萎病",
+            "蚜虫"
+          ],
+          "fallback_variety": "新疆棉",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "高粱",
+          "latin": "Sorghum bicolor",
+          "family": "Poaceae",
+          "adapt_score": 0.85,
+          "growth_days": 120,
+          "temp_range_c": [
+            22,
+            34
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "field",
+            "community"
+          ],
+          "key_risks": [
+            "蚜虫",
+            "纹枯"
+          ],
+          "fallback_variety": "晋杂",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "谷子",
+          "latin": "Setaria italica",
+          "family": "Poaceae",
+          "adapt_score": 0.86,
+          "growth_days": 110,
+          "temp_range_c": [
+            20,
+            30
+          ],
+          "ph_range": [
+            6.5,
+            8.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "field",
+            "community"
+          ],
+          "key_risks": [
+            "谷瘟",
+            "粟灰螟"
+          ],
+          "fallback_variety": "张杂谷",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "苜蓿",
+          "latin": "Medicago sativa",
+          "family": "Fabaceae",
+          "adapt_score": 0.84,
+          "growth_days": 120,
+          "temp_range_c": [
+            15,
+            30
+          ],
+          "ph_range": [
+            6.5,
+            7.8
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "field",
+            "community"
+          ],
+          "key_risks": [
+            "蓟马",
+            "蚜虫"
+          ],
+          "fallback_variety": "紫花苜蓿",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "沙葱",
+          "latin": "Allium mongolicum",
+          "family": "Alliaceae",
+          "adapt_score": 0.88,
+          "growth_days": 90,
+          "temp_range_c": [
+            10,
+            28
+          ],
+          "ph_range": [
+            7.0,
+            8.5
+          ],
+          "water_ml_day": 120,
+          "suitable_scenes": [
+            "garden",
+            "container",
+            "balcony"
+          ],
+          "key_risks": [
+            "极少"
+          ],
+          "fallback_variety": "蒙古沙葱",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "瓜尔豆",
+          "latin": "Cyamopsis tetragonoloba",
+          "family": "Fabaceae",
+          "adapt_score": 0.8,
+          "growth_days": 120,
+          "temp_range_c": [
+            24,
+            34
+          ],
+          "ph_range": [
+            7.0,
+            8.0
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "field"
+          ],
+          "key_risks": [
+            "根腐"
+          ],
+          "fallback_variety": "瓜尔豆",
+          "calibrated": false,
+          "source": "seed-supplement"
+        }
+      ]
+    },
+    "subarctic": {
+      "zone_name": "亚寒带",
+      "crops": [
+        {
+          "crop": "速生菜",
+          "latin": "Lactuca sativa var. capitata",
+          "family": "菊科",
+          "adapt_score": 0.88,
+          "growth_days": 30,
+          "temp_range_c": [
+            8,
+            20
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony_indoor",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "生长季短",
+            "光照不足"
+          ],
+          "fallback_variety": "奶油生菜（速生）"
+        },
+        {
+          "crop": "樱桃萝卜",
+          "latin": "Raphanus sativus var. minimus",
+          "family": "十字花科",
+          "adapt_score": 0.9,
+          "growth_days": 20,
+          "temp_range_c": [
+            8,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "生长季短"
+          ],
+          "fallback_variety": "无"
+        },
+        {
+          "crop": "菠菜",
+          "latin": "Spinacia oleracea",
+          "family": "苋科",
+          "adapt_score": 0.92,
+          "growth_days": 25,
+          "temp_range_c": [
+            5,
+            20
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "夏季抽苔"
+          ],
+          "fallback_variety": "大叶菠菜"
+        },
+        {
+          "crop": "韭菜",
+          "latin": "Allium tuberosum",
+          "family": "百合科",
+          "adapt_score": 0.94,
+          "growth_days": 25,
+          "temp_range_c": [
+            5,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "生长季短"
+          ],
+          "fallback_variety": "宽叶韭菜"
+        },
+        {
+          "crop": "葱",
+          "latin": "Allium fistulosum",
+          "family": "百合科",
+          "adapt_score": 0.95,
+          "growth_days": 20,
+          "temp_range_c": [
+            5,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "office"
+          ],
+          "key_risks": [
+            "冬季严寒"
+          ],
+          "fallback_variety": "香葱"
+        },
+        {
+          "crop": "豌豆苗",
+          "latin": "Pisum sativum",
+          "family": "豆科",
+          "adapt_score": 0.92,
+          "growth_days": 10,
+          "temp_range_c": [
+            8,
+            20
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 150,
+          "suitable_scenes": [
+            "balcony_indoor",
+            "container",
+            "office",
+            "car_greens"
+          ],
+          "key_risks": [
+            "夏季高温失败"
+          ],
+          "fallback_variety": "无"
+        },
+        {
+          "crop": "豆芽",
+          "latin": "Vigna radiata sprouts",
+          "family": "豆科",
+          "adapt_score": 0.96,
+          "growth_days": 5,
+          "temp_range_c": [
+            15,
+            25
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 300,
+          "suitable_scenes": [
+            "indoor",
+            "car_greens",
+            "office",
+            "container"
+          ],
+          "key_risks": [
+            "温度过高烂根"
+          ],
+          "fallback_variety": "绿豆芽"
+        },
+        {
+          "crop": "菌菇类（平菇）",
+          "latin": "Pleurotus ostreatus",
+          "family": "侧耳科",
+          "adapt_score": 0.93,
+          "growth_days": 20,
+          "temp_range_c": [
+            5,
+            25
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "indoor",
+            "balcony_indoor",
+            "container"
+          ],
+          "key_risks": [
+            "夏季高温"
+          ],
+          "fallback_variety": "双孢菇"
+        },
+        {
+          "crop": "菌菇类（木耳）",
+          "latin": "Auricularia auricula-judae",
+          "family": "木耳科",
+          "adapt_score": 0.91,
+          "growth_days": 60,
+          "temp_range_c": [
+            10,
+            25
+          ],
+          "ph_range": [
+            5.5,
+            6.5
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "indoor",
+            "balcony_indoor"
+          ],
+          "key_risks": [
+            "温度波动"
+          ],
+          "fallback_variety": "真木耳"
+        },
+        {
+          "crop": "耐寒香草（莳萝）",
+          "latin": "Anethum graveolens",
+          "family": "伞形科",
+          "adapt_score": 0.88,
+          "growth_days": 30,
+          "temp_range_c": [
+            5,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "夏季抽苔"
+          ],
+          "fallback_variety": "无"
+        },
+        {
+          "crop": "耐寒香草（薄荷）",
+          "latin": "Mentha haplocalyx",
+          "family": "唇形科",
+          "adapt_score": 0.92,
+          "growth_days": 25,
+          "temp_range_c": [
+            8,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony_indoor",
+            "container",
+            "office",
+            "car_herbs"
+          ],
+          "key_risks": [
+            "烂根"
+          ],
+          "fallback_variety": "胡椒薄荷"
+        },
+        {
+          "crop": "微绿菜（Microgreens）",
+          "latin": "Various brassicas/legumes",
+          "family": "多样",
+          "adapt_score": 0.97,
+          "growth_days": 7,
+          "temp_range_c": [
+            10,
+            22
+          ],
+          "ph_range": [
+            5.5,
+            7.0
+          ],
+          "water_ml_day": 100,
+          "suitable_scenes": [
+            "indoor",
+            "balcony_indoor",
+            "car_greens",
+            "office",
+            "container"
+          ],
+          "key_risks": [
+            "通风不良霉变"
+          ],
+          "fallback_variety": "无"
+        },
+        {
+          "crop": "黑麦",
+          "latin": "Secale cereale",
+          "family": "Poaceae",
+          "adapt_score": 0.86,
+          "growth_days": 240,
+          "temp_range_c": [
+            8,
+            20
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 200,
+          "suitable_scenes": [
+            "field",
+            "community"
+          ],
+          "key_risks": [
+            "锈病",
+            "白粉"
+          ],
+          "fallback_variety": "冬黑麦",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "大麦",
+          "latin": "Hordeum vulgare",
+          "family": "Poaceae",
+          "adapt_score": 0.85,
+          "growth_days": 110,
+          "temp_range_c": [
+            10,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "field",
+            "community"
+          ],
+          "key_risks": [
+            "条纹病",
+            "蚜虫"
+          ],
+          "fallback_variety": "裸大麦",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "燕麦",
+          "latin": "Avena sativa",
+          "family": "Poaceae",
+          "adapt_score": 0.84,
+          "growth_days": 100,
+          "temp_range_c": [
+            10,
+            22
+          ],
+          "ph_range": [
+            6.0,
+            7.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "field",
+            "community"
+          ],
+          "key_risks": [
+            "冠锈",
+            "蚜虫"
+          ],
+          "fallback_variety": "皮燕麦",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "甜菜",
+          "latin": "Beta vulgaris",
+          "family": "Amaranthaceae",
+          "adapt_score": 0.83,
+          "growth_days": 90,
+          "temp_range_c": [
+            12,
+            24
+          ],
+          "ph_range": [
+            6.5,
+            7.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "field",
+            "community"
+          ],
+          "key_risks": [
+            "丛根病",
+            "褐斑"
+          ],
+          "fallback_variety": "糖甜菜",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "蔓越莓",
+          "latin": "Vaccinium macrocarpon",
+          "family": "Ericaceae",
+          "adapt_score": 0.78,
+          "growth_days": 150,
+          "temp_range_c": [
+            12,
+            25
+          ],
+          "ph_range": [
+            4.0,
+            5.5
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "garden",
+            "field"
+          ],
+          "key_risks": [
+            "果腐",
+            "蛾"
+          ],
+          "fallback_variety": "蔓越莓",
+          "calibrated": false,
+          "source": "seed-supplement"
+        },
+        {
+          "crop": "蓝莓",
+          "latin": "Vaccinium corymbosum",
+          "family": "Ericaceae",
+          "adapt_score": 0.8,
+          "growth_days": 180,
+          "temp_range_c": [
+            12,
+            26
+          ],
+          "ph_range": [
+            4.0,
+            5.2
+          ],
+          "water_ml_day": 250,
+          "suitable_scenes": [
+            "balcony",
+            "container",
+            "garden"
+          ],
+          "key_risks": [
+            "缺素黄化",
+            "果蝇"
+          ],
+          "fallback_variety": "北高丛蓝莓",
+          "calibrated": false,
+          "source": "seed-supplement"
+        }
+      ]
+    }
+  }
+}

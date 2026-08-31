@@ -1,0 +1,161 @@
+{
+  "meta": {
+    "description": "智慧农业生态 · 设备/工具推荐库（按场景×品类×预算）",
+    "version": "1.0",
+    "data_sources": ["主流电商公开品类", "家庭园艺通识", "设施农业标准配置"],
+    "last_updated": "2026-08-30",
+    "note": "价格为公开渠道估算区间中值，仅供推荐排序参考；生产采购以实时报价为准"
+  },
+  "categories": {
+    "watering": "灌溉/浇水",
+    "lighting": "补光/光照",
+    "container": "容器/种植槽",
+    "sensor": "传感/监测",
+    "climate": "温控/遮阳/通风",
+    "substrate": "基质/肥料",
+    "support": "支架/爬藤",
+    "automation": "自动化/物联网"
+  },
+  "devices": [
+    {
+      "id": "dev_drip_kit",
+      "name": "小型自动滴灌套装",
+      "category": "watering",
+      "scenes": ["balcony", "garden", "office", "roof"],
+      "price_cny": 89,
+      "priority": 1,
+      "reason": "阳台/办公室定点供水，出差 3-5 天不旱死，显著降低新手死亡率",
+      "good_for": ["叶菜", "香草", "茄果"]
+    },
+    {
+      "id": "dev_spray",
+      "name": "加压喷壶（2L）",
+      "category": "watering",
+      "scenes": ["balcony", "office", "car_herbs"],
+      "price_cny": 25,
+      "priority": 2,
+      "reason": "叶面补水+防病喷药两用，零门槛起步必备",
+      "good_for": ["通用"]
+    },
+    {
+      "id": "dev_grow_light",
+      "name": "全光谱 LED 补光灯（15W 夹式）",
+      "category": "lighting",
+      "scenes": ["balcony", "office", "car_herbs", "indoor"],
+      "price_cny": 79,
+      "priority": 2,
+      "reason": "冬季/北向/车内光照不足时补光，避免徒长与抽苔",
+      "good_for": ["叶菜", "香草", "草莓"]
+    },
+    {
+      "id": "dev_planter_box",
+      "name": "长条种植箱（60×25×20cm 带托盘）",
+      "category": "container",
+      "scenes": ["balcony", "roof", "office"],
+      "price_cny": 45,
+      "priority": 1,
+      "reason": "阳台标准化种植单元，可并排拼出 1.5㎡ 菜园",
+      "good_for": ["通用"]
+    },
+    {
+      "id": "dev_hanging_pot",
+      "name": "壁挂/悬挂种植袋（5 穴）",
+      "category": "container",
+      "scenes": ["balcony_rail", "balcony", "office"],
+      "price_cny": 29,
+      "priority": 2,
+      "reason": "立体利用栏杆/墙面，小空间扩产 2-3 倍",
+      "good_for": ["香草", "草莓", "叶菜"]
+    },
+    {
+      "id": "dev_moisture_meter",
+      "name": "土壤湿度计（指针式）",
+      "category": "sensor",
+      "scenes": ["balcony", "garden", "office", "car_herbs"],
+      "price_cny": 19,
+      "priority": 1,
+      "reason": "新手最易犯浇水不当，湿度计直接读数避免烂根/旱死",
+      "good_for": ["通用"]
+    },
+    {
+      "id": "dev_env_sensor",
+      "name": "温湿度+光照三合一传感器（蓝牙）",
+      "category": "sensor",
+      "scenes": ["balcony", "garden", "office", "car_herbs"],
+      "price_cny": 69,
+      "priority": 3,
+      "reason": "长期记录微气候，回流数据优化分区模型（生态数据贡献入口）",
+      "good_for": ["通用"]
+    },
+    {
+      "id": "dev_shade_net",
+      "name": "遮阳网（50% 遮光，可伸缩）",
+      "category": "climate",
+      "scenes": ["balcony", "roof", "garden"],
+      "price_cny": 35,
+      "priority": 2,
+      "reason": "夏季高温（>32℃）作物防抽苔/日灼，叶菜越夏关键",
+      "good_for": ["生菜", "香菜", "菠菜", "草莓"]
+    },
+    {
+      "id": "dev_minigreenhouse",
+      "name": "微型保温棚（薄膜+骨架）",
+      "category": "climate",
+      "scenes": ["balcony", "garden", "roof"],
+      "price_cny": 55,
+      "priority": 3,
+      "reason": "冬季/高海拔低温区保温防冻，延长采收季",
+      "good_for": ["叶菜", "萝卜", "葱蒜"]
+    },
+    {
+      "id": "dev_substrate",
+      "name": "蔬菜专用营养土（20L）",
+      "category": "substrate",
+      "scenes": ["balcony", "office", "garden", "car_herbs"],
+      "price_cny": 39,
+      "priority": 1,
+      "reason": "容器种植不能用园土（板结/虫卵），专用基质是成活基础",
+      "good_for": ["通用"]
+    },
+    {
+      "id": "dev_fert",
+      "name": "水溶性有机肥套装（氮磷钾+微量元素）",
+      "category": "substrate",
+      "scenes": ["balcony", "garden", "office"],
+      "price_cny": 32,
+      "priority": 2,
+      "reason": "容器土养分有限，定期追肥保证产量与口感",
+      "good_for": ["通用"]
+    },
+    {
+      "id": "dev_trellis",
+      "name": "爬藤支架/网格（可伸缩）",
+      "category": "support",
+      "scenes": ["balcony", "garden", "balcony_rail"],
+      "price_cny": 28,
+      "priority": 2,
+      "reason": "黄瓜/豆角/百香果需攀援，立体栽培提产且通风防病",
+      "good_for": ["黄瓜", "豆角", "百香果", "番茄"]
+    },
+    {
+      "id": "dev_car_planter",
+      "name": "车载防滑种植杯（磁吸+卡扣）",
+      "category": "container",
+      "scenes": ["car_herbs", "car_greens"],
+      "price_cny": 49,
+      "priority": 1,
+      "reason": "车内颠簸场景专用固定方案，采摘即食场景落地件",
+      "good_for": ["香草", "微绿菜", "小白菜"]
+    },
+    {
+      "id": "dev_auto_ctrl",
+      "name": "WiFi 浇水定时器（物联网）",
+      "category": "automation",
+      "scenes": ["balcony", "garden", "roof", "office"],
+      "price_cny": 119,
+      "priority": 3,
+      "reason": "远程/定时灌溉，闭环自动化起点，数据可回传平台",
+      "good_for": ["通用"]
+    }
+  ]
+}

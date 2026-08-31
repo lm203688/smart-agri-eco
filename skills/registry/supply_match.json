@@ -1,0 +1,15 @@
+{
+  "id": "supply_match",
+  "name": "供需撮合（采摘即食）",
+  "version": "1.0",
+  "description": "根据地理位置 + 农产品类型 + 数量 + 新鲜度要求，撮合本地供需双方。先做社区内循环（3km 内），逐步扩展到城市级。",
+  "domain": "eco",
+  "agent": "EcoAgent",
+  "inputs": ["user_location (dict)", "produce_type (str)", "quantity_kg (float)", "freshness_requirement (str)"],
+  "outputs": ["provider_type (str)", "distance_km (float)", "freshness_score (float)", "match_quality (float)"],
+  "data_sources": ["社区用户种植数据", "本地农场数据", "物流时效数据"],
+  "confidence_method": "基于地理距离 + 新鲜度要求匹配 + 供需量平衡",
+  "safety_boundary": "不处理大规模商业交易；食品安全责任由交易双方自行负责",
+  "reuse_value": "L5 消费服务层的核心 Skill——实现'采摘即食'愿景的关键技术出口",
+  "dependencies": ["climate_match", "growth_plan"]
+}

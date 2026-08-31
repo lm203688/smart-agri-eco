@@ -1,0 +1,28 @@
+{
+  "id": "iceplant_advisory",
+  "name": "冰菜阳台种植建议",
+  "description": "为新增作物冰菜（Mesembryanthemum crystallinum）提供分区适配与阳台种植建议，由 skill_factory 自动生成，扩大 CropAgent 覆盖。",
+  "domain": "crop",
+  "inputs": [
+    "zone_id",
+    "scene",
+    "space_sqm"
+  ],
+  "outputs": [
+    "adapt_score",
+    "growth_days",
+    "risk_flags",
+    "fallback_variety"
+  ],
+  "data_sources": [
+    "用户反馈",
+    "农艺通识"
+  ],
+  "version": "1.0",
+  "agent": "CropAgent",
+  "confidence_method": "seed 适配分 + flywheel 实测校准",
+  "safety_boundary": "建议结合本地实测，不替代农技人员",
+  "reuse_value": "新增作物即自动注册为可复用 Skill，降低重复工程",
+  "auto_generated": true,
+  "created_at": "2026-08-30T22:14:52"
+}

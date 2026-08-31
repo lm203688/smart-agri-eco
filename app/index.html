@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>智慧农业生态 · AI 种植方案生成器</title>
+<style>
+  :root{
+    --green:#2e7d32; --green-soft:#e8f5e9; --green-mid:#66bb6a;
+    --ink:#1b3a1f; --muted:#6b7b6e; --line:#d7e6d9;
+    --bg:#f4f9f4; --card:#ffffff; --warn:#ef6c00; --blue:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.5;}
+  header{background:linear-gradient(120deg,var(--green),var(--green-mid));color:#fff;
+         padding:20px 28px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  header h1{margin:0;font-size:22px;}
+  header p{margin:6px 0 0;opacity:.92;font-size:13px;}
+  .wrap{display:grid;grid-template-columns:340px 1fr;gap:20px;padding:20px;max-width:1280px;margin:0 auto;}
+  @media(max-width:880px){.wrap{grid-template-columns:1fr;}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;
+         box-shadow:0 1px 4px rgba(0,0,0,.05);}
+  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 4px;font-weight:600;}
+  select,input[type=number],input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);
+         border-radius:8px;font-size:14px;background:#fafdfa;}
+  .row{display:flex;gap:10px;}
+  .row>div{flex:1;}
+  input[type=range]{width:100%;}
+  .budget-val{font-size:13px;color:var(--green);font-weight:600;}
+  button{margin-top:16px;width:100%;padding:11px;border:0;border-radius:9px;background:var(--green);
+         color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.15s;}
+  button:hover{background:#1b5e20;}
+  button:disabled{opacity:.6;cursor:wait;}
+  .hint{font-size:11px;color:var(--muted);margin-top:4px;}
+  #result{min-height:200px;}
+  .agent-card{border:1px solid var(--line);border-left:4px solid var(--green-mid);
+              border-radius:10px;padding:14px 16px;margin-bottom:14px;background:#fcfefc;}
+  .agent-card h3{margin:0 0 8px;font-size:15px;display:flex;align-items:center;gap:8px;}
+  .badge{font-size:11px;background:var(--green-soft);color:var(--green);padding:2px 8px;border-radius:20px;font-weight:700;}
+  .score{margin-left:auto;font-size:12px;color:var(--blue);font-weight:700;}
+  .kv{font-size:13px;margin:3px 0;}
+  .kv b{color:var(--ink);}
+  .crop{display:inline-block;background:var(--green-soft);border:1px solid var(--line);
+        border-radius:8px;padding:6px 10px;margin:4px 6px 4px 0;font-size:13px;}
+  .crop .s{color:var(--green);font-weight:700;}
+  .risk{color:var(--warn);font-size:13px;margin:3px 0;}
+  .dev{font-size:13px;margin:4px 0;display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:4px;}
+  .dev .p{color:var(--warn);font-weight:700;white-space:nowrap;margin-left:10px;}
+  .phase{background:#f7fbf7;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;font-size:12.5px;}
+  .phase b{color:var(--green);}
+  .cert{background:var(--ink);color:#e8f5e9;border-radius:10px;padding:14px 16px;font-size:12.5px;margin-top:8px;}
+  .cert h3{color:#a5d6a7;margin:0 0 8px;}
+  .cert code{color:#c8e6c9;word-break:break-all;font-size:11px;}
+  .placeholder-note{color:var(--warn);font-size:12px;}
+  .err{color:#c62828;background:#ffebee;padding:10px;border-radius:8px;font-size:13px;}
+  .loading{color:var(--muted);font-size:13px;padding:20px;text-align:center;}
+  footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;}
+  .legend{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.7;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🌱 智慧农业生态 · AI 种植方案生成器</h1>
+  <p>ClimateAgent → CropAgent → GrowthAgent → EcoAgent 四 Agent 协同 · 每条建议附 AgriTrust 可信证书</p>
+</header>
+
+<div class="wrap">
+  <!-- 输入面板 -->
+  <div class="panel">
+    <label>选择城市（自动填充坐标）</label>
+    <select id="city"></select>
+    <div class="row">
+      <div><label>纬度 lat</label><input type="number" id="lat" step="0.0001" value="30.2741"></div>
+      <div><label>经度 lon</label><input type="number" id="lon" step="0.0001" value="120.1551"></div>
+    </div>
+    <label>种植场景</label>
+    <select id="scene">
+      <option value="balcony">阳台种植</option>
+      <option value="office">办公室</option>
+      <option value="garden">庭院/露台</option>
+      <option value="balcony_rail">阳台护栏</option>
+      <option value="car_herbs">车载香草</option>
+      <option value="car_greens">车载叶菜</option>
+      <option value="community">社区农场</option>
+      <option value="field">大田</option>
+    </select>
+    <div class="row">
+      <div><label>楼层</label><input type="number" id="floor" value="15" min="1"></div>
+      <div><label>朝向</label>
+        <select id="orientation">
+          <option value="south">南</option><option value="north">北</option>
+          <option value="east">东</option><option value="west">西</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div><label>目的</label>
+        <select id="purpose">
+          <option value="食用">食用</option><option value="香料">香料</option>
+          <option value="观赏">观赏</option>
+        </select>
+      </div>
+      <div><label>难度</label>
+        <select id="difficulty">
+          <option value="beginner">新手</option><option value="advanced">进阶</option>
+        </select>
+      </div>
+    </div>
+    <label>空间 (m²)</label>
+    <input type="number" id="space_sqm" value="1.5" step="0.1" min="0.1">
+    <label>预算 ¥ <span class="budget-val" id="budgetVal">500</span> <span style="font-weight:400">(0=不限)</span></label>
+    <input type="range" id="budget" min="0" max="2000" step="50" value="500" oninput="document.getElementById('budgetVal').textContent=this.value">
+    <button id="go" onclick="run()">生成种植方案</button>
+    <div class="legend">
+      🧭 分区匹配来自全球 Köppen 气候带 + 微气候修正<br>
+      🌾 作物推荐基于 76+ 种作物-分区适配数据库<br>
+      🔁 EcoAgent 设备推荐按预算贪心筛选<br>
+      🔒 AgriTrust 证书为建议生成可复现数字签名
+    </div>
+  </div>
+
+  <!-- 结果区 -->
+  <div id="result">
+    <div class="loading">👈 在左侧选择城市与场景，点击「生成种植方案」查看四 Agent 协同结果。</div>
+  </div>
+</div>
+
+<footer>智慧农业生态 · 个人互联网项目 · 对标 SwarmLabs 科研 Agent Infra 的农业版 · 数据来源 WorldClim/FAO/ISRIC/中国农艺通识</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// 填充城市下拉
+fetch('/api/cities').then(r=>r.json()).then(d=>{
+  const sel = $('city');
+  d.cities.forEach(c=>{
+    const o=document.createElement('option');
+    o.value=JSON.stringify({lat:c.lat,lon:c.lon,name:c.name});
+    o.textContent=`${c.name}（${c.zone}）`;
+    sel.appendChild(o);
+  });
+  sel.onchange=()=>{
+    const v=JSON.parse(sel.value);
+    $('lat').value=v.lat; $('lon').value=v.lon;
+  };
+}).catch(()=>{});
+
+function esc(s){return String(s??'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+
+function agentCard(title, badge, score, inner){
+  return `<div class="agent-card"><h3>${title} <span class="badge">${badge}</span>
+    <span class="score">置信度 ${score}</span></h3>${inner}</div>`;
+}
+
+async function run(){
+  const btn=$('go'); btn.disabled=true; btn.textContent='生成中…';
+  const payload={
+    lat:parseFloat($('lat').value), lon:parseFloat($('lon').value),
+    scene:$('scene').value, floor:parseInt($('floor').value),
+    orientation:$('orientation').value, purpose:$('purpose').value,
+    space_sqm:parseFloat($('space_sqm').value), difficulty:$('difficulty').value,
+    budget_cny:parseInt($('budget').value)
+  };
+  $('result').innerHTML='<div class="loading">⏳ 四 Agent 协同计算中…</div>';
+  try{
+    const r=await fetch('/api/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await r.json();
+    if(data.error){$('result').innerHTML=`<div class="err">❌ ${esc(data.error)}</div>`;return;}
+    render(data);
+  }catch(e){
+    $('result').innerHTML=`<div class="err">❌ 请求失败：${esc(e)}</div>`;
+  }finally{
+    btn.disabled=false; btn.textContent='生成种植方案';
+  }
+}
+
+function render(data){
+  const steps=data.pipeline_steps;
+  const climate=steps[0].output, crop=steps[1].output, growth=steps[2].output, eco=steps[3].output;
+  const micro=steps[0].microclimate||{};
+  const trust=data.trust_summary||{};
+  let html='';
+
+  // ClimateAgent
+  const ev=climate.evidence||{};
+  const cst=climate.constraints||{};
+  html+=agentCard('① ClimateAgent','分区匹配',(climate.confidence||{}).rubric_score||'-',`
+    <div class="kv"><b>气候分区：</b>${esc(ev.zone_name)}（${esc(ev.zone_id)} / ${esc(ev.climate_class)}）</div>
+    <div class="kv"><b>温度范围：</b>${cst.min_temp_c??'?'} ~ ${cst.max_temp_c??'?'} ℃ · 年降水 ${cst.precipitation_mm_yr??'?'} mm</div>
+    <div class="kv"><b>数据源：</b>${esc((ev.data_sources||[]).join('、'))}</div>
+    <div class="kv"><b>微气候修正：</b>${esc(micro.micro_climate_note||'—')}
+      （有效温差 ${micro.effective_temp_offset??0}℃，日照偏差 ${micro.effective_sun_hours_delta??0}h）</div>
+  `);
+
+  // CropAgent
+  const recs=crop.recommendation||[];
+  const chips=recs.map(c=>`<span class="crop">${esc(c.crop)} <span class="s">${c.adapt_score}</span>
+     · D${c.growth_days}<br><small>${esc(c.reason)}</small></span>`).join('');
+  html+=agentCard('② CropAgent','作物推荐',(crop.confidence||{}).rubric_score||'-',`
+    <div class="kv"><b>候选：</b>${(crop.evidence||{}).candidates_after_filter??'?'} / ${(crop.evidence||{}).total_crops_in_zone??'?'} 种匹配</div>
+    <div>${chips||'<span class="placeholder-note">无匹配作物</span>'}</div>
+  `);
+
+  // GrowthAgent
+  const gp=growth.recommendation||{};
+  const phases=(gp.phases||[]).map(p=>`<div class="phase"><b>${esc(p.phase)}</b> （D${p.day_range[0]}–D${p.day_range[1]}）<br>${(p.actions||[]).join('；')}</div>`).join('');
+  const risks=(gp.risk_alerts||[]).map(r=>`<div class="risk">⚠️ ${esc(r)}</div>`).join('');
+  html+=agentCard('③ GrowthAgent','种植计划',(growth.confidence||{}).rubric_score||'-',`
+    ${phases}
+    ${risks}
+    <div class="kv"><b>兜底救活：</b>${esc(gp.rescue_plan||'—')}</div>
+  `);
+
+  // EcoAgent
+  const devs=eco.recommendation||[];
+  const devHtml=devs.map(d=>`<div class="dev"><span>${esc(d.device)}<br><small>${esc(d.reason)}</small></span><span class="p">¥${d.price_cny}</span></div>`).join('');
+  html+=agentCard('④ EcoAgent','生态撮合',(eco.confidence||{}).rubric_score||(eco.confidence||{}).match_quality||'-',`
+    <div class="kv"><b>命中设备：</b>${(eco.evidence||{}).matched_count??devs.length} 件 · 估算总价 ¥${(eco.constraints||{}).total_estimated_price_cny??'?'}</div>
+    ${devHtml}
+  `);
+
+  // 总置信度 + 证书
+  html+=`<div class="kv" style="margin:8px 0"><b>整体可信评分 (AgriTrust rubric)：</b>
+    <span style="color:var(--green);font-weight:700;font-size:16px">${trust.overall_rubric_score??'-'}</span></div>`;
+  html+=`<button onclick="showCert()" style="background:var(--ink)">🔒 查看 AgriTrust 可复现证书</button>
+         <div id="certBox"></div>`;
+
+  $('result').innerHTML=html;
+}
+
+async function showCert(){
+  const scene=$('scene').value;
+  const box=$('certBox');
+  box.innerHTML='<div class="loading">生成证书…</div>';
+  try{
+    const r=await fetch('/api/certificate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scene})});
+    const c=await r.json();
+    if(c.error){box.innerHTML=`<div class="err">${esc(c.error)}</div>`;return;}
+    const cov=c.data_coverage||{}, rb=c.rubric||{};
+    const rub=[];
+    for(const[k,v]of Object.entries(rb.detail||{})) rub.push(`${(v?'✅':'❌')} ${k}`);
+    box.innerHTML=`<div class="cert"><h3>AgriTrust 可复现证书</h3>
+      <div>作物覆盖：${cov.total_crops} 种 · 含气候带：${cov.zones_with_crops} 个</div>
+      <div>Skill 注册表：${(c.skill_registry||{}).total_skills} 个</div>
+      <div style="margin:6px 0">Rubric ${rb.passed}/${rb.total}：${rub.join(' ')}</div>
+      <div>签名：<code>${esc(c.signature)}</code></div>
+    </div>`;
+  }catch(e){box.innerHTML=`<div class="err">${esc(e)}</div>`;}
+}
+</script>
+</body>
+</html>

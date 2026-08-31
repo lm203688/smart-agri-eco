@@ -1,0 +1,15 @@
+{
+  "id": "device_recommend",
+  "name": "种植设备与工具推荐",
+  "version": "1.0",
+  "description": "根据种植场景（阳台/车载/屋顶/教育）+ 作物类型 + 分区数据 + 预算，推荐适配的设备/工具组合（种植机/传感器/水肥/补光），输出设备清单、价格和推荐理由。",
+  "domain": "eco",
+  "agent": "EcoAgent",
+  "inputs": ["scene (str)", "crop (str)", "zone_data (dict)", "budget_cny (float)"],
+  "outputs": ["device_name (str)", "category (str)", "price_cny (float)", "reason (str)"],
+  "data_sources": ["设备商合作数据库", "电商平台价格数据", "场景适配经验库"],
+  "confidence_method": "基于场景-作物-预算三维匹配度评分",
+  "safety_boundary": "不替代设备商官方建议；涉及电气安全的设备需确认认证",
+  "reuse_value": "生态化原则的核心变现 Skill——通过设备分成实现硬件生态收入",
+  "dependencies": ["climate_match", "crop_adapt"]
+}

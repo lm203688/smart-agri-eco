@@ -1,0 +1,110 @@
+[
+  {
+    "ts": "2026-08-30T09:23:53",
+    "zone_id": "subtropical_wet",
+    "crop": "生菜",
+    "survival_rate": 0.92,
+    "yield_rating": 4.5,
+    "user_rating": 5.0,
+    "issues": [
+      "梅雨季轻微霜霉病，已控湿处理"
+    ],
+    "note": "杭州 15 楼南向阳台，春播实测"
+  },
+  {
+    "ts": "2026-08-30T09:23:53",
+    "zone_id": "subtropical_wet",
+    "crop": "生菜",
+    "survival_rate": 0.7,
+    "yield_rating": 3.0,
+    "user_rating": 3.5,
+    "issues": [
+      "夏季高温抽苔，提前采收"
+    ],
+    "note": "杭州夏季阳台，未遮阳"
+  },
+  {
+    "ts": "2026-08-30T22:14:53",
+    "zone_id": "subtropical_wet",
+    "crop": "生菜",
+    "survival_rate": 0.9,
+    "yield_rating": 4.0,
+    "user_rating": 5.0,
+    "issues": [
+      "单测样本"
+    ],
+    "note": "unittest"
+  },
+  {
+    "ts": "2026-08-30T22:14:53",
+    "zone_id": "subtropical_wet",
+    "crop": "小白菜",
+    "survival_rate": 0.95,
+    "yield_rating": 5.0,
+    "user_rating": 5.0,
+    "issues": [
+      "冒烟测试"
+    ],
+    "note": "smoke"
+  },
+  {
+    "ts": "2026-08-30T22:15:34",
+    "zone_id": "subtropical_wet",
+    "crop": "小白菜",
+    "survival_rate": 0.9,
+    "yield_rating": 4.5,
+    "user_rating": 5.0,
+    "issues": [
+      "demo冒烟"
+    ],
+    "note": "smoke"
+  },
+  {
+    "ts": "2026-08-30T22:18:44",
+    "zone_id": "subtropical_wet",
+    "crop": "生菜",
+    "survival_rate": 0.9,
+    "yield_rating": 4.0,
+    "user_rating": 5.0,
+    "issues": [
+      "单测样本"
+    ],
+    "note": "unittest"
+  },
+  {
+    "ts": "2026-08-30T23:05:15",
+    "zone_id": "subtropical_wet",
+    "crop": "生菜",
+    "survival_rate": 0.9,
+    "yield_rating": 4.0,
+    "user_rating": 5.0,
+    "issues": [
+      "单测样本"
+    ],
+    "note": "unittest"
+  },
+  {
+    "ts": "2026-08-30T23:05:16",
+    "zone_id": "subtropical_wet",
+    "crop": "生菜",
+    "survival_rate": 0.92,
+    "yield_rating": 4.5,
+    "user_rating": 5.0,
+    "issues": [
+      "梅雨季轻微霜霉病，已控湿处理"
+    ],
+    "note": "杭州 15 楼南向阳台，春播实测"
+  },
+  {
+    "ts": "2026-08-30T23:05:16",
+    "zone_id": "subtropical_wet",
+    "crop": "生菜",
+    "survival_rate": 0.7,
+    "yield_rating": 3.0,
+    "user_rating": 3.5,
+    "issues": [
+      "夏季高温抽苔，提前采收"
+    ],
+    "note": "杭州夏季阳台，未遮阳"
+  }
+]

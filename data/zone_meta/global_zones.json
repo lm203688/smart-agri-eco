@@ -1,0 +1,119 @@
+{
+  "meta": {
+    "description": "全球农业分区元数据（基于 Köppen-Geiger 气候带 + FAO 农业分区）",
+    "version": "1.0",
+    "data_sources": ["WorldClim 2.1", "FAO GAEZ", "ISRIC SoilGrids"],
+    "last_updated": "2026-08-25",
+    "note": "此文件为项目初始骨架，完整版需接入 WorldClim 栅格数据后自动生成"
+  },
+  "zones": [
+    {
+      "zone_id": "tropical_rainforest",
+      "zone_name": "热带雨林带",
+      "koppen_class": "Af",
+      "temperature_range": {"min_c": 18, "max_c": 32},
+      "precipitation_mm_yr": {"min": 2000, "max": 10000},
+      "growing_season_days": 365,
+      "frost_risk": false,
+      "soil": {"ph_range": [4.5, 6.0], "texture_hint": "壤土/砂壤土，有机质含量高"},
+      "water_availability": "极充足",
+      "typical_crops": ["热带水果（香蕉/芒果/菠萝）", "香料（胡椒/香草）", "棕榈科作物"],
+      "key_constraints": ["土壤酸化", "病虫害高发", "雨季排水"],
+      "distributed_agri_potential": {
+        "balcony": "极高（全年可种热带蔬菜/香草）",
+        "car": "低（高温高湿挑战大）",
+        "rooftop": "中（需防涝"
+      }
+    },
+    {
+      "zone_id": "subtropical_wet",
+      "zone_name": "亚热带湿润带",
+      "koppen_class": "Cfa/Cwa",
+      "temperature_range": {"min_c": -2, "max_c": 35},
+      "precipitation_mm_yr": {"min": 800, "max": 2000},
+      "growing_season_days": 280,
+      "frost_risk": true,
+      "soil": {"ph_range": [5.5, 7.0], "texture_hint": "红壤/黄壤为主"},
+      "water_availability": "充足",
+      "typical_crops": ["水稻", "茶叶", "柑橘", "叶菜类", "豆角/茄果类"],
+      "key_constraints": ["梅雨期病虫害", "夏季高温", "冬季霜冻（轻度）"],
+      "distributed_agri_potential": {
+        "balcony": "高（杭州/上海/广州等，全年可种叶菜+番茄）",
+        "car": "中（夏季需温控）",
+        "rooftop": "高（城市屋顶农业理想区）"
+      }
+    },
+    {
+      "zone_id": "temperate_continental",
+      "zone_name": "温带大陆性带",
+      "koppen_class": "Dfa/Dfb",
+      "temperature_range": {"min_c": -25, "max_c": 30},
+      "precipitation_mm_yr": {"min": 400, "max": 1200},
+      "growing_season_days": 180,
+      "frost_risk": true,
+      "soil": {"ph_range": [6.0, 7.5], "texture_hint": "黑土/棕壤/栗钙土"},
+      "water_availability": "中等",
+      "typical_crops": ["玉米", "小麦", "大豆", "根菜类", "温带水果（苹果/梨）"],
+      "key_constraints": ["冬季严寒", "春季干旱", "生长季短"],
+      "distributed_agri_potential": {
+        "balcony": "中（春夏秋可种，冬季需室内）",
+        "car": "中（需能源供应）",
+        "rooftop": "中（需保温）"
+      }
+    },
+    {
+      "zone_id": "mediterranean",
+      "zone_name": "地中海带",
+      "koppen_class": "Csa/Csb",
+      "temperature_range": {"min_c": 0, "max_c": 35},
+      "precipitation_mm_yr": {"min": 300, "max": 1000},
+      "growing_season_days": 250,
+      "frost_risk": false,
+      "soil": {"ph_range": [6.5, 8.0], "texture_hint": "褐土/红壤，偏碱性"},
+      "water_availability": "夏季干旱",
+      "typical_crops": ["橄榄", "葡萄", "番茄", "香草（迷迭香/百里香）", "柑橘"],
+      "key_constraints": ["夏季缺水", "冬季温和但偶有低温"],
+      "distributed_agri_potential": {
+        "balcony": "高（香草种植的理想气候）",
+        "car": "中",
+        "rooftop": "高"
+      }
+    },
+    {
+      "zone_id": "arid",
+      "zone_name": "干旱带",
+      "koppen_class": "BWh/BSh",
+      "temperature_range": {"min_c": -5, "max_c": 45},
+      "precipitation_mm_yr": {"min": 50, "max": 500},
+      "growing_season_days": "视灌溉条件",
+      "frost_risk": true,
+      "soil": {"ph_range": [7.0, 9.0], "texture_hint": "沙质/荒漠土，盐碱化风险"},
+      "water_availability": "匮乏（依赖灌溉）",
+      "typical_crops": ["枣椰", "仙人掌科", "耐旱香草", "耐盐碱蔬菜"],
+      "key_constraints": ["极端缺水", "昼夜温差大", "土壤盐碱化"],
+      "distributed_agri_potential": {
+        "balcony": "中（需高效滴灌）",
+        "car": "低",
+        "rooftop": "低（需封闭环境）"
+      }
+    },
+    {
+      "zone_id": "subarctic",
+      "zone_name": "亚寒带",
+      "koppen_class": "Dfc/Dwc",
+      "temperature_range": {"min_c": -40, "max_c": 20},
+      "precipitation_mm_yr": {"min": 200, "max": 600},
+      "growing_season_days": 90,
+      "frost_risk": true,
+      "soil": {"ph_range": [5.0, 6.5], "texture_hint": "灰化土/苔原土"},
+      "water_availability": "中等（融雪期集中）",
+      "typical_crops": ["极早熟品种（速生菜/萝卜）", "耐寒香草", "菌菇类"],
+      "key_constraints": ["生长季极短", "严寒", "光照不足（冬季）"],
+      "distributed_agri_potential": {
+        "balcony": "低（室外极难，需室内）",
+        "car": "中（封闭环境+补光可尝试菌菇/微绿菜）",
+        "rooftop": "低"
+      }
+    }
+  ]
+}
