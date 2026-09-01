@@ -24,6 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from agent import AgriOrchestrator  # noqa: E402
+from agent.pest_agent import PestAgent  # noqa: E402
 from core.trust_layer import issue_certificate  # noqa: E402
 import engine.flywheel as fw  # noqa: E402
 
@@ -104,6 +105,37 @@ class TestFlywheel(unittest.TestCase):
         self.assertTrue(res["changed"])
         self.assertNotEqual(res["before"], res["after"])
         self.assertTrue(res["calibrated"])
+
+
+class TestPestAgent(unittest.TestCase):
+    def setUp(self):
+        self.agent = PestAgent()
+
+    def test_no_placeholder_and_signature(self):
+        r = self.agent.run({"crop": "番茄", "symptom_description": "叶片黄色斑点，背面白色粉状物，像白粉病"})
+        blob = json.dumps(r, ensure_ascii=False)
+        self.assertNotIn("PLACEHOLDER", blob)
+        self.assertTrue(r["signature"])
+        self.assertIn("constraints", r)
+        self.assertEqual(len(r["constraints"]), 3)
+
+    def test_symptom_diagnosis_returns_actions(self):
+        r = self.agent.run({"crop": "番茄", "symptom_description": "叶背有白色小点，结网，失绿，像是红蜘蛛"})
+        self.assertIn("红蜘蛛", r["diagnosis"])
+        self.assertIn("虫害", r["diagnosis"])
+        self.assertTrue(len(r["actions"]) >= 1)
+        self.assertGreater(r["diagnosis_confidence"], 0.5)
+
+    def test_monitoring_without_symptom(self):
+        r = self.agent.run({"crop": "香蕉"})
+        self.assertIn("监测", r["diagnosis"])
+        self.assertEqual(r["severity"], "light")
+        self.assertTrue(len(r["matched_risks"]) >= 1)
+
+    def test_unknown_crop_safe(self):
+        r = self.agent.run({"crop": "不存在的作物XYZ", "symptom_description": "叶片发黄"})
+        self.assertIn("signature", r)
+        self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
 
 
 if __name__ == "__main__":

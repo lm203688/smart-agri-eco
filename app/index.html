@@ -117,6 +117,7 @@
       🌾 作物推荐基于 76+ 种作物-分区适配数据库<br>
       🔁 EcoAgent 设备推荐按预算贪心筛选<br>
       🔒 AgriTrust 证书为建议生成可复现数字签名
+      🐛 病虫害/营养缺乏诊断见下方 PestAgent 区块（数据驱动 + 可插拔视觉后端）
     </div>
   </div>
 
@@ -125,6 +126,30 @@
     <div class="loading">👈 在左侧选择城市与场景，点击「生成种植方案」查看四 Agent 协同结果。</div>
   </div>
 </div>
+
+<!-- 病虫害诊断 -->
+<section class="wrap" style="margin-top:0">
+  <div class="panel" style="grid-column:1 / -1">
+    <h3 style="margin-top:0">🐛 病虫害与营养缺乏诊断（PestAgent）</h3>
+    <p class="hint" style="margin-top:0">数据驱动：结合作物已知病虫害清单 + 内置知识库症状匹配；配置视觉后端时可上传图片辅助。不替代专业植保人员。</p>
+    <div class="row">
+      <div style="flex:1">
+        <label>作物</label>
+        <input type="text" id="pest_crop" placeholder="如 番茄 / 香蕉 / 黄瓜" value="番茄">
+      </div>
+      <div style="flex:1">
+        <label>生长阶段（可选）</label>
+        <input type="text" id="pest_stage" placeholder="如 苗期 / 花期 / 结果期">
+      </div>
+    </div>
+    <label>症状描述</label>
+    <textarea id="pest_symptom" rows="3" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fafdfa" placeholder="如：叶片出现黄色斑点，背面有白色粉状物">叶片出现黄色斑点，背面有白色粉状物，像白粉病</textarea>
+    <label>图像（可选，data URI 或 URL；需服务端配置视觉后端才启用）</label>
+    <input type="text" id="pest_image" placeholder="data:image/jpeg;base64,.... 或 https://...">
+    <button id="pestGo" onclick="pestDiagnose()">诊断</button>
+    <div id="pestResult" style="margin-top:12px"></div>
+  </div>
+</section>
 
 <footer>智慧农业生态 · 个人互联网项目 · 对标 SwarmLabs 科研 Agent Infra 的农业版 · 数据来源 WorldClim/FAO/ISRIC/中国农艺通识</footer>
 
@@ -247,6 +272,45 @@ async function showCert(){
       <div>签名：<code>${esc(c.signature)}</code></div>
     </div>`;
   }catch(e){box.innerHTML=`<div class="err">${esc(e)}</div>`;}
+}
+
+async function pestDiagnose(){
+  const btn=$('pestGo'); btn.disabled=true; btn.textContent='诊断中…';
+  const payload={
+    crop:$('pest_crop').value.trim(),
+    symptom_description:$('pest_symptom').value.trim(),
+    image_reference:$('pest_image').value.trim(),
+    growth_stage:$('pest_stage').value.trim()
+  };
+  $('pestResult').innerHTML='<div class="loading">⏳ 诊断中…</div>';
+  try{
+    const r=await fetch('/api/pest_diagnose',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json();
+    if(d.error){$('pestResult').innerHTML=`<div class="err">❌ ${esc(d.error)}</div>`;return;}
+    const sevMap={light:'轻',medium:'中',severe:'重'};
+    const actions=(d.actions||[]).map(a=>`<div class="phase">• ${esc(a)}</div>`).join('');
+    const alt=(d.alternative_diagnoses||[]).map(x=>`<span class="crop">${esc(x)}</span>`).join('');
+    const cons=(d.constraints||[]).map(x=>`<div class="risk" style="color:var(--muted)">⚠️ ${esc(x)}</div>`).join('');
+    const vision=d.evidence&&d.evidence.vision_used?'（视觉辅助）':'';
+    $('pestResult').innerHTML=`
+      <div class="agent-card" style="border-left-color:var(--warn)">
+        <h3>🔍 ${esc(d.diagnosis)} <span class="badge" style="background:#fff3e0;color:var(--warn)">严重度 ${sevMap[d.severity]||d.severity}</span>
+          <span class="score">置信 ${d.diagnosis_confidence}</span></h3>
+        <div class="kv"><b>来源：</b>${esc(d.knowledge_source)} ${vision}</div>
+        <div class="kv"><b>重点监测/匹配：</b>${(d.matched_risks||[]).map(x=>`<span class="crop">${esc(x)}</span>`).join('')||'—'}</div>
+        <div class="kv"><b>处理建议：</b></div>${actions}
+        ${alt?`<div class="kv"><b>替代诊断：</b>${alt}</div>`:''}
+        ${d.vision_finding?`<div class="kv"><b>视觉模型：</b>${esc(d.vision_finding)}</div>`:''}
+        <div class="kv"><b>建议：</b>${esc(d.recommendation)}</div>
+      </div>
+      ${cons}
+      <div class="hint">数字签名（可复现）：<code style="word-break:break-all">${esc(d.signature)}</code></div>
+    `;
+  }catch(e){
+    $('pestResult').innerHTML=`<div class="err">❌ 请求失败：${esc(e)}</div>`;
+  }finally{
+    btn.disabled=false; btn.textContent='诊断';
+  }
 }
 </script>
 </body>
