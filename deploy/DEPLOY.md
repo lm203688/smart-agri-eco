@@ -102,7 +102,7 @@ python app/demo_server.py        # 打开 http://127.0.0.1:8000
 
 Python 3.10 / 3.11 / 3.12 三版本矩阵。
 
-> 硬阻塞：需要在 GitHub 上启用 Actions，PAT 需含 `Workflows:write`（你已知此权限缺口）。
+> 状态：GitHub Actions 已验证可用（fine-grained PAT 含 `Workflows:write`，push 到 main 后 CI 自动跑通，最近一次 run 结论为 success）。
 > 本地已逐条模拟验证过全部 6 步，均 PASS。
 
 ---

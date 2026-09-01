@@ -19,6 +19,9 @@
                                   "growth_stage","environment"} -> PestAgent 病虫害诊断
     POST /api/nutrition_plan      {"crop","scene","growth_stage","growth_days",
                                   "container_volume_l","start_date"} -> NutritionAgent 养分管理
+    POST /api/agent              {"skill":"pest_diagnose"|"nutrition_plan","payload":{...}}
+                                 -> orchestrator.call_skill 统一路由（等价上两者）
+    GET  /api/skills             -> 注册表技能目录（含可调用方式）
 
 所有建议遵循 docs/agent_output_contract.md 输出契约（evidence/confidence/constraints/recommendation）。
 """
@@ -90,6 +93,12 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_html(f"<h1>index.html 缺失：{e}</h1>")
         elif path == "/api/cities":
             self._send_json({"cities": PRESET_CITIES})
+        elif path == "/api/skills":
+            try:
+                orch = AgriOrchestrator()
+                self._send_json({"skills": orch.list_skills()})
+            except Exception as e:
+                self._send_json({"error": f"skills 失败: {e}"}, status=500)
         else:
             self._send_json({"error": "not found", "path": path}, status=404)
 
@@ -165,6 +174,14 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json(res)
             except Exception as e:
                 self._send_json({"error": f"nutrition_plan 失败: {e}"}, status=500)
+        elif path == "/api/agent":
+            try:
+                orch = AgriOrchestrator()
+                skill = payload.get("skill", "")
+                res = orch.call_skill(skill, payload.get("payload", payload))
+                self._send_json(res)
+            except Exception as e:
+                self._send_json({"error": f"agent[{payload.get('skill','')}] 失败: {e}"}, status=500)
         else:
             self._send_json({"error": "not found", "path": path}, status=404)
 

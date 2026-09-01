@@ -18,6 +18,12 @@ from .climate_agent import ClimateAgent
 from .crop_agent import CropAgent
 from .growth_agent import GrowthAgent
 from .eco_agent import EcoAgent
+from .pest_agent import PestAgent
+from .nutrition_agent import NutritionAgent
+
+import os
+import json
+import glob
 
 
 def _agent_score(output: Dict[str, Any]) -> float:
@@ -26,14 +32,71 @@ def _agent_score(output: Dict[str, Any]) -> float:
     return float(conf.get("rubric_score", conf.get("match_quality", 0.0)))
 
 
+# 按需调用（反应式）技能：由 call_skill 直接路由到独立 Agent 的 run(payload)
+ONDEMAND_SKILLS = {
+    "pest_diagnose": {"agent": "pest", "label": "病虫害与营养缺乏诊断"},
+    "nutrition_plan": {"agent": "nutrition", "label": "养分管理与阶段化施肥"},
+}
+
+# 注册表目录（用于技能目录自动发现）
+_REGISTRY_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                             "skills", "registry")
+
+
 class AgriOrchestrator:
-    """四 Agent 串联编排器"""
+    """四 Agent 串联编排器 + 统一技能路由
+
+    两类入口：
+      - run_pipeline()：规划流水线（Climate→Crop→Growth→Eco 四 Agent 串行）
+      - call_skill(name, payload)：按需/反应式技能（PestAgent / NutritionAgent 等）
+    """
 
     def __init__(self):
         self.climate = ClimateAgent()
         self.crop = CropAgent()
         self.growth = GrowthAgent()
         self.eco = EcoAgent()
+        self.pest = PestAgent()
+        self.nutrition = NutritionAgent()
+
+    # ---------- 统一技能路由 ----------
+    def list_skills(self) -> list:
+        """返回全部注册表技能目录（含是否可经 call_skill 直接调用）。"""
+        skills = []
+        if not os.path.isdir(_REGISTRY_DIR):
+            return skills
+        for path in sorted(glob.glob(os.path.join(_REGISTRY_DIR, "*.json"))):
+            if os.path.basename(path) == "schema.json":
+                continue  # 注册表元 Schema，非可调用技能
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    meta = json.load(f)
+            except Exception:
+                continue
+            sid = meta.get("id") or meta.get("skill") or os.path.splitext(os.path.basename(path))[0]
+            skills.append({
+                "id": sid,
+                "name": meta.get("name", sid),
+                "agent": meta.get("agent", ""),
+                "domain": meta.get("domain", ""),
+                "implemented": bool(meta.get("implemented", False)),
+                "description": meta.get("description", ""),
+                "callable_via": "call_skill" if sid in ONDEMAND_SKILLS else "pipeline",
+            })
+        return skills
+
+    def call_skill(self, name: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """按技能名路由到对应 Agent（反应式技能）。
+
+        当前支持：pest_diagnose / nutrition_plan。
+        规划流水线技能（climate/crop/growth/eco）请走 run_pipeline()。
+        """
+        entry = ONDEMAND_SKILLS.get(name)
+        if not entry:
+            available = " / ".join(sorted(ONDEMAND_SKILLS.keys()))
+            raise ValueError(f"未知技能「{name}」；call_skill 当前支持：{available}")
+        agent = getattr(self, entry["agent"])
+        return agent.run(payload or {})
 
     def run_pipeline(
         self,
@@ -148,8 +211,8 @@ class AgriOrchestrator:
                 ),
                 "known_limitations": [
                     "作物-分区适配为公开文献聚合，未叠加本地实测校准",
-                    "病虫害诊断已独立实现 PestAgent（数据驱动 + 可插拔视觉，默认规则降级），按需调用不进初始推荐流",
-                    "养分管理已独立实现 NutritionAgent（作物科属 NPK 侧重 + 阶段化施肥方案），按需调用不进初始推荐流",
+                    "病虫害诊断已独立实现 PestAgent（数据驱动 + 可插拔视觉，默认规则降级），经 orchestrator.call_skill('pest_diagnose') 统一调用",
+                    "养分管理已独立实现 NutritionAgent（作物科属 NPK 侧重 + 阶段化施肥方案），经 orchestrator.call_skill('nutrition_plan') 统一调用",
                     "供需撮合为结构化模板，需接入真实供给方数据后生效",
                 ],
             },

@@ -26,6 +26,7 @@ sys.path.insert(0, ROOT)
 from agent import AgriOrchestrator  # noqa: E402
 from agent.pest_agent import PestAgent  # noqa: E402
 from agent.nutrition_agent import NutritionAgent  # noqa: E402
+from agent.vision import call_vision_backend  # noqa: E402
 from core.trust_layer import issue_certificate  # noqa: E402
 import engine.flywheel as fw  # noqa: E402
 
@@ -138,6 +139,18 @@ class TestPestAgent(unittest.TestCase):
         self.assertIn("signature", r)
         self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
 
+    def test_vision_graceful_when_unset(self):
+        # 未配置视觉后端环境变量时应安全降级（返回 None，不抛异常，不触发网络）
+        os.environ.pop("AGRI_VISION_URL", None)
+        os.environ.pop("AGRI_VISION_KEY", None)
+        self.assertIsNone(call_vision_backend("http://example/x.jpg", "番茄"))
+        # 即便配置了端点，image_reference 为空也必须返回 None（不触发网络）
+        os.environ["AGRI_VISION_URL"] = "http://127.0.0.1:9/nope"
+        os.environ["AGRI_VISION_KEY"] = "fake"
+        self.assertIsNone(call_vision_backend("", "番茄"))
+        os.environ.pop("AGRI_VISION_URL", None)
+        os.environ.pop("AGRI_VISION_KEY", None)
+
 
 class TestNutritionAgent(unittest.TestCase):
     def setUp(self):
@@ -175,6 +188,45 @@ class TestNutritionAgent(unittest.TestCase):
         self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
         # 兜底仍给出 4 阶段方案
         self.assertEqual(len(r["recommendation"]["phases"]), 4)
+
+
+class TestOrchestratorSkills(unittest.TestCase):
+    """验证 orchestrator.call_skill 统一路由 + 技能目录。"""
+
+    def setUp(self):
+        self.orch = AgriOrchestrator()
+
+    def test_call_skill_pest(self):
+        r = self.orch.call_skill("pest_diagnose", {
+            "crop": "番茄",
+            "symptom_description": "叶片黄色斑点，背面白色粉状物，像白粉病",
+        })
+        self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
+        self.assertTrue(r["signature"])
+        self.assertIn("diagnosis", r)
+        self.assertIn("constraints", r)
+
+    def test_call_skill_nutrition(self):
+        r = self.orch.call_skill("nutrition_plan", {
+            "crop": "番茄", "container_volume_l": 10.0,
+        })
+        self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
+        self.assertTrue(r["signature"])
+        self.assertEqual(len(r["recommendation"]["phases"]), 4)
+
+    def test_unknown_skill_raises(self):
+        with self.assertRaises(ValueError):
+            self.orch.call_skill("not_a_skill", {"crop": "番茄"})
+
+    def test_list_skills_includes_on_demand(self):
+        skills = self.orch.list_skills()
+        ids = {s["id"] for s in skills}
+        self.assertIn("pest_diagnose", ids)
+        self.assertIn("nutrition_plan", ids)
+        for s in skills:
+            if s["id"] in ("pest_diagnose", "nutrition_plan"):
+                self.assertTrue(s["implemented"])
+                self.assertEqual(s["callable_via"], "call_skill")
 
 
 if __name__ == "__main__":

@@ -40,9 +40,9 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import urllib.request
-import urllib.error
 from typing import Any, Dict, List, Optional
+
+from .vision import call_vision_backend as _call_vision
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(ROOT)
@@ -229,45 +229,6 @@ def _severity_from_text(text: str, default: str) -> str:
         if any(w in text for w in words):
             return sev
     return default
-
-
-def _call_vision(image_reference: str, crop: str, symptom: str) -> Optional[str]:
-    """调用 OpenAI 兼容视觉接口。仅在配置了 AGRI_VISION_URL 时启用。"""
-    url = os.environ.get("AGRI_VISION_URL")
-    key = os.environ.get("AGRI_VISION_KEY")
-    model = os.environ.get("AGRI_VISION_MODEL", "gpt-4o-mini")
-    if not url or not key:
-        return None
-    prompt = (
-        "你是植物病虫害诊断专家。请结合作物【%s】诊断这张图片，用中文简洁输出：\n"
-        "1) 病害/虫害名称 2) 严重程度(轻/中/重) 3) 关键症状 4) 3 条处理建议。"
-    ) % (crop or "未知")
-    if symptom:
-        prompt += "\n用户补充症状：%s" % symptom
-    payload = {
-        "model": model,
-        "messages": [{
-            "role": "user",
-            "content": [
-                {"type": "text", "text": prompt},
-                {"type": "image_url", "image_url": {"url": image_reference}},
-            ],
-        }],
-        "max_tokens": 800,
-    }
-    try:
-        req = urllib.request.Request(
-            url.rstrip("/") + "/chat/completions",
-            data=json.dumps(payload).encode("utf-8"),
-            headers={"Authorization": "Bearer %s" % key,
-                     "Content-Type": "application/json"},
-            method="POST",
-        )
-        with urllib.request.urlopen(req, timeout=25) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        return data["choices"][0]["message"]["content"].strip()
-    except Exception:
-        return None
 
 
 def _canonical(obj: Any) -> str:

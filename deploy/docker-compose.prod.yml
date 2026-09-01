@@ -1,26 +1,29 @@
-# 智慧农业生态 · 生产部署（ECS / 任意支持 Docker 的 Linux 主机）
-# 用法：
-#   cd 智慧农业生态
-#   docker compose -f deploy/docker-compose.prod.yml up -d --build
-#   # 站点：http://<ECS公网IP>:8000 （配合 deploy/nginx.conf 反代到 80/443）
-#
-# 注意：demo_server 仅标准库，容器已含全部依赖（python:slim）。
-
+# 智慧农业生态 · 公网生产部署（serving 模式）
+# 由 deploy/setup_ecs.sh 调用：docker compose -f deploy/docker-compose.prod.yml up -d --build
+# 仅用 Python 官方镜像 python:3.11-slim，无需本地 pip 依赖（项目纯标准库实现）。
 services:
   agri-eco:
     build:
-      context: ..
+      context: .
       dockerfile: Dockerfile
+    image: agri-eco:1.0
     container_name: agri-eco
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
+    # 覆盖 Dockerfile 默认的 verify_all 命令，改为启动 Demo 服务
+    command: ["python", "app/demo_server.py"]
     environment:
       - AGRI_DEMO_HOST=0.0.0.0
       - AGRI_DEMO_PORT=8000
-    command: python app/demo_server.py
+      # 可选：视觉后端（PestAgent 启用）。不配置时默认规则降级。
+      # - AGRI_VISION_URL=https://你的网关/v1/chat/completions
+      # - AGRI_VISION_KEY=xxx
+      # - AGRI_VISION_MODEL=xxx
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/cities').status==200 else 1)"]
-      interval: 60s
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/cities', timeout=5)"]
+      interval: 30s
       timeout: 5s
       retries: 3
+      start_period: 10s

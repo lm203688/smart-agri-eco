@@ -186,10 +186,43 @@
   </div>
 </section>
 
+<!-- 技能目录 -->
+<section class="wrap" style="margin-top:0">
+  <div class="panel" style="grid-column:1 / -1">
+    <h3 style="margin-top:0">🗂️ 技能目录（Skill Registry · 经 orchestrator.call_skill 统一路由）</h3>
+    <p class="hint" style="margin-top:0">读取 <code>skills/registry/*.json</code> 自动生成；<b>call_skill</b> 类可直接经 <code>POST /api/agent</code> 调用，<b>pipeline</b> 类由四 Agent 规划流水线内部消费。</p>
+    <div id="skillCatalog" class="loading">⏳ 加载技能目录…</div>
+  </div>
+</section>
+
 <footer>智慧农业生态 · 个人互联网项目 · 对标 SwarmLabs 科研 Agent Infra 的农业版 · 数据来源 WorldClim/FAO/ISRIC/中国农艺通识</footer>
 
 <script>
 const $ = id => document.getElementById(id);
+
+// 加载技能目录
+(async function loadSkills(){
+  const box=$('skillCatalog');
+  try{
+    const r=await fetch('/api/skills'); const d=await r.json();
+    if(d.error){box.innerHTML=`<div class="err">${esc(d.error)}</div>`;return;}
+    const rows=(d.skills||[]).map(s=>{
+      const tag = s.callable_via==='call_skill'
+        ? '<span class="badge" style="background:#e3f2fd;color:var(--blue)">call_skill</span>'
+        : '<span class="badge">pipeline</span>';
+      const impl = s.implemented ? '✅ 已真实实现' : '⚠️ 占位/未实现';
+      return `<div class="phase" style="display:flex;gap:10px;align-items:baseline">
+        <b style="min-width:160px">${esc(s.name)}</b>
+        <span style="color:var(--muted);font-size:12px">${esc(s.agent)} · ${esc(s.domain)}</span>
+        ${tag}
+        <span style="font-size:12px">${impl}</span>
+        <span style="color:var(--muted);font-size:12px;margin-left:auto;text-align:right">${esc(s.description).slice(0,60)}…</span>
+      </div>`;
+    }).join('');
+    box.innerHTML=`<div style="margin-bottom:8px">共 ${ (d.skills||[]).length } 个注册技能</div>${rows}`;
+  }catch(e){box.innerHTML=`<div class="err">${esc(e)}</div>`;}
+})();
+
 
 // 填充城市下拉
 fetch('/api/cities').then(r=>r.json()).then(d=>{
@@ -319,7 +352,7 @@ async function pestDiagnose(){
   };
   $('pestResult').innerHTML='<div class="loading">⏳ 诊断中…</div>';
   try{
-    const r=await fetch('/api/pest_diagnose',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const r=await fetch('/api/agent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({skill:'pest_diagnose',payload})});
     const d=await r.json();
     if(d.error){$('pestResult').innerHTML=`<div class="err">❌ ${esc(d.error)}</div>`;return;}
     const sevMap={light:'轻',medium:'中',severe:'重'};
@@ -359,7 +392,7 @@ async function nutritionPlan(){
   };
   $('nutResult').innerHTML='<div class="loading">⏳ 生成施肥方案…</div>';
   try{
-    const r=await fetch('/api/nutrition_plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const r=await fetch('/api/agent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({skill:'nutrition_plan',payload})});
     const d=await r.json();
     if(d.error){$('nutResult').innerHTML=`<div class="err">❌ ${esc(d.error)}</div>`;return;}
     const rec=d.recommendation||{};
