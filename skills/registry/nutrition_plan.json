@@ -1,0 +1,16 @@
+{
+  "id": "nutrition_plan",
+  "name": "养分管理与阶段化施肥方案",
+  "version": "1.0",
+  "description": "根据作物 + 科属养分需求 + 生长周期 + 容器/场景，生成阶段化施肥方案（播种→苗期→生长→采收），给出 NPK 侧重、浓度、频率、单次用量与安全边界。已由 agent/nutrition_agent.py (NutritionAgent) 真实实现。",
+  "domain": "soil",
+  "agent": "NutritionAgent",
+  "implemented": true,
+  "inputs": ["crop (str)", "scene (str)", "growth_stage (str)", "growth_days (int)", "container_volume_l (float)", "start_date (str)"],
+  "outputs": ["profile_label (str)", "npk_strategy (str)", "phases (list of {phase, day_range, fertilizer, npk, frequency, dilution, amount_guidance, notes})", "deficiency_quickref (dict)", "signature (str)"],
+  "data_sources": ["crop_adapt_db.json (family/growth_days/water_ml_day/ph_range)", "内置养分需求知识库（按科属 NPK 侧重）"],
+  "confidence_method": "数据齐备度（作物命中 DB）+ 科属 NPK 匹配覆盖度；未知作物走保守通用方案",
+  "safety_boundary": "不替代土壤/基质检测；严格按标签稀释、宁稀勿浓、忌高温施肥；有机肥须腐熟",
+  "reuse_value": "L3 执行控制层核心 Skill——水肥一体化直接决定产量与品质，是用户高粘性留存能力",
+  "dependencies": ["crop_adapt", "growth_plan"]
+}

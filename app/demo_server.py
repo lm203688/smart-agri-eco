@@ -17,6 +17,8 @@
                                   "user_rating","issues","note"} -> 数据飞轮校准 adapt_score
     POST /api/pest_diagnose      {"crop","symptom_description","image_reference",
                                   "growth_stage","environment"} -> PestAgent 病虫害诊断
+    POST /api/nutrition_plan      {"crop","scene","growth_stage","growth_days",
+                                  "container_volume_l","start_date"} -> NutritionAgent 养分管理
 
 所有建议遵循 docs/agent_output_contract.md 输出契约（evidence/confidence/constraints/recommendation）。
 """
@@ -35,6 +37,7 @@ sys.path.insert(0, ROOT)
 
 from agent import AgriOrchestrator  # noqa: E402
 from agent.pest_agent import PestAgent  # noqa: E402
+from agent.nutrition_agent import NutritionAgent  # noqa: E402
 from core.trust_layer import issue_certificate  # noqa: E402
 
 PORT = int(os.environ.get("AGRI_DEMO_PORT", "8000"))
@@ -148,6 +151,20 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json(res)
             except Exception as e:
                 self._send_json({"error": f"pest_diagnose 失败: {e}"}, status=500)
+        elif path == "/api/nutrition_plan":
+            try:
+                agent = NutritionAgent()
+                res = agent.run({
+                    "crop": payload.get("crop", ""),
+                    "scene": payload.get("scene", ""),
+                    "growth_stage": payload.get("growth_stage", ""),
+                    "growth_days": payload.get("growth_days"),
+                    "container_volume_l": payload.get("container_volume_l"),
+                    "start_date": payload.get("start_date", ""),
+                })
+                self._send_json(res)
+            except Exception as e:
+                self._send_json({"error": f"nutrition_plan 失败: {e}"}, status=500)
         else:
             self._send_json({"error": "not found", "path": path}, status=404)
 

@@ -52,7 +52,7 @@
 
 | 模块 | 路径 | 用途 |
 |------|------|------|
-| 多 Agent 协同框架 | `agent/` | 气候/作物/生长/生态四 Agent 设计 |
+| 多 Agent 协同框架 | `agent/` | 气候/作物/生长/生态四 Agent + 病虫害(PestAgent) + 养分(NutritionAgent) 按需调用 |
 | 农业分区数据 | `data/zone_meta/` | 全球农业分区元数据 |
 | Skill 注册表 | `skills/registry/` | 可复用农业 AI 能力 |
 | 可信输出契约 | `docs/agent_output_contract.md` | 每条建议的证据/置信度/适用条件 |
@@ -64,7 +64,7 @@
 | 数据扩展脚本 | `scripts/enrich_crop_data.py` | 每气候带补充适生作物至 ≥18 种 |
 | 端到端验证 | `scripts/verify_all.py` | 多城市 pipeline + Trust 证书 PASS/FAIL |
 | Skill 自动生成 | `engine/skill_factory.py` | 新作物/能力点 → 自动生成符合 Schema 的 Skill |
-| 单元测试 | `scripts/test_agents.py` | 8 项 unittest（零依赖），覆盖四 Agent + Trust + flywheel |
+| 单元测试 | `scripts/test_agents.py` | 16 项 unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + Trust + flywheel |
 | 反馈回流 CLI | `scripts/submit_feedback.py` | 内测用户提交种植结果 → 校准 adapt_score |
 | 生产部署 | `deploy/` | 一键部署（`deploy_local.sh` 上传 + `setup_ecs.sh` 远端构建启动）+ nginx 反代 + DEPLOY.md |
 | CI | `.github/workflows/ci.yml` | push 自动跑单测/verify/trust/flywheel/数据自检，Python 3.10-3.12 矩阵 |
@@ -132,7 +132,7 @@ push 到 main 后自动跑：单测 → verify_all → trust_layer → flywheel 
 
 ### 4. 单元测试（零依赖）
 ```bash
-python -m unittest scripts.test_agents -v     # 8 项用例全过
+python -m unittest scripts.test_agents -v     # 16 项用例全过
 ```
 
 ### 5. Skill 自动生成（闭环触发）

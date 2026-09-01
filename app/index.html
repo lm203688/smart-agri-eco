@@ -151,6 +151,41 @@
   </div>
 </section>
 
+<!-- 养分管理 -->
+<section class="wrap" style="margin-top:0">
+  <div class="panel" style="grid-column:1 / -1">
+    <h3 style="margin-top:0">🌿 养分管理与阶段化施肥方案（NutritionAgent）</h3>
+    <p class="hint" style="margin-top:0">数据驱动：结合作物科属 NPK 侧重 + 生长周期，生成播种→苗期→生长→采收四阶段施肥方案（浓度/频率/单次用量）。不替代土壤/基质检测。</p>
+    <div class="row">
+      <div style="flex:1">
+        <label>作物</label>
+        <input type="text" id="nut_crop" placeholder="如 番茄 / 生菜 / 香蕉" value="番茄">
+      </div>
+      <div style="flex:1">
+        <label>种植场景</label>
+        <select id="nut_scene">
+          <option value="balcony">阳台</option>
+          <option value="container">容器</option>
+          <option value="garden">庭院</option>
+          <option value="office">办公室</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div style="flex:1">
+        <label>当前阶段（可选）</label>
+        <input type="text" id="nut_stage" placeholder="如 苗期 / 结果期">
+      </div>
+      <div style="flex:1">
+        <label>容器容积 (L，可选)</label>
+        <input type="number" id="nut_vol" placeholder="如 10" step="0.5" min="0">
+      </div>
+    </div>
+    <button id="nutGo" onclick="nutritionPlan()">生成施肥方案</button>
+    <div id="nutResult" style="margin-top:12px"></div>
+  </div>
+</section>
+
 <footer>智慧农业生态 · 个人互联网项目 · 对标 SwarmLabs 科研 Agent Infra 的农业版 · 数据来源 WorldClim/FAO/ISRIC/中国农艺通识</footer>
 
 <script>
@@ -310,6 +345,51 @@ async function pestDiagnose(){
     $('pestResult').innerHTML=`<div class="err">❌ 请求失败：${esc(e)}</div>`;
   }finally{
     btn.disabled=false; btn.textContent='诊断';
+  }
+}
+
+async function nutritionPlan(){
+  const btn=$('nutGo'); btn.disabled=true; btn.textContent='生成中…';
+  const volRaw=$('nut_vol').value.trim();
+  const payload={
+    crop:$('nut_crop').value.trim(),
+    scene:$('nut_scene').value.trim(),
+    growth_stage:$('nut_stage').value.trim(),
+    container_volume_l: volRaw? parseFloat(volRaw): null
+  };
+  $('nutResult').innerHTML='<div class="loading">⏳ 生成施肥方案…</div>';
+  try{
+    const r=await fetch('/api/nutrition_plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json();
+    if(d.error){$('nutResult').innerHTML=`<div class="err">❌ ${esc(d.error)}</div>`;return;}
+    const rec=d.recommendation||{};
+    const phases=(rec.phases||[]).map(p=>`
+      <div class="phase"><b>${esc(p.phase)}</b> （D${p.day_range[0]}–D${p.day_range[1]}）<br>
+      <b>肥料：</b>${esc(p.fertilizer)} · <b>NPK：</b>${esc(p.npk)}<br>
+      <b>频率：</b>${esc(p.frequency)} · <b>${esc(p.dilution)}</b><br>
+      <b>用量：</b>${esc(p.amount_guidance)}<br>
+      <span style="color:var(--muted)">${esc(p.notes)}</span></div>`).join('');
+    const quick=(rec.deficiency_quickref||{});
+    const quickHtml=Object.entries(quick).map(([k,v])=>`<div class="kv"><b>${esc(k)}</b> → ${esc(v)}</div>`).join('');
+    const cons=(d.constraints||[]).map(x=>`<div class="risk" style="color:var(--muted)">⚠️ ${esc(x)}</div>`).join('');
+    $('nutResult').innerHTML=`
+      <div class="agent-card" style="border-left-color:var(--green)">
+        <h3>🌿 ${esc(rec.crop)} · ${esc(rec.profile_label)}
+          <span class="score">置信 ${(d.confidence||{}).rubric_score}</span></h3>
+        <div class="kv"><b>NPK 策略：</b>${esc(rec.npk_strategy)}</div>
+        <div class="kv"><b>原则：</b>${esc((rec.key_principles||[]).join('；'))}</div>
+        ${phases}
+        ${rec.current_stage_guidance?`<div class="kv"><b>当前阶段建议：</b>${esc(rec.current_stage_guidance)}</div>`:''}
+        <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--green);font-size:13px;font-weight:600">营养缺乏速查（桥接 PestAgent）</summary>${quickHtml}</details>
+        <div class="kv"><b>提示：</b>${esc(rec.manual_review_note)}</div>
+      </div>
+      ${cons}
+      <div class="hint">数字签名（可复现）：<code style="word-break:break-all">${esc(d.signature)}</code></div>
+    `;
+  }catch(e){
+    $('nutResult').innerHTML=`<div class="err">❌ 请求失败：${esc(e)}</div>`;
+  }finally{
+    btn.disabled=false; btn.textContent='生成施肥方案';
   }
 }
 </script>

@@ -208,6 +208,7 @@ def issue_certificate(
             "作物-分区适配为公开文献聚合 + 实测校准种子（engine/flywheel.py 持续回流，已校准条目标注 calibrated:true）",
             "微气候修正因子为估算值，未接入实际传感器数据",
             "病虫害诊断已真实化（PestAgent：作物 key_risks + 内置知识库症状匹配；视觉后端可插拔，默认规则降级）",
+            "养分管理已真实化（NutritionAgent：作物科属 NPK 侧重 + 阶段化施肥方案；不替代土壤检测）",
             "设备推荐库已构建（device_recommend Skill 已填充 14 件），待补充更多品牌与价格校准",
         ],
     }

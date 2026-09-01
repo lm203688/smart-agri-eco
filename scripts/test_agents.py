@@ -25,6 +25,7 @@ sys.path.insert(0, ROOT)
 
 from agent import AgriOrchestrator  # noqa: E402
 from agent.pest_agent import PestAgent  # noqa: E402
+from agent.nutrition_agent import NutritionAgent  # noqa: E402
 from core.trust_layer import issue_certificate  # noqa: E402
 import engine.flywheel as fw  # noqa: E402
 
@@ -136,6 +137,44 @@ class TestPestAgent(unittest.TestCase):
         r = self.agent.run({"crop": "不存在的作物XYZ", "symptom_description": "叶片发黄"})
         self.assertIn("signature", r)
         self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
+
+
+class TestNutritionAgent(unittest.TestCase):
+    def setUp(self):
+        self.agent = NutritionAgent()
+
+    def test_no_placeholder_and_signature(self):
+        r = self.agent.run({"crop": "番茄", "scene": "balcony", "container_volume_l": 10.0})
+        blob = json.dumps(r, ensure_ascii=False)
+        self.assertNotIn("PLACEHOLDER", blob)
+        self.assertTrue(r["signature"])
+        self.assertEqual(len(r["constraints"]), 3)
+        self.assertIn("phases", r["recommendation"])
+
+    def test_leafy_keeps_nitrogen_at_harvest(self):
+        r = self.agent.run({"crop": "生菜"})
+        phases = r["recommendation"]["phases"]
+        # 叶菜采收期应维持高氮（npk_repro 首项 > 15）
+        harvest = phases[-1]
+        self.assertIn("高氮", harvest["fertilizer"])
+        self.assertTrue(r["evidence"]["data_loaded"])
+
+    def test_fruiting_switches_to_high_potassium(self):
+        r = self.agent.run({"crop": "番茄"})
+        phases = r["recommendation"]["phases"]
+        harvest = phases[-1]
+        self.assertIn("高钾", harvest["fertilizer"])
+        # 至少四个阶段，且采收期给出浓度/用量
+        self.assertEqual(len(phases), 4)
+        self.assertNotEqual(harvest["amount_guidance"], "—")
+
+    def test_unknown_crop_safe_fallback(self):
+        r = self.agent.run({"crop": "不存在的作物XYZ"})
+        self.assertIn("signature", r)
+        self.assertFalse(r["evidence"]["data_loaded"])
+        self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
+        # 兜底仍给出 4 阶段方案
+        self.assertEqual(len(r["recommendation"]["phases"]), 4)
 
 
 if __name__ == "__main__":
