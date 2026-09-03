@@ -13,12 +13,16 @@ services:
     environment:
       - AGRI_DEMO_HOST=0.0.0.0
       - AGRI_DEMO_PORT=8000
-      # 可选：视觉后端（PestAgent 启用）。不配置时默认规则降级。
-      # - AGRI_VISION_URL=https://你的网关/v1/chat/completions
-      # - AGRI_VISION_KEY=xxx
-      # - AGRI_VISION_MODEL=xxx
+      # 视觉后端：PestAgent 调用 ATEX 多模态网关（密钥来自仓库外的 .env，不进 git）
+      # .env 需含 AGRI_VISION_URL / AGRI_VISION_KEY / AGRI_VISION_MODEL
+      - AGRI_VISION_URL=${AGRI_VISION_URL:-http://host.docker.internal:8420/v1}
+      - AGRI_VISION_KEY=${AGRI_VISION_KEY}
+      - AGRI_VISION_MODEL=${AGRI_VISION_MODEL:-gpt-4o}
+    # 让容器用 host.docker.internal 访问宿主机的 ATEX(:8420)，走 docker 网桥、不受安全组限制
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
-      - "8000:8000"
+      - "8001:8000"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c",

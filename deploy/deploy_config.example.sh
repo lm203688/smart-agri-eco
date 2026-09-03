@@ -4,7 +4,7 @@
 #
 # 注意：本文件不含密钥。SSH 用密钥认证，请把私钥放本机 ~/.ssh/ 并 ssh-copy-id 到 ECS。
 
-# ECS 公网地址（你已知的腾讯云主机；已跑 ATEX:8420 与 HealthLens，本项目用 8000 不冲突）
+# ECS 公网地址（你已知的腾讯云主机；已跑 ATEX:8420 与 HealthLens，本项目用 8001 不冲突）
 ECS_IP="150.158.119.19"
 
 # 登录用户
@@ -14,4 +14,4 @@ ECS_USER="root"
 REMOTE_APP_DIR="/opt/agri-eco"
 
 # 对外端口
-PORT="8000"
+PORT="8001"

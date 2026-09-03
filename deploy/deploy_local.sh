@@ -8,7 +8,7 @@
 #
 # 用法：
 #   bash deploy/deploy_local.sh                     # 用 deploy_config.sh 里的默认值
-#   ECS_IP=150.158.119.119 PORT=8000 bash deploy/deploy_local.sh
+#   ECS_IP=150.158.119.119 PORT=8001 bash deploy/deploy_local.sh
 #
 # 退出码：0 成功；非 0 表示某步失败（已打印原因）。
 
@@ -23,7 +23,7 @@ fi
 ECS_IP="${ECS_IP:-150.158.119.19}"
 ECS_USER="${ECS_USER:-root}"
 REMOTE_APP_DIR="${REMOTE_APP_DIR:-/opt/agri-eco}"
-PORT="${PORT:-8000}"
+PORT="${PORT:-8001}"
 PROJECT_ROOT="$(cd "${HERE}/.." && pwd)"
 
 SSH_OPTS="-o StrictHostKeyChecking=accept-new -o ConnectTimeout=15 -o BatchMode=yes"

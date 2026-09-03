@@ -2,7 +2,7 @@
 # 智慧农业生态 · ECS 端一键部署脚本
 # 用途：在腾讯云服务器上执行，完成 Docker 安装（如缺）、目录准备、构建、启动、健康检查。
 # 用法（在 ECS 上）：
-#   bash setup_ecs.sh                 # 默认 /opt/agri-eco，端口 8000
+#   bash setup_ecs.sh                 # 默认 /opt/agri-eco，端口 8001
 #   APP_DIR=/root/agri-eco PORT=9000 bash setup_ecs.sh
 #
 # 说明：
@@ -13,7 +13,7 @@
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/agri-eco}"
-PORT="${PORT:-8000}"
+PORT="${PORT:-8001}"
 COMPOSE_FILE="deploy/docker-compose.prod.yml"
 
 log() { echo "[$(date '+%F %T')] $*"; }

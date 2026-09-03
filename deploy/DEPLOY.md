@@ -12,7 +12,7 @@
 
 ## 推荐路径：腾讯云 ECS（一条命令）
 
-你已有 ECS `150.158.119.19`（上面已跑 ATEX :8420 与 HealthLens，本项目用 **:8000**，不冲突）。
+你已有 ECS `150.158.119.19`（上面已跑 ATEX :8420 与 HealthLens，本项目用 **:8001**，不冲突）。
 
 ### 一次性前置（只做一次）
 
@@ -37,14 +37,14 @@ bash deploy/deploy_local.sh
 成功后访问：
 
 ```
-http://150.158.119.19:8000
+http://150.158.119.19:8001
 ```
 
 ### 验证
 
 ```bash
-curl http://150.158.119.19:8000/api/cities
-curl -X POST http://150.158.119.19:8000/api/recommend \
+curl http://150.158.119.19:8001/api/cities
+curl -X POST http://150.158.119.19:8001/api/recommend \
   -H 'Content-Type: application/json' \
   -d '{"lat":30.2741,"lon":120.1551,"scene":"balcony","floor":15,"orientation":"south","purpose":"食用","space_sqm":1.5,"difficulty":"beginner","budget_cny":500}'
 ```
@@ -61,7 +61,7 @@ curl -X POST http://150.158.119.19:8000/api/recommend \
    scp deploy/nginx.conf root@150.158.119.19:/etc/nginx/conf.d/agri-eco.conf
    ssh root@150.158.119.19 "sed -i 's/agri.your-domain.com/你的域名/' /etc/nginx/conf.d/agri-eco.conf"
    ```
-   ⚠️ 注意：`nginx.conf` 反代到 `127.0.0.1:8000`，而 `docker-compose.prod.yml` 映射了 `8000:8000` 到宿主机，两者能直接对上。
+   ⚠️ 注意：`nginx.conf` 反代到 `127.0.0.1:8001`（宿主机端口），而 `docker-compose.prod.yml` 映射了 `8001:8000`（宿主机 8001 → 容器 8000），两者能直接对上。
 3. 在 ECS 上签证书并重启：
    ```bash
    apt-get install -y certbot python3-certbot-nginx && nginx -t && certbot --nginx
@@ -110,6 +110,6 @@ Python 3.10 / 3.11 / 3.12 三版本矩阵。
 ## 部署后待办
 
 - [ ] 决定域名（或直接使用 IP）
-- [ ] ECS 安全组放通 8000（或 80/443）
+- [ ] ECS 安全组放通 8001（或 80/443）
 - [ ] 如需 HTTPS：`certbot --nginx` 或 CF 代理开 SSL
 - [ ] 把公网地址回填到 `README.md` 与 `docs/project_evaluation.md` 的 Demo 链接

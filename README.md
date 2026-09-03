@@ -115,15 +115,27 @@ python scripts/enrich_crop_data.py     # 扩展作物数据密度至每带 ≥18
 ### 3. Docker 部署
 ```bash
 docker compose up --build                                  # 本地 verify 模式（跑端到端验证即退出）
-docker compose -f deploy/docker-compose.prod.yml up -d --build   # 生产 serving 模式（监听 :8000）
+docker compose -f deploy/docker-compose.prod.yml up -d --build   # 生产 serving 模式（宿主机 :8001 → 容器 :8000）
 ```
 
 ### 3b. 公网部署（一条命令）
 ```bash
 cp deploy/deploy_config.example.sh deploy/deploy_config.sh   # 一次性：按需改 IP/端口
 bash deploy/deploy_local.sh                                   # 同步代码 + 远端构建 + 启动 + 验证
-# 站点：http://<ECS_IP>:8000   详细流程见 deploy/DEPLOY.md
+# 站点：http://<ECS_IP>:8001   详细流程见 deploy/DEPLOY.md
 ```
+
+### 3b-2. 视觉诊断后端（可选，接 ATEX 多模态网关）
+PestAgent 的视觉诊断走可插拔后端：配置以下环境变量（读 `agent/vision.py`）即启用，未配置则规则降级。
+密钥放仓库外的 `.env`（已被 `.gitignore` 忽略，部署时由 `deploy_local.sh` 同步到 ECS，不进 GitHub）：
+
+```bash
+# .env（项目根目录，不要提交）
+AGRI_VISION_URL=http://host.docker.internal:8420/v1   # ATEX 网关，容器内用 host 网桥访问
+AGRI_VISION_KEY=<你的 ATEX 网关 Key>
+AGRI_VISION_MODEL=gpt-4o                              # 须为多模态模型
+```
+`deploy/docker-compose.prod.yml` 已默认读取这三个变量；若 ATEX 仅监听 `127.0.0.1`，可把 `AGRI_VISION_URL` 改为宿主内网 IP。
 
 ### 3c. CI（push 自动验证）
 ```
