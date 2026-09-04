@@ -349,7 +349,6 @@
             "根腐"
           ],
           "fallback_variety": "华南9号",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -376,7 +375,6 @@
             "凋萎"
           ],
           "fallback_variety": "金钻菠萝",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -403,7 +401,6 @@
             "蚂蚁"
           ],
           "fallback_variety": "红心火龙果",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -430,7 +427,6 @@
             "黑荚病"
           ],
           "fallback_variety": "亚马逊种",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -457,7 +453,6 @@
             "天牛"
           ],
           "fallback_variety": "小粒种",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -485,7 +480,6 @@
             "极少"
           ],
           "fallback_variety": "柠檬香茅",
-          "calibrated": false,
           "source": "seed-supplement"
         }
       ]
@@ -497,7 +491,7 @@
           "crop": "生菜",
           "latin": "Lactuca sativa",
           "family": "菊科",
-          "adapt_score": 0.767,
+          "adapt_score": 0.92,
           "growth_days": 45,
           "temp_range_c": [
             10,
@@ -517,20 +511,7 @@
             "夏季高温抽苔",
             "蚜虫"
           ],
-          "fallback_variety": "罗马生菜（耐热）",
-          "seed_adapt_score": 0.92,
-          "measured_calibration": {
-            "n_feedback": 4,
-            "calibrated_score": 0.767,
-            "last_survival_rate": 0.7,
-            "last_yield_rating": 3.0,
-            "last_user_rating": 3.5,
-            "last_issues": [
-              "夏季高温抽苔，提前采收"
-            ],
-            "last_updated": "2026-08-30T23:05:16"
-          },
-          "calibrated": true
+          "fallback_variety": "罗马生菜（耐热）"
         },
         {
           "crop": "番茄",
@@ -693,7 +674,7 @@
           "crop": "小白菜",
           "latin": "Brassica rapa var. parachinensis",
           "family": "十字花科",
-          "adapt_score": 0.945,
+          "adapt_score": 0.96,
           "growth_days": 30,
           "temp_range_c": [
             10,
@@ -714,20 +695,7 @@
             "菜青虫",
             "霜霉病"
           ],
-          "fallback_variety": "快菜（D15 采收）",
-          "seed_adapt_score": 0.96,
-          "measured_calibration": {
-            "n_feedback": 2,
-            "calibrated_score": 0.945,
-            "last_survival_rate": 0.9,
-            "last_yield_rating": 4.5,
-            "last_user_rating": 5.0,
-            "last_issues": [
-              "demo冒烟"
-            ],
-            "last_updated": "2026-08-30T22:15:34"
-          },
-          "calibrated": true
+          "fallback_variety": "快菜（D15 采收）"
         },
         {
           "crop": "香菜",
@@ -882,7 +850,6 @@
             "高温抽苔"
           ],
           "fallback_variety": "西芹耐热种",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -909,7 +876,6 @@
             "高温抽苔"
           ],
           "fallback_variety": "大叶茼蒿",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -937,7 +903,6 @@
             "瓜实蝇"
           ],
           "fallback_variety": "翠绿苦瓜",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -963,7 +928,6 @@
             "瓜绢螟"
           ],
           "fallback_variety": "短棒丝瓜",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -990,7 +954,6 @@
             "日灼"
           ],
           "fallback_variety": "小冬瓜",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -1018,7 +981,6 @@
             "蚜虫"
           ],
           "fallback_variety": "贝贝南瓜",
-          "calibrated": false,
           "source": "seed-supplement"
         }
       ]
@@ -1410,7 +1372,6 @@
             "白粉病"
           ],
           "fallback_variety": "冬小麦",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -1437,7 +1398,6 @@
             "霜霉"
           ],
           "fallback_variety": "中黄13",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -1465,7 +1425,6 @@
             "葵螟"
           ],
           "fallback_variety": "矮大头",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -1494,7 +1453,6 @@
             "葱蓟马"
           ],
           "fallback_variety": "章丘大葱",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -1522,7 +1480,6 @@
             "蒜蛆"
           ],
           "fallback_variety": "紫皮蒜",
-          "calibrated": false,
           "source": "seed-supplement"
         }
       ]
@@ -1884,7 +1841,6 @@
             "天牛"
           ],
           "fallback_variety": "波姬红",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -1911,7 +1867,6 @@
             "蚜虫"
           ],
           "fallback_variety": "绿球",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -1940,7 +1895,6 @@
             "跳甲"
           ],
           "fallback_variety": "野苣",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -1968,7 +1922,6 @@
             "虫害"
           ],
           "fallback_variety": "加州种",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -1994,7 +1947,6 @@
             "极少"
           ],
           "fallback_variety": "油莎豆",
-          "calibrated": false,
           "source": "seed-supplement"
         }
       ]
@@ -2327,7 +2279,6 @@
             "蚜虫"
           ],
           "fallback_variety": "新疆棉",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2354,7 +2305,6 @@
             "纹枯"
           ],
           "fallback_variety": "晋杂",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2381,7 +2331,6 @@
             "粟灰螟"
           ],
           "fallback_variety": "张杂谷",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2408,7 +2357,6 @@
             "蚜虫"
           ],
           "fallback_variety": "紫花苜蓿",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2435,7 +2383,6 @@
             "极少"
           ],
           "fallback_variety": "蒙古沙葱",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2460,7 +2407,6 @@
             "根腐"
           ],
           "fallback_variety": "瓜尔豆",
-          "calibrated": false,
           "source": "seed-supplement"
         }
       ]
@@ -2797,7 +2743,6 @@
             "白粉"
           ],
           "fallback_variety": "冬黑麦",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2824,7 +2769,6 @@
             "蚜虫"
           ],
           "fallback_variety": "裸大麦",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2851,7 +2795,6 @@
             "蚜虫"
           ],
           "fallback_variety": "皮燕麦",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2879,7 +2822,6 @@
             "褐斑"
           ],
           "fallback_variety": "糖甜菜",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2906,7 +2848,6 @@
             "蛾"
           ],
           "fallback_variety": "蔓越莓",
-          "calibrated": false,
           "source": "seed-supplement"
         },
         {
@@ -2934,7 +2875,6 @@
             "果蝇"
           ],
           "fallback_variety": "北高丛蓝莓",
-          "calibrated": false,
           "source": "seed-supplement"
         }
       ]

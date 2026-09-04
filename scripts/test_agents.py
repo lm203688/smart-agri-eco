@@ -11,7 +11,8 @@
     - 四 Agent 流水线：杭州→亚热带湿润带、无 PLACEHOLDER、rubric 聚合正确
     - CropAgent 候选数 / EcoAgent 预算门控
     - Trust Layer 可复现证书 rubric 全通过
-    - flywheel 反馈闭环：校准分随反馈变化（文件备份还原，不污染 seed 数据）
+    - flywheel 反馈闭环：校准分随反馈变化（数据文件备份/重定向，不污染 seed 数据）
+    - 作物库数据完整性：calibrated 标记必须有证据、反馈日志不得含合成样本
 """
 
 import os
@@ -88,17 +89,29 @@ class TestTrustLayer(unittest.TestCase):
 
 
 class TestFlywheel(unittest.TestCase):
-    """校准会写盘 crop_adapt_db.json，用备份还原避免污染 seed 数据。"""
+    """校准会写盘：crop_adapt_db.json 用备份还原，feedback_log.json 重定向到临时文件。
+
+    后者修复的是真实缺陷：record_feedback 原本只写固定的 data/feedback_log.json，
+    单测 / CI 每次运行都会追加「单测样本」，造成该 git 跟踪文件无限膨胀 + git 噪音。
+    """
 
     def setUp(self):
         self.backup = CROP_DB + ".test.bak"
         shutil.copy(CROP_DB, self.backup)
+        # 反馈日志重定向到临时文件，绝不污染仓库内的 data/feedback_log.json
+        self.test_log = os.path.join(ROOT, "data", "_test_feedback_log.json")
+        os.environ["AGRI_FEEDBACK_LOG"] = self.test_log
 
     def tearDown(self):
         if os.path.exists(self.backup):
             shutil.move(self.backup, CROP_DB)
+        os.environ.pop("AGRI_FEEDBACK_LOG", None)
+        if os.path.exists(self.test_log):
+            os.remove(self.test_log)
 
     def test_calibration_changes_score(self):
+        # 环境变量必须真的生效（否则测试会污染仓库数据）
+        self.assertEqual(fw.feedback_log_path(), self.test_log)
         res = fw.record_feedback(
             zone_id="subtropical_wet", crop="生菜",
             survival_rate=0.9, yield_rating=4.0, user_rating=5.0,
@@ -107,6 +120,86 @@ class TestFlywheel(unittest.TestCase):
         self.assertTrue(res["changed"])
         self.assertNotEqual(res["before"], res["after"])
         self.assertTrue(res["calibrated"])
+
+    def test_feedback_log_not_polluted(self):
+        """回归守卫：单测绝不能向仓库内的真实 feedback_log.json 写入测试样本。"""
+        fw.record_feedback(
+            zone_id="subtropical_wet", crop="生菜",
+            survival_rate=0.9, yield_rating=4.0, user_rating=5.0,
+            issues=["单测样本"], note="unittest",
+        )
+        real_log = fw._DEFAULT_FEEDBACK_LOG
+        if os.path.exists(real_log):
+            with open(real_log, "r", encoding="utf-8") as f:
+                entries = json.load(f)
+            self.assertIsInstance(entries, list)
+            polluted = [e for e in entries if e.get("note") == "unittest"]
+            self.assertEqual(polluted, [], "真实反馈日志被单测污染")
+
+    def test_bad_crop_db_override_fails_fast(self):
+        """回归守卫：指向不存在文件的环境变量覆盖必须明确报错。
+
+        静默降级会让查询全空、校准全「未找到」、demo 输出全 None 且无任何报错。
+        """
+        os.environ["AGRI_CROP_DB"] = os.path.join(ROOT, "data", "_no_such_file.json")
+        try:
+            with self.assertRaises(ValueError):
+                fw.crop_db_path()
+        finally:
+            os.environ.pop("AGRI_CROP_DB", None)
+
+
+class TestCropDataIntegrity(unittest.TestCase):
+    """守住作物库的诚实性：可信层会把 calibrated 标记透给用户，标记就必须有证据。"""
+
+    @classmethod
+    def setUpClass(cls):
+        with open(CROP_DB, "r", encoding="utf-8") as f:
+            cls.db = json.load(f)
+
+    def _crops(self):
+        for zone in self.db.get("zones", {}).values():
+            for crop in zone.get("crops", []):
+                yield crop
+
+    def test_calibration_flag_has_evidence(self):
+        """回归守卫：曾出现 34 个作物只有 calibrated:true 却零校准证据。"""
+        bad = [c["crop"] for c in self._crops()
+               if c.get("calibrated") and "measured_calibration" not in c]
+        self.assertEqual(bad, [], f"{len(bad)} 个作物 calibrated 标记无校准证据: {bad[:5]}")
+
+    def test_seed_score_consistent(self):
+        """有 seed 记录时，adapt_score 必须等于校准分或 seed 分（防半写状态）。"""
+        bad = []
+        for c in self._crops():
+            seed = c.get("seed_adapt_score")
+            if seed is not None:
+                calib = c.get("measured_calibration") or {}
+                if c.get("adapt_score") not in (seed, calib.get("calibrated_score")):
+                    bad.append(c["crop"])
+        self.assertEqual(bad, [], f"{len(bad)} 个作物分数状态不一致: {bad[:5]}")
+
+    def test_feedback_log_has_no_synthetic_entries(self):
+        """回归守卫：feedback_log 只存真实用户反馈，demo/单测/冒烟样本不得入库。
+
+        历史事实：仓库里曾累积 12 条合成样本，制造出「已有真实数据回流」的假象。
+        """
+        log_path = os.path.join(ROOT, "data", "feedback_log.json")
+        if not os.path.exists(log_path):
+            self.skipTest("feedback_log.json 不存在")
+        with open(log_path, "r", encoding="utf-8") as f:
+            entries = json.load(f)
+        if not isinstance(entries, list):
+            self.fail("feedback_log.json 不是数组")
+        synthetic = {"unittest", "smoke"}
+        bad = []
+        for e in entries:
+            text = " ".join(
+                [str(e.get("note", ""))] + [str(i) for i in e.get("issues", [])]
+            ).lower()
+            if any(k in text for k in synthetic) or "[demo]" in text:
+                bad.append(e.get("note", ""))
+        self.assertEqual(bad, [], f"反馈日志含 {len(bad)} 条合成样本")
 
 
 class TestPestAgent(unittest.TestCase):

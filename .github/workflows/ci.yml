@@ -25,6 +25,7 @@ on:
       - "docs/**"
       - "deploy/**"
       - "README.md"
+      - "*.md"
       - ".gitignore"
   pull_request:
     branches: [main, master]
@@ -66,8 +67,37 @@ jobs:
       - name: Trust 层证书签发验证
         run: python -m core.trust_layer
 
-      - name: 反馈闭环示例
-        run: python -m engine.flywheel
+      - name: 反馈闭环示例（隔离运行，不污染工作区数据）
+        env:
+          AGRI_CROP_DB: ${{ runner.temp }}/crop_adapt_db.json
+          AGRI_FEEDBACK_LOG: ${{ runner.temp }}/feedback_log.json
+        run: |
+          # flywheel 会真实写盘，指向临时文件避免 CI 污染仓库数据
+          cp data/crop_adapt_db.json "${{ runner.temp }}/crop_adapt_db.json"
+          python -m engine.flywheel
+
+      - name: 数据完整性门禁（防假数据冒充真实数据）
+        run: |
+          python - <<'PY'
+          import json
+          db = json.load(open('data/crop_adapt_db.json', encoding='utf-8'))
+          crops = [c for z in db['zones'].values() for c in z.get('crops', [])]
+          # 1) calibrated 标记必须有可复算的校准证据
+          bad = [c['crop'] for c in crops if c.get('calibrated') and 'measured_calibration' not in c]
+          assert not bad, f"{len(bad)} 个作物 calibrated 无证据: {bad[:5]}"
+          # 2) 反馈日志不得含 demo/单测/冒烟合成样本
+          import os
+          log_path = 'data/feedback_log.json'
+          if os.path.exists(log_path):
+              entries = json.load(open(log_path, encoding='utf-8'))
+              synth = {'unittest', 'smoke'}
+              bad = [e for e in entries
+                     if any(k in (" ".join([str(e.get('note', ''))] + [str(i) for i in e.get('issues', [])])).lower()
+                            for k in synth)
+                     or '[demo]' in str(e.get('note', ''))]
+              assert not bad, f"反馈日志含 {len(bad)} 条合成样本"
+          print(f"data integrity OK ({len(crops)} crops)")
+          PY
 
       - name: Skill 注册表合法性
         run: |

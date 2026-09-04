@@ -65,7 +65,10 @@
 | 数据扩展脚本 | `scripts/enrich_crop_data.py` | 每气候带补充适生作物至 ≥18 种 |
 | 端到端验证 | `scripts/verify_all.py` | 多城市 pipeline + Trust 证书 PASS/FAIL |
 | Skill 自动生成 | `engine/skill_factory.py` | 新作物/能力点 → 自动生成符合 Schema 的 Skill |
-| 单元测试 | `scripts/test_agents.py` | 21 项 unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel |
+| 单元测试 | `scripts/test_agents.py` | 26 项 unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + **作物库数据完整性守卫** |
+| 预览残留清理 | `scripts/clean_preview_artifacts.py` | 清除预览工具注入 HTML 的 `data-page-node-id` 属性（曾一次性注入 115 处） |
+| 演示数据重置 | `scripts/clean_demo_data.py` | 清空 demo/单测污染的 feedback_log + 剥离作物库假校准标记 |
+| 同步状态检查 | `scripts/sync_check.py` | 本地工作区 vs GitHub main 逐文件 blob sha 比对（本仓非 git clone，无法用 git status） |
 | 反馈回流 CLI | `scripts/submit_feedback.py` | 内测用户提交种植结果 → 校准 adapt_score |
 | 生产部署 | `deploy/` | 一键部署（`deploy_local.sh` 上传 + `setup_ecs.sh` 远端构建启动）+ nginx 反代 + DEPLOY.md |
 | CI | `.github/workflows/ci.yml` | push 自动跑单测/verify/trust/flywheel/数据自检，Python 3.10-3.12 矩阵 |
@@ -93,6 +96,34 @@ python -c "import json; d=json.load(open('data/zone_meta/global_zones.json')); p
 # 查看 Skill 注册表
 for f in skills/registry/*.json; do python -c "import json; s=json.load(open('$f')); print(s['id'])"; done
 ```
+
+---
+
+## 数据卫生（重要）
+
+`engine/flywheel.py` 的 `record_feedback()` **真的会写盘**——这是为了让反馈闭环真实生效。
+代价是：demo 与单测如果不隔离，就会把合成样本混进真实数据。本项目已踩过的两类事故及防护：
+
+| 事故 | 现象 | 防护 |
+|---|---|---|
+| 单测污染反馈日志 | `data/feedback_log.json` 累积 12 条 `unittest`/`smoke` 样本，制造「已有真实数据回流」的假象 | 单测把 `AGRI_FEEDBACK_LOG` 重定向到临时文件 |
+| 作物库假校准标记 | 34 个作物只有 `calibrated: true` 却**零校准证据**，被可信层当成实测数据透出 | `scripts/clean_demo_data.py` 清洗 + CI/单测双门禁 |
+
+规则：
+
+1. **`data/feedback_log.json` 只允许真实用户反馈**。demo 记录带 `[demo]` 前缀，门禁会拦截未标注的合成数据。
+2. **`python -m engine.flywheel` 跑过之后**，提交前必须执行：
+   ```bash
+   python scripts/clean_demo_data.py --dry-run   # 先看会清多少
+   python scripts/clean_demo_data.py             # 实际清理
+   ```
+3. **隔离运行**（不碰仓库数据）：
+   ```bash
+   AGRI_CROP_DB=<绝对路径>/crop.json AGRI_FEEDBACK_LOG=<绝对路径>/fb.json python -m engine.flywheel
+   ```
+   ⚠️ Windows 注意：Git Bash 的 `/tmp` 映射到 `%LOCALAPPDATA%\Temp`，Python 按 `C:\tmp` 解析，
+   **必须用 Windows 风格绝对路径**，否则 `AGRI_CROP_DB` 找不到文件会直接报错（故意 fail fast，避免静默输出全 None）。
+4. CI 中的 flywheel 步骤已改为写入 `$RUNNER_TEMP` 隔离目录，并加了数据完整性门禁。
 
 ---
 
@@ -141,12 +172,12 @@ AGRI_VISION_MODEL=gpt-4o                              # 须为多模态模型
 ```
 .github/workflows/ci.yml
 ```
-push 到 main 后自动跑：单测 → verify_all → trust_layer → flywheel → Skill 注册表合法性 → 数据自检（每带 ≥18 种作物），Python 3.10/3.11/3.12 矩阵。
+push 到 main 后自动跑：单测 → verify_all → trust_layer → flywheel（隔离到 $RUNNER_TEMP）→ **数据完整性门禁**（禁假校准标记、禁合成反馈样本）→ Skill 注册表合法性 → 数据自检（每带 ≥18 种作物），Python 3.10/3.11/3.12 矩阵。
 状态：GitHub Actions 已验证可用（fine-grained PAT 含 `Workflows:write`，push 后 CI 自动跑通，最近一次 run 结论 success）。
 
 ### 4. 单元测试（零依赖）
 ```bash
-python -m unittest scripts.test_agents -v     # 21 项用例全过
+python -m unittest scripts.test_agents -v     # 26 项用例全过
 ```
 
 ### 5. Skill 自动生成（闭环触发）
