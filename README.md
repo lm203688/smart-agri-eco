@@ -175,6 +175,23 @@ AGRI_VISION_MODEL=gpt-4o                              # 须为多模态模型
 push 到 main 后自动跑：单测 → verify_all → trust_layer → flywheel（隔离到 $RUNNER_TEMP）→ **数据完整性门禁**（禁假校准标记、禁合成反馈样本）→ Skill 注册表合法性 → 数据自检（每带 ≥18 种作物），Python 3.10/3.11/3.12 矩阵。
 状态：GitHub Actions 已验证可用（fine-grained PAT 含 `Workflows:write`，push 后 CI 自动跑通，最近一次 run 结论 success）。
 
+### 3d. 本地 → GitHub 同步（无 git push 环境）
+
+本机 github.com:443 不可达，且本地目录不是 git clone，**不能用 `git push` / `git status`**。
+统一走这两个脚本：
+
+```bash
+# 1) 查看待推差异（只读，公开仓库可匿名）
+python scripts/sync_check.py
+
+# 2) 推送（单 commit，推送后自动回读校验）
+python scripts/gh_push.py <token临时文件> "<提交信息>" file1 file2 ...
+```
+
+- 需要 fine-grained PAT（Contents: read/write），建议含 `Workflows:write` 以便改 CI
+- token 放临时文件、用完即删，不要留在命令行历史里
+- 推送后 CI 会自动跑；确认 success 再关掉本地改动
+
 ### 4. 单元测试（零依赖）
 ```bash
 python -m unittest scripts.test_agents -v     # 26 项用例全过
