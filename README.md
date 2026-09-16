@@ -65,11 +65,19 @@
 | 数据扩展脚本 | `scripts/enrich_crop_data.py` | 每气候带补充适生作物至 ≥18 种 |
 | 端到端验证 | `scripts/verify_all.py` | 多城市 pipeline + Trust 证书 PASS/FAIL |
 | Skill 自动生成 | `engine/skill_factory.py` | 新作物/能力点 → 自动生成符合 Schema 的 Skill |
-| 单元测试 | `scripts/test_agents.py` | 26 项 unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + **作物库数据完整性守卫** |
+| 单元测试 | `scripts/test_agents.py` | **42 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + **作物库数据完整性守卫** |
+| MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **9 个** agri 工具（分区/推荐/计划/诊断/养分/Env Recipe/物候播期/土壤剖面）；注册与投递见 `mcp/README.md` |
+| Env Recipe 协议 | `schemas/env_recipe.schema.json` + `docs/env_recipe_protocol_v1.md` | 配置协议 v1：作物×阶段×箱体 → 可执行环境参数；day-1 留位 `execution_log`/`outcome`/`image_consent` 独占数据字段；校验 `scripts/validate_env_recipe.py` |
+| AI 评测基线 | `engine/eval.py` + `scripts/run_eval.py` | P0-H：分区分类一致率（真实基线）+ 4 个脚手架项（绝不谎报）；评测集 `data/eval/zone_checks.json` |
 | 预览残留清理 | `scripts/clean_preview_artifacts.py` | 清除预览工具注入 HTML 的 `data-page-node-id` 属性（曾一次性注入 115 处） |
 | 演示数据重置 | `scripts/clean_demo_data.py` | 清空 demo/单测污染的 feedback_log + 剥离作物库假校准标记 |
 | 同步状态检查 | `scripts/sync_check.py` | 本地工作区 vs GitHub main 逐文件 blob sha 比对（本仓非 git clone，无法用 git status） |
 | 反馈回流 CLI | `scripts/submit_feedback.py` | 内测用户提交种植结果 → 校准 adapt_score |
+| 物候/播期层 | `agent/phenology.py` + `agent/plant_calendar.py` + `agent/season_agent.py` | WOFOST 积温物候（7 作物，EUPL 1.2 署名）+ 霜冻锚定播期窗口；技能 `season_advisory` |
+| 土壤剖面（降级源） | `agent/soil_profile.py` | 在线 SoilGrids 优先 → 离线分区均值降级；`resolution=zone` / `confidence=low`，不虚构指标 |
+| 文档死链扫描 | `scripts/check_doc_links.py` | 全量 md 外链四态判定（ALIVE / DEAD_CONFIRMED / UNREACHABLE / UNPROBEABLE） |
+| 回流通路自检 | `scripts/check_feedback_loop.py` | 用 `AGRI_FEEDBACK_LOG` 隔离，13 项验证 record → calibrate → report 全链路，零污染真实数据 |
+| 巡检报告 diff | `scripts/diff_daily_loop.py` | 报告跨日 diff（`--selftest` 守护解析器） |
 | 生产部署 | `deploy/` | 一键部署（`deploy_local.sh` 上传 + `setup_ecs.sh` 远端构建启动）+ nginx 反代 + DEPLOY.md |
 | CI | `.github/workflows/ci.yml` | push 自动跑单测/verify/trust/flywheel/数据自检，Python 3.10-3.12 矩阵 |
 
@@ -96,6 +104,21 @@ python -c "import json; d=json.load(open('data/zone_meta/global_zones.json')); p
 # 查看 Skill 注册表
 for f in skills/registry/*.json; do python -c "import json; s=json.load(open('$f')); print(s['id'])"; done
 ```
+
+---
+
+## v2.1 提升项落地（Agent-native 分发 + 配置协议 + 评测）
+
+> 依据《项目方案评审-商业模式与AI专业分析》：商业主线重排为「免费资产 → 免费入口换数据 → 产业端收钱」；
+> 模块⑤生成箱降级为「配方大脑授权硬件厂/存量设备」；Env Recipe 协议与 MCP 分发为近期最高优先。
+
+| 提升项 | 交付物 | 验证 |
+|---|---|---|
+| P0-G Env Recipe v1 协议 | `schemas/env_recipe.schema.json` + `docs/env_recipe_protocol_v1.md` + `data/examples/sample_env_recipe.json` | `python scripts/validate_env_recipe.py data/examples/sample_env_recipe.json` |
+| P0-E/F 零依赖 MCP server | `mcp/server.py`（9 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
+| P0-H 评测基线 | `engine/eval.py` + `scripts/run_eval.py` + `data/eval/zone_checks.json` | `python scripts/run_eval.py` |
+
+**决策门**（评审 §3.5）：P0-F/G 若 3 个月内零外部调用 / 零社区响应 → 降级为个人知识库项目，停止对外投入。
 
 ---
 
@@ -194,8 +217,17 @@ python scripts/gh_push.py <token临时文件> "<提交信息>" file1 file2 ...
 
 ### 4. 单元测试（零依赖）
 ```bash
-python -m unittest scripts.test_agents -v     # 26 项用例全过
+python -m unittest scripts.test_agents -v     # 42 项用例全过
 ```
+
+### 4b. MCP / 协议 / 评测（v2.1 提升项）
+```bash
+python scripts/test_mcp_server.py                  # MCP server 自测：initialize/tools/list/tools/call
+python scripts/validate_env_recipe.py data/examples/sample_env_recipe.json  # Env Recipe v1 Schema 校验
+python scripts/run_eval.py                          # AI 评测基线（分区一致率真实数字 + 脚手架项）
+```
+
+注册到 Claude Desktop（stdio）：见 `mcp/README.md`。Env Recipe 协议说明与 AeroGarden 孤儿设备接入路径：见 `docs/env_recipe_protocol_v1.md`。
 
 ### 5. Skill 自动生成（闭环触发）
 ```bash
@@ -212,17 +244,22 @@ python scripts/submit_feedback.py --zone subtropical_wet --crop 生菜 \
 
 ---
 
-## 自动化定时闭环（情报 → 数据 → 评估）
+## 自动化定时闭环（每日单口巡检）
 
-项目已建立三个互相衔接的**定时自动化任务**（WorkBuddy Automation），持续收集情报、修复迭代、度量提升，形成逻辑闭环：
+项目仅保留 **1 个** WorkBuddy Automation：**「智慧农业生态 · 每日单口闭环」**（id `6f195835-6499-4888-812b-3cb0f8e9d251`，每日 05:00，ACTIVE）。
 
 | 闭环 | 频率 | 产出文件 | 作用 |
 |------|------|---------|------|
-| 情报收集 | 每周一 09:00 | `docs/intel_log.md` | WebSearch 农业 AI 最新进展 → 差距分析 → 改进点 / 自动 Skill |
-| 数据飞轮 | 每周日 22:00 | `data/WEEKLY_REPORT.md` | verify_all + flywheel + enrich 自检 → 周报 |
-| 评审自评 | 每两周周三 10:00 | `docs/project_evaluation.md` | 评审维度重评 → 暴露短板 → 度量提升 |
+| 每日单口闭环 | 每日 05:00 | `outputs/daily_loop_YYYY-MM-DD.md` | 回归 + 数据源存活探测 + 回流通路体检 + 状态快照 + 跨日 diff，**只读巡检** |
 
-**闭环逻辑**：情报（发现差距）→ 数据（执行校准/扩充）→ 评审（度量提升并暴露新短板）→ 情报（再发现）。三个任务均已 ACTIVE，按上方频率自动运行。
+执行内容（全部只读，禁改代码 / 禁 git / 禁推送）：
+
+1. **回归四项**：`test_agents.py`（42 项）、`test_mcp_server.py`（9 工具）、`verify_all.py`（5 城 PLACEHOLDER=0）、`diff_daily_loop.py --selftest`
+2. **数据源存活探测**：GAEZ / WorldClim / SoilGrids(`rest.isric.org`) / PlantVillage / EPPO / GitHub 等 7 个外部源 —— 防止引用死数据源（Ecocrop / OpenFarm / @pondlog 三次教训）
+3. **回流通路健康检查**：跑 `check_feedback_loop.py`，**区分「通路故障（≠0 报警）」与「数据量缺口（=0 条、不报警）」**（JSON 字段 `snapshot.feedback_path` = ok/broken）
+4. **状态快照 + 跨日 diff**：feedback 条数 / recipes 数 / wofost 作物数；与昨日报告对比，零漂移即静默，漂移即暴露
+
+**已知长期缺口**：`data/feedback_log.json` 持续 0 条 = 通路可用但无真实用户回流数据（属产品/增长问题，非代码缺陷——不得以合成数据充数）。
 
 ---
 

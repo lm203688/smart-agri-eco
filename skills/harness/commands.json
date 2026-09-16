@@ -1,0 +1,77 @@
+{
+  "schema": "agri-harness-commands/v1",
+  "generated_at": "2026-09-16T07:13:18",
+  "count": 4,
+  "items": [
+    {
+      "id": "full_advisory",
+      "name": "全链路种植建议",
+      "entry": "agent.orchestrator.AgriOrchestrator.run_pipeline",
+      "inputs": {
+        "lat": "float",
+        "lon": "float",
+        "scene": "str"
+      },
+      "outputs": [
+        "pipeline_steps",
+        "confidence_summary"
+      ],
+      "writes": [],
+      "side_effect": "none",
+      "description": "分区匹配 → 作物推荐 → 生长计划 → 生态闭环，一次跑完"
+    },
+    {
+      "id": "pest_check",
+      "name": "病虫害检查（含证据门控）",
+      "entry": "agent.orchestrator.AgriOrchestrator.call_skill",
+      "inputs": {
+        "skill": "pest_diagnose",
+        "crop": "str",
+        "symptom_description": "str",
+        "environment": "dict?"
+      },
+      "outputs": [
+        "diagnosis",
+        "confirmation_status",
+        "evidence_gate"
+      ],
+      "writes": [],
+      "side_effect": "none",
+      "description": "无双重证据时返回 confirmation_status=unconfirmed，只报监测项"
+    },
+    {
+      "id": "season_check",
+      "name": "物候与播期检查",
+      "entry": "agent.orchestrator.AgriOrchestrator.call_skill",
+      "inputs": {
+        "skill": "season_advisory",
+        "mode": "str",
+        "monthly_mean_c": "list[float]",
+        "crops": "list[str]"
+      },
+      "outputs": [
+        "available",
+        "planting_window"
+      ],
+      "writes": [],
+      "side_effect": "none",
+      "description": "霜冻锚定播期窗口，纯本地推导不依赖第三方日历"
+    },
+    {
+      "id": "nutrition_check",
+      "name": "容器营养方案",
+      "entry": "agent.orchestrator.AgriOrchestrator.call_skill",
+      "inputs": {
+        "skill": "nutrition_plan",
+        "crop": "str",
+        "container_volume_l": "float"
+      },
+      "outputs": [
+        "recommendation"
+      ],
+      "writes": [],
+      "side_effect": "none",
+      "description": "四阶段营养配比方案"
+    }
+  ]
+}

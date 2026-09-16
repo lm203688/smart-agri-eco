@@ -1,9 +1,10 @@
 {
   "meta": {
-    "description": "全球分区作物适配数据库（基于 FAO CropInfo + 中国农业技术通识）",
+    "description": "全球分区作物适配数据库（基于 GAEZ v4（含 Ecocrop 参数）+ WorldClim 2.1 + 中国农业技术通识）",
     "version": "1.1",
     "data_sources": [
-      "FAO CropInfo",
+      "GAEZ v4 (含 Ecocrop 参数)",
+      "WorldClim 2.1",
       "中国作物栽培数据库",
       "USDA Plant Guides",
       "IPNI"

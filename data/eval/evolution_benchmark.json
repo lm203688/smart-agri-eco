@@ -1,0 +1,104 @@
+{
+  "schema": "agri-evolution-benchmark/v1",
+  "generated_at": "2026-09-16T06:59:56",
+  "source": "data\\crop_adapt_db.json",
+  "scoring": "direction-correct=1.0, unchanged=0.5, wrong-direction=0.0",
+  "cases": [
+    {
+      "id": "good_arid_芦荟",
+      "zone_id": "arid",
+      "crop": "芦荟",
+      "feedback": {
+        "survival_rate": 0.98,
+        "yield_rating": 5.0,
+        "user_rating": 5.0
+      },
+      "expect": "up",
+      "rationale": "high-survival feedback should raise adapt_score"
+    },
+    {
+      "id": "bad_arid_芦荟",
+      "zone_id": "arid",
+      "crop": "芦荟",
+      "feedback": {
+        "survival_rate": 0.25,
+        "yield_rating": 1.0,
+        "user_rating": 1.0
+      },
+      "expect": "down",
+      "rationale": "low-survival feedback should lower adapt_score"
+    },
+    {
+      "id": "good_arid_仙人掌",
+      "zone_id": "arid",
+      "crop": "仙人掌",
+      "feedback": {
+        "survival_rate": 0.98,
+        "yield_rating": 5.0,
+        "user_rating": 5.0
+      },
+      "expect": "up",
+      "rationale": "high-survival feedback should raise adapt_score"
+    },
+    {
+      "id": "bad_arid_仙人掌",
+      "zone_id": "arid",
+      "crop": "仙人掌",
+      "feedback": {
+        "survival_rate": 0.25,
+        "yield_rating": 1.0,
+        "user_rating": 1.0
+      },
+      "expect": "down",
+      "rationale": "low-survival feedback should lower adapt_score"
+    },
+    {
+      "id": "good_mediterranean_番茄",
+      "zone_id": "mediterranean",
+      "crop": "番茄",
+      "feedback": {
+        "survival_rate": 0.98,
+        "yield_rating": 5.0,
+        "user_rating": 5.0
+      },
+      "expect": "up",
+      "rationale": "high-survival feedback should raise adapt_score"
+    },
+    {
+      "id": "bad_mediterranean_番茄",
+      "zone_id": "mediterranean",
+      "crop": "番茄",
+      "feedback": {
+        "survival_rate": 0.25,
+        "yield_rating": 1.0,
+        "user_rating": 1.0
+      },
+      "expect": "down",
+      "rationale": "low-survival feedback should lower adapt_score"
+    },
+    {
+      "id": "good_mediterranean_香草（迷迭香）",
+      "zone_id": "mediterranean",
+      "crop": "香草（迷迭香）",
+      "feedback": {
+        "survival_rate": 0.98,
+        "yield_rating": 5.0,
+        "user_rating": 5.0
+      },
+      "expect": "up",
+      "rationale": "high-survival feedback should raise adapt_score"
+    },
+    {
+      "id": "bad_mediterranean_香草（迷迭香）",
+      "zone_id": "mediterranean",
+      "crop": "香草（迷迭香）",
+      "feedback": {
+        "survival_rate": 0.25,
+        "yield_rating": 1.0,
+        "user_rating": 1.0
+      },
+      "expect": "down",
+      "rationale": "low-survival feedback should lower adapt_score"
+    }
+  ]
+}

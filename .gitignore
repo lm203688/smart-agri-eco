@@ -14,5 +14,8 @@ outputs/
 .DS_Store
 Thumbs.db
 
+# Derived index（由 engine/local_search.py 的 rebuild() 从源 JSON 重建，勿提交二进制）
+data/search_index/
+
 # Logs
 *.log

@@ -1,0 +1,76 @@
+{
+  "protocol": "env-recipe",
+  "recipe_version": "1.0.0",
+  "crop": {
+    "species": "蓝莓",
+    "latin": "Vaccinium corymbosum",
+    "family": "Ericaceae"
+  },
+  "stage": "full_cycle",
+  "device_profile": {
+    "device_class": "other",
+    "sensor_capability": [
+      "temp",
+      "humidity"
+    ]
+  },
+  "environment": {
+    "temperature": {
+      "day_c": 26,
+      "night_c": 12
+    },
+    "humidity": {
+      "min_pct": 50,
+      "max_pct": 80
+    },
+    "water_nutrient": {
+      "ph": 4.6,
+      "water_ml_day": 250
+    },
+    "airflow": {
+      "level": "medium"
+    }
+  },
+  "exception_handling": [
+    {
+      "condition": "出现「缺素黄化」相关症状",
+      "action": "经 agri_diagnose_pest 工具诊断后按建议处理",
+      "severity": "warn"
+    },
+    {
+      "condition": "出现「果蝇」相关症状",
+      "action": "经 agri_diagnose_pest 工具诊断后按建议处理",
+      "severity": "warn"
+    }
+  ],
+  "execution_log": [],
+  "outcome": {},
+  "image_consent": {
+    "captured": false,
+    "license": "",
+    "attribution": ""
+  },
+  "sources": [
+    {
+      "title": "FAO CropInfo",
+      "url": "",
+      "accessed_at": "2026-08-27"
+    },
+    {
+      "title": "中国作物栽培数据库",
+      "url": "",
+      "accessed_at": "2026-08-27"
+    },
+    {
+      "title": "USDA Plant Guides",
+      "url": "",
+      "accessed_at": "2026-08-27"
+    },
+    {
+      "title": "IPNI",
+      "url": "",
+      "accessed_at": "2026-08-27"
+    }
+  ],
+  "license": "CC-BY-4.0"
+}

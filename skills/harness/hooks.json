@@ -1,0 +1,67 @@
+{
+  "schema": "agri-harness-hooks/v1",
+  "generated_at": "2026-09-16T07:13:18",
+  "count": 3,
+  "items": [
+    {
+      "id": "humidity_over_limit",
+      "name": "湿度越限 → 病害风险检查",
+      "trigger": {
+        "field": "environment.humidity_pct",
+        "op": ">=",
+        "value": 90
+      },
+      "action": {
+        "command": "pest_check",
+        "inject": {
+          "environment": "event.environment",
+          "symptom_hint": "高湿环境，重点排查霜霉病/白粉病"
+        }
+      },
+      "priority": "high",
+      "cooldown_hours": 6,
+      "rationale": "持续高湿是霜霉病/白粉病的主要非生物诱因"
+    },
+    {
+      "id": "temp_extreme",
+      "name": "极端温度 → 环境胁迫告警",
+      "trigger": {
+        "field": "environment.temp_c",
+        "op": "not_in",
+        "value": [
+          5,
+          35
+        ]
+      },
+      "action": {
+        "command": "season_check",
+        "inject": {
+          "mode": "risk",
+          "crops": "event.crops"
+        }
+      },
+      "priority": "high",
+      "cooldown_hours": 12,
+      "rationale": "越出 [5,35]°C 多数喜温作物进入胁迫区，需复核播期与遮阴"
+    },
+    {
+      "id": "feedback_arrived",
+      "name": "用户反馈到达 → 触发飞轮校准",
+      "trigger": {
+        "field": "event.type",
+        "op": "==",
+        "value": "feedback"
+      },
+      "action": {
+        "command": "flywheel_record",
+        "inject": {
+          "zone_id": "event.zone_id",
+          "crop": "event.crop"
+        }
+      },
+      "priority": "normal",
+      "cooldown_hours": 0,
+      "rationale": "反馈是飞轮的输入端；不触发校准则闭环永远空转"
+    }
+  ]
+}

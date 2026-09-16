@@ -17,6 +17,8 @@ on:
       - "data/**"
       - "skills/**"
       - "app/**"
+      - "mcp/**"
+      - "schemas/**"
       - "scripts/**"
       - "tests/**"
       - "Dockerfile"
@@ -58,8 +60,14 @@ jobs:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ matrix.python-version }}
 
-      - name: 运行单元测试
+      - name: 运行单元测试（Agent 层）
         run: python -m unittest scripts.test_agents -v
+
+      - name: 运行引擎回归（v2 / v3 / v4）
+        run: |
+          python -m unittest scripts.test_engine_v2 -v
+          python -m unittest scripts.test_engine_v3 -v
+          python -m unittest scripts.test_engine_v4 -v
 
       - name: 端到端验证（多城市 pipeline + Trust 证书）
         run: python scripts/verify_all.py
@@ -96,6 +104,19 @@ jobs:
                             for k in synth)
                      or '[demo]' in str(e.get('note', ''))]
               assert not bad, f"反馈日志含 {len(bad)} 条合成样本"
+          # 3) 长期记忆库不得含合成样本（engine.long_term_memory 在
+          #    AGRI_MEMORY_SYNTHETIC 下会给 source_ref 打 [unittest] 标记）
+          mem_path = 'data/long_term_memory.json'
+          if os.path.exists(mem_path):
+              doc = json.load(open(mem_path, encoding='utf-8'))
+              mems = doc.get('memories', [])
+              bad = [m.get('id') for m in mems
+                     if any(k in str(m.get('source_ref', '')).lower()
+                            for k in synth)
+                     or any(k in str(m.get('skill', '')).lower() for k in synth)
+                     or any(k in str(t).lower() for t in m.get('tags', []))]
+              assert not bad, f"长期记忆库含 {len(bad)} 条合成样本: {bad[:5]}"
+              print(f"  long_term_memory OK ({len(mems)} memories)")
           print(f"data integrity OK ({len(crops)} crops)")
           PY
 
@@ -115,6 +136,18 @@ jobs:
           for z,v in d['zones'].items():
               n=len(v['crops']); assert n>=18, f'{z} 只有 {n} 种 (<18)'; print(f'  {z}: {n}')
           print('data OK')"
+
+      - name: MCP server 自测（零依赖 JSON-RPC over stdio）
+        run: python scripts/test_mcp_server.py
+
+      - name: Env Recipe v1 Schema 校验
+        run: python scripts/validate_env_recipe.py data/examples/sample_env_recipe.json
+
+      - name: 全量 Env Recipes 校验（data/env_recipes）
+        run: python scripts/validate_env_recipe.py data/env_recipes
+
+      - name: AI 评测基线（P0-H：分区一致率 + 脚手架项）
+        run: python scripts/run_eval.py
 
       - name: 产物汇总
         if: always()

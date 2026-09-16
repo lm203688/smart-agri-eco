@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/lm203688/smart-agri-eco/main/schemas/execution_log.schema.json",
+  "title": "Env Recipe Execution Log Entry v1",
+  "description": "Env Recipe 执行回流日志的【单条】规范条目。作为 env_recipe.schema.json 中 execution_log 数组项的可机读契约，并设计为可从外部花园活动日志（如 mcp-kasvanta 的 SQLite 活动记录）导入的格式。与 kasvanta 对接是『配方→执行→结果』闭环（独占数据 A）的关键燃料来源。完整对接映射见 docs/execution_log_import.md。",
+  "type": "object",
+  "required": ["run_id", "recipe_ref", "started_at", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "本次执行唯一 ID（原生运行由设备生成；导入记录由导入器按 source+device_id+started_at 派生）。"
+    },
+    "recipe_ref": {
+      "type": "string",
+      "description": "所执行的 Env Recipe 引用，建议格式 crop:stage:device_class，如 番茄:vegetative:indoor_cabinet。"
+    },
+    "device_id": {
+      "type": "string",
+      "description": "执行设备匿名 ID（孤儿设备社区可凭此对账、共享配方）。导入时取 kasvanta 的 location。"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "执行开始时间（ISO 8601）。"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "执行结束时间（可选）。"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["native", "imported_kasvanta", "imported_other"],
+      "description": "数据来源：native=本平台设备直报；imported_kasvanta=从 mcp-kasvanta 活动日志导入；imported_other=其他外部源。"
+    },
+    "actual_params": {
+      "type": "object",
+      "description": "实际执行参数（与 recipe.environment 对照算偏差）。导入记录若无参数遥测则留空对象并置 params_unknown=true。",
+      "additionalProperties": true
+    },
+    "params_unknown": {
+      "type": "boolean",
+      "description": "true 表示本次无实际参数遥测（如 kasvanta 仅记录人工活动，不记录设备参数）。"
+    },
+    "actions_taken": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "本次执行/人工动作列表，如 [浇水, 追肥]。导入时取 kasvanta 的 activity。"
+    },
+    "deviations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "实际与配方的偏差说明（可选）。"
+    },
+    "observations": {
+      "type": "string",
+      "description": "自由文本观察/笔记。导入时取 kasvanta 的 notes。"
+    },
+    "outcome_ref": {
+      "type": "string",
+      "description": "关联到 outcome 对象的 run_id（若结果已回填）。kasvanta 不追踪产量，故导入记录通常无此字段，需用户/农艺师后续补全。"
+    }
+  }
+}

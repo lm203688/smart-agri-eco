@@ -1,0 +1,57 @@
+{
+  "schema": "agri-harness-rules/v1",
+  "generated_at": "2026-09-16T07:13:18",
+  "count": 5,
+  "items": [
+    {
+      "id": "no_unconfirmed_diagnosis",
+      "name": "无双重证据不下确定性诊断",
+      "applies_to": [
+        "pest_diagnose"
+      ],
+      "check": "confirmation_status == 'unconfirmed' → diagnosis 必须带（未确认）前缀",
+      "severity": "blocker",
+      "source": "agent/pest_agent._evidence_gate（借鉴 Shannon 零误报）"
+    },
+    {
+      "id": "no_placeholder_output",
+      "name": "禁止占位符输出",
+      "applies_to": [
+        "*"
+      ],
+      "check": "输出 JSON 中不得出现 PLACEHOLDER 字面量",
+      "severity": "blocker",
+      "source": "agent/orchestrator Verifier 既有约束"
+    },
+    {
+      "id": "data_provenance_required",
+      "name": "每条建议必须标注数据来源",
+      "applies_to": [
+        "*"
+      ],
+      "check": "evidence 字段非空且含 source 或 crop_known_risks 等证据指针",
+      "severity": "major",
+      "source": "docs/agent_output_contract.md"
+    },
+    {
+      "id": "safe_rollback_on_regression",
+      "name": "评测分数下降必须回滚",
+      "applies_to": [
+        "*"
+      ],
+      "check": "engine.evolution.ratchet 判定 Δ<=0 时自动 restore 快照",
+      "severity": "blocker",
+      "source": "engine/evolution.py（借鉴 PenguinHarness 棘轮）"
+    },
+    {
+      "id": "local_first_no_silent_telemetry",
+      "name": "本地优先，无静默遥测",
+      "applies_to": [
+        "*"
+      ],
+      "check": "任何外发请求必须可被环境变量关闭；视觉后端未配置时安全降级",
+      "severity": "major",
+      "source": "AgriTrust 信任层原则"
+    }
+  ]
+}

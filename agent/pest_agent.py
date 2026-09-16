@@ -235,6 +235,118 @@ def _canonical(obj: Any) -> str:
     return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
+# ---------------------------------------------------------------------------
+# 证据门控（借鉴 Shannon 渗透测试「打不通就不报」的零误报策略）
+#
+# 原则：仅当症状命中具体知识库条目 且 至少一路独立证据（视觉确认 / 环境观测）
+# 同时满足时，才给出「确认」诊断结论；否则标注 unconfirmed，只给监测建议，
+# 不下确定性结论。宁可少报，不误报——农业处置（用药/拔株/上报检疫）成本高。
+#
+# 三要素均为可机读判定，不依赖主观打分：
+#   symptom_hit        症状文本命中 KB 具体条目（top score >= _HIT_MIN）
+#   visual_confirm     视觉后端返回了有效补充（knowledge_source == vision_assisted）
+#   environment_observed  调用方提供了 >= 2 项有效环境观测值
+# ---------------------------------------------------------------------------
+_HIT_MIN = 0.45                      # 命中阈值：低于此值视为「模糊归类」不算命中
+_ENV_KEYS = ("humidity", "humidity_pct", "temp", "temperature", "temp_c",
+             "ppfd", "light", "ec", "ph", "wind")
+
+
+def _environment_observed(environment: Optional[Dict[str, Any]]) -> bool:
+    """环境是否被真实观测：>= 2 项有效数值。缺项不计入。"""
+    if not isinstance(environment, dict):
+        return False
+    hit = 0
+    for k, v in environment.items():
+        if k not in _ENV_KEYS:
+            continue
+        if isinstance(v, bool):
+            continue
+        if isinstance(v, (int, float)) and v == v:      # 排除 NaN
+            hit += 1
+    return hit >= 2
+
+
+def _evidence_gate(sym: str, scored, primary: Optional[str],
+                   knowledge_source: str,
+                   environment: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """产出零误报门控判定。返回 status + 三要素明细 + 缺失项。"""
+    top_score = scored[0][0] if scored else 0.0
+    symptom_hit = bool(sym) and top_score >= _HIT_MIN and bool(primary)
+    visual_confirm = (knowledge_source == "vision_assisted")
+    env_observed = _environment_observed(environment)
+
+    status = "confirmed" if (symptom_hit and (visual_confirm or env_observed)) else "unconfirmed"
+    missing: List[str] = []
+    if not symptom_hit:
+        missing.append("症状未命中知识库具体条目（或无症状输入）")
+    if not (visual_confirm or env_observed):
+        missing.append("缺少独立佐证（视觉确认 / 环境观测二选一）")
+    return {
+        "status": status,
+        "symptom_hit": symptom_hit,
+        "top_score": round(top_score, 3),
+        "hit_min": _HIT_MIN,
+        "visual_confirm": visual_confirm,
+        "environment_observed": env_observed,
+        "missing": missing,
+        "policy": "Shannon 零误报：打不通就不报——无双重证据不下确定性结论",
+    }
+
+
+# ---------------------------------------------------------------------------
+# 三阶段解释链（借鉴 AIMe 的 预测 → 解释 → 映射 多智能体范式）
+#
+# 只有结论没有推理链，用户既无法验证也无法复盘。这里把每次诊断拆成三段：
+#   prediction  预测   —— 首选诊断是什么、置信度、备选、严重度
+#   explanation 解释   —— 为什么：症状词逐条命中明细、类别信号、环境支持度、
+#                          视觉补充、以及零误报策略如何裁决
+#   mapping     映射   —— 映射到哪个已知模式（KB 条目 / 类别通用模板）、
+#                          候选集、成长阶段、门控状态
+# 三段全部由 diagnose() 内部真实计算结果派生，不引入新的判定口径，
+# 因此不会与零误报证据门控冲突（门控仍是唯一裁决者）。
+# ---------------------------------------------------------------------------
+def _build_reasoning_chain(prediction: Dict[str, Any],
+                           explanation: Dict[str, Any],
+                           mapping: Dict[str, Any]) -> Dict[str, Any]:
+    """组装三阶段解释链，并生成一句人可读的因果叙述。"""
+    primary = prediction.get("primary")
+    ev = (explanation.get("symptom_matches") or {}).get(primary, {}) if primary else {}
+    gate_status = mapping.get("gate_status", "")
+    kws = ev.get("symptom_keywords") or []
+    env_keys = (explanation.get("environment") or {}).get("observed_keys") or []
+
+    parts: List[str] = []
+    if ev.get("name_hit"):
+        parts.append("症状文本直接点名「%s」" % primary)
+    elif ev.get("name_fragment"):
+        parts.append("症状与名称共享片段「%s」" % ev["name_fragment"])
+    if kws:
+        parts.append("命中知识库症状词：%s" % "、".join(kws))
+    sig = explanation.get("signal_counts") or {}
+    top_sig = max(sig, key=lambda k: sig[k]) if any(sig.values()) else None
+    if top_sig:
+        parts.append("类别信号以「%s」为主" % top_sig)
+    if env_keys:
+        parts.append("环境观测到 %s（%d 项）" % ("、".join(env_keys[:4]), len(env_keys)))
+    if explanation.get("vision_note"):
+        parts.append("视觉模型参与补充")
+    if not parts:
+        parts.append("无有效症状信号")
+
+    if gate_status == "confirmed":
+        verdict = "证据充分，按零误报策略下确定结论"
+    else:
+        verdict = "证据不足，按零误报策略标注未确认（宁少报不误报）"
+
+    return {
+        "prediction": prediction,
+        "explanation": explanation,
+        "mapping": mapping,
+        "narrative": "因为 " + "；".join(parts) + "，所以 " + verdict + "。",
+    }
+
+
 def diagnose(
     crop: str = "",
     symptom_description: str = "",
@@ -264,27 +376,36 @@ def diagnose(
                 candidates.append(kb_name)
 
     scored = []
+    # 每个候选的命中证据（用于三阶段解释链的 explanation / mapping）
+    evidence_by_risk: Dict[str, Dict[str, Any]] = {}
     for r in candidates:
         score = 0.0
         rcat = _category_of(r)
         kb = KB.get(r)
+        ev: Dict[str, Any] = {"name_hit": False, "name_fragment": None,
+                              "symptom_keywords": [], "signal_score": 0.0}
         if sym:
             if r in sym:
                 score += 0.5
+                ev["name_hit"] = True
             else:
                 # 名称与症状共享 2 字片段 → 相关（如「黄化曲叶病毒」命中「黄化」）
                 for i in range(len(r) - 1):
                     if r[i:i + 2] in sym:
                         score += 0.3
+                        ev["name_fragment"] = r[i:i + 2]
                         break
             if kb:
                 for kw in kb.get("symptoms", []):
                     if kw in sym:
                         score += 0.15
+                        ev["symptom_keywords"].append(kw)
             if signals.get(rcat, 0) > 0:
-                score += 0.2 * signals[rcat]
+                ev["signal_score"] = round(0.2 * signals[rcat], 3)
+                score += ev["signal_score"]
         else:
             score = 0.1
+        evidence_by_risk[r] = ev
         scored.append((score, r, rcat, kb))
 
     scored.sort(key=lambda x: x[0], reverse=True)
@@ -343,8 +464,68 @@ def diagnose(
     if vision_note:
         recommendation += " ｜ 视觉模型补充：%s" % vision_note[:160]
 
+    # 零误报门控：先判定证据强度，再决定是否下确定性结论
+    gate = _evidence_gate(sym, scored, primary, knowledge_source, environment)
+    if gate["status"] != "confirmed":
+        diagnosis = "（未确认）%s" % diagnosis
+        recommendation = "（未确认，建议先采集证据）%s" % recommendation
+
+    # 三阶段解释链：预测 → 解释 → 映射（全部派生自上面已算出的真实结果）
+    reasoning_chain = _build_reasoning_chain(
+        prediction={
+            "primary": primary,
+            "category": (scored[0][2] if scored else None),
+            "top_score": round(scored[0][0], 3) if scored else 0.0,
+            "severity": severity,
+            "alternatives": alternatives,
+            "match_quality": round(match_quality, 2),
+            "diagnosis": diagnosis,
+            "hit_min": _HIT_MIN,
+        },
+        explanation={
+            "symptom_matches": {
+                r: {
+                    "name_hit": evidence_by_risk.get(r, {}).get("name_hit", False),
+                    "name_fragment": evidence_by_risk.get(r, {}).get("name_fragment"),
+                    "symptom_keywords": list(evidence_by_risk.get(r, {}).get(
+                        "symptom_keywords", [])),
+                    "signal_score": evidence_by_risk.get(r, {}).get("signal_score", 0.0),
+                    "total_score": round(score, 3),
+                }
+                for (score, r, _, _) in scored[:3]
+            },
+            "signal_counts": dict(signals),
+            "signal_contribution_note": "每类信号按 0.2×次数 计入总分",
+            "environment": {
+                "observed": _environment_observed(environment),
+                "observed_keys": sorted([k for k in (environment or {}) if k in _ENV_KEYS]),
+                "threshold": ">= 2 项有效数值（排除 NaN / bool）",
+                "values": {k: environment.get(k) for k in sorted((environment or {}))
+                           if k in _ENV_KEYS},
+            },
+            "vision_note": vision_note,
+            "knowledge_source": knowledge_source,
+        },
+        mapping={
+            "kb_pattern": (KB.get(primary) if primary else None),
+            "kb_pattern_category": (
+                _category_of(primary) if primary else None),
+            "category_generic": (
+                CATEGORY_GENERIC.get(scored[0][2]) if scored else
+                CATEGORY_GENERIC.get("disease")),
+            "risk_candidates": [r for (_, r, _, _) in scored[:5]],
+            "crop_known_risks": risks,
+            "growth_stage": growth_stage,
+            "gate_status": gate["status"],
+            "gate_missing": gate["missing"],
+        },
+    )
+
     result: Dict[str, Any] = {
         "diagnosis": diagnosis,
+        "confirmation_status": gate["status"],
+        "evidence_gate": gate,
+        "reasoning_chain": reasoning_chain,
         "severity": severity,
         "actions": actions,
         "alternative_diagnoses": alternatives,
@@ -357,6 +538,8 @@ def diagnose(
             "symptom_signals": signals,
             "growth_stage": growth_stage,
             "vision_used": knowledge_source == "vision_assisted",
+            "environment_observed": _environment_observed(environment),
+            "environment_keys": sorted([k for k in (environment or {}) if k in _ENV_KEYS]),
         },
         "confidence": {"rubric_score": round(match_quality, 2), "match_quality": round(match_quality, 2)},
         "constraints": list(SAFETY_CONSTRAINTS),

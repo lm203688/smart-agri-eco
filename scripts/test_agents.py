@@ -19,6 +19,7 @@ import os
 import sys
 import json
 import shutil
+import tempfile
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +29,7 @@ from agent import AgriOrchestrator  # noqa: E402
 from agent.pest_agent import PestAgent  # noqa: E402
 from agent.nutrition_agent import NutritionAgent  # noqa: E402
 from agent.vision import call_vision_backend  # noqa: E402
+from agent import soil_profile as sp  # noqa: E402
 from core.trust_layer import issue_certificate  # noqa: E402
 import engine.flywheel as fw  # noqa: E402
 
@@ -39,6 +41,37 @@ BASE_REQ = {
     "purpose": "食用", "space_sqm": 1.5,
     "difficulty": "beginner", "budget_cny": 500,
 }
+
+
+# ---------------------------------------------------------------------------
+# 模块级写盘隔离
+# ---------------------------------------------------------------------------
+# run_pipeline 自 B1/B2 起会写长期记忆与检索索引。本模块早于这两个能力写成，
+# 没有 per-test 隔离——若不在此重定向，每次跑测试都会往 data/long_term_memory.json
+# 写合成记录，最终被当成真实记忆提交（已踩过：一次跑出 13 条脏数据）。
+# AGRI_MEMORY_SYNTHETIC=1 让漏网的合成记录带 [unittest] 标记，由 CI 门禁拦下。
+_TMP = None
+_ENV_SAVED = {}
+
+
+def setUpModule():
+    global _TMP
+    _TMP = tempfile.mkdtemp(prefix="agri_test_agents_")
+    for k, v in (("AGRI_LONG_TERM_MEMORY", os.path.join(_TMP, "mem.json")),
+                 ("AGRI_SEARCH_INDEX", os.path.join(_TMP, "idx.db")),
+                 ("AGRI_MEMORY_SYNTHETIC", "1")):
+        _ENV_SAVED[k] = os.environ.get(k)
+        os.environ[k] = v
+
+
+def tearDownModule():
+    for k, v in _ENV_SAVED.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+    if _TMP:
+        shutil.rmtree(_TMP, ignore_errors=True)
 
 
 class TestPipeline(unittest.TestCase):
@@ -320,6 +353,124 @@ class TestOrchestratorSkills(unittest.TestCase):
             if s["id"] in ("pest_diagnose", "nutrition_plan"):
                 self.assertTrue(s["implemented"])
                 self.assertEqual(s["callable_via"], "call_skill")
+
+
+class TestSeasonAgent(unittest.TestCase):
+    """验证 SeasonAgent（B1 物候推演 + B2 霜冻锚定播期窗口）。"""
+
+    BEIJING = [-4.0, -1.0, 5.0, 14.0, 20.0, 25.0, 27.0, 26.0, 21.0, 14.0, 5.0, -2.0]
+
+    def setUp(self):
+        self.orch = AgriOrchestrator()
+
+    def test_planting_window_feasible(self):
+        r = self.orch.call_skill("season_advisory", {
+            "mode": "planting_window", "monthly_mean_c": self.BEIJING,
+            "crops": ["马铃薯"],
+        })
+        self.assertTrue(r["available"])
+        w = r["windows"][0]
+        self.assertTrue(w["feasible"])
+        self.assertIsNotNone(w["latest_sow"])
+        self.assertGreater(w["sow_window_days"], 0)
+
+    def test_frost_free_period_sane(self):
+        r = self.orch.call_skill("season_advisory", {
+            "mode": "planting_window", "monthly_mean_c": self.BEIJING, "crops": ["大豆"],
+        })
+        self.assertGreater(r["frost_free"]["length_days"], 200)
+
+    def test_year_round_freeze_unavailable(self):
+        r = self.orch.call_skill("season_advisory", {
+            "mode": "planting_window", "monthly_mean_c": [-20.0] * 12, "crops": ["马铃薯"],
+        })
+        self.assertFalse(r["available"])
+
+    def test_tropical_year_round(self):
+        r = self.orch.call_skill("season_advisory", {
+            "mode": "planting_window", "monthly_mean_c": [26.0] * 12, "crops": ["马铃薯"],
+        })
+        self.assertTrue(r["frost_free"]["year_round"])
+
+    def test_stage_days(self):
+        r = self.orch.call_skill("season_advisory", {
+            "mode": "stage_days", "crop": "马铃薯", "mean_temp_c": 18,
+        })
+        self.assertTrue(r["available"])
+        self.assertGreater(r["maturity_days_from_sow"], r["emergence_days"])
+
+    def test_uncovered_crop_graceful(self):
+        r = self.orch.call_skill("season_advisory", {
+            "mode": "stage_days", "crop": "番茄", "mean_temp_c": 20,
+        })
+        self.assertFalse(r["available"])
+        self.assertIn("potato", r["covered_crops"])
+
+    def test_bad_mode_graceful(self):
+        r = self.orch.call_skill("season_advisory", {"mode": "nope"})
+        self.assertFalse(r["available"])
+
+    def test_confidence_not_overclaimed(self):
+        """积温推演不得伪装成实测结论：置信度须为 medium 而非 high。"""
+        r = self.orch.call_skill("season_advisory", {
+            "mode": "planting_window", "monthly_mean_c": self.BEIJING, "crops": ["小麦"],
+        })
+        self.assertEqual(r["confidence"]["level"], "medium")
+        self.assertLessEqual(r["confidence"]["rubric_score"], 0.7)
+
+    def test_registry_entry(self):
+        skills = self.orch.list_skills()
+        ids = {s["id"] for s in skills}
+        self.assertIn("season_advisory", ids)
+        for s in skills:
+            if s["id"] == "season_advisory":
+                self.assertTrue(s["implemented"])
+                self.assertEqual(s["callable_via"], "call_skill")
+
+
+class TestSoilProfile(unittest.TestCase):
+    """验证土壤查询的降级路径与诚实标注（SoilGrids 从本机不可靠，离线必须兜住）。"""
+
+    def test_offline_fallback_is_zone_level(self):
+        r = sp.get_soil_profile(lat=30.2741, lon=120.1551, online=False)
+        self.assertEqual(r["resolution"], "zone")
+        self.assertEqual(r["confidence"], "low")
+        self.assertIn("global_zones", r["source"])
+        self.assertTrue(r["soil"]["ph_range"])
+
+    def test_zone_values_are_real(self):
+        """离线值必须来自 global_zones.json 的真实字段，不是占位。"""
+        r = sp.get_soil_profile(zone_id="subtropical_wet", online=False)
+        self.assertEqual(r["soil"]["ph_range"], [5.5, 7.0])
+        r2 = sp.get_soil_profile(zone_id="arid", online=False)
+        self.assertEqual(r2["soil"]["ph_range"], [7.0, 9.0])
+
+    def test_unknown_zone_unavailable_not_fabricated(self):
+        r = sp.get_soil_profile(zone_id="atlantis", online=False)
+        self.assertEqual(r["resolution"], "unavailable")
+        self.assertEqual(r["soil"], {})
+
+    def test_ph_fit_suitable_and_unsuitable(self):
+        self.assertEqual(sp.ph_fit([5.5, 7.0], [6.0, 7.0])["level"], "suitable")
+        self.assertEqual(sp.ph_fit([7.0, 9.0], [5.0, 6.0])["level"], "unsuitable")
+
+    def test_crop_ph_fit_attached(self):
+        r = sp.get_soil_profile(zone_id="subtropical_wet", crop="小白菜", online=False)
+        self.assertIn("crop_ph_fit", r)
+        self.assertIn(r["crop_ph_fit"]["level"],
+                      ("suitable", "marginal", "narrow", "unsuitable"))
+
+    def test_online_probe_never_raises_and_uses_correct_host(self):
+        """在线探测无论成败都不得抛异常；主机必须是 rest.isric.org（api.isric.org 不存在）。"""
+        probe = sp.probe_soilgrids(120.15, 30.27, timeout=3)
+        self.assertIn("available", probe)
+        self.assertIn("rest.isric.org", probe["url"])
+        self.assertNotIn("api.isric.org", probe["url"])
+
+    def test_limitations_present(self):
+        r = sp.get_soil_profile(zone_id="temperate_continental", online=False)
+        self.assertTrue(r["limitations"])
+        self.assertTrue(any("分区" in x for x in r["limitations"]))
 
 
 if __name__ == "__main__":

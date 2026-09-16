@@ -1,0 +1,225 @@
+{
+  "schema": "agri-harness-tree/v1",
+  "generated_at": "2026-09-16T07:13:18",
+  "layers": {
+    "agents": {
+      "count": 4,
+      "pipeline": [
+        "ClimateAgent",
+        "CropAgent",
+        "GrowthAgent",
+        "EcoAgent"
+      ],
+      "ondemand": [
+        "PestAgent",
+        "NutritionAgent",
+        "SeasonAgent"
+      ],
+      "note": "Agent 定义见 agent/ 目录，此处只登记层级计数"
+    },
+    "skills": {
+      "count": null,
+      "source": "skills/registry/*.json"
+    },
+    "commands": {
+      "count": 4,
+      "items": [
+        {
+          "id": "full_advisory",
+          "name": "全链路种植建议",
+          "entry": "agent.orchestrator.AgriOrchestrator.run_pipeline",
+          "inputs": {
+            "lat": "float",
+            "lon": "float",
+            "scene": "str"
+          },
+          "outputs": [
+            "pipeline_steps",
+            "confidence_summary"
+          ],
+          "writes": [],
+          "side_effect": "none",
+          "description": "分区匹配 → 作物推荐 → 生长计划 → 生态闭环，一次跑完"
+        },
+        {
+          "id": "pest_check",
+          "name": "病虫害检查（含证据门控）",
+          "entry": "agent.orchestrator.AgriOrchestrator.call_skill",
+          "inputs": {
+            "skill": "pest_diagnose",
+            "crop": "str",
+            "symptom_description": "str",
+            "environment": "dict?"
+          },
+          "outputs": [
+            "diagnosis",
+            "confirmation_status",
+            "evidence_gate"
+          ],
+          "writes": [],
+          "side_effect": "none",
+          "description": "无双重证据时返回 confirmation_status=unconfirmed，只报监测项"
+        },
+        {
+          "id": "season_check",
+          "name": "物候与播期检查",
+          "entry": "agent.orchestrator.AgriOrchestrator.call_skill",
+          "inputs": {
+            "skill": "season_advisory",
+            "mode": "str",
+            "monthly_mean_c": "list[float]",
+            "crops": "list[str]"
+          },
+          "outputs": [
+            "available",
+            "planting_window"
+          ],
+          "writes": [],
+          "side_effect": "none",
+          "description": "霜冻锚定播期窗口，纯本地推导不依赖第三方日历"
+        },
+        {
+          "id": "nutrition_check",
+          "name": "容器营养方案",
+          "entry": "agent.orchestrator.AgriOrchestrator.call_skill",
+          "inputs": {
+            "skill": "nutrition_plan",
+            "crop": "str",
+            "container_volume_l": "float"
+          },
+          "outputs": [
+            "recommendation"
+          ],
+          "writes": [],
+          "side_effect": "none",
+          "description": "四阶段营养配比方案"
+        }
+      ]
+    },
+    "hooks": {
+      "count": 3,
+      "items": [
+        {
+          "id": "humidity_over_limit",
+          "name": "湿度越限 → 病害风险检查",
+          "trigger": {
+            "field": "environment.humidity_pct",
+            "op": ">=",
+            "value": 90
+          },
+          "action": {
+            "command": "pest_check",
+            "inject": {
+              "environment": "event.environment",
+              "symptom_hint": "高湿环境，重点排查霜霉病/白粉病"
+            }
+          },
+          "priority": "high",
+          "cooldown_hours": 6,
+          "rationale": "持续高湿是霜霉病/白粉病的主要非生物诱因"
+        },
+        {
+          "id": "temp_extreme",
+          "name": "极端温度 → 环境胁迫告警",
+          "trigger": {
+            "field": "environment.temp_c",
+            "op": "not_in",
+            "value": [
+              5,
+              35
+            ]
+          },
+          "action": {
+            "command": "season_check",
+            "inject": {
+              "mode": "risk",
+              "crops": "event.crops"
+            }
+          },
+          "priority": "high",
+          "cooldown_hours": 12,
+          "rationale": "越出 [5,35]°C 多数喜温作物进入胁迫区，需复核播期与遮阴"
+        },
+        {
+          "id": "feedback_arrived",
+          "name": "用户反馈到达 → 触发飞轮校准",
+          "trigger": {
+            "field": "event.type",
+            "op": "==",
+            "value": "feedback"
+          },
+          "action": {
+            "command": "flywheel_record",
+            "inject": {
+              "zone_id": "event.zone_id",
+              "crop": "event.crop"
+            }
+          },
+          "priority": "normal",
+          "cooldown_hours": 0,
+          "rationale": "反馈是飞轮的输入端；不触发校准则闭环永远空转"
+        }
+      ]
+    },
+    "rules": {
+      "count": 5,
+      "items": [
+        {
+          "id": "no_unconfirmed_diagnosis",
+          "name": "无双重证据不下确定性诊断",
+          "applies_to": [
+            "pest_diagnose"
+          ],
+          "check": "confirmation_status == 'unconfirmed' → diagnosis 必须带（未确认）前缀",
+          "severity": "blocker",
+          "source": "agent/pest_agent._evidence_gate（借鉴 Shannon 零误报）"
+        },
+        {
+          "id": "no_placeholder_output",
+          "name": "禁止占位符输出",
+          "applies_to": [
+            "*"
+          ],
+          "check": "输出 JSON 中不得出现 PLACEHOLDER 字面量",
+          "severity": "blocker",
+          "source": "agent/orchestrator Verifier 既有约束"
+        },
+        {
+          "id": "data_provenance_required",
+          "name": "每条建议必须标注数据来源",
+          "applies_to": [
+            "*"
+          ],
+          "check": "evidence 字段非空且含 source 或 crop_known_risks 等证据指针",
+          "severity": "major",
+          "source": "docs/agent_output_contract.md"
+        },
+        {
+          "id": "safe_rollback_on_regression",
+          "name": "评测分数下降必须回滚",
+          "applies_to": [
+            "*"
+          ],
+          "check": "engine.evolution.ratchet 判定 Δ<=0 时自动 restore 快照",
+          "severity": "blocker",
+          "source": "engine/evolution.py（借鉴 PenguinHarness 棘轮）"
+        },
+        {
+          "id": "local_first_no_silent_telemetry",
+          "name": "本地优先，无静默遥测",
+          "applies_to": [
+            "*"
+          ],
+          "check": "任何外发请求必须可被环境变量关闭；视觉后端未配置时安全降级",
+          "severity": "major",
+          "source": "AgriTrust 信任层原则"
+        }
+      ]
+    },
+    "mcp_tools": {
+      "count": null,
+      "source": "mcp/server.py"
+    }
+  },
+  "six_layer_note": "Agents / Skills / Commands / Hooks / Rules / MCP 六层齐备；Commands/Hooks/Rules 由本模块定义并导出。"
+}

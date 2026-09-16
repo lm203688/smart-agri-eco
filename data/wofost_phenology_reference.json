@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "title": "WOFOST 物候温度总和参考（growth_agent 微观推演用）",
+    "description": "仅移植 WOFOST 作物参数中的『物候温度总和』子集（TSUM1/TSUM2/TSUMEM/TBASE/春化），供 growth_agent 做『积温→物候期』推演。不移植完整 WOFOST 生理参数，故不依赖 WOFOST/PCSE 引擎，保持项目零依赖。",
+    "source_repo": "ajwdewit/WOFOST_crop_parameters",
+    "source_branch": "wofost81",
+    "license": "EUPL 1.2（参数表需署名：Wageningen WOFOST crop parameters）",
+    "ported_at": "2026-09-07",
+    "covered_crops": "potato, wheat, soybean, sunflower, rice, sweetpotato, mungbean（均为本平台 recipes 中出现的作物）",
+    "units": "TSUM* 单位 C.d（摄氏度·天）；TBASE 单位 C；VERN* 单位 d（天）或 DVS（发育阶段）",
+    "estimation_formula": "某阶段所需天数 ≈ TSUM / max(0, mean_temp_daily - TBASE)；TBASE 取自 DTSMTB 中积温增量首次 >0 的日均温阈值"
+  },
+  "crops": {
+    "potato": {
+      "species_cn": "马铃薯", "species_latin": "Solanum tuberosum", "photo_type": "C3",
+      "representative_variety": "Potato_701",
+      "tsum_em": 170, "tsum1": 150, "tsum2": 1550,
+      "tbase_c": 2.0, "teffmx_c": 18.0,
+      "vernalization": { "vernbase_d": 14.0, "vernsat_d": 70.0, "verndvs": 0.30, "idls": 0 },
+      "note": "品种间 TSUM2 差异大（1550–2100）；取 Potato_701 为代表。"
+    },
+    "wheat": {
+      "species_cn": "小麦", "species_latin": "Triticum aestivum", "photo_type": "C3",
+      "representative_variety": "Winter_wheat_101",
+      "tsum_em": 120, "tsum1": 543, "tsum2": 1194,
+      "tbase_c": 0.0, "teffmx_c": 30.0,
+      "vernalization": { "vernbase_d": 10.0, "vernsat_d": 49.0, "verndvs": 0.30, "idls": 1 },
+      "note": "冬小麦需春化（IDSL=1）；春麦品种 TSUM1 可达 1031。取 Winter_wheat_101 为代表。"
+    },
+    "soybean": {
+      "species_cn": "大豆", "species_latin": "Glycine max", "photo_type": "C3",
+      "representative_variety": "Soybean_901",
+      "tsum_em": 70, "tsum1": 350, "tsum2": 850,
+      "tbase_c": 7.0, "teffmx_c": 22.0,
+      "vernalization": { "vernbase_d": 14.0, "vernsat_d": 70.0, "verndvs": 0.30, "idls": 0 },
+      "note": "南欧品种 TSUM1 可达 500、TSUM2 达 1300；取 Soybean_901（北法）为代表。"
+    },
+    "sunflower": {
+      "species_cn": "向日葵", "species_latin": "Helianthus annuus", "photo_type": "C3",
+      "representative_variety": "Sunflower_1101",
+      "tsum_em": 130, "tsum1": 1050, "tsum2": 1000,
+      "tbase_c": 3.0, "teffmx_c": 32.0,
+      "vernalization": { "vernbase_d": 14.0, "vernsat_d": 70.0, "verndvs": 0.30, "idls": 0 },
+      "note": "仅一个品种 Sunflower_1101。"
+    },
+    "rice": {
+      "species_cn": "水稻", "species_latin": "Oryza sativa", "photo_type": "C3",
+      "representative_variety": "Rice_501",
+      "tsum_em": 100, "tsum1": 875, "tsum2": 625,
+      "tbase_c": 10.0, "teffmx_c": 22.0,
+      "vernalization": { "vernbase_d": 14.0, "vernsat_d": 70.0, "verndvs": 0.30, "idls": 0 },
+      "note": "热带 IRRI 品种 TSUM1 800–1633、TSUM2 465–770 且多无 TSUMEM（仿真从出苗起）；取欧洲 Rice_501 为代表。"
+    },
+    "sweetpotato": {
+      "species_cn": "红薯", "species_latin": "Ipomoea batatas", "photo_type": "C3",
+      "representative_variety": "Sweetpotato_VanHeemst_1988",
+      "tsum_em": 200, "tsum1": 416, "tsum2": 1436,
+      "tbase_c": 10.0, "teffmx_c": 30.0,
+      "vernalization": { "vernbase_d": 14.0, "vernsat_d": 70.0, "verndvs": 0.30, "idls": 0 },
+      "note": "仅一个品种。"
+    },
+    "mungbean": {
+      "species_cn": "绿豆", "species_latin": "Vigna radiata", "photo_type": "C3",
+      "representative_variety": "Mungbean_VanHeemst_1988",
+      "tsum_em": 60, "tsum1": 640, "tsum2": 753,
+      "tbase_c": 10.0, "teffmx_c": 28.0,
+      "vernalization": { "vernbase_d": 14.0, "vernsat_d": 70.0, "verndvs": 0.30, "idls": 0 },
+      "note": "仅一个品种。"
+    }
+  }
+}

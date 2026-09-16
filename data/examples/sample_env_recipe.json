@@ -1,0 +1,47 @@
+{
+  "protocol": "env-recipe",
+  "recipe_version": "1.0.0",
+  "crop": {
+    "species": "番茄",
+    "latin": "Solanum lycopersicum",
+    "family": "茄科"
+  },
+  "stage": "fruiting",
+  "device_profile": {
+    "device_class": "indoor_cabinet",
+    "volume_l": 12,
+    "light_type": "full_spectrum_led",
+    "sensor_capability": ["temp", "humidity", "ec", "ph", "camera"]
+  },
+  "environment": {
+    "temperature": { "day_c": 26, "night_c": 18 },
+    "humidity": { "min_pct": 55, "max_pct": 75 },
+    "light": {
+      "ppfd_umol": 450,
+      "photoperiod_h": 14,
+      "spectrum": { "blue_pct": 20, "red_pct": 65, "white_pct": 10, "far_red_pct": 5 }
+    },
+    "co2_ppm": 900,
+    "water_nutrient": {
+      "ec_ms": 2.4,
+      "ph": 6.2,
+      "npk_ratio": { "n": 1.0, "p": 0.5, "k": 1.6 },
+      "water_ml_day": 600
+    },
+    "airflow": { "level": "medium", "mps": 0.4 },
+    "substrate": "椰糠"
+  },
+  "exception_handling": [
+    { "condition": "连续 3 日湿度 > 85%", "action": "加强通风并暂停叶面加湿，防灰霉", "severity": "warn" },
+    { "condition": "顶梢徒长（节间 > 8cm）", "action": "PPFD 上调 15% 或 photoperiod 缩短 1h", "severity": "info" },
+    { "condition": "果实脐腐（缺钙）", "action": "EC 维持、pH 校准至 6.0-6.5、补 Ca 肥", "severity": "critical" }
+  ],
+  "execution_log": [],
+  "outcome": {},
+  "image_consent": { "captured": false, "license": "", "attribution": "" },
+  "sources": [
+    { "title": "FAO CropInfo - Tomato", "url": "https://www.fao.org/", "accessed_at": "2026-08-27" },
+    { "title": "中国作物栽培数据库 - 番茄", "url": "https://www.cropdb.cn/", "accessed_at": "2026-08-27" }
+  ],
+  "license": "CC-BY-4.0"
+}

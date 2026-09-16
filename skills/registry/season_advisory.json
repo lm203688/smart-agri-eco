@@ -1,0 +1,36 @@
+{
+  "id": "season_advisory",
+  "name": "物候推演与霜冻锚定播期窗口",
+  "version": "1.0",
+  "description": "按调用方提供的 12 个月均温推导无霜期，并结合 WOFOST 积温参数给出各作物的最早/最晚安全播种日；也可单查某作物在给定日均温下的出苗/开花/成熟天数。已由 agent/season_agent.py (SeasonAgent) 真实实现。",
+  "domain": "growth",
+  "inputs": ["mode", "monthly_mean_c", "crops", "crop", "mean_temp_c", "zone", "date", "frost_threshold_c", "safety_margin_days"],
+  "outputs": ["frost_free", "windows", "emergence_days", "anthesis_days_from_sow", "maturity_days_from_sow", "in_window"],
+  "agent": "SeasonAgent",
+  "implemented": true,
+  "modes": {
+    "planting_window": {
+      "inputs": ["monthly_mean_c (list[float], 12, 1月起)", "crops (list[str], optional)", "frost_threshold_c (float, default 0)", "safety_margin_days (int, default 7)"],
+      "outputs": ["frost_free: {start, end, length_days, mean_temp_c, year_round}", "windows[]: {crop, feasible, maturity_days, earliest_sow, latest_sow, sow_window_days, requires_vernalization, note}"]
+    },
+    "stage_days": {
+      "inputs": ["crop (str)", "mean_temp_c (float)"],
+      "outputs": ["emergence_days", "anthesis_days_from_sow", "maturity_days_from_sow", "tbase_c", "requires_vernalization"]
+    },
+    "calendar": {
+      "inputs": ["zone (int, USDA)", "date (YYYY-MM-DD)", "category (str, optional)"],
+      "outputs": ["in_window[]: {common_name, action, window}"]
+    }
+  },
+  "data_sources": ["data/wofost_phenology_reference.json（移植自 ajwdewit/WOFOST_crop_parameters @ wofost81，EUPL 1.2，需署名）", "气候输入由调用方提供（WorldClim 2.1 / Open-Meteo / 本地气象站）"],
+  "confidence_method": "仅模型可用+作物被覆盖时给 0.6（medium）：理论积温推演、未本地校准、不含春化与光周期机制；不可用 0.0",
+  "limitations": [
+    "仅覆盖已移植的 7 种作物（potato/wheat/soybean/sunflower/rice/sweetpotato/mungbean）",
+    "月份按每月 30 天简化（年 360 天）",
+    "不含春化（vernalization）与光周期机制——需春化品种（如冬小麦）的窗口仅对春播型成立，输出已显式标注",
+    "数据来自温带/亚热带主产区参数，热带高原与保护地场景需另行校准"
+  ],
+  "safety_boundary": "播期为理论推演，实际播种须结合当地天气预报、土壤温度与品种说明",
+  "reuse_value": "补上 growth_agent 此前完全缺失的『何时种 / 长多快』微观层，是 Env Recipe 从静态参数走向动态时序的关键一步",
+  "dependencies": ["growth_plan"]
+}

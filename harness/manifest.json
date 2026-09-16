@@ -1,0 +1,344 @@
+{
+  "schema": "agri-harness-manifest/v1",
+  "version": "2.2.0",
+  "generated_at": "2026-09-16T17:33:40",
+  "project": "智慧农业生态 (smart-agri-eco)",
+  "protocols": {
+    "env_recipe": "v1",
+    "mcp_protocol": "2024-11-05"
+  },
+  "mcp": {
+    "tool_count": 9,
+    "tools": [
+      "agri_diagnose_pest",
+      "agri_env_recipe",
+      "agri_growth_plan",
+      "agri_list_cities",
+      "agri_match_zone",
+      "agri_nutrition_plan",
+      "agri_recommend_crops",
+      "agri_season_advisory",
+      "agri_soil_profile"
+    ]
+  },
+  "agents": {
+    "pipeline": [
+      "ClimateAgent",
+      "CropAgent",
+      "GrowthAgent",
+      "EcoAgent"
+    ],
+    "ondemand_skills": [
+      "nutrition_plan",
+      "pest_diagnose",
+      "season_advisory"
+    ]
+  },
+  "skills": {
+    "ids": [
+      "climate_match",
+      "crop_adapt",
+      "device_recommend",
+      "growth_plan",
+      "iceplant_advisory",
+      "nutrition_plan",
+      "pest_diagnose",
+      "season_advisory",
+      "supply_match"
+    ],
+    "count": 9,
+    "auto_generated": [
+      "iceplant_advisory"
+    ],
+    "implemented": 3
+  },
+  "harness_tree": {
+    "commands": {
+      "count": 4,
+      "ids": [
+        "full_advisory",
+        "pest_check",
+        "season_check",
+        "nutrition_check"
+      ]
+    },
+    "hooks": {
+      "count": 3,
+      "ids": [
+        "humidity_over_limit",
+        "temp_extreme",
+        "feedback_arrived"
+      ]
+    },
+    "rules": {
+      "count": 5,
+      "ids": [
+        "no_unconfirmed_diagnosis",
+        "no_placeholder_output",
+        "data_provenance_required",
+        "safe_rollback_on_regression",
+        "local_first_no_silent_telemetry"
+      ],
+      "blocker": 3
+    },
+    "lint_ok": true,
+    "exported_to": "skills/harness/",
+    "six_layers": [
+      "agents",
+      "skills",
+      "commands",
+      "hooks",
+      "rules",
+      "mcp_tools"
+    ],
+    "source": "engine/harness_tree.py"
+  },
+  "data_baselines": [
+    {
+      "path": "data/crop_adapt_db.json",
+      "sha256_16": "47950676dc1d7224",
+      "zones": 6,
+      "crops": 110,
+      "calibrated": 0
+    },
+    {
+      "path": "data/zone_meta/global_zones.json",
+      "sha256_16": "872326c4a393fa90"
+    },
+    {
+      "path": "data/wofost_phenology_reference.json",
+      "sha256_16": "4a3c9baa09d4fa38"
+    },
+    {
+      "path": "data/feedback_log.json",
+      "sha256_16": "a5338d955b09046e",
+      "entries": 0
+    }
+  ],
+  "eval_baseline": {
+    "implemented": [
+      "eval_crop_db_coverage",
+      "eval_zone_consistency"
+    ],
+    "pending": [
+      "eval_extraction_accuracy",
+      "eval_pest_diagnosis_topk",
+      "eval_recipe_expert_adoption",
+      "eval_source_traceability"
+    ],
+    "pending_reasons": {
+      "eval_extraction_accuracy": "需补库 Agent 抽取器 + 100 条人工标注样本（评审 §2.3）",
+      "eval_pest_diagnosis_topk": "需 PlantVillage 留出集 + 自建 200 张中文场景图 + 视觉后端（评审 §2.3）",
+      "eval_recipe_expert_adoption": "需 3-5 位农艺专家盲评 50 份配方 vs 现行栽培规程（评审 §2.3）",
+      "eval_source_traceability": "需溯源层埋点：每条建议的引用 url 可访问性校验（评审 §2.3）"
+    },
+    "updated_at": "2026-09-16T17:33:40"
+  },
+  "knowledge_graph": {
+    "schema": "agri-knowledge-graph/v1",
+    "nodes": 198,
+    "edges": 320,
+    "edges_by_rel": {
+      "grows_in": 110,
+      "sensitive_to": 187,
+      "koppen_of": 6,
+      "constrains": 17
+    },
+    "reverse_queries_supported": true
+  },
+  "org_memory": {
+    "trajectories": 0,
+    "playbook_entries": 0,
+    "playbook_updated_at": null,
+    "outcome_breakdown": {},
+    "category_breakdown": {},
+    "skills_seen": [],
+    "note": "轨迹为 append-only；Playbook 由 distill_playbook() 重蒸馏。"
+  },
+  "long_term_memory": {
+    "schema": "agri-long-term-memory/v1",
+    "memories": 0,
+    "hyperedges": 0,
+    "by_kind": {},
+    "by_skill": {},
+    "by_crop": {},
+    "sessions": 0,
+    "local_only": true
+  },
+  "local_search": {
+    "built": true,
+    "rows": {
+      "crops": 110,
+      "pests": 23,
+      "recipes": 110,
+      "zones": 6
+    },
+    "total": 249,
+    "fts": true,
+    "schema_ver": 2
+  },
+  "recipe_scheduler": {
+    "recipes_scanned": 110,
+    "anchors_total": 957,
+    "anchors_by_kind": {
+      "threshold": 770,
+      "keyword": 187
+    },
+    "operators_supported": [
+      ">=",
+      ">",
+      "<=",
+      "<",
+      "==",
+      "!="
+    ],
+    "field_aliases": {
+      "temp_c": [
+        "temp_c",
+        "temp",
+        "temperature",
+        "day_temp"
+      ],
+      "humidity_pct": [
+        "humidity_pct",
+        "humidity",
+        "rh"
+      ],
+      "ph": [
+        "ph"
+      ],
+      "water_ml": [
+        "water_ml",
+        "water_ml_given",
+        "water_ml_day_actual",
+        "irrigation_ml"
+      ],
+      "ppfd": [
+        "ppfd",
+        "light",
+        "lux"
+      ],
+      "ec": [
+        "ec",
+        "conductivity"
+      ]
+    }
+  },
+  "rsi": {
+    "gate_version": "1.0",
+    "history": [
+      {
+        "ts": "2026-09-15T15:40:56",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-15T15:46:55",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-15T15:48:12",
+        "level": "B0",
+        "hci": 0.167
+      },
+      {
+        "ts": "2026-09-15T15:48:14",
+        "level": "B0",
+        "hci": 0.167
+      },
+      {
+        "ts": "2026-09-15T15:48:49",
+        "level": "B0",
+        "hci": 0.167
+      },
+      {
+        "ts": "2026-09-15T15:48:51",
+        "level": "B0",
+        "hci": 0.167
+      },
+      {
+        "ts": "2026-09-15T16:08:08",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-15T16:08:08",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-15T16:11:44",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-15T16:11:44",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-15T16:18:06",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-16T07:03:55",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-16T07:13:19",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-16T08:19:41",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-16T08:20:25",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-16T17:33:40",
+        "level": "B0",
+        "hci": 0.0
+      }
+    ],
+    "autonomy_level": "B0",
+    "hci": 0.0,
+    "open_gates": [
+      "execution_log",
+      "feedback_inflow",
+      "calibration",
+      "generalization",
+      "skill_generation",
+      "meta_improvement"
+    ]
+  },
+  "env_vars": [
+    "AGRI_CROP_DB",
+    "AGRI_DEMO_HOST",
+    "AGRI_DEMO_PORT",
+    "AGRI_EVOLUTION_BENCHMARK",
+    "AGRI_EVOLUTION_SNAPSHOTS",
+    "AGRI_FEEDBACK_LOG",
+    "AGRI_GH_BRANCH",
+    "AGRI_GH_REPO",
+    "AGRI_KG_PATH",
+    "AGRI_MEMORY_SYNTHETIC",
+    "AGRI_ORG_MEMORY",
+    "AGRI_SOILGRIDS_HOST",
+    "AGRI_SOILGRIDS_TIMEOUT",
+    "AGRI_SOIL_INSECURE",
+    "AGRI_VERIFY_NO_ISOLATE",
+    "AGRI_VISION_KEY",
+    "AGRI_VISION_MODEL",
+    "AGRI_VISION_URL",
+    "AGRI_ZONE_META"
+  ],
+  "push_policy": "本脚本绝不执行 git commit/push；提交走 scripts/gh_push.py"
+}

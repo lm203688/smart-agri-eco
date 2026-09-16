@@ -14,12 +14,46 @@
 
 from __future__ import annotations
 
+import atexit
 import json
 import os
+import shutil
 import sys
+import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
+
+# ---------------------------------------------------------------------------
+# 写盘隔离
+# ---------------------------------------------------------------------------
+# run_pipeline 自 B1/B2 起会写长期记忆与检索索引。本脚本是「验证」而不是「生产」，
+# 6 次 pipeline 的输出不应沉入真实记忆库——否则每跑一次验证就往仓库数据里写 6 条
+# 合成记录，harness 观测区随之漂移（已踩过）。
+# 需要真实验证记忆写入路径时，设 AGRI_VERIFY_NO_ISOLATE=1 关闭隔离。
+_TMPD = None
+_SAVED_ENV = {k: os.environ.get(k) for k in
+              ("AGRI_LONG_TERM_MEMORY", "AGRI_SEARCH_INDEX")}
+
+
+def _restore_env():
+    """退出时还原环境变量并清掉临时目录。"""
+    for k, v in _SAVED_ENV.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+    os.environ.pop("AGRI_MEMORY_SYNTHETIC", None)
+    if _TMPD:
+        shutil.rmtree(_TMPD, ignore_errors=True)
+
+
+if not os.environ.get("AGRI_VERIFY_NO_ISOLATE"):
+    _TMPD = tempfile.mkdtemp(prefix="agri_verify_")
+    os.environ["AGRI_LONG_TERM_MEMORY"] = os.path.join(_TMPD, "mem.json")
+    os.environ["AGRI_SEARCH_INDEX"] = os.path.join(_TMPD, "idx.db")
+    os.environ["AGRI_MEMORY_SYNTHETIC"] = "1"
+    atexit.register(_restore_env)
 
 from agent import AgriOrchestrator  # noqa: E402
 from core.trust_layer import issue_certificate  # noqa: E402
@@ -95,6 +129,41 @@ def main():
     _check(cert["data_coverage"]["total_crops"] > 0,
            f"作物覆盖 {cert['data_coverage']['total_crops']} 种")
     _check(bool(cert["signature"]), f"数字签名已生成（{cert['signature'][:12]}...）")
+
+    print("\n[5] 引擎 v2（RSI / HCI / 技能审计 / harness 漂移）")
+    from engine.eval import eval_hci
+    import engine.skill_factory as sf
+
+    hci = eval_hci()
+    _check(hci["status"] == "IMPLEMENTED", "HCI 北极星已接入 eval")
+    _check(hci["autonomy_level"] in ("B0", "L1", "L2", "L3", "L4", "L5"),
+           f"自主权级别 {hci['autonomy_level']}（HCI={hci['hci']}，"
+           f"{hci['closed']}/{hci['total']} 门禁闭合）")
+    _check(all(isinstance(hci['gate_gaps'][g], str) for g in hci["open_gates"]),
+           f"未闭合门禁均给出缺口说明（{len(hci['open_gates'])} 条）")
+
+    audit = sf.audit()
+    _check(audit["rot_count"] == 0, f"技能零腐化（{audit['total']} 个技能，"
+                                     f"CLS 分布 {audit['cls_distribution']}）")
+
+    harness_path = os.path.join(ROOT, "harness", "manifest.json")
+    _check(os.path.exists(harness_path), "harness 清单已生成")
+    if os.path.exists(harness_path):
+        sys.path.insert(0, os.path.join(ROOT, "scripts"))
+        import harness_sync
+        _check(harness_sync.cmd_check() == 0, "harness 声明区无漂移")
+
+    import engine.context_compact as cc
+    fused = cc.fuse_actions([
+        {"act_type": "water", "target": "A", "amount_ml": 200},
+        {"act_type": "water", "target": "B", "amount_ml": 150},
+    ])
+    _check(fused["fusion"]["merged"] == 1 and fused["actions"][0]["amount_ml"] == 350,
+           "动作融合正确（相邻同类合并、数值求和）")
+    compact = cc.reduce_output({"items": [{"i": i} for i in range(10)]}, max_items=3)
+    _check(compact["payload"]["items"][-1].get("__folded")
+           and len(compact["payload"]["items"][-1]["evidence_refs"]) == 7,
+           "上下文压缩保留证据指纹")
 
     print("\n" + "=" * 60)
     if FAILURES:

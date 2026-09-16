@@ -25,6 +25,16 @@
     "safety_boundary": {"type": "string", "description": "安全边界"},
     "reuse_value": {"type": "string", "description": "复用价值"},
     "dependencies": {"type": "array", "items": {"type": "string"}, "default": []},
-    "agent": {"type": "string", "description": "所属 Agent（Climate/Crop/Growth/Eco）"}
+    "agent": {"type": "string", "description": "所属 Agent（Climate/Crop/Growth/Eco/Pest/Nutrition/Season）"},
+    "cls": {
+      "type": "string",
+      "enum": ["S", "A", "B", "C", "D"],
+      "description": "安全分级（engine.skill_factory.classify_skill_risk 机读判定）：S 纯本地只读+安全边界 / A 本地只读可逆 / B 写本地文件 / C 外部网络 / D 联网且写文件或接触凭据"
+    },
+    "modes": {"type": "object", "description": "多模式技能：每个 mode 声明各自的 inputs/outputs（如 season_advisory）"},
+    "implemented": {"type": "boolean", "description": "是否已由对应 Agent 真实实现"},
+    "limitations": {"type": "array", "items": {"type": "string"}, "description": "已知局限，诚实标注"},
+    "auto_generated": {"type": "boolean", "description": "由 skill_factory 自动生成，便于审计与溯源"},
+    "created_at": {"type": "string", "description": "创建时间（ISO8601）"}
   }
 }

@@ -1,0 +1,12 @@
+[
+  {"lat": 1.3521,  "lon": 103.8198, "expected_zone": "tropical_rainforest", "note": "新加坡：赤道热带雨林"},
+  {"lat": 30.2741, "lon": 120.1551, "expected_zone": "subtropical_wet",    "note": "杭州：东亚季风亚热带湿润"},
+  {"lat": 23.1291, "lon": 113.2644, "expected_zone": "subtropical_wet",    "note": "广州：华南亚热带湿润"},
+  {"lat": 30.5728, "lon": 104.0668, "expected_zone": "subtropical_wet",    "note": "成都：四川盆地亚热带湿润"},
+  {"lat": 39.9042, "lon": 116.4074, "expected_zone": "temperate_continental", "note": "北京：温带大陆性"},
+  {"lat": 43.8256, "lon": 87.6168,  "expected_zone": "arid",               "note": "乌鲁木齐：中亚内陆干旱"},
+  {"lat": 34.0522, "lon": -118.2437,"expected_zone": "mediterranean",      "note": "洛杉矶：加州地中海"},
+  {"lat": 55.7558, "lon": 37.6173,  "expected_zone": "subarctic",          "note": "莫斯科：亚寒带"},
+  {"lat": 29.6520, "lon": 91.1721,  "expected_zone": "subtropical_wet",    "note": "拉萨：当前启发式归亚热带湿润（高原寒带未单独建模，已知近似）"},
+  {"lat": 25.2048, "lon": 55.2708,  "expected_zone": "arid",               "note": "迪拜：中东干旱带——当前启发式误判为亚热带湿润，已知局限，评测应暴露"}
+]
