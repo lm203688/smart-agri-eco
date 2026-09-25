@@ -36,25 +36,20 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from agent import AgriOrchestrator  # noqa: E402
+from agent.preset_cities import load_preset_cities  # noqa: E402
 
 PROTOCOL_VERSION = "2024-11-05"
 SERVER_NAME = "agri-eco"
 SERVER_VERSION = "1.0.0"
 
-_PRESET_CITIES = [
-    {"name": "杭州", "lat": 30.2741, "lon": 120.1551, "zone": "亚热带湿润带"},
-    {"name": "北京", "lat": 39.9042, "lon": 116.4074, "zone": "温带大陆性"},
-    {"name": "深圳", "lat": 22.5431, "lon": 114.0579, "zone": "亚热带湿润带"},
-    {"name": "广州", "lat": 23.1291, "lon": 113.2644, "zone": "亚热带湿润带"},
-    {"name": "成都", "lat": 30.5728, "lon": 104.0668, "zone": "亚热带湿润带"},
-    {"name": "武汉", "lat": 30.5928, "lon": 114.3055, "zone": "亚热带湿润带"},
-    {"name": "乌鲁木齐", "lat": 43.8256, "lon": 87.6168, "zone": "干旱带"},
-    {"name": "拉萨", "lat": 29.6520, "lon": 91.1721, "zone": "高原寒带（近似干旱）"},
-    {"name": "洛杉矶", "lat": 34.0522, "lon": -118.2437, "zone": "地中海带"},
-    {"name": "新加坡", "lat": 1.3521, "lon": 103.8198, "zone": "热带雨林"},
-    {"name": "迪拜", "lat": 25.2048, "lon": 55.2708, "zone": "干旱带"},
-    {"name": "莫斯科", "lat": 55.7558, "lon": 37.6173, "zone": "亚寒带"},
-]
+# 安全护栏：单次请求最大字节数，防止超长载荷导致内存耗尽（MCP 分发通道）
+MAX_LINE_BYTES = 1 << 20  # 1 MiB
+
+# 预设城市：唯一数据源 data/preset_cities.json（2026-09-23 收敛）。
+# 此前本文件与 app/demo_server.py 各持一份完全相同的硬编码副本 → 必然漂移
+# （改一处忘另一处，两侧给出不同城市集且不报错）。现两侧统一经
+# agent/preset_cities.py 读取，测试锁定一致性。
+_PRESET_CITIES = load_preset_cities()
 
 _STAGES = ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest", "full_cycle"]
 _DEVICE_CLASSES = ["balcony", "windowsill", "indoor_cabinet", "aerogarden_orphan",
@@ -280,6 +275,64 @@ def _tool_soil_profile(args: dict) -> dict:
     )
 
 
+def _tool_bp_screen(args: dict) -> dict:
+    """农业项目投资初筛（AgriScreen 移植版）：BP/审计/流水文本或已抽取字段 → 六分类 + 五闸 +
+    六评分卡 + 一票否决 → 三档结论（≥75 通过 / 60-75 需深挖 / <60 淘汰）+ 归因 + 反事实边界。
+
+    只输出初筛参考，不构成投资决策建议。输入是 BP 文本，不依赖本项目的种植数据，
+    也不生成 ROI 数字（agri_project_roi 仍不做，理由见 docs/agriscreen_integration_assessment.md）。
+    """
+    import bp_screen
+
+    text = (args.get("text") or "").strip()
+    fields = args.get("fields") or None
+    category = args.get("category")
+
+    if fields:
+        r = bp_screen.screen_fields(dict(fields), category=category,
+                                    company=args.get("company", ""),
+                                    all_text=text)
+    elif text:
+        r = bp_screen.screen_text(text, company=args.get("company", ""),
+                                  mode=args.get("mode", "text"),
+                                  filename=args.get("filename"),
+                                  category=category)
+    else:
+        return {"error": "需要 text（BP/审计文本）或 fields（已抽取字段 dict）之一"}
+
+    ev = r.get("evaluation") or {}
+    card = ev.get("card") or {}
+    return {
+        "verdict": r.get("verdict"),
+        "verdict_name": ev.get("verdict_name"),
+        "verdict_reason": ev.get("verdict_reason"),
+        "score": r.get("score"),
+        "score_range": r.get("score_range"),
+        "missing_dimensions": card.get("missing_dimensions"),
+        "category": r.get("category"),
+        "category_name": r.get("category_name"),
+        "classify": r.get("cls"),
+        "status": r.get("status"),
+        "gates_fired": ev.get("gates_fired"),
+        "vetoes_fired": ev.get("vetoes_fired"),
+        "decision_path": (ev.get("decision_path") or [])[:6],
+        "counterfactual": ev.get("counterfactual"),
+        "gaps": r.get("gaps"),
+        "verify_results": r.get("verify_results"),
+        "sanity_summary": (r.get("channel_flags") or {}).get("sanity_summary"),
+        "sanity_observations": (r.get("channel_flags") or {}).get("sanity_observations"),
+        "llm_mode": r.get("llm_mode"),
+        "rules_version": r.get("rules_version"),
+        "boundary": [
+            "输出为初筛参考，不构成投资决策建议",
+            "verify_results 中 local_hit 仅为本地示例库字符串匹配，不是官方核验；"
+            "正式结论须按 official_source 指向的官方系统复核",
+            "score_range 表达数据不完整带来的不确定性；禁止用估算值冒充实际值",
+            "分类置信度低于 70 时 status=need_classify，不自动评分，请人工指定 category 后重跑",
+        ],
+    }
+
+
 TOOLS = [
     {
         "name": "agri_list_cities",
@@ -418,6 +471,37 @@ TOOLS = [
             },
         },
     },
+    {
+        "name": "agri_bp_screen",
+        "description": (
+            "（投资初筛）农业项目投资初筛系统：传入 BP/审计/流水文本（text）或已抽取字段（fields），"
+            "跑九层管线 → 六分类（种业/农机/数字农业/生物投入品/供应链/养殖）+ 五闸爆雷 + "
+            "六评分卡 + 一票否决 → 三档结论（≥75 通过 / 60-75 需深挖 / <60 淘汰），"
+            "并返回归因决策路径、反事实边界（补齐哪几项可翻档）、三级数据缺口清单、"
+            "证照核验结果与合理性校验摘要。输入是 BP 文本，不依赖本项目种植数据，也不生成 ROI 数字。"
+            "输出为初筛参考，不构成投资决策建议；核验层 local_hit 仅为本地示例库字符串匹配，"
+            "不是官方核验。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "text": {"type": "string",
+                         "description": "BP / 审计报告 / 银行流水 / 证书文本。与 fields 二选一"},
+                "fields": {"type": "object",
+                           "description": "已抽取的结构化字段 dict（跳过归档/解析/提取/归一化层）。"
+                                          "常见键：revenue, gross_margin, net_margin, ue_margin, "
+                                          "runway_months, top5_client_pct, subsidy_pct, "
+                                          "approved_varieties, safety_certs, reg_certs, eia_passed 等。"
+                                          "与 text 二选一"},
+                "category": {"type": "string",
+                             "enum": ["seeds", "agmach", "digag", "bioinputs", "supply", "livestock"],
+                             "description": "可选：强制指定分类，跳过自动分类（用于人工确认后再评）"},
+                "company": {"type": "string", "description": "公司名称（可选，报告与溯源用）"},
+                "mode": {"type": "string", "enum": ["text", "md", "docx"],
+                         "description": "text 模式下的解析类型，默认 text"},
+                "filename": {"type": "string", "description": "可选：虚拟文件名，用于报告溯源"},
+            },
+        },
+    },
 ]
 
 _DISPATCH = {
@@ -430,6 +514,7 @@ _DISPATCH = {
     "agri_env_recipe": _tool_env_recipe,
     "agri_season_advisory": _tool_season_advisory,
     "agri_soil_profile": _tool_soil_profile,
+    "agri_bp_screen": _tool_bp_screen,
 }
 
 
@@ -495,6 +580,11 @@ def main():
         line = sys.stdin.readline()
         if not line:
             break  # EOF：客户端关闭 stdin
+        # 安全护栏：拒绝超长行，防止内存耗尽型 DoS（MCP 分发通道）
+        if len(line.encode("utf-8", "ignore")) > MAX_LINE_BYTES:
+            _send({"jsonrpc": "2.0", "id": None,
+                   "error": {"code": -32700, "message": "请求过长，已拒绝"}})
+            continue
         line = line.strip()
         if not line:
             continue

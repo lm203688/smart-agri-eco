@@ -153,6 +153,16 @@ def main():
         import harness_sync
         _check(harness_sync.cmd_check() == 0, "harness 声明区无漂移")
 
+    print("\n[6] 数据质量门禁（真实性红线 + 数值口径）")
+    sys.path.insert(0, os.path.join(ROOT, "scripts"))
+    try:
+        import data_quality_gate
+        dq_exit = data_quality_gate.run()
+    except Exception as e:  # noqa: BLE001
+        dq_exit = 1
+        print(f"  ⚠️ 数据质量门禁异常: {e}")
+    _check(dq_exit == 0, f"数据质量门禁全通过（exit={dq_exit}）")
+
     import engine.context_compact as cc
     fused = cc.fuse_actions([
         {"act_type": "water", "target": "A", "amount_ml": 200},
