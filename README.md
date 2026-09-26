@@ -34,6 +34,22 @@
 
 ---
 
+---
+
+> **已知覆盖边界（2026-09-23）**：分区库当前建模 **6 个气候带，未包含热漠与高原**。
+> 迪拜（波斯湾热漠）、拉萨（青藏高原）这类坐标会被 ClimateAgent 识别为「未建模气候类」
+> 并**显式拒答**（Verifier 判红、信任分塌至 0.2 档、作物推荐为空），
+> 不再静默归入「亚热带湿润」给出错误方案——**拒答优于错答**。
+> 补齐这两类气候的作物库与 Env Recipe 属产品决策，尚未启动；
+> 详见 `outputs/zone_coverage_decision_2026-09-23.md`。
+>
+> **两个诚实性约定（2026-09-23 起生效，均有测试锁死）**：
+> 1. `monthly_precip_mm` 虽是月度序列，但**每个元素是月内日均降水（mm/day），不是月累计量**。
+>    NASA POWER 与 Open-Meteo 两条路径口径一致，`agent/climate_data.py` 统一以 `PRECIP_UNITS` 声明并透传
+>    `monthly_precip_mm_units`。生态位校准的降水通道依赖「同口径区间命中」，**不得**对该字段乘天数换算。
+> 2. 预设城市清单的**唯一数据源**是 `data/preset_cities.json`，前端与 MCP Server 均经
+>    `agent/preset_cities.py` 读取；`modeled: false` 的城市（拉萨、迪拜）即上文所说的未建模气候类。
+
 ## 七层生态架构（来自项目战略指引）
 
 | 层级 | 名称 | 关键节点 | 本项目状态 |
@@ -115,7 +131,7 @@ for f in skills/registry/*.json; do python -c "import json; s=json.load(open('$f
 | 提升项 | 交付物 | 验证 |
 |---|---|---|
 | P0-G Env Recipe v1 协议 | `schemas/env_recipe.schema.json` + `docs/env_recipe_protocol_v1.md` + `data/examples/sample_env_recipe.json` | `python scripts/validate_env_recipe.py data/examples/sample_env_recipe.json` |
-| P0-E/F 零依赖 MCP server | `mcp/server.py`（9 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
+| P0-E/F 零依赖 MCP server | `mcp/server.py`（10 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
 | P0-H 评测基线 | `engine/eval.py` + `scripts/run_eval.py` + `data/eval/zone_checks.json` | `python scripts/run_eval.py` |
 
 **决策门**（评审 §3.5）：P0-F/G 若 3 个月内零外部调用 / 零社区响应 → 降级为个人知识库项目，停止对外投入。
@@ -254,7 +270,7 @@ python scripts/submit_feedback.py --zone subtropical_wet --crop 生菜 \
 
 执行内容（全部只读，禁改代码 / 禁 git / 禁推送）：
 
-1. **回归四项**：`test_agents.py`（42 项）、`test_mcp_server.py`（9 工具）、`verify_all.py`（5 城 PLACEHOLDER=0）、`diff_daily_loop.py --selftest`
+1. **回归七项（358 项单测 + MCP 自测）**：`test_engine_v4.py`（135 项）、`test_engine_v3.py`（43 项）、`test_engine_v2.py`（59 项）、`test_agents.py`（45 项）、`test_engine_v5.py`（76 项，BP 初筛引擎）、`test_mcp_server.py`（10 工具）、`verify_all.py`（5 城 PLACEHOLDER=0）、`diff_daily_loop.py --selftest`
 2. **数据源存活探测**：GAEZ / WorldClim / SoilGrids(`rest.isric.org`) / PlantVillage / EPPO / GitHub 等 7 个外部源 —— 防止引用死数据源（Ecocrop / OpenFarm / @pondlog 三次教训）
 3. **回流通路健康检查**：跑 `check_feedback_loop.py`，**区分「通路故障（≠0 报警）」与「数据量缺口（=0 条、不报警）」**（JSON 字段 `snapshot.feedback_path` = ok/broken）
 4. **状态快照 + 跨日 diff**：feedback 条数 / recipes 数 / wofost 作物数；与昨日报告对比，零漂移即静默，漂移即暴露

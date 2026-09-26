@@ -63,7 +63,7 @@ Hi <项目维护者>,
 我们在做「智慧农业生态」——一个把全球农业知识（气候分区/作物适配/病虫害/Env Recipe 配方）
 做成 Agent 可调用工具的项目。已发布零依赖 MCP server（协议 2024-11-05）：
 
-  - 9 个工具：分区匹配 / 作物推荐 / 种植计划 / 病虫害诊断 / 养分管理 / Env Recipe 配方 / 物候播期 / 土壤剖面
+  - 10 个工具：分区匹配 / 作物推荐 / 种植计划 / 病虫害诊断 / 养分管理 / Env Recipe 配方 / 物候播期 / 土壤剖面 / BP 投资初筛
   - 纯标准库，stdio 拉起，可直接接 Claude Desktop / Cursor / 自研 Agent
   - 仓库：https://github.com/lm203688/smart-agri-eco  （mcp/ 目录）
 

@@ -8,6 +8,9 @@ scripts/validate_env_recipe.py —— Env Recipe v1 零依赖校验器
 用法：
     python scripts/validate_env_recipe.py data/examples/sample_env_recipe.json
     python scripts/validate_env_recipe.py path/to/recipe.json   # 退出码 0=通过 1=失败
+    python scripts/validate_env_recipe.py data/env_recipes       # 目录：全量校验
+    python scripts/validate_env_recipe.py data/env_recipes --derived
+        额外报告 VPD / 露点派生量体检（engine/derived.py，纯算术零依赖）
 """
 from __future__ import annotations
 
@@ -15,9 +18,11 @@ import json
 import os
 import re
 import sys
+from typing import Dict, Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCHEMA_PATH = os.path.join(ROOT, "schemas", "env_recipe.schema.json")
+sys.path.insert(0, ROOT)
 
 
 def _type_ok(node: object, typ: str) -> bool:
@@ -86,7 +91,9 @@ def validate_recipe(recipe: dict, schema: dict) -> list:
 
 
 def main() -> int:
-    targets = sys.argv[1:] or [os.path.join(ROOT, "data", "examples", "sample_env_recipe.json")]
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    want_derived = "--derived" in sys.argv[1:]
+    targets = args or [os.path.join(ROOT, "data", "examples", "sample_env_recipe.json")]
     try:
         with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
             schema = json.load(f)
@@ -95,6 +102,7 @@ def main() -> int:
         return 1
 
     all_ok = True
+    loaded: list = []  # (path, recipe) 用于 --derived 体检
     # 目录参数展开为其下所有 .json（用于全量配方校验）
     expanded: list = []
     for t in targets:
@@ -119,6 +127,43 @@ def main() -> int:
                 print(f"   - {e}")
         else:
             print(f"[通过] {path}")
+            loaded.append((path, recipe))
+
+    if want_derived and loaded:
+        from engine import derived as dv
+        report = dv.audit_recipes([r for _, r in loaded])
+        print()
+        print("=== VPD / 露点派生量体检（engine/derived.py，纯算术） ===")
+        print(f"  可计算 {report['available']}/{report['total']}，"
+              f"硬告警 {report['with_flags']} 份，"
+              f"软提示 {report['with_observations']} 份")
+        if report["flag_kinds"]:
+            print("  硬告警种类（可执行层面的问题）：")
+            for k, n in report["flag_kinds"].items():
+                print(f"    {n:>4d} 份  {k}")
+        else:
+            print("  无硬告警")
+        if report["observation_kinds"]:
+            print("  软提示种类（数据粒度线索，不门禁）：")
+            for k, n in report["observation_kinds"].items():
+                print(f"    {n:>4d} 份  {k}")
+        # 逐份展示硬告警明细（只列有 flags 的，控制输出量）
+        shown = 0
+        for row, (path, _) in zip(report["rows"], loaded):
+            if not row["flags"] or shown >= 8:
+                continue
+            rel = os.path.relpath(path, ROOT)
+            v = row["vkd"] or {}
+            env_ = v.get("envelope") or {}
+            print(f"  [{rel}] 标称 VPD {v.get('nominal_kpa')} kPa"
+                  f"（{v.get('nominal_label')}）"
+                  f"，包络 {env_.get('min_kpa')}–{env_.get('max_kpa')} kPa")
+            for fl in row["flags"]:
+                print(f"      ! {fl}")
+            shown += 1
+        if report["with_flags"] > shown:
+            print(f"  … 另有 {report['with_flags'] - shown} 份带硬告警，略")
+
     return 0 if all_ok else 1
 
 

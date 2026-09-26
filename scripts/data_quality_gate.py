@@ -114,6 +114,98 @@ def _check_preset_cities(obj):
     return issues
 
 
+# --- 数据标准规范校验（DataFlow「数据标准规范制定」→ 壁垒③ 可执行配置）---
+# 定义核心数据文件的最小 schema 契约，使 MCP 分发后消费方可确定性解析。
+# 仅校验「结构合法性」，不臆造字段值；发现不合规即暴露真实数据缺口。
+
+def _check_global_zones_schema(obj):
+    issues = []
+    if not isinstance(obj, dict) or "zones" not in obj:
+        issues.append("global_zones 缺少顶层 zones")
+        return issues
+    zones = obj["zones"]
+    if not isinstance(zones, list):
+        issues.append("zones 非列表")
+        return issues
+    for i, z in enumerate(zones):
+        if not isinstance(z, dict):
+            issues.append(f"zones[{i}] 非对象")
+            continue
+        for req in ("zone_id", "zone_name", "temperature_range", "frost_risk"):
+            if req not in z:
+                issues.append(f"zones[{i}] 缺必需字段 {req}")
+        tr = z.get("temperature_range")
+        if tr is not None and not (
+            isinstance(tr, dict)
+            and isinstance(tr.get("min_c"), (int, float))
+            and isinstance(tr.get("max_c"), (int, float))
+        ):
+            issues.append(f"zones[{i}] temperature_range 结构非法（须含 min_c/max_c 数值）")
+        if "frost_risk" in z and not isinstance(z["frost_risk"], bool):
+            issues.append(f"zones[{i}] frost_risk 须为布尔")
+    return issues
+
+
+def _check_preset_cities_schema(obj):
+    issues = _check_preset_cities(obj)
+    cities = obj if isinstance(obj, list) else (obj.get("cities") if isinstance(obj, dict) else None)
+    if not isinstance(cities, list):
+        return issues
+    for i, c in enumerate(cities):
+        if not isinstance(c, dict):
+            issues.append(f"cities[{i}] 非对象")
+            continue
+        for req in ("name", "lat", "lon", "modeled"):
+            if req not in c:
+                issues.append(f"cities[{i}] 缺 {req} 字段")
+        lat, lon = c.get("lat"), c.get("lon")
+        if not (isinstance(lat, (int, float)) and -90 <= lat <= 90):
+            issues.append(f"cities[{i}] lat 越界/非法: {lat!r}")
+        if not (isinstance(lon, (int, float)) and -180 <= lon <= 180):
+            issues.append(f"cities[{i}] lon 越界/非法: {lon!r}")
+        if "modeled" in c and not isinstance(c["modeled"], bool):
+            issues.append(f"cities[{i}] modeled 须为布尔")
+    return issues
+
+
+def _check_zone_checks_schema(obj):
+    issues = []
+    if not isinstance(obj, list):
+        issues.append("zone_checks 非列表结构")
+        return issues
+    for i, e in enumerate(obj):
+        if not isinstance(e, dict):
+            issues.append(f"[{i}] 非对象")
+            continue
+        for req in ("lat", "lon", "expected_zone"):
+            if req not in e:
+                issues.append(f"[{i}] 缺 {req} 字段")
+        if "modeled" in e and not isinstance(e["modeled"], bool):
+            issues.append(f"[{i}] modeled 须为布尔")
+    return issues
+
+
+def _check_crop_db_schema(obj):
+    issues = _check_crop_db(obj)
+    zones = obj.get("zones", {}) if isinstance(obj, dict) else {}
+    if not isinstance(zones, dict):
+        issues.append("crop_adapt_db.zones 非字典（zone_id 须为键）")
+        return issues
+    for zid, zdata in zones.items():
+        crops = (zdata or {}).get("crops", []) if isinstance(zdata, dict) else []
+        for j, c in enumerate(crops):
+            if not isinstance(c, dict):
+                issues.append(f"zone {zid} crop[{j}] 非对象")
+                continue
+            if "crop" not in c:
+                issues.append(f"zone {zid} crop[{j}] 缺 crop 字段")
+            if "calibrated" not in c:
+                issues.append(f"zone {zid} crop[{j}] 缺 calibrated 字段")
+            elif not isinstance(c["calibrated"], bool):
+                issues.append(f"zone {zid} crop[{j}] calibrated 须为布尔")
+    return issues
+
+
 def run():
     results = []
     for rel in TRACKED:
@@ -127,14 +219,34 @@ def run():
         if rel.endswith("crop_adapt_db.json"):
             issues += _check_crop_db(obj)
             issues += _check_precip_units(obj)
+            issues += _check_crop_db_schema(obj)
         elif rel.endswith("preset_cities.json"):
-            issues += _check_preset_cities(obj)
+            issues += _check_preset_cities_schema(obj)
+        elif rel.endswith("global_zones.json"):
+            issues += _check_global_zones_schema(obj)
+        elif rel.endswith("zone_checks.json"):
+            issues += _check_zone_checks_schema(obj)
         if obj in (None, {}, []) and rel not in _ALLOW_EMPTY:
             issues.append("文件为空结构")
         if issues:
             results.append((rel, "FAIL", issues))
         else:
             results.append((rel, "PASS", []))
+
+    # 额外已知核心文件（eval 真值表）：不污染 harness_sync 声明区，
+    # 仅做 schema 结构校验，守护「真值本身合法」这一数据质量底线。
+    checked = {r[0] for r in results}
+    for rel in ("data/eval/zone_checks.json",):
+        if rel in checked:
+            continue
+        if not rel.endswith(_DATA_EXT):
+            continue
+        obj, err = _load(rel)
+        if err:
+            results.append((rel, "FAIL", [err]))
+            continue
+        issues = _check_zone_checks_schema(obj)
+        results.append((rel, "PASS" if not issues else "FAIL", issues))
 
     width = max([len(r[0]) for r in results] + [10])
     print("=" * (width + 12))

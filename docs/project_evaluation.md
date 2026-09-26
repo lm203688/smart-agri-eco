@@ -1,7 +1,7 @@
 # 智慧农业生态 · 评审维度自评
 
 > 对标 SwarmLabs 评估框架，以农业项目当前骨架状态逐项评分
-> 最后更新：2026-09-12（MCP 9 工具 / Env Recipe v1 协议 / 评测基线 / 物候播期层 / 42 项单测 / CI 全绿 已落地；综合评分 8.3 → 8.8）
+> 最后更新：2026-09-20（MCP 10 工具 / BP 投资初筛引擎 bp_screen 并入 / 358 项单测 / CI 全绿 已落地；综合评分 8.3 → 8.9）
 
 ---
 
@@ -12,7 +12,7 @@
 | 1 | **行业场景价值** | 25% | 七层生态架构已定义；110 种作物 × 6 气候带真实适配数据，每带 ≥18 种 | ★★★★★ 9/10 | SwarmLabs 有 47,566 条真实结构化实体；农业项目数据量仍小但已结构化闭环 | 继续向"采摘即食"垂直场景收口，叠加本地实测校准 |
 | 2 | **多 Agent 协同与闭环** | 25% | 四 Agent 流水线 + PestAgent / NutritionAgent / SeasonAgent 按需调用（PLACEHOLDER=0，rubric 0.92）；flywheel 反馈闭环 + **Skill 自动生成管线**已接上 | ★★★★★ 9/10 | SwarmLabs 有 47,566 条结构化实体；农业项目已打通「校准→自动新增 Skill」 | 继续扩大真实反馈回流，用实测分替换 seed 分 |
 | 3 | **Skill 工程体系与生态复用** | 25% | 9 个 Skill 机读注册（含自动生成的 iceplant_advisory）+ JSON Schema + 自动生成管线 | ★★★★★ 9/10 | SwarmLabs 有自动 Skill 生成器；农业项目已补齐同款管线 | 让 Skill 可经 MCP 被外部 Agent 直接消费 |
-| 4 | **工程落地与运行验证** | 20% | **42 项单测 + GitHub Actions CI（矩阵 3.10-3.12，已绿）** + verify_all + Docker + 每日只读巡检闭环 | ★★★★★ 9/10 | SwarmLabs 有 100+ 验证脚本；农业项目核心路径已全覆盖 | 回流通路真实数据回归（当前仅隔离自检） |
+| 4 | **工程落地与运行验证** | 20% | **358 项单测（v4 135 + v3 43 + v2 59 + agents 45 + v5 76）+ GitHub Actions CI（矩阵 3.10-3.12，已绿）** + verify_all + Docker + 每日只读巡检闭环 | ★★★★★ 9/10 | SwarmLabs 有 100+ 验证脚本；农业项目核心路径已全覆盖 | 回流通路真实数据回归（当前仅隔离自检） |
 | 5 | **安全审计/可信** | 20% | AgriTrust Layer 落地，rubric 5/5 全通过，SHA256 可复现证书 | ★★★★☆ 8/10 | SwarmLabs 有 traceability.py + 完整 Provenance 层 | 已对齐；可补"建议→数据源"反查链 UI |
 | 6 | **Demo 完成度与产品体验** | 20% | 交互式 Demo 站点已落地（app/demo_server.py，零依赖）；输入坐标→四 Agent 方案 + AgriTrust 证书可点击 | ★★★★★ 9/10 | SwarmLabs 有已上线交互式 Demo 站点 | 已对齐；下一步部署公网 demo 链接 |
 | 7 | **可检查性与可延续性** | 15% | 输出契约四段式 + AgriTrust 证书 + flywheel 校准溯源（seed_adapt_score 保留） | ★★★★☆ 8/10 | SwarmLabs 有 Finding/Provenance/Audit 完整层 | 已对齐主线，可加每建议的 data_lineage 字段 |
@@ -24,7 +24,7 @@
 
 ## 综合结论
 
-**农业项目当前综合评分：约 8.8/10**（满分 10），较初版 5.4、上版 7.2、再版 8.3、上次 8.6 持续提升——新增 **42 项单测 + CI 全绿、MCP 9 工具（Agent-native 分发）、Env Recipe v1 协议、评测基线（分区一致率 90% 真实数字）、物候/播期层、土壤降级源、Skill 自动生成管线、每日只读巡检闭环**。工程可复现性已从短板转为优势；唯一未解的是公网 Demo 与真实回流数据（均为增长/账号类外部依赖）。
+**农业项目当前综合评分：约 8.8/10**（满分 10），较初版 5.4、上版 7.2、再版 8.3、上次 8.6 持续提升——新增 **358 项单测 + CI 全绿、MCP 10 工具（Agent-native 分发）、Env Recipe v1 协议、评测基线（分区一致率 90% 真实数字）、物候/播期层、土壤降级源、Skill 自动生成管线、每日只读巡检闭环**。工程可复现性已从短板转为优势；唯一未解的是公网 Demo 与真实回流数据（均为增长/账号类外部依赖）。
 
 ### 已完成（累计）
 
@@ -41,7 +41,7 @@
 | **数据密度扩展** | `scripts/enrich_crop_data.py` | 110 种 / 6 带，每带 ≥18 种 |
 | Docker 部署 | `Dockerfile` + `docker-compose.yml` | 端到端验证 PASS |
 | 端到端验证 | `scripts/verify_all.py` | 五城市 + 证书 PASS |
-| MCP server（9 工具） | `mcp/server.py` | 零依赖 stdio，9 工具自测全通过 |
+| MCP server（10 工具） | `mcp/server.py` | 零依赖 stdio，10 工具自测全通过 |
 | Env Recipe v1 协议 | `schemas/env_recipe.schema.json` + `docs/env_recipe_protocol_v1.md` | Schema 校验通过；110 份配方已生成 |
 | AI 评测基线 | `engine/eval.py` + `scripts/run_eval.py` | 分区一致率 90%（真实数字）+ 4 项脚手架（绝不谎报） |
 | 物候/播期层 | `agent/phenology.py` + `agent/plant_calendar.py` + `agent/season_agent.py` | 7 作物积温物候 + 霜冻锚定播期窗口 |

@@ -25,7 +25,7 @@ REPO = os.environ.get("AGRI_GH_REPO", "lm203688/smart-agri-eco")
 BRANCH = os.environ.get("AGRI_GH_BRANCH", "main")
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXCLUDE_DIRS = {".git", ".workbuddy", "__pycache__", ".venv", "node_modules",
-                "outputs", "search_index"}
+                "outputs", "search_index", "_demo_runtime"}
 EXCLUDE_FILES = {".env"}  # gitignored secret，不比对
 
 

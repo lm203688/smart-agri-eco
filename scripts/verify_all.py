@@ -175,6 +175,40 @@ def main():
            and len(compact["payload"]["items"][-1]["evidence_refs"]) == 7,
            "上下文压缩保留证据指纹")
 
+    print("\n[7] 数据血缘追踪（DataFlow 提升点3 · 壁垒④真实结果回流校准）")
+    from core import data_lineage as dl
+    rep = dl.trace_recipe("tomato", "temperate")
+    local_present = [f for f in rep["local_files"] if f["present"]]
+    _check(len(local_present) >= 3,
+           f"本地权威文件血缘可追溯 {len(local_present)}/{len(rep['local_files'])} 个")
+    reachable = [a for a in rep["external_apis"] if a["reachable"]]
+    _check(len(reachable) >= 4,
+           f"外部程序化 API 可达 {len(reachable)} 个（NASA POWER/Open-Meteo/WorldClim/GBIF/SoilGrids）")
+    # 数据源注册表完整性：必须 5 个外部源 + 4 个本地文件全部登记（缺项即血缘断裂）
+    _check(len(rep["external_apis"]) == 5,
+           f"外部数据源注册表完整（{len(rep['external_apis'])}/5 已登记）")
+    _check(len(rep["local_files"]) == 4,
+           f"本地权威文件注册表完整（{len(rep['local_files'])}/4 已登记）")
+    try:
+        txt = dl.render_text(rep)
+        _check("数据血缘追踪报告" in txt, "血缘报告可渲染为文本")
+    except Exception as e:  # noqa: BLE001
+        _check(False, f"血缘报告渲染失败: {e}")
+
+    print("\n[8] MCP 审计异常行为分析器（CyberGuard 行为监控）")
+    try:
+        import subprocess as _sp
+        analyzer = os.path.join(ROOT, "mcp", "audit_analyzer.py")
+        r = _sp.run([sys.executable, analyzer, "--selftest"],
+                    capture_output=True, text=True, timeout=30)
+        out = (r.stdout or "") + (r.stderr or "")
+        _check(r.returncode in (0, 1),
+               f"审计分析器自测可运行（exit={r.returncode}）")
+        _check("MCP 审计异常行为分析报告" in out, "审计分析器产出报告头")
+        _check("统计:" in out, "审计分析器输出统计摘要")
+    except Exception as e:  # noqa: BLE001
+        _check(False, f"审计分析器静态检查失败: {e}")
+
     print("\n" + "=" * 60)
     if FAILURES:
         print(f"结果: FAIL（{len(FAILURES)} 项未通过）")

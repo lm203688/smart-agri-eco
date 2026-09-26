@@ -47,6 +47,9 @@ TRACKED_PATHS = [
     "data/zone_meta/global_zones.json",
     "data/wofost_phenology_reference.json",
     "data/feedback_log.json",
+    # 预设城市清单（2026-09-23 收敛为单一数据源）：改它等于改前端与 MCP 的城市集，
+    # 必须纳入防漂移追踪，否则静默改动无法被巡检发现。
+    "data/preset_cities.json",
 ]
 
 # 协议版本声明（与各 docs/env_recipe_protocol_v1.md 保持同步，人工维护）
@@ -145,7 +148,11 @@ def _env_vars() -> List[str]:
     found: List[str] = []
     pat = re.compile(r'os\.environ\.get\(\s*["\']([A-Z][A-Z0-9_]*)["\']')
     pat2 = re.compile(r'os\.environ\.pop\(\s*["\']([A-Z][A-Z0-9_]*)["\']')
-    for rel in ("engine", "agent", "core", "mcp", "app", "scripts"):
+    # bp_screen 是独立包（零依赖 BP 初筛引擎），2026-09-20 并入。
+    # 漏扫后果：它的 6 个环境变量（AGRI_BP_DB / _LLM_URL / _LLM_KEY /
+    # _LLM_MODEL / _WEB_PORT / _WEB_HOST）对防漂移清单完全不可见——
+    # 曾只有 AGRI_BP_LLM_URL/_KEY 因测试文件恰好引用而混入，属假阳性。
+    for rel in ("engine", "agent", "core", "mcp", "app", "scripts", "bp_screen"):
         d = os.path.join(ROOT, rel)
         if not os.path.isdir(d):
             continue
@@ -322,6 +329,9 @@ def _harness_tree() -> Dict[str, Any]:
             "rules": {"count": s["rules"],
                       "ids": [r["id"] for r in ht.RULES],
                       "blocker": s["blocker_rules"]},
+            # 显式列出 blocker 规则 id——避免巡检脚本每次都要回读 engine/harness_tree.py 才能
+            # 知道哪 3 条是硬门禁。blocker 决定「回归即拒发布」，缺失会让门禁失效。
+            "blockers": [r["id"] for r in ht.RULES if r.get("severity") == "blocker"],
             "lint_ok": s["lint_ok"],
             "exported_to": "skills/harness/",
             "six_layers": ["agents", "skills", "commands", "hooks", "rules", "mcp_tools"],
@@ -359,12 +369,37 @@ def _org_memory_obs() -> Dict[str, Any]:
         return {"error": str(e)}
 
 
+def _pin_default_env(name: str) -> str:
+    """观测区必须读**真实默认路径**，不能跟随 AGRI_* 覆盖。
+
+    背景：观测区被 verify_all / 各测试套件调用时，进程内的 AGRI_LONG_TERM_MEMORY /
+    AGRI_SEARCH_INDEX 可能已被某个用例指向 tempfile（那是隔离用的临时文件）。
+    若观测区照单全收，快照就会报告「memories 0→6」「built True→False」这类
+    假漂移——数字来自临时文件，不代表真实基线（2026-09-17 实测踩到）。
+    这里临时摘除覆盖，测完原样还原。
+    """
+    old = os.environ.get(name)
+    os.environ.pop(name, None)
+    return old if old is not None else ""
+
+
+def _restore_env(name: str, old: str):
+    if old:
+        os.environ[name] = old
+    else:
+        os.environ.pop(name, None)
+
+
 def _long_term_memory_obs() -> Dict[str, Any]:
     """长期记忆观测区：记忆与超边随真实执行增长。"""
     try:
         import importlib
         ltm = importlib.import_module("engine.long_term_memory")
-        s = ltm.stats()
+        saved = _pin_default_env(ltm.ENV_PATH)
+        try:
+            s = ltm.stats()
+        finally:
+            _restore_env(ltm.ENV_PATH, saved)
         # 去掉绝对路径：路径会随 AGRI_LONG_TERM_MEMORY 变化，属噪声
         s.pop("path", None)
         return s
@@ -377,7 +412,12 @@ def _local_search_obs() -> Dict[str, Any]:
     try:
         import importlib
         ls = importlib.import_module("engine.local_search")
-        s = ls.stats()
+        env_name = getattr(ls, "ENV_INDEX", getattr(ls, "ENV_PATH", "AGRI_SEARCH_INDEX"))
+        saved = _pin_default_env(env_name)
+        try:
+            s = ls.stats()
+        finally:
+            _restore_env(env_name, saved)
         s.pop("path", None)
         return s
     except Exception as e:  # pragma: no cover

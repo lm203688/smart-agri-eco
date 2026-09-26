@@ -4,7 +4,13 @@
   "title": "Env Recipe (环境配置配方) v1",
   "description": "智慧农业生态 · Env Recipe 协议 v1 的 JSON Schema。一份 Env Recipe = 作物 × 生长阶段 × 箱体条件 → 温湿/光谱/PPFD/CO2/EC/pH/水肥/气流/异常处理 的可执行参数集，是所有种植硬件与 Agent 共享的『配方语言』。execution_log / outcome / image_consent 为 day-1 必须留位的独占数据字段（配方→执行→结果三元组 + 中文病虫害图像），事后补字段是数据工程里最贵的错误。",
   "type": "object",
-  "required": ["protocol", "recipe_version", "crop", "stage", "environment"],
+  "required": [
+    "protocol",
+    "recipe_version",
+    "crop",
+    "stage",
+    "environment"
+  ],
   "additionalProperties": false,
   "properties": {
     "protocol": {
@@ -18,17 +24,36 @@
     },
     "crop": {
       "type": "object",
-      "required": ["species"],
+      "required": [
+        "species"
+      ],
       "additionalProperties": false,
       "properties": {
-        "species": { "type": "string", "description": "作物中文名，如 番茄 / 生菜。" },
-        "latin": { "type": "string", "description": "拉丁学名，如 Solanum lycopersicum。" },
-        "family": { "type": "string", "description": "科属，如 茄科。" }
+        "species": {
+          "type": "string",
+          "description": "作物中文名，如 番茄 / 生菜。"
+        },
+        "latin": {
+          "type": "string",
+          "description": "拉丁学名，如 Solanum lycopersicum。"
+        },
+        "family": {
+          "type": "string",
+          "description": "科属，如 茄科。"
+        }
       }
     },
     "stage": {
       "type": "string",
-      "enum": ["seed", "seedling", "vegetative", "flowering", "fruiting", "harvest", "full_cycle"],
+      "enum": [
+        "seed",
+        "seedling",
+        "vegetative",
+        "flowering",
+        "fruiting",
+        "harvest",
+        "full_cycle"
+      ],
       "description": "适用生长阶段。full_cycle 表示跨阶段通用配方。"
     },
     "device_profile": {
@@ -38,18 +63,46 @@
       "properties": {
         "device_class": {
           "type": "string",
-          "enum": ["balcony", "windowsill", "indoor_cabinet", "aerogarden_orphan", "greenhouse", "open_field", "other"],
+          "enum": [
+            "balcony",
+            "windowsill",
+            "indoor_cabinet",
+            "aerogarden_orphan",
+            "greenhouse",
+            "open_field",
+            "other"
+          ],
           "description": "设备类别。aerogarden_orphan = AeroGarden 等沦为孤儿设备的存量智能种植机（协议重点自救对象）。"
         },
-        "volume_l": { "type": "number", "minimum": 0, "description": "种植容器/箱体有效容积（升）。" },
+        "volume_l": {
+          "type": "number",
+          "minimum": 0,
+          "description": "种植容器/箱体有效容积（升）。"
+        },
         "light_type": {
           "type": "string",
-          "enum": ["full_spectrum_led", "red_blue_led", "sunlight", "unknown"],
+          "enum": [
+            "full_spectrum_led",
+            "red_blue_led",
+            "sunlight",
+            "unknown"
+          ],
           "description": "补光类型；unknown 表示设备未声明。"
         },
         "sensor_capability": {
           "type": "array",
-          "items": { "type": "string", "enum": ["temp", "humidity", "ppfd", "co2", "ec", "ph", "camera"] },
+          "items": {
+            "type": "string",
+            "enum": [
+              "temp",
+              "humidity",
+              "ppfd",
+              "co2",
+              "ec",
+              "ph",
+              "camera"
+            ]
+          },
           "description": "设备具备的传感器能力；决定配方可被多少参数闭环校准。"
         }
       }
@@ -63,64 +116,142 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "day_c": { "type": "number", "description": "日间目标温度（℃）。" },
-            "night_c": { "type": "number", "description": "夜间目标温度（℃）。" }
+            "day_c": {
+              "type": "number",
+              "description": "日间目标温度（℃）。"
+            },
+            "night_c": {
+              "type": "number",
+              "description": "夜间目标温度（℃）。"
+            }
           }
         },
         "humidity": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "min_pct": { "type": "number", "minimum": 0, "maximum": 100 },
-            "max_pct": { "type": "number", "minimum": 0, "maximum": 100 }
+            "min_pct": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "max_pct": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
           }
         },
         "light": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "ppfd_umol": { "type": "number", "minimum": 0, "description": "目标光合光子通量密度（μmol/m²/s）。" },
-            "photoperiod_h": { "type": "number", "minimum": 0, "maximum": 24, "description": "日光照时长（小时）。" },
+            "ppfd_umol": {
+              "type": "number",
+              "minimum": 0,
+              "description": "目标光合光子通量密度（μmol/m²/s）。"
+            },
+            "photoperiod_h": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 24,
+              "description": "日光照时长（小时）。"
+            },
             "spectrum": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "blue_pct": { "type": "number", "minimum": 0, "maximum": 100 },
-                "red_pct": { "type": "number", "minimum": 0, "maximum": 100 },
-                "white_pct": { "type": "number", "minimum": 0, "maximum": 100 },
-                "far_red_pct": { "type": "number", "minimum": 0, "maximum": 100 }
+                "blue_pct": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "red_pct": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "white_pct": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "far_red_pct": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
               }
             }
           }
         },
-        "co2_ppm": { "type": "number", "minimum": 0, "description": "目标 CO2 浓度（ppm）；露天可省略。" },
+        "co2_ppm": {
+          "type": "number",
+          "minimum": 0,
+          "description": "目标 CO2 浓度（ppm）；露天可省略。"
+        },
         "water_nutrient": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "ec_ms": { "type": "number", "minimum": 0, "description": "电导率（mS/cm）。" },
-            "ph": { "type": "number", "minimum": 0, "maximum": 14 },
+            "ec_ms": {
+              "type": "number",
+              "minimum": 0,
+              "description": "电导率（mS/cm）。"
+            },
+            "ph": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 14
+            },
             "npk_ratio": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "n": { "type": "number", "minimum": 0 },
-                "p": { "type": "number", "minimum": 0 },
-                "k": { "type": "number", "minimum": 0 }
+                "n": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "p": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "k": {
+                  "type": "number",
+                  "minimum": 0
+                }
               }
             },
-            "water_ml_day": { "type": "number", "minimum": 0, "description": "日均灌溉量（ml）。" }
+            "water_ml_day": {
+              "type": "number",
+              "minimum": 0,
+              "description": "日均灌溉量（ml）。"
+            }
           }
         },
         "airflow": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "level": { "type": "string", "enum": ["low", "medium", "high"] },
-            "mps": { "type": "number", "minimum": 0, "description": "可选：风速（m/s）精确值。" }
+            "level": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "mps": {
+              "type": "number",
+              "minimum": 0,
+              "description": "可选：风速（m/s）精确值。"
+            }
           }
         },
-        "substrate": { "type": "string", "description": "基质/介质，如 椰糠 / 岩棉 / 营养土。" }
+        "substrate": {
+          "type": "string",
+          "description": "基质/介质，如 椰糠 / 岩棉 / 营养土。"
+        }
       }
     },
     "exception_handling": {
@@ -128,12 +259,28 @@
       "description": "异常处理规则：当某条件触发时执行对应动作。",
       "items": {
         "type": "object",
-        "required": ["condition", "action"],
+        "required": [
+          "condition",
+          "action"
+        ],
         "additionalProperties": false,
         "properties": {
-          "condition": { "type": "string", "description": "触发条件，如 连续 3 日湿度 > 85%" },
-          "action": { "type": "string", "description": "动作，如 加强通风 / 暂停灌溉 / 告警" },
-          "severity": { "type": "string", "enum": ["info", "warn", "critical"] }
+          "condition": {
+            "type": "string",
+            "description": "触发条件，如 连续 3 日湿度 > 85%"
+          },
+          "action": {
+            "type": "string",
+            "description": "动作，如 加强通风 / 暂停灌溉 / 告警"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "warn",
+              "critical"
+            ]
+          }
         }
       }
     },
@@ -144,11 +291,27 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "run_id": { "type": "string" },
-          "device_id": { "type": "string", "description": "执行设备匿名 ID（孤儿设备社区可凭此对账）。" },
-          "started_at": { "type": "string", "format": "date-time" },
-          "actual_params": { "type": "object", "description": "实际执行参数（与 environment 对照，算偏差）。" },
-          "deviations": { "type": "array", "items": { "type": "string" } }
+          "run_id": {
+            "type": "string"
+          },
+          "device_id": {
+            "type": "string",
+            "description": "执行设备匿名 ID（孤儿设备社区可凭此对账）。"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actual_params": {
+            "type": "object",
+            "description": "实际执行参数（与 environment 对照，算偏差）。"
+          },
+          "deviations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       }
     },
@@ -157,11 +320,29 @@
       "description": "【day-1 独占数据字段 A】执行结果。与 execution_log 配对，是唯一能训练『环境→结果』预测模型的燃料。",
       "additionalProperties": false,
       "properties": {
-        "survival_rate": { "type": "number", "minimum": 0, "maximum": 1 },
-        "yield_g": { "type": "number", "minimum": 0, "description": "单株/单箱产量（克）。" },
-        "yield_rating": { "type": "number", "minimum": 1, "maximum": 5, "description": "用户/农艺师产量评分。" },
-        "quality_notes": { "type": "string" },
-        "failure_reason": { "type": "string", "description": "失败原因；非空表示本次配方未达预期，用于校准。" }
+        "survival_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "yield_g": {
+          "type": "number",
+          "minimum": 0,
+          "description": "单株/单箱产量（克）。"
+        },
+        "yield_rating": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "用户/农艺师产量评分。"
+        },
+        "quality_notes": {
+          "type": "string"
+        },
+        "failure_reason": {
+          "type": "string",
+          "description": "失败原因；非空表示本次配方未达预期，用于校准。"
+        }
       }
     },
     "image_consent": {
@@ -169,9 +350,18 @@
       "description": "【day-1 独占数据字段 B】中文病虫害图像授权。PlantVillage 以欧美作物为主，中文场景标注图像是真空白；本字段在采集端即声明授权，避免事后法律/伦理返工。",
       "additionalProperties": false,
       "properties": {
-        "captured": { "type": "boolean", "description": "是否采集了图像。" },
-        "license": { "type": "string", "description": "图像许可，如 CC-BY-4.0 / 私有。" },
-        "attribution": { "type": "string", "description": "署名/来源。" }
+        "captured": {
+          "type": "boolean",
+          "description": "是否采集了图像。"
+        },
+        "license": {
+          "type": "string",
+          "description": "图像许可，如 CC-BY-4.0 / 私有。"
+        },
+        "attribution": {
+          "type": "string",
+          "description": "署名/来源。"
+        }
       }
     },
     "sources": {
@@ -181,9 +371,22 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "title": { "type": "string" },
-          "url": { "type": "string", "format": "uri" },
-          "accessed_at": { "type": "string", "format": "date" }
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "accessed_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "license": {
+            "type": "string",
+            "description": "该来源的许可条款。混合许可下必须逐条标注：recipe 级 license 只覆盖编排层分发，不代表任何单一来源的授权。未核实的来源写 unknown（…），不得猜。含 CC BY-NC-SA（如 FAO/FAOSTAT）来源时整包非商用。",
+            "default": "unknown"
+          }
         }
       }
     },
@@ -191,6 +394,11 @@
       "type": "string",
       "description": "配方许可；基础配方 CC-BY-4.0，高级配方包可商用授权。",
       "default": "CC-BY-4.0"
+    },
+    "license_scope": {
+      "type": "string",
+      "description": "许可适用范围声明：说明 recipe 级 license 与 sources[].license 的关系，以及是否存在限制整包商用性的来源（如 CC BY-NC-SA）。"
     }
-  }
+  },
+  "schema_version": "1.0.0"
 }
