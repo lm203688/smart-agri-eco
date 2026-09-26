@@ -58,24 +58,29 @@
   "sources": [
     {
       "title": "FAO CropInfo",
-      "url": "",
-      "accessed_at": "2026-08-27"
+      "url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/home",
+      "accessed_at": "2026-08-27",
+      "license": "CC BY-NC-SA 3.0 IGO（FAO 官方；非商用，禁止作为付费资产转售）"
     },
     {
       "title": "中国作物栽培数据库",
       "url": "",
-      "accessed_at": "2026-08-27"
+      "accessed_at": "2026-08-27",
+      "license": "unknown（未标注许可）"
     },
     {
       "title": "USDA Plant Guides",
-      "url": "",
-      "accessed_at": "2026-08-27"
+      "url": "https://plants.usda.gov/plantguides",
+      "accessed_at": "2026-08-27",
+      "license": "公有领域（美国联邦政府作品）"
     },
     {
       "title": "IPNI",
-      "url": "",
-      "accessed_at": "2026-08-27"
+      "url": "https://www.ipni.net/",
+      "accessed_at": "2026-08-27",
+      "license": "CC BY 3.0"
     }
   ],
-  "license": "CC-BY-4.0"
+  "license": "CC-BY-4.0",
+  "license_scope": "本配方聚合多个来源，逐条许可见 sources[].license；recipe 级 license 仅代表本配方编排层的分发条款，不代表任何单一来源的授权。含 FAO/FAOSTAT（CC BY-NC-SA，非商用）来源时，整包不得作为付费资产转售。"
 }
