@@ -107,6 +107,29 @@ def _find_crop(db: Dict[str, Any], zone_id: str, crop_name: str) -> Optional[Dic
     return None
 
 
+def _dry_run() -> bool:
+    """演示/测试模式：AGRI_FEEDBACK_DRY_RUN=1 时 record_feedback 只算不写盘。
+
+    动机：app/demo_server.py 暴露 POST /api/feedback，用户在演示前端点几下就会把
+    合成反馈写进真实 data/feedback_log.json 并把 data/crop_adapt_db.json 的
+    adapt_score 伪校准成实测分——而这两个文件不受 git 跟踪，git status 永远是
+    clean，污染完全静默（本项目 2026-09-17 实踩：3 条 note="smoke" 记录 +
+    小白菜 adapt_score 0.96 被校准成 0.951，事后靠人工扫描才发现）。
+    隔离 feedback_log 只挡住一半，record_feedback 还会写 crop_db，故必须整体跳过。
+    """
+    return os.environ.get("AGRI_FEEDBACK_DRY_RUN") == "1"
+
+
+def _persist(crop_db: str, db: Dict[str, Any],
+             feedback_log: str, log: List[Dict[str, Any]]) -> bool:
+    """写入反馈日志与作物库；dry-run 时跳过并返回 False。"""
+    if _dry_run():
+        return False
+    _save(crop_db, db)
+    _save(feedback_log, log)
+    return True
+
+
 def record_feedback(
     zone_id: str,
     crop: str,
@@ -138,8 +161,9 @@ def record_feedback(
 
     target = _find_crop(db, zone_id, crop)
     if not target:
-        _save(feedback_log, log)
-        return {"changed": False, "reason": f"未找到 {zone_id}/{crop}", "before": None, "after": None}
+        _persist(crop_db, db, feedback_log, log)
+        return {"changed": False, "dry_run": _dry_run(),
+                "reason": f"未找到 {zone_id}/{crop}", "before": None, "after": None}
 
     seed = float(target.get("seed_adapt_score", target.get("adapt_score", 0.0)))
     if "seed_adapt_score" not in target:
@@ -168,10 +192,9 @@ def record_feedback(
     }
     target["calibrated"] = True
 
-    _save(crop_db, db)
-    _save(feedback_log, log)
+    _persist(crop_db, db, feedback_log, log)
     return {
-        "changed": True, "before": before, "after": new_score,
+        "changed": True, "dry_run": _dry_run(), "before": before, "after": new_score,
         "calibrated": True, "n_feedback": n,
         "seed_adapt_score": seed, "observed_score": observed,
     }

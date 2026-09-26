@@ -81,12 +81,56 @@ def _match_zone_by_coords(lat: float, lon: float) -> str:
     if 40 <= a <= 50 and -90 <= lon <= -60:
         return "temperate_continental"
 
+    # 5.5) 已知覆盖缺口：这些气候类当前在 global_zones.json 中**没有对应分区**。
+    #      必须在最后的默认分支之前判定，否则会被静默吞成「亚热带湿润」——
+    #      2026-09-23 前迪拜就是这样拿到湿热区参数的（年均 17°C + 终年湿润的作物清单），
+    #      而它实际是热漠（年均约 28°C、年降水约 100mm），属于错到会种死的推荐。
+    #      放在此处意味着：只改变原本会落到默认分支的点，不动任何已归类正确的坐标。
+    gap = _detect_unmodeled_zone(lat, lon)
+    if gap:
+        return gap
+
     # 6) 亚热带湿润：默认（东亚季风区/北美东南部/南美沿海/澳洲东南部）
     #    中国东部沿海: 110-125°E, 20-35°N
     #    美国东南部: -95 到 -75°E, 25-35°N
     #    巴西东南沿海: -50 到 -35°E, -25 到 -5
     #    澳洲东南: 145-153°E, -40 到 -30
     return "subtropical_wet"
+
+
+# ---------------------------------------------------------------------------
+# 已知覆盖缺口（识别得出、但当前分区库未建模的气候类）
+# ---------------------------------------------------------------------------
+# 与上面「猜一个已建模分区」的区别：这里返回的是**真实气候类名**，global_zones.json
+# 里没有它，于是 match_zone 走既有的「分区数据缺失」降级路径——Verifier 的
+# zone_id_known 直接判红、trust 分数塌到 0.2 档、作物推荐为空。
+# 即：宁可显式失败，也不给一份基于错误气候假设的种植方案。
+#
+# 背景：data/eval/zone_checks.json 早已把迪拜/拉萨登记为「已知局限」，但运行时对调用方
+# 完全静默（rubric≈0.95、recommendation 写「环境条件适宜」）。本函数把这份「内部已知」
+# 变成对 Agent/用户可机读的显式信号。残留缺口（这两类气候没有作物库与 Env Recipe）
+# 属产品决策，见 outputs/zone_coverage_decision_2026-09-23.md。
+UNMODELED_ZONE_CLASSES = {
+    "hot_arid": "热漠（热带/亚热带干旱：阿拉伯半岛、波斯湾沿岸等）；当前分区库无热漠区",
+    "highland": "高原（青藏高原等）；当前分区库无高原区",
+}
+
+
+def _detect_unmodeled_zone(lat: float, lon: float) -> Optional[str]:
+    """识别当前分区库未建模的气候类，返回类名；未命中返回 None。
+
+    与文件内其它规则同属经纬度盒式启发式（精确判定需栅格数据）。刻意保守：
+    只覆盖有实据的两个缺口（预设城市迪拜 = 波斯湾热漠、拉萨 = 青藏高原），
+    宁可少判，不顺手改动其它区域——例如开罗（31.2°E）仍在盒子外，归类保持原样。
+    """
+    a = abs(lat)
+    # 热漠：阿拉伯半岛 + 波斯湾沿岸（迪拜 25.20N/55.27E、利雅得、多哈、阿布扎比）
+    if 12 <= a <= 35 and 34 <= lon <= 60:
+        return "hot_arid"
+    # 高原：青藏高原主体（拉萨 29.65N/91.17E）；lon 上限 100 以避开成都（104.07E）
+    if 26 <= a <= 38 and 78 <= lon <= 100:
+        return "highland"
+    return None
 
 
 class ClimateAgent:
@@ -122,20 +166,41 @@ class ClimateAgent:
         z = self._zone_index.get(zone_id, {})
 
         if not z:
-            # 降级：数据缺失
+            gap_note = UNMODELED_ZONE_CLASSES.get(zone_id)
+            gap_evidence = {}
+            gap_conf = {}
+            if gap_note:
+                # 已知覆盖缺口：分类器认出了气候类，但分区库没有它。
+                # 诚实降级——不给分区默认参数，避免输出基于错误气候假设的方案。
+                gap_evidence = {"coverage_gap": zone_id, "coverage_gap_note": gap_note}
+                gap_conf = {
+                    "confidence_note": (
+                        f"该坐标属「{zone_id}」气候类，当前分区库未建模，"
+                        "无法给出分区参数（拒答优于错答）"
+                    )
+                }
+                recommendation = (
+                    f"该地块属{gap_note}，当前分区体系未覆盖，因此不提供分区默认参数，"
+                    "以免给出基于错误气候假设的种植方案。可选：① 走箱体环境控制路线"
+                    "（温湿/光照可设定，按箱体配方执行，不依赖露天分区假设）；"
+                    "② 待该气候类分区建模后再查。"
+                )
+            else:
+                recommendation = "分区数据缺失，需补充分区元数据"
+            # 降级：数据缺失（或已知未建模气候类）
             return {
                 "evidence": {"zone_id": zone_id, "zone_name": "UNKNOWN",
                              "climate_class": "UNKNOWN",
                              "data_sources": DATA_SOURCES,
-                             "data_recency_years": None},
+                             "data_recency_years": None, **gap_evidence},
                 "confidence": {"rubric_score": 0.0, "coverage_pct": 0.0,
-                               "data_recency_years": None},
+                               "data_recency_years": None, **gap_conf},
                 "constraints": {"min_temp_c": None, "max_temp_c": None,
                                 "precipitation_mm_yr": None,
                                 "growing_season_days": None,
                                 "frost_risk": None,
                                 "soil_ph_range": [None, None]},
-                "recommendation": "分区数据缺失，需补充分区元数据",
+                "recommendation": recommendation,
             }
 
         temp = z.get("temperature_range", {})
@@ -198,10 +263,20 @@ class ClimateAgent:
     def microclimate_adjustment(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """微气候修正（阳台/屋顶/车载等分布式场景）。"""
         scene = context.get("scene", "balcony")
-        floor = context.get("floor", 1)
+        # 前端传入的 floor / shading_ratio 可能是字符串（input 字段），必须数值化，
+        # 否则 `floor >= 10` 触发 TypeError: '>=' not supported between str and int。
+        _floor_raw = context.get("floor", 1)
+        try:
+            floor = int(_floor_raw)
+        except (TypeError, ValueError):
+            floor = 1
         orientation = context.get("orientation", "south")
         city = context.get("city", "")
-        shading = context.get("shading_ratio", 0.0)
+        _shading_raw = context.get("shading_ratio", 0.0)
+        try:
+            shading = float(_shading_raw)
+        except (TypeError, ValueError):
+            shading = 0.0
 
         temp_offset = 0.0
         sun_delta = 0.0

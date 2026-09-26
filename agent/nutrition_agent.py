@@ -38,7 +38,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(ROOT)
@@ -242,6 +242,32 @@ def _profile_for(crop: str, family: str) -> str:
     return DEFAULT_PROFILE
 
 
+def _phase_boundaries(growth_days: Any) -> Tuple[int, int, int]:
+    """把总生长周期切成 4 段连续且不倒挂的日区间边界。
+
+    返回 (sow_end, seedling_end, preharvest)，语义为:
+        播种育苗 [1, sow_end]
+        苗期管理 [sow_end+1, seedling_end]
+        生长旺盛 [seedling_end+1, preharvest]
+        成熟采收 [preharvest+1, gd]
+
+    旧实现用 max(prev+7, 比例值) 强行保证段间至少 7 天，但总周期短（如 20 天的
+    小容器叶菜）时该下限会把边界推过 gd，导致末段 day_range 变成 [22, 20]——
+    起始日晚于结束日。这里改为「比例切分 + 最小间隔 + 上限钳制 + 回向级联」，
+    对任意 gd >= 20 都保证 end_i == start_{i+1} - 1 且每段非空。
+    """
+    gd = max(int(growth_days), 20)
+    sow_end = max(3, round(gd * 0.15))
+    seedling_end = max(sow_end + 3, round(gd * 0.40))
+    preharvest = max(seedling_end + 3, round(gd * 0.85))
+    # 上限钳制：保证末段至少 1 天，再回向级联保证每段非空
+    preharvest = min(preharvest, gd - 1)
+    seedling_end = min(seedling_end, preharvest - 1)
+    sow_end = min(sow_end, seedling_end - 1)
+    sow_end = max(sow_end, 1)
+    return sow_end, seedling_end, preharvest
+
+
 def _build_fert_phases(
     growth_days: int,
     profile: Dict[str, Any],
@@ -250,9 +276,7 @@ def _build_fert_phases(
     is_leaf: bool,
 ) -> List[Dict[str, Any]]:
     gd = max(int(growth_days), 20)
-    sow_end = max(7, round(gd * 0.15))
-    seedling_end = max(sow_end + 7, round(gd * 0.40))
-    preharvest = max(seedling_end + 7, round(gd * 0.85))
+    sow_end, seedling_end, preharvest = _phase_boundaries(growth_days)
 
     base = profile["base_g_per_l"]
     freq = profile["freq_days"]
@@ -316,6 +340,22 @@ def _build_fert_phases(
                       if is_leaf else "控氮防贪青晚熟，重钾提升品质与耐储性。"),
         },
     ]
+    # 防御性后置校验：任何一次回归导致日序倒挂或越界都必须显式报错，
+    # 而不是让 [22, 20] 这类结果静默流到前端（前端此前只能如实标注、无法纠正）。
+    for i, p in enumerate(phases):
+        s, e = p["day_range"]
+        if s > e:
+            raise ValueError(
+                "养分阶段日序倒挂：%s day_range=[%d,%d]（start > end），总周期 %d 天"
+                % (p["phase"], s, e, gd))
+        if e > gd:
+            raise ValueError(
+                "养分阶段越出总周期：%s day_range=[%d,%d] > 总周期 %d 天"
+                % (p["phase"], s, e, gd))
+        if i and p["day_range"][0] != phases[i - 1]["day_range"][1] + 1:
+            raise ValueError(
+                "养分阶段不连续：%s 起始日 %d，上一段结束日 %d"
+                % (p["phase"], s, phases[i - 1]["day_range"][1]))
     return phases
 
 

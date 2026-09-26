@@ -3,428 +3,1888 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>智慧农业生态 · AI 种植方案生成器</title>
+<title>智慧农业生态 · Global Agriculture Environmental Configuration Platform</title>
 <style>
   :root{
-    --green:#2e7d32; --green-soft:#e8f5e9; --green-mid:#66bb6a;
-    --ink:#1b3a1f; --muted:#6b7b6e; --line:#d7e6d9;
-    --bg:#f4f9f4; --card:#ffffff; --warn:#ef6c00; --blue:#1565c0;
+    --un-blue:#009edb; --un-blue-d:#007bb5; --un-navy:#0a3d7a; --un-navy-2:#062a55;
+    --un-deep:#041c38; --un-light:#e8f4f9; --un-line-b:#b8d8e8;
+    --gold:#e0a020; --gold-l:#f7e3b8;
+    --ink:#12263c; --ink-2:#33475b; --muted:#5b7286; --line:#d4e1ea; --bg:#f4f8fa; --card:#ffffff;
+    --ok:#1c7a4a; --ok-bg:#e6f4ec; --warn:#b3600a; --warn-bg:#fdf1e3; --err:#a3231f; --err-bg:#fbe9e8;
+    --serif:"Times New Roman",Georgia,"Songti SC","SimSun",serif;
+    --sans:-apple-system,"Segoe UI","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
   }
   *{box-sizing:border-box;}
-  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-       background:var(--bg);color:var(--ink);line-height:1.5;}
-  header{background:linear-gradient(120deg,var(--green),var(--green-mid));color:#fff;
-         padding:20px 28px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
-  header h1{margin:0;font-size:22px;}
-  header p{margin:6px 0 0;opacity:.92;font-size:13px;}
-  .wrap{display:grid;grid-template-columns:340px 1fr;gap:20px;padding:20px;max-width:1280px;margin:0 auto;}
-  @media(max-width:880px){.wrap{grid-template-columns:1fr;}}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;
-         box-shadow:0 1px 4px rgba(0,0,0,.05);}
-  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 4px;font-weight:600;}
-  select,input[type=number],input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);
-         border-radius:8px;font-size:14px;background:#fafdfa;}
-  .row{display:flex;gap:10px;}
-  .row>div{flex:1;}
-  input[type=range]{width:100%;}
-  .budget-val{font-size:13px;color:var(--green);font-weight:600;}
-  button{margin-top:16px;width:100%;padding:11px;border:0;border-radius:9px;background:var(--green);
-         color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.15s;}
-  button:hover{background:#1b5e20;}
-  button:disabled{opacity:.6;cursor:wait;}
-  .hint{font-size:11px;color:var(--muted);margin-top:4px;}
-  #result{min-height:200px;}
-  .agent-card{border:1px solid var(--line);border-left:4px solid var(--green-mid);
-              border-radius:10px;padding:14px 16px;margin-bottom:14px;background:#fcfefc;}
-  .agent-card h3{margin:0 0 8px;font-size:15px;display:flex;align-items:center;gap:8px;}
-  .badge{font-size:11px;background:var(--green-soft);color:var(--green);padding:2px 8px;border-radius:20px;font-weight:700;}
-  .score{margin-left:auto;font-size:12px;color:var(--blue);font-weight:700;}
-  .kv{font-size:13px;margin:3px 0;}
-  .kv b{color:var(--ink);}
-  .crop{display:inline-block;background:var(--green-soft);border:1px solid var(--line);
-        border-radius:8px;padding:6px 10px;margin:4px 6px 4px 0;font-size:13px;}
-  .crop .s{color:var(--green);font-weight:700;}
-  .risk{color:var(--warn);font-size:13px;margin:3px 0;}
-  .dev{font-size:13px;margin:4px 0;display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:4px;}
-  .dev .p{color:var(--warn);font-weight:700;white-space:nowrap;margin-left:10px;}
-  .phase{background:#f7fbf7;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;font-size:12.5px;}
-  .phase b{color:var(--green);}
-  .cert{background:var(--ink);color:#e8f5e9;border-radius:10px;padding:14px 16px;font-size:12.5px;margin-top:8px;}
-  .cert h3{color:#a5d6a7;margin:0 0 8px;}
-  .cert code{color:#c8e6c9;word-break:break-all;font-size:11px;}
-  .placeholder-note{color:var(--warn);font-size:12px;}
-  .err{color:#c62828;background:#ffebee;padding:10px;border-radius:8px;font-size:13px;}
-  .loading{color:var(--muted);font-size:13px;padding:20px;text-align:center;}
-  footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;}
-  .legend{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.7;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;}
+  a{color:var(--un-blue-d);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .mono{font-family:"SFMono-Regular",Consolas,"Courier New",monospace;}
+
+  /* ---------- utility bar ---------- */
+  .utility{background:#fff;border-bottom:1px solid var(--line);font-size:11.5px;color:var(--muted);}
+  .utility .in{max-width:1340px;margin:0 auto;padding:7px 24px;display:flex;justify-content:space-between;gap:16px;align-items:center;}
+  .utility .srcs{display:flex;gap:14px;flex-wrap:wrap;}
+  .utility .src{display:flex;align-items:center;gap:5px;}
+  .utility .src::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--un-blue);}
+
+  /* ---------- masthead ---------- */
+  .masthead{background:linear-gradient(180deg,var(--un-navy),var(--un-navy-2));color:#fff;
+            border-bottom:3px solid var(--gold);box-shadow:0 3px 14px rgba(4,28,56,.22);}
+  .masthead .in{max-width:1340px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;gap:22px;}
+  .brand{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+  .brand .emblem{width:52px;height:52px;flex-shrink:0;}
+  .brand h1{margin:0;font-family:var(--serif);font-size:21px;font-weight:700;letter-spacing:.01em;line-height:1.2;}
+  .brand .en{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fd4ec;margin-top:3px;font-family:var(--sans);}
+  .nav{display:flex;gap:0;margin-left:auto;flex-wrap:wrap;}
+  .nav a{color:#d7ecf7;padding:9px 13px;font-size:12.5px;font-weight:600;letter-spacing:.02em;border-bottom:3px solid transparent;}
+  .nav a:hover{color:#fff;background:rgba(255,255,255,.08);text-decoration:none;border-bottom-color:var(--gold);}
+
+  /* ---------- hero ---------- */
+  .hero{background:
+      radial-gradient(1200px 500px at 78% -10%, rgba(0,158,219,.45), transparent 62%),
+      linear-gradient(115deg,var(--un-deep) 0%,var(--un-navy) 46%,var(--un-navy-2) 100%);
+    color:#fff;padding:56px 0 50px;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;inset:0;background:
+      repeating-linear-gradient(90deg,rgba(255,255,255,.028) 0 1px,transparent 1px 90px);pointer-events:none;}
+  .hero .in{max-width:1340px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+  .eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#8fcdec;font-weight:700;margin-bottom:16px;}
+  .hero h2{font-family:var(--serif);font-size:44px;line-height:1.16;margin:0 0 16px;font-weight:700;letter-spacing:-.005em;max-width:900px;}
+  .hero h2 .accent{color:#8fcdec;}
+  .hero .sub{font-size:16.5px;max-width:820px;color:#cfe6f3;line-height:1.75;margin-bottom:8px;}
+  .hero .sub-en{font-size:13.5px;max-width:820px;color:#7fb8d4;margin-bottom:34px;font-style:italic;font-family:var(--serif);}
+  .rule{width:64px;height:3px;background:var(--gold);margin:0 0 28px;}
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid rgba(255,255,255,.18);max-width:1080px;}
+  .kpi{padding:20px 22px 4px;border-right:1px solid rgba(255,255,255,.14);}
+  .kpi:last-child{border-right:0;}
+  .kpi .n{font-family:var(--serif);font-size:31px;font-weight:700;line-height:1;color:#fff;}
+  .kpi .l{font-size:11px;letter-spacing:.06em;color:#8fcdec;margin-top:9px;text-transform:uppercase;}
+  .kpi .c{font-size:12px;color:#cfe6f3;margin-top:3px;}
+
+  /* ---------- shell ---------- */
+  .shell{max-width:1340px;margin:0 auto;padding:0 24px 70px;}
+  .crumb{font-size:12px;color:var(--muted);padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:38px;}
+  .crumb b{color:var(--ink-2);font-weight:600;}
+
+  .section{margin-bottom:58px;}
+  .section-head{display:flex;align-items:flex-end;gap:18px;border-bottom:2px solid var(--un-navy);padding-bottom:10px;margin-bottom:26px;}
+  .section-head .idx{font-family:var(--serif);font-size:15px;color:var(--gold);font-weight:700;letter-spacing:.04em;padding-bottom:2px;}
+  .section-head h3{margin:0;font-size:23px;color:var(--un-navy);font-weight:700;letter-spacing:-.005em;}
+  .section-head .en{font-size:11.5px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase;margin-left:auto;padding-bottom:3px;}
+  .section-head p{width:100%;margin:10px 0 0;font-size:13.5px;color:var(--muted);}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex;gap:0;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:0;background:#fff;
+        border:1px solid var(--line);border-bottom:0;border-radius:6px 6px 0 0;overflow:hidden;}
+  .tab{padding:13px 18px;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer;border:0;background:transparent;
+       border-right:1px solid var(--line);transition:.14s;display:flex;flex-direction:column;gap:2px;line-height:1.3;}
+  .tab .en{font-size:9.5px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:#98a9b8;}
+  .tab:hover{background:var(--un-light);color:var(--un-navy);}
+  .tab.active{background:var(--un-navy);color:#fff;border-top:3px solid var(--gold);padding-top:10px;}
+  .tab.active .en{color:#8fcdec;}
+  .tab:last-child{border-right:0;}
+  .panelbox{border:1px solid var(--line);border-radius:0 0 6px 6px;background:#fff;padding:28px;
+            box-shadow:0 2px 10px rgba(4,28,56,.05);}
+  .pane{display:none;}
+  .pane.on{display:block;}
+
+  /* ---------- forms ---------- */
+  .grid2{display:grid;grid-template-columns:330px 1fr;gap:32px;align-items:start;}
+  @media(max-width:980px){.grid2{grid-template-columns:1fr;}.kpis{grid-template-columns:repeat(2,1fr);}
+    .kpi{border-right:0;border-bottom:1px solid rgba(255,255,255,.14);}.hero h2{font-size:31px;}}
+  .form{background:#fbfdfe;border:1px solid var(--line);border-left:3px solid var(--un-blue);border-radius:5px;padding:20px;}
+  .form h4{margin:0 0 4px;font-size:14px;color:var(--un-navy);}
+  .form .fs{font-size:11.5px;color:var(--muted);margin-bottom:16px;}
+  label{display:block;font-size:11.5px;color:var(--ink-2);margin:13px 0 5px;font-weight:700;letter-spacing:.02em;}
+  select,input[type=number],input[type=text],input[type=date],textarea{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:4px;font-size:13.5px;background:#fff;color:var(--ink);}
+  select:focus,input:focus,textarea:focus{outline:0;border-color:var(--un-blue);box-shadow:0 0 0 3px rgba(0,158,219,.14);}
+  textarea{resize:vertical;min-height:62px;font-family:inherit;}
+  .row{display:flex;gap:11px;}
+  .row>div{flex:1;min-width:0;}
+  .chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);margin:7px 0;cursor:pointer;}
+  .chk input{width:auto;}
+  .btn{margin-top:19px;width:100%;padding:12px;border:0;border-radius:4px;background:var(--un-navy);color:#fff;
+       font-size:14px;font-weight:700;letter-spacing:.03em;cursor:pointer;transition:.15s;}
+  .btn:hover{background:var(--un-navy-2);box-shadow:0 3px 10px rgba(4,28,56,.2);}
+  .btn:disabled{opacity:.55;cursor:wait;}
+  .btn.alt{background:#fff;color:var(--un-navy);border:1.5px solid var(--un-navy);}
+  .btn.alt:hover{background:var(--un-light);}
+  .btn.gold{background:var(--gold);color:#3a2a05;}
+  .hint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;}
+  .budget-val{font-size:13px;color:var(--un-blue-d);font-weight:700;}
+
+  /* ---------- output ---------- */
+  .out{min-height:230px;}
+  .empty{color:var(--muted);font-size:13.5px;padding:34px 0;text-align:center;line-height:1.9;}
+  .empty .g{font-size:34px;display:block;margin-bottom:10px;opacity:.4;}
+  .load{color:var(--muted);font-size:13.5px;padding:34px;text-align:center;}
+  .errbox{color:#fff;background:var(--err);border-radius:5px;padding:14px 17px;font-size:13.5px;}
+
+  .card{border:1px solid var(--line);border-left:4px solid var(--un-blue);border-radius:5px;padding:17px 19px;
+        margin-bottom:15px;background:#fff;box-shadow:0 1px 4px rgba(4,28,56,.04);}
+  .card.gold{border-left-color:var(--gold);}
+  .card.ok{border-left-color:var(--ok);}
+  .card h5{margin:0 0 10px;font-size:14.5px;color:var(--un-navy);display:flex;align-items:center;gap:9px;}
+  .card h5 .en{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-left:auto;}
+  .kv{font-size:13.5px;margin:4px 0;color:var(--ink-2);}
+  .kv b{color:var(--ink);font-weight:700;}
+  .kv .v{color:var(--ink);font-weight:600;}
+  .tag{display:inline-block;background:var(--un-light);color:var(--un-blue-d);border:1px solid var(--un-line-b);
+       border-radius:3px;padding:2px 9px;font-size:11.5px;margin:3px 4px 3px 0;font-weight:600;}
+  .tag.w{background:var(--warn-bg);color:var(--warn);border-color:#f0d3ab;}
+  .tag.e{background:var(--err-bg);color:var(--err);border-color:#f0c0be;}
+  .tag.g{background:var(--ok-bg);color:var(--ok);border-color:#b9dcc4;}
+  hr.sep{border:0;border-top:1px dashed var(--line);margin:16px 0;}
+  .btn.sm{width:auto;margin-top:8px;padding:7px 14px;font-size:12.5px;background:var(--un-blue);}
+  #bpFiles{margin-top:6px;font-size:12.5px;}
+  .bp-list{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+  .bp-item{border:1px solid var(--line);border-radius:4px;padding:9px 12px;background:#fbfdff;}
+  .bp-item-main{font-size:13.5px;color:var(--ink);}
+  .bp-item-meta{margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .tag.n{background:#f0f3f6;color:var(--muted);border-color:var(--line);}
+
+  /* 知识底座 */
+  .subnav{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px;}
+  .sbtn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:20px;
+    padding:6px 14px;font-size:13px;cursor:pointer;transition:.15s;}
+  .sbtn:hover{border-color:var(--un-blue);color:var(--un-blue);}
+  .sbtn.on{background:var(--un-blue);color:#fff;border-color:var(--un-blue);}
+  .croplist{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:4px;}
+  .crop.click{cursor:pointer;transition:.12s;}
+  .crop.click:hover{border-color:var(--un-blue);box-shadow:0 2px 8px rgba(1,52,120,.10);transform:translateY(-1px);}
+  .crop .la{font-size:11px;color:var(--muted);font-style:italic;}
+  .prov{margin:8px 0 4px;padding:8px 10px;border:1px solid #f0c36d;background:#fff8e6;border-radius:8px;
+    font-size:12px;line-height:1.6;color:#7a5b00;}
+  .prov code{background:#fbeecb;padding:1px 5px;border-radius:4px;font-size:11px;}
+  .calbadge{display:inline-block;margin-left:6px;font-size:10px;padding:1px 7px;border-radius:10px;
+    background:#fdecea;color:#b94a48;border:1px solid #f5c6c0;vertical-align:middle;}
+  .calbadge.ok{background:#e8f6ec;color:#2e7d4f;border-color:#bfe3cb;}
+  .src-link{color:var(--un-blue);text-decoration:none;font-weight:700;}
+  .src-link:hover{text-decoration:underline;}
+  .dim{color:var(--muted);font-size:11px;}
+  .fd-detail .kv{border-bottom:1px dashed var(--line);padding:7px 0;}
+  .fd-detail .kv:last-child{border-bottom:0;}
+  .backbtn{margin-bottom:10px;font-size:12.5px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0;}
+  th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);
+     border-bottom:2px solid var(--un-navy);padding:8px 10px;font-weight:700;}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top;}
+  tr:last-child td{border-bottom:0;}
+  tbody tr:hover{background:#f8fbfd;}
+  .num{text-align:right;font-variant-numeric:tabular-nums;}
+
+  .scorebar{height:6px;background:#e6edf2;border-radius:3px;overflow:hidden;width:88px;display:inline-block;vertical-align:middle;}
+  .scorebar i{display:block;height:100%;background:linear-gradient(90deg,var(--un-blue),var(--un-blue-d));border-radius:3px;}
+  .crops{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+  .crop{border:1px solid var(--line);border-radius:5px;padding:13px 15px;background:#fff;position:relative;transition:.15s;}
+  .crop:hover{box-shadow:0 4px 14px rgba(4,28,56,.1);border-color:var(--un-line-b);}
+  .crop .nm{font-size:15px;font-weight:700;color:var(--un-navy);margin-bottom:2px;}
+  .crop .la{font-size:11px;color:var(--muted);font-style:italic;font-family:var(--serif);margin-bottom:8px;}
+  .crop .sc{font-family:var(--serif);font-size:21px;color:var(--un-blue-d);font-weight:700;line-height:1;}
+  .crop .meta{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.6;}
+  .crop .rs{margin-top:7px;}
+
+  .phase{border:1px solid var(--line);border-radius:4px;padding:11px 14px;margin:8px 0;background:#fbfdfe;font-size:13px;}
+  .phase .ph{font-weight:700;color:var(--un-navy);font-size:13.5px;}
+  .phase .dr{font-size:11px;color:var(--muted);background:var(--un-light);padding:1px 8px;border-radius:3px;margin-left:8px;}
+  .phase ul{margin:7px 0 0;padding-left:18px;color:var(--ink-2);}
+  .phase li{margin:3px 0;}
+  .trust{background:linear-gradient(135deg,var(--un-deep),var(--un-navy-2));color:#e8f4f9;border-radius:6px;
+         padding:20px 22px;margin-top:6px;}
+  .trust h5{color:#8fcdec;margin:0 0 12px;font-size:14.5px;}
+  .trust .rs{font-family:var(--serif);font-size:30px;color:#fff;font-weight:700;}
+  .trust ul{margin:10px 0 0;padding-left:17px;font-size:12.5px;color:#bfe0ef;line-height:1.75;}
+  .flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-bottom:16px;}
+  .step{flex:1;min-width:132px;border:1px solid var(--line);border-top:3px solid var(--un-blue);padding:12px 14px;background:#fff;margin-right:-1px;}
+  .step .a{font-size:12.5px;font-weight:700;color:var(--un-navy);}
+  .step .s{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;margin-top:3px;}
+  .step .c{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;}
+  .ok{color:var(--ok);font-weight:700;}
+  .warn{color:var(--warn);font-weight:700;}
+  .detail{font-size:12.5px;color:var(--muted);background:#f8fbfd;border:1px dashed var(--line);border-radius:4px;padding:10px 13px;margin:8px 0;}
+  .anchor{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .anchor:last-child{border-bottom:0;}
+  .anchor .k{width:26px;height:26px;border-radius:50%;background:var(--un-light);color:var(--un-blue-d);
+             display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;}
+  .anchor .k.kw{background:var(--gold-l);color:#8a6008;}
+  .mono-box{font-family:"SFMono-Regular",Consolas,monospace;font-size:11.5px;background:var(--un-deep);color:#cfe6f3;
+            padding:14px 16px;border-radius:5px;white-space:pre-wrap;word-break:break-all;max-height:320px;overflow:auto;}
+  .foot{background:var(--un-deep);color:#a9cadd;padding:46px 0 30px;font-size:12.5px;}
+  .foot .in{max-width:1340px;margin:0 auto;padding:0 24px;}
+  .foot .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:34px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,.13);}
+  @media(max-width:980px){.foot .cols{grid-template-columns:1fr 1fr;}}
+  .foot h6{color:#fff;font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 13px;font-weight:700;}
+  .foot a{color:#a9cadd;display:block;margin-bottom:7px;font-size:12.5px;}
+  .foot .base{color:#8fcdec;font-size:12.5px;line-height:1.85;}
+  .foot .bar{padding:18px 0 0;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:#7fa9c2;font-size:11.5px;}
+  .badge-rsi{display:inline-block;border:1px solid #f0a32b;color:var(--gold);padding:2px 9px;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.06em;}
+  details summary{cursor:pointer;font-size:13px;color:var(--un-blue-d);font-weight:600;margin:6px 0;}
+  details summary:hover{text-decoration:underline;}
+  .srcline{font-size:11px;color:var(--muted);margin-top:4px;}
 </style>
 </head>
 <body>
-<header>
-  <h1>🌱 智慧农业生态 · AI 种植方案生成器</h1>
-  <p>ClimateAgent → CropAgent → GrowthAgent → EcoAgent 四 Agent 协同 · 每条建议附 AgriTrust 可信证书</p>
-</header>
 
-<div class="wrap">
-  <!-- 输入面板 -->
-  <div class="panel">
-    <label>选择城市（自动填充坐标）</label>
-    <select id="city"></select>
-    <div class="row">
-      <div><label>纬度 lat</label><input type="number" id="lat" step="0.0001" value="30.2741"></div>
-      <div><label>经度 lon</label><input type="number" id="lon" step="0.0001" value="120.1551"></div>
+<!-- ============ UTILITY BAR ============ -->
+<div class="utility">
+  <div class="in">
+    <div class="srcs">
+      <span class="src">FAO GAEZ v4</span>
+      <span class="src">WorldClim 2.1</span>
+      <span class="src">ISRIC SoilGrids</span>
+      <span class="src">NASA POWER</span>
+      <span class="src">IPNI / USDA Plant Guides</span>
+      <span class="src">WOFOST</span>
     </div>
-    <label>种植场景</label>
-    <select id="scene">
-      <option value="balcony">阳台种植</option>
-      <option value="office">办公室</option>
-      <option value="garden">庭院/露台</option>
-      <option value="balcony_rail">阳台护栏</option>
-      <option value="car_herbs">车载香草</option>
-      <option value="car_greens">车载叶菜</option>
-      <option value="community">社区农场</option>
-      <option value="field">大田</option>
-    </select>
-    <div class="row">
-      <div><label>楼层</label><input type="number" id="floor" value="15" min="1"></div>
-      <div><label>朝向</label>
-        <select id="orientation">
-          <option value="south">南</option><option value="north">北</option>
-          <option value="east">东</option><option value="west">西</option>
-        </select>
-      </div>
-    </div>
-    <div class="row">
-      <div><label>目的</label>
-        <select id="purpose">
-          <option value="食用">食用</option><option value="香料">香料</option>
-          <option value="观赏">观赏</option>
-        </select>
-      </div>
-      <div><label>难度</label>
-        <select id="difficulty">
-          <option value="beginner">新手</option><option value="advanced">进阶</option>
-        </select>
-      </div>
-    </div>
-    <label>空间 (m²)</label>
-    <input type="number" id="space_sqm" value="1.5" step="0.1" min="0.1">
-    <label>预算 ¥ <span class="budget-val" id="budgetVal">500</span> <span style="font-weight:400">(0=不限)</span></label>
-    <input type="range" id="budget" min="0" max="2000" step="50" value="500" oninput="document.getElementById('budgetVal').textContent=this.value">
-    <button id="go" onclick="run()">生成种植方案</button>
-    <div class="legend">
-      🧭 分区匹配来自全球 Köppen 气候带 + 微气候修正<br>
-      🌾 作物推荐基于 76+ 种作物-分区适配数据库<br>
-      🔁 EcoAgent 设备推荐按预算贪心筛选<br>
-      🔒 AgriTrust 证书为建议生成可复现数字签名
-      🐛 病虫害/营养缺乏诊断见下方 PestAgent 区块（数据驱动 + 可插拔视觉后端）
-    </div>
-  </div>
-
-  <!-- 结果区 -->
-  <div id="result">
-    <div class="loading">👈 在左侧选择城市与场景，点击「生成种植方案」查看四 Agent 协同结果。</div>
+    <div>中文 · ENGLISH &nbsp;|&nbsp; <span id="srvtime">—</span></div>
   </div>
 </div>
 
-<!-- 病虫害诊断 -->
-<section class="wrap" style="margin-top:0">
-  <div class="panel" style="grid-column:1 / -1">
-    <h3 style="margin-top:0">🐛 病虫害与营养缺乏诊断（PestAgent）</h3>
-    <p class="hint" style="margin-top:0">数据驱动：结合作物已知病虫害清单 + 内置知识库症状匹配；配置视觉后端时可上传图片辅助。不替代专业植保人员。</p>
-    <div class="row">
-      <div style="flex:1">
-        <label>作物</label>
-        <input type="text" id="pest_crop" placeholder="如 番茄 / 香蕉 / 黄瓜" value="番茄">
-      </div>
-      <div style="flex:1">
-        <label>生长阶段（可选）</label>
-        <input type="text" id="pest_stage" placeholder="如 苗期 / 花期 / 结果期">
-      </div>
-    </div>
-    <label>症状描述</label>
-    <textarea id="pest_symptom" rows="3" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fafdfa" placeholder="如：叶片出现黄色斑点，背面有白色粉状物">叶片出现黄色斑点，背面有白色粉状物，像白粉病</textarea>
-    <label>图像（可选，data URI 或 URL；需服务端配置视觉后端才启用）</label>
-    <input type="text" id="pest_image" placeholder="data:image/jpeg;base64,.... 或 https://...">
-    <button id="pestGo" onclick="pestDiagnose()">诊断</button>
-    <div id="pestResult" style="margin-top:12px"></div>
-  </div>
-</section>
-
-<!-- 养分管理 -->
-<section class="wrap" style="margin-top:0">
-  <div class="panel" style="grid-column:1 / -1">
-    <h3 style="margin-top:0">🌿 养分管理与阶段化施肥方案（NutritionAgent）</h3>
-    <p class="hint" style="margin-top:0">数据驱动：结合作物科属 NPK 侧重 + 生长周期，生成播种→苗期→生长→采收四阶段施肥方案（浓度/频率/单次用量）。不替代土壤/基质检测。</p>
-    <div class="row">
-      <div style="flex:1">
-        <label>作物</label>
-        <input type="text" id="nut_crop" placeholder="如 番茄 / 生菜 / 香蕉" value="番茄">
-      </div>
-      <div style="flex:1">
-        <label>种植场景</label>
-        <select id="nut_scene">
-          <option value="balcony">阳台</option>
-          <option value="container">容器</option>
-          <option value="garden">庭院</option>
-          <option value="office">办公室</option>
-        </select>
+<!-- ============ MASTHEAD ============ -->
+<div class="masthead">
+  <div class="in">
+    <div class="brand">
+      <svg class="emblem" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="29" fill="none" stroke="#8fcdec" stroke-width="1.4"/>
+        <circle cx="32" cy="32" r="22.5" fill="none" stroke="#8fcdec" stroke-width=".8" opacity=".6"/>
+        <ellipse cx="32" cy="32" rx="10" ry="22.5" fill="none" stroke="#8fcdec" stroke-width=".9" opacity=".75"/>
+        <ellipse cx="32" cy="32" rx="19" ry="22.5" fill="none" stroke="#8fcdec" stroke-width=".7" opacity=".45"/>
+        <line x1="32" y1="9.5" x2="32" y2="54.5" stroke="#8fcdec" stroke-width=".7" opacity=".5"/>
+        <line x1="9.5" y1="32" x2="54.5" y2="32" stroke="#8fcdec" stroke-width=".9" opacity=".75"/>
+        <line x1="15" y1="18" x2="49" y2="18" stroke="#8fcdec" stroke-width=".55" opacity=".4"/>
+        <line x1="15" y1="46" x2="49" y2="46" stroke="#8fcdec" stroke-width=".55" opacity=".4"/>
+        <path d="M32 14 q-6 8 0 18 q6 -10 0 -18z" fill="#e0a020" opacity=".95"/>
+        <circle cx="32" cy="32" r="2.6" fill="#e0a020"/>
+      </svg>
+      <div>
+        <h1>智慧农业生态</h1>
+        <div class="en">Global Agriculture Environmental Configuration</div>
       </div>
     </div>
-    <div class="row">
-      <div style="flex:1">
-        <label>当前阶段（可选）</label>
-        <input type="text" id="nut_stage" placeholder="如 苗期 / 结果期">
+    <nav class="nav">
+      <a href="#platform">平台 Platform</a>
+      <a href="#capabilities">能力 Capabilities</a>
+      <a href="#data">数据 Data</a>
+      <a href="#trust">可信 Trust</a>
+      <a href="#mcp">MCP</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<div class="hero" id="platform">
+  <div class="in">
+    <div class="eyebrow">Knowledge Foundation &amp; Output Engine</div>
+    <h2>全球农业环境配置的<span class="accent">知识底座与输出引擎</span></h2>
+    <div class="rule"></div>
+    <p class="sub">面向任意经纬度的地块，聚合公开气候、土壤与作物文献，识别农业分区、生成可执行的作物与设备方案，
+      并以环境配置配方（Env Recipe）为单位交付温湿、光谱、水肥、气流与异常处理的完整参数集。
+      每条建议附带 AgriTrust 可信证书，全部结论可溯源至具体数据源。</p>
+    <p class="sub-en">A zero-dependency, Agent-native platform that turns global agricultural environment data
+      into executable cultivation configurations — traceable, certificate-backed, and open by design.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kCrops">—</div><div class="l">Crops 作物</div><div class="c">适配度评分覆盖</div></div>
+      <div class="kpi"><div class="n" id="kRecipes">—</div><div class="l">Env Recipes</div><div class="c">环境配置配方</div></div>
+      <div class="kpi"><div class="n" id="kZones">—</div><div class="l">Zones 分区</div><div class="c">全球气候带</div></div>
+      <div class="kpi"><div class="n" id="kSkills">—</div><div class="l">Skills</div><div class="c" id="kMcp">9 MCP 工具</div></div>
+      <div class="kpi"><div class="n" id="kCities">—</div><div class="l">Cities</div><div class="c">跨 6 大气候带</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SHELL ============ -->
+<div class="shell">
+  <div class="crumb"><b>首页</b> › 平台概览 › 能力展示与交互 <span class="srcline">&nbsp;·&nbsp; 全部能力均可在线试用</span></div>
+
+  <div class="section" id="capabilities">
+    <div class="section-head">
+      <span class="idx">§ 01</span>
+      <h3>核心能力</h3>
+      <span class="en">Core Capabilities</span>
+      <p>十个模块对应平台全部可调用能力：四项流水线 Agent、三项反应式技能、土壤与物候专项、环境配置调度、本地检索、跨会话记忆、数据飞轮与质量基线。</p>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-pane="recommend">种植方案<span class="en">Recommendation</span></button>
+      <button class="tab" data-pane="diagnose">病虫害诊断<span class="en">Diagnosis</span></button>
+      <button class="tab" data-pane="nutrition">养分方案<span class="en">Nutrition</span></button>
+      <button class="tab" data-pane="phenology">物候播期<span class="en">Planting Window</span></button>
+      <button class="tab" data-pane="soil">土壤画像<span class="en">Soil Profile</span></button>
+      <button class="tab" data-pane="recipe">环境配置<span class="en">Env Recipe</span></button>
+      <button class="tab" data-pane="foundation">知识底座<span class="en">Data Foundation</span></button>
+      <button class="tab" data-pane="search">知识检索<span class="en">Search</span></button>
+      <button class="tab" data-pane="memory">记忆溯源<span class="en">Memory &amp; Audit</span></button>
+      <button class="tab" data-pane="feedback">数据飞轮<span class="en">Feedback</span></button>
+      <button class="tab" data-pane="platform2">平台总览<span class="en">Platform</span></button>
+      <button class="tab" data-pane="bpscreen">投资评估<span class="en">Investment Screen</span></button>
+    </div>
+    <div class="panelbox">
+
+      <!-- ================= 1 种植方案 ================= -->
+      <div class="pane on" id="p-recommend">
+        <div class="grid2">
+          <div class="form">
+            <h4>地块与场景</h4>
+            <div class="fs">Plot &amp; scene parameters</div>
+            <label>城市 City（自动填充坐标）</label>
+            <select id="city"></select>
+            <div class="row">
+              <div><label>纬度 lat</label><input type="number" id="lat" step="0.0001" value="30.2741"></div>
+              <div><label>经度 lon</label><input type="number" id="lon" step="0.0001" value="120.1551"></div>
+            </div>
+            <label>种植场景 Scene</label>
+            <select id="scene">
+              <option value="balcony">阳台种植 Balcony</option>
+              <option value="office">办公室 Office</option>
+              <option value="roof">屋顶 Roof</option>
+              <option value="container">容器 Container</option>
+              <option value="car_greens">车载 Car Greens</option>
+              <option value="education">教育场景 Education</option>
+            </select>
+            <div class="row">
+              <div><label>楼层 Floor</label><input type="number" id="floor" value="15"></div>
+              <div><label>朝向 Orientation</label>
+                <select id="orientation">
+                  <option value="south">南 South</option><option value="east">东 East</option>
+                  <option value="west">西 West</option><option value="north">北 North</option>
+                </select></div>
+            </div>
+            <label>用途 Purpose</label>
+            <select id="purpose">
+              <option value="食用">食用 Edible</option><option value="观赏">观赏 Ornamental</option><option value="香料">香料 Aromatic</option>
+            </select>
+            <div class="row">
+              <div><label>面积 ㎡</label><input type="number" id="space_sqm" step="0.1" value="1.5"></div>
+              <div><label>难度 Level</label>
+                <select id="difficulty">
+                  <option value="beginner">新手 Beginner</option><option value="intermediate">进阶 Intermediate</option><option value="expert">专家 Expert</option>
+                </select></div>
+            </div>
+            <label>预算 Budget CNY <span class="budget-val" id="bval">¥500</span></label>
+            <input type="range" id="budget_cny" min="0" max="3000" step="50" value="500">
+            <button class="btn" id="btnRec">生成方案 Generate</button>
+            <div class="hint">四 Agent 协同：ClimateAgent → CropAgent → GrowthAgent → EcoAgent。工作项自动流转并写入长期记忆。</div>
+          </div>
+          <div class="out" id="o-rec"><div class="empty"><span class="g">◇</span>填写左侧参数后点击「生成方案」<br><span class="srcline">四 Agent 闭环将在约 1 秒内返回完整方案与可信证书</span></div></div>
+        </div>
       </div>
-      <div style="flex:1">
-        <label>容器容积 (L，可选)</label>
-        <input type="number" id="nut_vol" placeholder="如 10" step="0.5" min="0">
+
+      <!-- ================= 2 病虫害 ================= -->
+      <div class="pane" id="p-diagnose">
+        <div class="grid2">
+          <div class="form">
+            <h4>症状与诊断</h4>
+            <div class="fs">Symptom description → evidence-gated diagnosis</div>
+            <label>作物 Crop</label>
+            <input type="text" id="dCrop" value="生菜">
+            <label>症状描述 Symptoms</label>
+            <textarea id="dSym">叶片发黄，叶面出现水渍状病斑，边缘发白，下部叶片先发病</textarea>
+            <label>生长阶段 Growth Stage</label>
+            <select id="dStage"><option>苗期</option><option>莲座期</option><option>生长期</option><option>采收期</option></select>
+            <label>环境观测 Environment（可选）</label>
+            <div class="row">
+              <div><label>湿度 RH</label><input type="number" id="dHum" step="0.01" value="0.85"></div>
+              <div><label>温度 ℃</label><input type="number" id="dTemp" step="0.1" value="28"></div>
+            </div>
+            <button class="btn" id="btnDia">诊断 Diagnose</button>
+            <div class="hint"><b>证据门控（零误报策略）</b>：证据不足时明确返回「未确认」，不给出确定性诊断。
+            附三阶段推理链：预测 → 解释 → 处置映射。</div>
+          </div>
+          <div class="out" id="o-dia"><div class="empty"><span class="g">◇</span>描述症状后点击「诊断」</div></div>
+        </div>
+      </div>
+
+      <!-- ================= 3 养分 ================= -->
+      <div class="pane" id="p-nutrition">
+        <div class="grid2">
+          <div class="form">
+            <h4>阶段化施肥</h4>
+            <div class="fs">Crop-family NPK profile → staged fertilization plan</div>
+            <label>作物 Crop</label>
+            <input type="text" id="nCrop" value="生菜">
+            <label>场景 Scene</label>
+            <select id="nScene"><option value="balcony">阳台</option><option value="office">办公室</option><option value="roof">屋顶</option><option value="container">容器</option></select>
+            <label>生长阶段 Stage</label>
+            <select id="nStage"><option>播种</option><option>苗期</option><option>生长期</option><option>采收期</option></select>
+            <div class="row">
+              <div><label>已生长天数</label><input type="number" id="nDays" value="20"></div>
+              <div><label>容器容积 L</label><input type="number" id="nVol" value="8"></div>
+            </div>
+            <label>起始日期 Start Date</label>
+            <input type="date" id="nDate" value="2026-09-20">
+            <button class="btn" id="btnNut">生成方案 Generate</button>
+            <div class="hint">按科属推断氮磷钾侧重，输出播种→苗期→生长→采收四阶段配方。</div>
+          </div>
+          <div class="out" id="o-nut"><div class="empty"><span class="g">◇</span>填写作物与阶段后点击「生成方案」</div></div>
+        </div>
+      </div>
+
+      <!-- ================= 4 物候 ================= -->
+      <div class="pane" id="p-phenology">
+        <div class="grid2">
+          <div class="form">
+            <h4>霜冻锚定播期</h4>
+            <div class="fs">Frost-anchored planting windows (WOFOST GDD)</div>
+            <label>城市 City（决定 12 个月均温）</label>
+            <select id="phCity"></select>
+            <label>覆盖作物 Crops（WOFOST 参数）</label>
+            <div id="phCrops"></div>
+            <label>霜冻阈值 Frost threshold ℃</label>
+            <input type="number" id="phTh" step="0.1" value="0">
+            <label>安全余量 Safety margin（天）</label>
+            <input type="number" id="phMargin" value="7">
+            <button class="btn" id="btnPh">推导播期窗口 Derive</button>
+            <div class="hint">由月均温推导无霜期与 GDD 积温，给出各作物最早 / 最晚安全播种日。<br>
+            <span class="srcline">月均温为近似气候常态值，仅作演示输入；生产环境应由调用方传入实测序列。</span></div>
+
+            <hr class="sep">
+            <h4>或用真实经纬度自动获取气候</h4>
+            <div class="fs">NASA POWER（公有领域）实时拉取 · 失败回退 Open-Meteo（CC BY 4.0）</div>
+            <div class="row">
+              <div><label>纬度 lat</label><input type="number" id="phLat" step="0.0001" value="30.2741"></div>
+              <div><label>经度 lon</label><input type="number" id="phLon" step="0.0001" value="120.1551"></div>
+            </div>
+            <button class="btn sm" id="btnPhGeo">自动获取真实气候并推导 Auto-fetch</button>
+            <div class="hint">后端按经纬度实时拉取 12 个月均温（带来源与取数时间标注），<b>无需手填</b>。<br>
+            <span class="srcline">首次拉取约 2–6 秒；结果写入本地缓存，二次调用免联网。</span></div>
+          </div>
+          <div class="out" id="o-ph"><div class="empty"><span class="g">◇</span>选择城市与作物后点击「推导播期窗口」</div></div>
+        </div>
+      </div>
+
+      <!-- ================= 5 土壤 ================= -->
+      <div class="pane" id="p-soil">
+        <div class="grid2">
+          <div class="form">
+            <h4>土壤画像</h4>
+            <div class="fs">SoilGrids online first → offline zone fallback</div>
+            <div class="row">
+              <div><label>纬度 lat</label><input type="number" id="sLat" step="0.0001" value="30.2741"></div>
+              <div><label>经度 lon</label><input type="number" id="sLon" step="0.0001" value="120.1551"></div>
+            </div>
+            <label>作物 Crop（用于 pH 适配判定）</label>
+            <input type="text" id="sCrop" value="生菜">
+            <label class="chk"><input type="checkbox" id="sOnline" checked> 优先在线查询 SoilGrids（超时自动降级）</label>
+            <label>查询超时 Timeout（秒）</label>
+            <input type="number" id="sTo" step="0.5" value="6">
+            <button class="btn" id="btnSoil">查询土壤 Query</button>
+            <div class="hint">在线不可达时自动降级为分区均值画像，并标注数据来源为离线兜底。<br>
+            <span class="srcline">中国坐标查询偶发慢响应，为防用户端挂死，超时保持严格。</span></div>
+          </div>
+          <div class="out" id="o-soil"><div class="empty"><span class="g">◇</span>填写坐标后点击「查询土壤」</div></div>
+        </div>
+      </div>
+
+      <!-- ================= 6 Env Recipe ================= -->
+      <div class="pane" id="p-recipe">
+        <div class="grid2">
+          <div class="form">
+            <h4>条件锚定调度</h4>
+            <div class="fs">Env Recipe → threshold &amp; keyword anchors</div>
+            <label>作物 Crop</label>
+            <input type="text" id="rCrop" value="生菜">
+            <label>分区 Zone</label>
+            <select id="rZone">
+              <option value="subtropical_wet">subtropical_wet 亚热带湿润带</option>
+              <option value="tropical_rainforest">tropical_rainforest 热带雨林</option>
+              <option value="temperate_continental">temperate_continental 温带大陆性</option>
+              <option value="arid">arid 干旱带</option>
+              <option value="mediterranean">mediterranean 地中海带</option>
+              <option value="subarctic">subarctic 亚寒带</option>
+            </select>
+            <label>实时观测 Observations（字段名须与锚点一致）</label>
+            <div class="row">
+              <div><label>temp_c 温度</label><input type="number" id="rTemp" step="0.1" value="26"></div>
+              <div><label>humidity_pct 湿度 %</label><input type="number" id="rHum" step="1" value="62"></div>
+            </div>
+            <div class="row">
+              <div><label>ph 酸碱度</label><input type="number" id="rPh" step="0.1" value="6.6"></div>
+              <div><label>water_ml 供水量</label><input type="number" id="rWater" step="10" value="120"></div>
+            </div>
+            <label>症状文本（触发关键词锚点）</label>
+            <input type="text" id="rSym" placeholder="如：夏季高温抽苔、蚜虫">
+            <button class="btn" id="btnSch">评估动作 Evaluate</button>
+            <div class="hint">不依赖固定时刻：锚点由配方阈值与异常处理文本推导，返回 ready / waiting 动作集。
+            <span class="srcline">字段名必须与锚点 field 精确匹配（temp_c / humidity_pct / ph / water_ml）——单位错一个量级就会误触发。</span></div>
+          </div>
+          <div class="out" id="o-rec2"><div class="empty"><span class="g">◇</span>填写作物、分区与观测后点击「评估动作」</div></div>
+        </div>
+      </div>
+
+      <!-- ================= 知识底座（可浏览/可检索的真实数据） ================= -->
+      <div class="pane" id="p-foundation">
+        <div class="grid2">
+          <div class="form" style="max-width:340px">
+            <h4>知识底座浏览</h4>
+            <div class="fs">110 作物 · 6 分区 · 23 病虫害 · 110 配方</div>
+            <div class="prov">⚠️ 数据性质：本库为 <b>AI 依据公开农艺通识 + 权威资料（GAEZ/WorldClim/USDA/FAO/IPNI/WOFOST）编撰的冷启动种子</b>，<b>非</b>经自动化管道从外部源实时抓取入库。适配分（adapt_score）现已对 <b>107/110 作物</b>用<b>生态位包络反推</b>实证校准：以 GBIF 真实物种分布点 + NASA POWER / Open-Meteo 真实气候反推气候适宜包络，对照 6 分区基线得出（<code>calibration_method=niche_envelope</code>），<b>非手编近似</b>；另有 <b>3/110</b>（樱桃萝卜/豆芽/微绿菜，属栽培品种或加工形态，GBIF 无物种分布点）仍 <code>calibrated:false</code>。注意：此校准为<b>「0 用户下唯一能实证」的气候生态位反推，仍不同于「真实种植结果回流校准」</b>——后者需用户反馈，数据飞轮目前 0 条记录。数值仅供方案生成参考，正式商用前须以权威源逐条核验。</div>
+            <div class="subnav" id="fdNav">
+              <button class="sbtn on" data-v="crops">作物库</button>
+              <button class="sbtn" data-v="zones">分区库</button>
+              <button class="sbtn" data-v="pests">病虫害库</button>
+              <button class="sbtn" data-v="recipes">配方库</button>
+            </div>
+            <div id="fdFilter"></div>
+            <div class="hint" id="fdHint">点击左侧条目查看完整画像。作物可按分区筛选、按名称/风险检索。</div>
+          </div>
+          <div class="out" id="o-foundation"><div class="empty"><span class="g">◇</span>选择上方分类开始浏览知识底座</div></div>
+        </div>
+      </div>
+
+      <!-- ================= 7 检索 ================= -->
+      <div class="pane" id="p-search">
+        <div class="grid2">
+          <div class="form">
+            <h4>本地三层检索</h4>
+            <div class="fs">FTS5 + CJK bigram + hash vector, zero network</div>
+            <label>查询 Query</label>
+            <input type="text" id="qText" value="生菜 病虫害">
+            <label>语料库 Corpus</label>
+            <select id="qCorpus">
+              <option value="all">全部 All</option><option value="crops">作物 Crops</option>
+              <option value="zones">分区 Zones</option><option value="pests">病虫害 Pests</option><option value="recipes">配方 Recipes</option>
+            </select>
+            <label>模式 Mode</label>
+            <select id="qMode">
+              <option value="hybrid">混合 Hybrid（精确+关键词+向量）</option>
+              <option value="exact">仅精确 Exact</option>
+              <option value="keyword">仅关键词 Keyword</option>
+              <option value="vector">仅向量 Vector</option>
+            </select>
+            <div class="row">
+              <div><label>返回条数 k</label><input type="number" id="qK" value="10"></div>
+              <div><label>最小得分</label><input type="number" id="qMin" step="0.01" value="0.02"></div>
+            </div>
+            <button class="btn" id="btnSearch">检索 Search</button>
+            <div class="hint">索引为派生产物（sqlite3 FTS5），不触碰源 JSON；中文按连续 CJK 2-gram 切分以保证查询侧与文档侧一致。</div>
+          </div>
+          <div class="out" id="o-search"><div class="empty"><span class="g">◇</span>输入查询后点击「检索」</div></div>
+        </div>
+      </div>
+
+      <!-- ================= 8 记忆 ================= -->
+      <div class="pane" id="p-memory">
+        <div class="grid2">
+          <div class="form">
+            <h4>跨会话记忆与工作项</h4>
+            <div class="fs">Cross-session recall + append-only work item audit</div>
+            <label>召回查询 Query</label>
+            <input type="text" id="mQuery" value="阳台 生菜">
+            <label>过滤 Filter</label>
+            <div class="row">
+              <div><label>Skill</label><input type="text" id="mSkill" placeholder="可选"></div>
+              <div><label>Crop</label><input type="text" id="mCrop" placeholder="可选"></div>
+            </div>
+            <label class="chk"><input type="checkbox" id="mExp" checked> 超边二阶扩展 Hyperedge expansion</label>
+            <button class="btn" id="btnRec2">召回记忆 Recall</button>
+            <button class="btn alt" id="btnWI" style="margin-top:10px">跑通工作项状态机 Run Work Item</button>
+            <div class="hint">记忆六层加权（主体 / 技能 / 标签 / 查询 / 时效 / 向量）；
+            工作项为 7 态 5 模式声明式状态机，非法转移被拒绝且不改变状态，审计只存 16 位摘要。</div>
+          </div>
+          <div class="out" id="o-mem"><div class="empty"><span class="g">◇</span>两次操作：记忆召回、工作项状态机全链路</div></div>
+        </div>
+      </div>
+
+      <!-- ================= 9 飞轮 ================= -->
+      <div class="pane" id="p-feedback">
+        <div class="grid2">
+          <div class="form">
+            <h4>数据回流</h4>
+            <div class="fs">Real outcome feedback → score calibration</div>
+            <label>分区 ID</label><input type="text" id="fZone" value="subtropical_wet">
+            <label>作物 Crop</label><input type="text" id="fCrop" value="小白菜">
+            <div class="row">
+              <div><label>存活率</label><input type="number" id="fSurv" step="0.1" min="0" max="1" value="1"></div>
+              <div><label>产量评分</label><input type="number" id="fYield" step="0.1" min="1" max="5" value="4.5"></div>
+            </div>
+            <div class="row">
+              <div><label>用户评分</label><input type="number" id="fRate" step="0.1" min="1" max="5" value="4.5"></div>
+              <div><label>问题数</label><input type="number" id="fIssues" min="0" value="0"></div>
+            </div>
+            <label>备注 Note</label>
+            <textarea id="fNote">首批阳台试种，30 天采收，无病害。</textarea>
+            <button class="btn gold" id="btnFeed">提交真实反馈 Submit</button>
+            <div class="hint"><b>诚实基线</b>：平台当前真实用户反馈为 0 条，此表单是回流闭环的入口。
+            合成测试数据带标记并被 CI 门禁拦截，不会冒充真实数据。</div>
+          </div>
+          <div class="out" id="o-feed"><div class="empty"><span class="g">◇</span>提交一次真实种植结果，参与适配度校准</div></div>
+        </div>
+      </div>
+
+      <!-- ================= 10 平台总览 ================= -->
+      <div class="pane" id="p-platform2">
+        <div id="o-platform"></div>
+      </div>
+
+      <!-- ================= 11 投资评估 ================= -->
+      <div class="pane" id="p-bpscreen">
+        <div class="grid2">
+          <div class="form">
+            <h4>BP 文本初筛</h4>
+            <div class="fs">Business plan → completeness &amp; risk triage</div>
+            <label>公司名称 Company</label>
+            <input type="text" id="bpCompany" value="测试种业">
+            <label>分类 Category（可选，空则自动分类）</label>
+            <select id="bpCategory">
+              <option value="">自动分类 Auto</option>
+              <option value="seeds">种业 Seeds</option>
+              <option value="agmach">农机 Ag Machinery</option>
+              <option value="digag">数字农业 Digital Ag</option>
+              <option value="bioinputs">农资 Bioinputs</option>
+              <option value="supply">供应链 Supply Chain</option>
+              <option value="livestock">畜牧 Livestock</option>
+            </select>
+            <label>BP 文本 Business Plan</label>
+            <textarea id="bpText" rows="12">种业公司BP：主营杂交水稻种子。
+已审定品种：6个（金玉188、金玉198、金玉208、金玉218、金玉228、金玉238）。
+生产应用安全证书 2个，农药登记证 3个。
+2023年营业收入1.8亿元，销售净利率10%，毛利率41%。
+研发投入占营业收入8%。政府补贴占营业收入15%。
+现金及现金等价物期末余额3.2亿元，月均净支出800万元。
+单位经济模型为正，ue_margin 32%。客户集中度35%。</textarea>
+            <button class="btn" id="btnBp">初筛 Screen</button>
+            <div class="hint"><b>完备性 + 风险初筛</b>：三档结论（通过 / 需深挖 / 淘汰）+ 六评分卡 + 五闸一票否决 + 11 区块报告。<br>
+            <b>不构成投资决策建议</b>——本地核验库是演示数据，仅做字段完备度与红旗检测。</div>
+            <hr class="sep">
+            <label>上传 BP 文件 Upload（PDF / Word / Excel / CSV / TXT）</label>
+            <input type="file" id="bpFiles" multiple accept=".pdf,.docx,.xlsx,.xls,.csv,.txt,.md">
+            <button class="btn" id="btnBpFile">上传并初筛 Upload &amp; Screen</button>
+            <div class="hint">文件在浏览器内读为 base64 上传，服务端解析（Word 零依赖；PDF/Excel 缺依赖时自动降级）。每次初筛（文本或文件）自动归档到下方「我的评估」。</div>
+          </div>
+          <div class="out" id="o-bp"><div class="empty"><span class="g">◇</span>粘贴 BP 文本后点击「初筛」，或上传文件<br><span class="srcline">九层管线：解析 → 抽取 → 归一化 → 合理性校验 → 分类 → 核验 → 缺口 → 评分 → 报告</span></div></div>
+          <div class="card" id="bpHistory" style="margin-top:18px">
+            <h5>我的评估 My Assessments<span class="en" id="bpListCount"></span></h5>
+            <button class="btn sm" id="btnBpList">刷新列表 Refresh</button>
+            <div id="bpList" class="bp-list"><div class="detail">点击刷新加载已归档的初筛记录。</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ DATA SECTION ============ -->
+  <div class="section" id="data">
+    <div class="section-head">
+      <span class="idx">§ 02</span>
+      <h3>数据底座</h3>
+      <span class="en">Data Foundation</span>
+      <p>数据库本身不是壁垒——公开源早已开放。壁垒在于组织方式、可机读的 Agent-native 接口、可执行的配置输出，以及真实结果的持续回流校准。</p>
+    </div>
+    <div class="crops" id="cityCards"></div>
+  </div>
+
+  <!-- ============ TRUST / MCP ============ -->
+  <div class="section" id="trust">
+    <div class="section-head">
+      <span class="idx">§ 03</span>
+      <h3>可信与开放接口</h3>
+      <span class="en">Trust &amp; Agent-Native API</span>
+      <p>每条建议都可追溯到具体数据源与决策链路，并随附可验证的可信证书；平台同时以 MCP 协议对外提供九个工具，供外部智能体直接调用。</p>
+    </div>
+    <div id="o-trust"></div>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<div class="foot">
+  <div class="in">
+    <div class="cols">
+      <div>
+        <h6>关于平台 About</h6>
+        <div class="base">
+          零依赖构建：全部能力仅用 Python 标准库实现，无 Docker、无第三方 API Key、无外部服务依赖。
+          前端单文件、后端单进程，可在任意具备 Python 3.10+ 的机器上直接运行。
+        </div>
+        <div style="margin-top:14px"><span class="badge-rsi" id="rsiBadge">RSI B0 · HCI 0.0</span></div>
+        <div class="base" style="margin-top:8px" id="rsiNote"></div>
+      </div>
+      <div>
+        <h6>能力 Capabilities</h6>
+        <a href="#capabilities">种植方案生成</a>
+        <a href="#capabilities">病虫害诊断</a>
+        <a href="#capabilities">物候播期推导</a>
+        <a href="#capabilities">环境配置调度</a>
+        <a href="#capabilities">本地知识检索</a>
+      </div>
+      <div>
+        <h6>数据 Sources</h6>
+        <a href="#data">FAO GAEZ v4</a>
+        <a href="#data">WorldClim 2.1</a>
+        <a href="#data">ISRIC SoilGrids</a>
+        <a href="#data">WOFOST</a>
+        <a href="#data">NASA POWER</a>
+      </div>
+      <div>
+        <h6>开放接口 API</h6>
+        <a href="#mcp" id="footMcp">MCP Server · 10 tools</a>
+        <a href="#mcp">REST · 19 endpoints</a>
+        <a href="#mcp">Skills Registry · 9</a>
+        <a href="#mcp">AgriTrust 证书</a>
+        <a href="#mcp">JSON Schema</a>
       </div>
     </div>
-    <button id="nutGo" onclick="nutritionPlan()">生成施肥方案</button>
-    <div id="nutResult" style="margin-top:12px"></div>
+    <div class="bar">
+      <span>智慧农业生态 · Smart Agriculture Ecosystem</span>
+      <span id="footTime">—</span>
+    </div>
   </div>
-</section>
-
-<!-- 技能目录 -->
-<section class="wrap" style="margin-top:0">
-  <div class="panel" style="grid-column:1 / -1">
-    <h3 style="margin-top:0">🗂️ 技能目录（Skill Registry · 经 orchestrator.call_skill 统一路由）</h3>
-    <p class="hint" style="margin-top:0">读取 <code>skills/registry/*.json</code> 自动生成；<b>call_skill</b> 类可直接经 <code>POST /api/agent</code> 调用，<b>pipeline</b> 类由四 Agent 规划流水线内部消费。</p>
-    <div id="skillCatalog" class="loading">⏳ 加载技能目录…</div>
-  </div>
-</section>
-
-<footer>智慧农业生态 · 个人互联网项目 · 对标 SwarmLabs 科研 Agent Infra 的农业版 · 数据来源 WorldClim/FAO/ISRIC/中国农艺通识</footer>
+</div>
 
 <script>
-const $ = id => document.getElementById(id);
+/* ============================== DATA ============================== */
+const MONTHLY = {
+  "杭州":[4.8,6.3,10.0,16.1,21.5,25.2,29.1,29.2,25.1,19.3,13.3,7.0],
+  "北京":[-3.5,0.0,6.5,14.5,20.7,24.5,26.8,25.5,20.7,13.5,5.0,-1.5],
+  "深圳":[15.6,16.2,18.4,22.3,25.9,27.8,28.5,28.4,27.3,24.6,20.5,16.6],
+  "广州":[13.8,15.4,18.2,22.2,25.8,27.9,28.9,28.7,27.0,23.7,19.4,15.0],
+  "成都":[5.7,7.9,11.9,17.3,21.6,24.4,26.5,26.0,21.8,17.0,12.3,7.6],
+  "武汉":[3.6,6.1,11.2,17.6,22.7,26.2,29.1,28.8,24.3,18.9,12.9,6.6],
+  "乌鲁木齐":[-15.3,-9.8,-0.5,10.5,17.2,21.5,24.0,22.6,15.7,7.0,-3.3,-12.3],
+  "拉萨":[-2.0,0.5,5.5,8.9,11.3,12.5,12.4,11.7,9.4,5.7,0.5,-3.5],
+  "洛杉矶":[13.5,14.7,16.1,17.5,19.4,21.0,22.6,23.1,22.4,19.8,16.4,13.9],
+  "新加坡":[26.0,26.5,26.8,26.9,27.4,27.7,27.9,28.0,27.6,27.3,26.6,26.0],
+  "迪拜":[18.1,20.3,24.0,27.9,31.5,33.6,34.9,34.6,32.1,28.4,23.3,19.5],
+  "莫斯科":[-8.9,-8.5,-2.9,5.8,12.6,17.0,19.1,15.3,9.4,3.5,-3.1,-7.4]
+};
+const PH_CROPS = ["potato","wheat","soybean","sunflower","rice","sweetpotato","mungbean"];
 
-// 加载技能目录
-(async function loadSkills(){
-  const box=$('skillCatalog');
+/* ============================== HELPERS ============================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+async function api(path, payload){
+  const opt = payload
+    ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)}
+    : {method:"GET"};
+  const r = await fetch(path, opt);
+  const j = await r.json().catch(() => ({error:"响应解析失败"}));
+  if(!r.ok) throw new Error(j.error || (path + " → HTTP " + r.status));
+  return j;
+}
+function loading(el, msg){ el.innerHTML = '<div class="load">▮ 处理中 · ' + esc(msg || "正在计算") + "…</div>"; }
+function fail(el, e){ el.innerHTML = '<div class="errbox"><b>请求失败</b><br>' + esc(e && e.message ? e.message : e) + "</div>"; }
+const tags = (arr, cls) => (arr||[]).map(t => '<span class="tag '+(cls||"")+'">'+esc(t)+"</span>").join("");
+const kv = (k, v) => '<div class="kv"><b>'+esc(k)+'：</b><span class="v">'+v+'</span></div>';
+function scorebar(v){
+  const p = Math.max(0, Math.min(100, (Number(v)||0)*100));
+  return '<span class="scorebar"><i style="width:'+p.toFixed(0)+'%"></i></span> <b>'+(p.toFixed(0))+'%</b>';
+}
+function jsonbox(o){ return '<div class="mono-box">' + esc(JSON.stringify(o, null, 2)) + "</div>"; }
+
+/* ============================== TABS ============================== */
+document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+  document.querySelectorAll(".pane").forEach(x => x.classList.remove("on"));
+  b.classList.add("active");
+  const pane = document.getElementById("p-" + b.dataset.pane);
+  pane.classList.add("on");
+  if(b.dataset.pane === "bpscreen") loadBpList();
+  if(b.dataset.pane === "foundation"){ renderFoundationFilter(); loadFoundation(); }
+}));
+
+/* ============================== CITIES ============================== */
+let CITIES = [];
+async function loadCities(){
   try{
-    const r=await fetch('/api/skills'); const d=await r.json();
-    if(d.error){box.innerHTML=`<div class="err">${esc(d.error)}</div>`;return;}
-    const rows=(d.skills||[]).map(s=>{
-      const tag = s.callable_via==='call_skill'
-        ? '<span class="badge" style="background:#e3f2fd;color:var(--blue)">call_skill</span>'
-        : '<span class="badge">pipeline</span>';
-      const impl = s.implemented ? '✅ 已真实实现' : '⚠️ 占位/未实现';
-      return `<div class="phase" style="display:flex;gap:10px;align-items:baseline">
-        <b style="min-width:160px">${esc(s.name)}</b>
-        <span style="color:var(--muted);font-size:12px">${esc(s.agent)} · ${esc(s.domain)}</span>
-        ${tag}
-        <span style="font-size:12px">${impl}</span>
-        <span style="color:var(--muted);font-size:12px;margin-left:auto;text-align:right">${esc(s.description).slice(0,60)}…</span>
-      </div>`;
-    }).join('');
-    box.innerHTML=`<div style="margin-bottom:8px">共 ${ (d.skills||[]).length } 个注册技能</div>${rows}`;
-  }catch(e){box.innerHTML=`<div class="err">${esc(e)}</div>`;}
-})();
+    const d = await api("/api/cities");
+    CITIES = d.cities || [];
+    const opts = CITIES.map(c => '<option value="'+esc(c.name)+'" data-lat="'+c.lat+'" data-lon="'+c.lon+'" data-zone="'+esc(c.zone)+'">'+esc(c.name)+" · "+esc(c.zone)+"</option>").join("");
+    $("#city").innerHTML = opts;
+    $("#phCity").innerHTML = opts;
+    $("#phCrops").innerHTML = PH_CROPS.map((c,i) =>
+      '<label class="chk"><input type="checkbox" value="'+c+'"'+(i<3?" checked":"")+'>'+c+"</label>").join("");
+    renderCityCards();
+  }catch(e){ /* 静态兜底 */ }
+}
+function renderCityCards(){
+  $("#cityCards").innerHTML = CITIES.map(c => {
+    const m = MONTHLY[c.name] || [];
+    const min = m.length ? Math.min.apply(null, m) : null;
+    const max = m.length ? Math.max.apply(null, m) : null;
+    return '<div class="crop"><div class="nm">'+esc(c.name)+'</div><div class="la">'+c.lat.toFixed(2)+', '+c.lon.toFixed(2)+'</div>'+
+      '<div class="meta">'+esc(c.zone)+'<br>年均温区间 '+(min==null?"—":min.toFixed(1)+" → "+max.toFixed(1))+' ℃</div></div>';
+  }).join("");
+}
+$("#city").addEventListener("change", e => {
+  const o = e.target.selectedOptions[0];
+  if(o){ $("#lat").value = o.dataset.lat; $("#lon").value = o.dataset.lon; }
+});
+$("#budget_cny").addEventListener("input", e => $("#bval").textContent = "¥" + e.target.value);
 
+/* ============================== 1 RECOMMEND ============================== */
+$("#btnRec").addEventListener("click", async () => {
+  const out = $("#o-rec"); const b = $("#btnRec"); b.disabled = true;
+  loading(out, "四 Agent 协同推理");
+  try{
+    const r = await api("/api/recommend", {
+      lat:+$("#lat").value, lon:+$("#lon").value, scene:$("#scene").value, floor:+$("#floor").value,
+      orientation:$("#orientation").value, purpose:$("#purpose").value, space_sqm:+$("#space_sqm").value,
+      difficulty:$("#difficulty").value, budget_cny:+$("#budget_cny").value
+    });
+    out.innerHTML = renderRecommend(r);
+  }catch(e){ fail(out, e); } finally { b.disabled = false; }
+});
+function renderRecommend(r){
+  const fr = r.final_recommendation || {};
+  const crops = fr.recommended_crops || [];
+  const gp = fr.growth_plan || {};
+  const rec = gp.recommendation || {};
+  const conf = gp.confidence || {};
+  const cons = gp.constraints || {};
+  const ev = gp.evidence || {};
+  const trust = r.trust_summary || {};
+  const ver = r.verification || {};
 
-// 填充城市下拉
-fetch('/api/cities').then(r=>r.json()).then(d=>{
-  const sel = $('city');
-  d.cities.forEach(c=>{
-    const o=document.createElement('option');
-    o.value=JSON.stringify({lat:c.lat,lon:c.lon,name:c.name});
-    o.textContent=`${c.name}（${c.zone}）`;
-    sel.appendChild(o);
+  let h = "";
+  /* pipeline flow */
+  h += '<div class="card"><h5>Agent 管线 Pipeline<span class="en">4-stage closed loop</span></h5><div class="flow">';
+  (r.pipeline_steps||[]).forEach(s => {
+    const o = s.output || {}; const c = o.confidence || {};
+    h += '<div class="step"><div class="a">'+esc(s.agent)+'</div>'+
+      '<div class="s">'+(s.status==="ok"?'<span class="ok">✓ PASS</span>':'<span class="warn">! '+esc(s.status)+'</span>')+'</div>'+
+      '<div class="c">评分 '+(c.rubric_score!=null?(c.rubric_score*100).toFixed(0)+"%":"—")+'<br>'+
+      (c.data_recency_years!=null?'数据时效 '+c.data_recency_years+' 年':(c.confidence_note?esc(c.confidence_note).slice(0,42):""))+'</div></div>';
   });
-  sel.onchange=()=>{
-    const v=JSON.parse(sel.value);
-    $('lat').value=v.lat; $('lon').value=v.lon;
-  };
-}).catch(()=>{});
+  h += "</div>";
+  if(ver.per_agent){
+    const fails = [];
+    Object.keys(ver.per_agent).forEach(a => (ver.per_agent[a].checks||[]).forEach(c => { if(!c.ok) fails.push(a+" / "+c.name); }));
+    h += '<div class="detail"><b>交叉验证</b>：'+(ver.passed?'<span class="ok">通过</span>':'<span class="warn">未通过</span>')+
+      '，'+esc(ver.verified_agents)+' 个 Agent，'+
+      (fails.length?('失败项 '+fails.map(esc).join("、")):'全部检查项通过')+'</div>';
+  }
+  h += "</div>";
 
-function esc(s){return String(s??'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+  /* zone */
+  h += '<div class="card gold"><h5>农业分区匹配 Zone<span class="en">Köppen-Geiger + FAO</span></h5>'+
+    kv("分区", esc(fr.zone||"—")) +
+    kv("数据源", tags(ev.data_sources||[], "n")) +
+    (ev.data_recency_years!=null?kv("数据时效", esc(ev.data_recency_years)+" 年"): "") +
+    (ev.crop_db_version?kv("作物库版本", esc(ev.crop_db_version)): "") + "</div>";
 
-function agentCard(title, badge, score, inner){
-  return `<div class="agent-card"><h3>${title} <span class="badge">${badge}</span>
-    <span class="score">置信度 ${score}</span></h3>${inner}</div>`;
+  /* crops */
+  h += '<div class="card"><h5>作物推荐 Crops<span class="en">adaptability score</span></h5><div class="crops">';
+  crops.forEach(c => {
+    h += '<div class="crop"><div class="nm">'+esc(c.crop)+'</div><div class="la">'+esc(c.latin||"")+'</div>'+
+      '<div class="sc">'+(c.adapt_score!=null?c.adapt_score.toFixed(2):"—")+'</div>'+
+      '<div class="meta">D'+esc(c.growth_days)+' · '+esc((c.family||""))+' · 耐温 '+esc(c.temp_range_c?c.temp_range_c.join("–"):"")+' ℃<br>'+
+      'pH '+esc(c.ph_range?c.ph_range.join("–"):"")+' · '+esc(c.water_ml_day||"")+' ml/天</div>'+
+      '<div class="meta" style="margin-top:6px">'+esc(c.reason||"")+'</div>'+
+      (c.fallback_variety?'<div class="meta" style="margin-top:4px;color:#007bb5">兜底品种：'+esc(c.fallback_variety)+'</div>':"")+
+      '<div class="rs">'+tags(c.risk_flags||[], "w")+'</div></div>';
+  });
+  h += "</div></div>";
+
+  /* growth plan */
+  if(rec.phases){
+    h += '<div class="card"><h5>生长计划 Growth Plan<span class="en">stage schedule</span></h5>'+
+      (gp.evidence?kv("基准作物", esc(gp.evidence.crop||"")): "")+
+      (cons.expected_days?kv("预期周期", "D"+esc(cons.expected_days)+"（容差 ±"+esc(cons.tolerance_days)+" 天）"): "")+
+      (cons.water_ml_day?kv("日需水量", esc(cons.water_ml_day)+" ml/天"): "")+
+      (conf.rubric_score!=null?kv("置信度", scorebar(conf.rubric_score)+" &nbsp;<span class='srcline'>"+esc(conf.confidence_note||"")+'</span>'): "")+
+      '<div style="margin-top:10px">';
+    rec.phases.forEach(p => {
+      h += '<div class="phase"><span class="ph">'+esc(p.phase)+'</span><span class="dr">D'+esc((p.day_range||[]).join("–"))+'</span>'+
+        '<ul>'+(p.actions||[]).map(a => '<li>'+esc(a)+'</li>').join("")+'</ul></div>';
+    });
+    h += "</div></div>";
+  }
+
+  /* devices */
+  if(fr.devices && fr.devices.length){
+    const total = fr.devices.reduce((s,d) => s + (+d.price_cny||0), 0);
+    h += '<div class="card"><h5>设备与工具 Devices<span class="en">¥'+total+' 合计</span></h5><table><thead><tr>'+
+      '<th>设备</th><th>类别</th><th class="num">价格</th><th>选型理由</th></tr></thead><tbody>';
+    fr.devices.forEach(d => {
+      h += '<tr><td><b>'+esc(d.device)+'</b><br><span class="srcline">'+esc(d.device_id)+'</span></td>'+
+        '<td>'+esc(d.category)+'</td><td class="num">¥'+esc(d.price_cny)+'</td><td>'+esc(d.reason||"")+'</td></tr>';
+    });
+    h += "</tbody></table></div>";
+  }
+
+  /* provenance */
+  const prov = [];
+  if(r.work_item) prov.push("工作项 <span class='mono'>"+esc(r.work_item.item_id||r.work_item)+"</span> · 状态 <b>"+esc(r.work_item.state||"")+"</b>");
+  if(r.memory_id) prov.push("记忆条目 <span class='mono'>"+esc(r.memory_id)+"</span>");
+  if(r.prior_memory && r.prior_memory.hits && r.prior_memory.hits.length) prov.push("召回历史 <b>"+r.prior_memory.hits.length+"</b> 条");
+  if(prov.length){
+    h += '<div class="card ok"><h5>可溯源 Provenance<span class="en">memory &amp; work item</span></h5>'+
+      prov.map(p => '<div class="kv">· '+p+'</div>').join("")+'</div>';
+  }
+
+  /* trust */
+  h += '<div class="trust"><h5>◆ AgriTrust 可信证书</h5>'+
+    '<div style="display:flex;align-items:baseline;gap:14px"><span class="rs">'+(trust.overall_rubric_score!=null?(trust.overall_rubric_score*100).toFixed(0)+'%':'—')+'</span>'+
+    '<span style="font-size:12.5px;color:#8fcdec">overall rubric score</span></div>'+
+    '<ul>'+ (trust.known_limitations||[]).map(l => '<li>'+esc(l)+'</li>').join("") +'</ul>'+
+    '<div style="margin-top:12px;font-size:11.5px;color:#7fb8d4">每条建议附证据、置信度、约束与已知局限，可逐项追溯至数据源。</div></div>';
+  return h;
 }
 
-async function run(){
-  const btn=$('go'); btn.disabled=true; btn.textContent='生成中…';
-  const payload={
-    lat:parseFloat($('lat').value), lon:parseFloat($('lon').value),
-    scene:$('scene').value, floor:parseInt($('floor').value),
-    orientation:$('orientation').value, purpose:$('purpose').value,
-    space_sqm:parseFloat($('space_sqm').value), difficulty:$('difficulty').value,
-    budget_cny:parseInt($('budget').value)
-  };
-  $('result').innerHTML='<div class="loading">⏳ 四 Agent 协同计算中…</div>';
+/* ============================== 2 DIAGNOSE ============================== */
+$("#btnDia").addEventListener("click", async () => {
+  const out = $("#o-dia"), b = $("#btnDia"); b.disabled = true; loading(out, "证据门控诊断");
   try{
-    const r=await fetch('/api/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const data=await r.json();
-    if(data.error){$('result').innerHTML=`<div class="err">❌ ${esc(data.error)}</div>`;return;}
-    render(data);
+    const r = await api("/api/pest_diagnose", {
+      crop:$("#dCrop").value, symptom_description:$("#dSym").value, growth_stage:$("#dStage").value,
+      environment:{humidity:+$("#dHum").value, temperature:+$("#dTemp").value}
+    });
+    out.innerHTML = renderDiag(r);
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+function renderDiag(r){
+  let h = "";
+  const gate = r.evidence_gate || {};
+  const st = gate.status || r.confirmation_status || "";
+  const cls = st === "unconfirmed" ? "warn" : (r.severity==="high" ? "card" : "ok");
+  h += '<div class="card '+cls+'"><h5>诊断结论 Diagnosis<span class="en">'+esc(st)+'</span></h5>'+
+    kv("结论", esc(r.diagnosis||"—")) +
+    kv("严重度", tags([r.severity], r.severity==="high"?"e":(r.severity==="medium"?"w":"g"))) +
+    kv("置信度", r.diagnosis_confidence!=null?scorebar(r.diagnosis_confidence):"—") +
+    kv("知识源", esc(r.knowledge_source||"—")) +
+    kv("替代解释", tags(r.alternative_diagnoses||[], "n")) + "</div>";
+
+  h += '<div class="card"><h5>证据门控 Evidence Gate<span class="en">zero false-positive policy</span></h5>'+
+    kv("状态", tags([st], st==="unconfirmed"?"w":"g")) +
+    kv("症状命中", gate.symptom_hit!=null?(gate.symptom_hit?'<span class="ok">是</span>':'<span class="warn">否</span>'):"—") +
+    kv("匹配分", "top_score <b>"+(gate.top_score!=null?gate.top_score.toFixed(2):"—")+"</b> / 阈值 <b>"+(gate.hit_min!=null?gate.hit_min.toFixed(2):"—")+"</b>") +
+    kv("双重证据", "视觉 "+(gate.visual_confirm?"✓":"✗")+" · 环境观测 "+(gate.environment_observed?"✓":"✗")) +
+    (gate.missing&&gate.missing.length?kv("缺口", tags(gate.missing,"w")):"") +
+    (gate.policy?kv("策略", esc(gate.policy)):"") + "</div>";
+
+  if(r.reasoning_chain){
+    const rc = r.reasoning_chain;
+    h += '<div class="card gold"><h5>三阶段推理链 Reasoning Chain<span class="en">prediction → explanation → mapping</span></h5>';
+    [["prediction","预测 Prediction"],["explanation","解释 Explanation"],["mapping","处置映射 Mapping"]].forEach(pair => {
+      const v = rc[pair[0]];
+      if(v==null) return;
+      h += '<div class="phase"><span class="ph">'+pair[1]+'</span><ul>'+
+        (Array.isArray(v)?v.map(x=>'<li>'+esc(x)+'</li>').join("") : '<li>'+esc(String(v))+'</li>')+'</ul></div>';
+    });
+    if(rc.narrative) h += '<div class="detail">'+esc(rc.narrative)+'</div>';
+    h += "</div>";
+  }
+  h += '<div class="card ok"><h5>处置建议 Actions<span class="en">immediate</span></h5>'+
+    (r.actions||[]).map(a => '<div class="kv">▸ '+esc(a)+'</div>').join("") +
+    kv("症状信号", JSON.stringify(r.evidence && r.evidence.symptom_signals)) + "</div>";
+  return h;
+}
+
+/* ============================== 3 NUTRITION ============================== */
+$("#btnNut").addEventListener("click", async () => {
+  const out = $("#o-nut"), b = $("#btnNut"); b.disabled = true; loading(out, "科属养分推演");
+  try{
+    const r = await api("/api/nutrition_plan", {
+      crop:$("#nCrop").value, scene:$("#nScene").value, growth_stage:$("#nStage").value,
+      growth_days:+$("#nDays").value, container_volume_l:+$("#nVol").value, start_date:$("#nDate").value
+    });
+    out.innerHTML = renderNut(r);
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+function renderNut(r){
+  let h = '';
+  const rec = r.recommendation || {};
+  const inv = (rec.phases||[]).filter(p => {
+    const d = p.day_range||[]; return d.length===2 && d[1] < d[0];
+  });
+  h += '<div class="card"><h5>方案概要 Summary<span class="en">'+esc(rec.profile_label||"")+'</span></h5>'+
+    kv("作物", esc(rec.crop||"—")) + kv("场景", esc(rec.scene||"—")) +
+    kv("起始日期", esc(rec.start_date||"—")) +
+    kv("氮磷钾策略", '<b>'+esc(rec.npk_strategy||"—")+'</b>') +
+    kv("置信度", r.confidence!=null?scorebar(r.confidence):"—") +
+    kv("约束", Array.isArray(r.constraints)?tags(r.constraints,"n"):esc(JSON.stringify(r.constraints||{}))) +
+    (Array.isArray(r.evidence)?kv("依据", r.evidence.map(e=>'<div class="kv">· '+esc(e)+'</div>').join("")):
+      kv("依据", '<span class="srcline mono">'+esc(JSON.stringify(r.evidence||{}))+'</span>')) +
+    '</div>';
+  const phases = rec.phases || rec.stages || [];
+  if(phases.length){
+    h += '<div class="card gold"><h5>阶段化施肥 Stages<span class="en">'+phases.length+' 阶段</span></h5>'+
+      '<table><thead><tr><th>阶段</th><th>日序</th><th>肥料</th><th>NPK</th>'+
+      '<th>频率</th><th>用量指导</th></tr></thead><tbody>';
+    phases.forEach(p => {
+      const d = p.day_range||[];
+      const bad = d.length===2 && d[1] < d[0];
+      h += '<tr><td><b>'+esc(p.phase||p.stage||"")+'</b>'+(p.notes?'<br><span class="srcline">'+esc(p.notes)+'</span>':'')+'</td>'+
+        '<td class="num">'+(d.length===2?'D'+esc(d[0])+'–'+esc(d[1]):'—')+
+        (bad?'<br><span class="tag w">日序倒挂</span>':'')+'</td>'+
+        '<td style="font-size:12.5px">'+esc(p.fertilizer||"—")+'</td>'+
+        '<td class="mono">'+esc(p.npk||"—")+'</td>'+
+        '<td style="font-size:12.5px">'+esc(p.frequency||"—")+'</td>'+
+        '<td style="font-size:12px">'+esc(p.amount_guidance||"")+'</td></tr>';
+    });
+    h += '</tbody></table>';
+    if(inv.length)
+      h += '<div class="detail" style="border-color:#f0d3ab;background:#fdf1e3"><b>发现一处数据缺陷</b>：'+
+        inv.length+' 个阶段的日序区间出现结束日早于起始日（'+
+        inv.map(p=>'「'+p.phase+'」D'+p.day_range.join('–')).join('、')+
+        '）。原因是容器/周期太短，四阶段模板强行摊到了 '+esc(r.start_date||"")+' 之后。此处如实展示而非修正——建议后端按总周期裁剪阶段数。</div>';
+    h += '</div>';
+  }
+  if(rec.key_principles && rec.key_principles.length)
+    h += '<div class="card"><h5>核心原则<span class="en">principles</span></h5>'+
+      rec.key_principles.map(x=>'<div class="kv">▸ '+esc(x)+'</div>').join("")+'</div>';
+  if(rec.deficiency_quickref && Object.keys(rec.deficiency_quickref).length){
+    h += '<div class="card"><h5>缺素速查 Deficiency<span class="en">symptom → element</span></h5><table><thead><tr>'+
+      '<th>症状</th><th>缺失元素</th></tr></thead><tbody>'+
+      Object.keys(rec.deficiency_quickref).map(k=>
+        '<tr><td>'+esc(k)+'</td><td><b>'+esc(rec.deficiency_quickref[k])+'</b></td></tr>').join("")+
+      '</tbody></table></div>';
+  }
+  if(rec.current_stage_guidance)
+    h += '<div class="card ok"><h5>当前阶段指引<span class="en">'+esc($("#nStage").value)+'</span></h5>'+
+      '<div class="kv">'+esc(typeof rec.current_stage_guidance==="string"?rec.current_stage_guidance:JSON.stringify(rec.current_stage_guidance))+'</div></div>';
+  if(rec.manual_review_note)
+    h += '<div class="detail"><b>人工复核提示</b>：'+esc(rec.manual_review_note)+'</div>';
+  if(r.signature)
+    h += '<div class="detail"><b>输出签名</b>：<span class="mono">'+esc(r.signature)+'</span></div>';
+  if(!phases.length && !Object.keys(rec).length)
+    h += '<div class="card"><h5>完整输出</h5>'+jsonbox(r)+'</div>';
+  return h;
+}
+
+/* ============================== 4 PHENOLOGY ============================== */
+$("#btnPh").addEventListener("click", async () => {
+  const out = $("#o-ph"), b = $("#btnPh"); b.disabled = true; loading(out, "WOFOST 积温推演");
+  try{
+    const city = $("#phCity").value;
+    const monthly = MONTHLY[city] || [];
+    if(monthly.length !== 12) throw new Error("城市「"+city+"」缺少 12 个月均温数据");
+    const crops = Array.from(document.querySelectorAll("#phCrops input:checked")).map(x => x.value);
+    const r = await api("/api/season_advisory", {
+      mode:"planting_window", monthly_mean_c:monthly, crops:crops,
+      frost_threshold_c:+$("#phTh").value, safety_margin_days:+$("#phMargin").value
+    });
+    out.innerHTML = renderPheno(r, city, monthly);
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+$("#btnPhGeo").addEventListener("click", async () => {
+  const out = $("#o-ph"), b = $("#btnPhGeo"); b.disabled = true; loading(out, "从 NASA POWER / Open-Meteo 拉取真实气候");
+  try{
+    const lat = +$("#phLat").value, lon = +$("#phLon").value;
+    const crops = Array.from(document.querySelectorAll("#phCrops input:checked")).map(x => x.value);
+    const r = await api("/api/season_advisory", {
+      mode:"planting_window", lat:lat, lon:lon, crops:crops,
+      frost_threshold_c:+$("#phTh").value, safety_margin_days:+$("#phMargin").value
+    });
+    out.innerHTML = renderPheno(r, "lat "+lat+" / lon "+lon, r.monthly_mean_c || []);
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+function renderPheno(r, city, monthly){
+  let h = '';
+  if(r.available === false){
+    h += '<div class="card"><h5>无法推导</h5>'+kv("错误", esc(r.error||""))+'</div>';
+    return h;
+  }
+  const smin = Math.min.apply(null, monthly), smax = Math.max.apply(null, monthly);
+  const ff = r.frost_free || {};
+  const conf = r.confidence || {};
+  const prov = r.climate_provenance || {};
+  h += '<div class="card gold"><h5>气候输入与无霜期<span class="en">'+esc(city)+' · '+esc(r.mode||"")+'</span></h5>'+
+    (r.climate_input === "auto_fetched_from_latlon"
+      ? kv("气候来源", '<span class="tag g">实测获取</span> '+esc(prov.source||"")+' <span class="srcline">'+esc(prov.license||"")+'</span>')
+      : kv("气候来源", '<span class="tag n">手编近似</span> <span class="srcline">演示输入</span>')) +
+    (prov.accessed_at ? kv("取数时间", '<span class="srcline mono">'+esc(prov.accessed_at)+'</span>') : "") +
+    (prov.url ? kv("请求 URL", '<span class="srcline mono" style="word-break:break-all">'+esc(prov.url)+'</span>') : "") +
+    kv("月均温区间", esc(smin.toFixed(1))+" ℃ → "+esc(smax.toFixed(1))+" ℃") +
+    kv("月均温序列", '<span class="srcline mono">'+monthly.map(x=>x.toFixed(1)).join(" / ")+' ℃</span>') +
+    (ff.start?kv("无霜期", esc(ff.start)+" → "+esc(ff.end)+'（<b>'+esc(ff.length_days)+'</b> 天'+(ff.year_round?'，全年无霜':'')+'）'):"") +
+    (ff.mean_temp_c!=null?kv("年均温", esc(ff.mean_temp_c)+" ℃"):"") +
+    (conf.rubric_score!=null?kv("置信度", scorebar(conf.rubric_score)+' <span class="srcline">'+esc(conf.level||"")+'</span>'):"") +
+    (conf.reason?'<div class="detail">'+esc(conf.reason)+'</div>':"") +
+    '</div>';
+  const wins = r.windows || [];
+  if(wins.length){
+    h += '<div class="card"><h5>播期窗口 Planting Windows<span class="en">'+wins.length+' 作物</span></h5>'+
+      '<table><thead><tr><th>作物</th><th>可行性</th><th>最早播种</th><th>最晚播种</th>'+
+      '<th class="num">成熟天数</th><th class="num">窗口天数</th><th>说明</th></tr></thead><tbody>';
+    wins.forEach(w => {
+      h += '<tr><td><b>'+esc(w.crop)+'</b></td>'+
+        '<td>'+(w.feasible?'<span class="tag g">可行</span>':'<span class="tag e">不可行</span>')+'</td>'+
+        '<td>'+esc(w.earliest_sow||"—")+'</td><td>'+esc(w.latest_sow||"—")+'</td>'+
+        '<td class="num">'+esc(w.maturity_days!=null?w.maturity_days:"—")+'</td>'+
+        '<td class="num">'+esc(w.sow_window_days!=null?w.sow_window_days:"—")+'</td>'+
+        '<td style="font-size:12px">'+esc(w.note||"")+'</td></tr>';
+    });
+    h += '</tbody></table></div>';
+  }
+  if((r.available_crops||[]).length)
+    h += '<div class="card"><h5>覆盖作物 Coverage<span class="en">WOFOST parameters</span></h5>'+
+      tags(r.available_crops, "n") +
+      '<div class="srcline" style="margin-top:8px">仅覆盖已移植 WOFOST 积温参数的作物；未收录作物不会给出猜测性窗口。</div></div>';
+  if(r.note) h += '<div class="detail">'+esc(r.note)+'</div>';
+  h += '<details><summary>查看完整响应</summary>'+jsonbox(r)+'</details>';
+  h += '<div class="detail"><b>方法说明</b>：以月均温推导无霜期起止日，按 WOFOST 积温参数（EUPL 1.2，需署名）计算各作物安全播种窗口；安全余量防止晚霜冻害。不含春化与光周期机制。</div>';
+  return h;
+}
+
+/* ============================== 5 SOIL ============================== */
+$("#btnSoil").addEventListener("click", async () => {
+  const out = $("#o-soil"), b = $("#btnSoil"); b.disabled = true; loading(out, "土壤画像查询（在线优先）");
+  try{
+    const r = await api("/api/soil_profile", {
+      lat:+$("#sLat").value, lon:+$("#sLon").value, crop:$("#sCrop").value,
+      online:$("#sOnline").checked, timeout:+$("#sTo").value
+    });
+    out.innerHTML = renderSoil(r);
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+function renderSoil(r){
+  let h = '';
+  const q = r.query || {};
+  const oa = r.online_attempt || {};
+  const online = !!oa.available;
+  const s = r.soil || {};
+  h += '<div class="card '+(online?"ok":"gold")+'"><h5>来源判定 Source<span class="en">'+esc(r.resolution||"—")+'</span></h5>'+
+    kv("解析方式", tags([r.resolution||"未标注"], online?"g":"n")) +
+    kv("画像来源", '<span class="srcline">'+esc(r.source||"未标注")+'</span>') +
+    (q.zone_id?kv("匹配分区", esc(q.zone_id)):"") +
+    (q.crop?kv("目标作物", esc(q.crop)):"") +
+    (q.lat!=null?kv("查询坐标", '<span class="mono">'+q.lat+", "+q.lon+'</span>'):"") +
+    (r.confidence!=null?kv("置信度", scorebar(r.confidence)):"") +
+    '</div>';
+
+  if(oa.attempted){
+    h += '<div class="card"><h5>在线探测 Online Probe<span class="en">SoilGrids v2.0</span></h5>'+
+      kv("尝试", oa.attempted?'<span class="ok">已尝试</span>':'<span class="tag n">未尝试</span>') +
+      kv("结果", oa.available?'<span class="ok">可用</span>':'<span class="warn">不可用，已降级</span>') +
+      (oa.reason?'<div class="kv"><b>原因</b>：<span class="srcline mono">'+esc(oa.reason)+'</span></div>':"") +
+      (oa.url?'<div class="kv"><b>端点</b><br><span class="srcline mono">'+esc(oa.url)+'</span></div>':"") +
+      '</div>';
+  }
+
+  if(Object.keys(s).length){
+    h += '<div class="card"><h5>土壤参数 Profile<span class="en">'+esc(s.zone_name||"")+'</span></h5><table><tbody>';
+    if(s.ph_range) h += '<tr><td>pH 区间</td><td class="num"><b>'+esc(s.ph_range.join(" – "))+'</b></td></tr>';
+    if(s.ph_mean!=null) h += '<tr><td>pH 均值</td><td class="num"><b>'+esc(s.ph_mean)+'</b></td></tr>';
+    if(s.texture_hint) h += '<tr><td>质地描述</td><td>'+esc(s.texture_hint)+'</td></tr>';
+    if(s.koppen_class) h += '<tr><td>Köppen 分类</td><td class="mono">'+esc(s.koppen_class)+'</td></tr>';
+    Object.keys(s).forEach(k => {
+      if(["ph_range","ph_mean","texture_hint","zone_name","koppen_class"].indexOf(k) >= 0) return;
+      h += '<tr><td>'+esc(k)+'</td><td class="num">'+esc(typeof s[k]==="object"?JSON.stringify(s[k]):s[k])+'</td></tr>';
+    });
+    h += '</tbody></table></div>';
+  }
+
+  if(r.crop_ph_fit){
+    const pf = r.crop_ph_fit;
+    const fit = pf.fit===true || pf.fit===1;
+    h += '<div class="card '+(fit?"ok":"warn")+'"><h5>作物 pH 适配判定<span class="en">'+esc(q.crop||"")+'</span></h5>'+
+      kv("判定", tags([fit?"适配":"需改良"], fit?"g":"w")) +
+      kv("详情", '<span class="srcline mono">'+esc(JSON.stringify(pf))+'</span>') + '</div>';
+  }
+
+  if((r.limitations||[]).length)
+    h += '<div class="card"><h5>已知局限 Limitations<span class="en">'+r.limitations.length+' 项</span></h5>'+
+      '<ul style="margin:0;padding-left:19px;font-size:13px;color:var(--ink-2)">'+
+      r.limitations.map(l=>'<li style="margin:5px 0">'+esc(l)+'</li>').join("")+'</ul></div>';
+
+  h += '<details><summary>查看完整响应</summary>'+jsonbox(r)+'</details>';
+  return h;
+}
+
+/* ============================== 6 RECIPE SCHEDULER ============================== */
+$("#btnSch").addEventListener("click", async () => {
+  const out = $("#o-rec2"), b = $("#btnSch"); b.disabled = true; loading(out, "锚点推导与动作评估");
+  try{
+    const r = await api("/api/schedule", {
+      crop:$("#rCrop").value, zone:$("#rZone").value,
+      observations:{temp_c:+$("#rTemp").value, humidity_pct:+$("#rHum").value,
+                    ph:+$("#rPh").value, water_ml:+$("#rWater").value},
+      symptom_text:$("#rSym").value
+    });
+    out.innerHTML = renderSch(r);
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+function renderSch(r){
+  let h = '';
+  const rc = r.recipe || {};
+  const crop = rc.crop || {};
+  h += '<div class="card gold"><h5>Env Recipe 环境配置配方<span class="en">'+esc(rc.protocol||"—")+'</span></h5>'+
+    kv("作物", esc(crop.species||rc.crop||"")+' <span class="srcline">'+esc(crop.latin||"")+'</span>') +
+    kv("配方版本", esc(rc.recipe_version||"—")) +
+    kv("阶段", esc(rc.stage||"—")) +
+    kv("设备能力", tags((rc.device_profile&&rc.device_profile.sensor_capability)||[], "n")) +
+    (rc.license?kv("许可", esc(rc.license)):"") +
+    '</div>';
+
+  const an = r.anchors || [];
+  if(an.length){
+    h += '<div class="card"><h5>推导锚点 Anchors<span class="en">'+an.length+' 个（阈值 '+(an.filter(x=>x.kind==="threshold").length)+' / 关键词 '+(an.filter(x=>x.kind==="keyword").length)+'）</span></h5>';
+    an.forEach(a => {
+      const isKw = a.kind === "keyword";
+      const body = isKw
+        ? '关键词 <b class="mono">「'+esc((a.keywords||[]).join("」「"))+'」</b>'
+        : '<span class="mono">'+esc(a.field||"")+'</span> <b>'+esc(a.op||"")+'</b> <span class="mono">'+esc(a.value!=null?a.value:"")+'</span>';
+      h += '<div class="anchor"><div class="k'+(isKw?" kw":"")+'">'+(isKw?"词":"阈")+'</div><div>'+
+        '<div><b>'+esc(a.name||"")+'</b><div class="srcline" style="margin-top:3px">'+body+'</div>'+
+        (a.action?'<div style="margin-top:4px;color:#33475b">→ '+esc(a.action)+'</div>':"")+
+        '</div><div class="srcline" style="margin-top:5px">来源 '+esc(a.source||"")+'</div></div></div>';
+    });
+    h += '</div>';
+  }
+
+  const ac = r.actions || {};
+  const ready = ac.ready || [], waiting = ac.waiting || [], skipped = ac.skipped || [];
+  h += '<div class="card '+(ready.length?"ok":"")+'"><h5>动作评估 Actions<span class="en">'+esc(ac.summary||"")+'</span></h5>';
+  function acts(list, cls){
+    if(!list.length) return '<span class="tag n">无</span>';
+    return list.map(x => '<div style="margin:6px 0;padding:9px 12px;border:1px solid '+(cls==="g"?"#b9dcc4":"var(--line)")+
+      ';border-radius:4px;background:'+(cls==="g"?"#e6f4ec":"#fff")+'">'+
+      '<div style="font-weight:700;font-size:13px;color:'+(cls==="g"?"#1c7a4a":"var(--ink-2)")+'">'+esc(x.name||"")+'</div>'+
+      '<div style="font-size:12.5px;margin-top:3px">'+esc(x.action||"")+'</div>'+
+      (x.current!=null?'<div class="srcline" style="margin-top:4px">当前 <b class="mono">'+esc(x.current)+'</b> · 阈值 <b class="mono">'+esc(x.target!=null?x.target:"")+'</b> · 判定 '+esc(x.reason||"")+'</div>':"")+
+      (x.keyword_match?'<div class="srcline" style="margin-top:4px">命中 <span class="mono">「'+esc(x.keyword_match)+'」</span></div>':"")+
+      '</div>').join("");
+  }
+  h += '<div class="kv"><b>已就绪 Ready（'+ready.length+'）</b></div>'+acts(ready,"g");
+  h += '<div class="kv" style="margin-top:10px"><b>待触发 Waiting（'+waiting.length+'）</b></div>'+acts(waiting,"n");
+  if(skipped.length) h += '<div class="kv"><b>冷却跳过</b>：'+tags(skipped,"w")+'</div>';
+  h += '</div>';
+
+  h += '<details><summary>查看完整配方与响应</summary>'+jsonbox(r)+'</details>';
+  h += '<div class="detail"><b>与定时调度的区别</b>：锚点由配方阈值与异常处理条款推导，返回的是「条件成立则执行」的动作集，而非固定时刻触发的任务。NaN 与布尔值不视为有效观测。' +
+    '<b>字段名必须精确匹配</b>：锚点 field 为 temp_c / humidity_pct / ph / water_ml，单位错一个量级（如把湿度 0–1 当成 0–100）会误触发。</div>';
+  return h;
+}
+
+/* ============================== 7 SEARCH ============================== */
+$("#btnSearch").addEventListener("click", async () => {
+  const out = $("#o-search"), b = $("#btnSearch"); b.disabled = true; loading(out, "三层检索");
+  try{
+    const r = await api("/api/search", {
+      query:$("#qText").value, corpus:$("#qCorpus").value, mode:$("#qMode").value,
+      k:+$("#qK").value, min_score:+$("#qMin").value
+    });
+    out.innerHTML = renderSearch(r);
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+function renderSearch(r){
+  let h = '';
+  const st = r.stats || {};
+  const rows = st.rows || {};
+  h += '<div class="card"><h5>索引状态 Index<span class="en">'+esc(st.schema_ver?('schema v'+st.schema_ver):"hybrid")+'</span></h5>'+
+    kv("命中", '<b>'+((r.hits||[]).length)+'</b> 条 / 查询「'+esc(r.query||"")+'」') +
+    kv("索引行数", (st.total!=null?'<b>'+st.total+'</b> 行':'—')+
+        ' &nbsp;<span class="srcline">'+Object.keys(rows).map(k=>esc(k)+' '+esc(rows[k])).join(' · ')+'</span>') +
+    kv("FTS5 可用", st.fts?'<span class="ok">是</span>':'<span class="warn">否（全量扫描兜底）</span>') +
+    kv("构建状态", st.built?'<span class="ok">已构建</span>':'<span class="warn">未构建</span>') +
+    (r.rebuilt?'<div class="kv"><b>本次首次运行</b>：索引已自动重建</div>':"") +
+    kv("索引路径", '<span class="mono srcline">'+esc(st.path||"")+'</span>') +
+    '</div>';
+  const hits = r.hits || [];
+  if(!hits.length) return h + '<div class="empty">无命中结果<br><span class="srcline">换关键词试试：生菜 / 蚜虫 / 土壤 / 温度</span></div>';
+  h += '<div class="card"><h5>检索结果<span class="en">three-layer ranking</span></h5><table><thead><tr>'+
+    '<th>实体</th><th>语料</th><th class="num">综合</th><th class="num">精确</th><th class="num">关键词</th><th class="num">向量</th><th>摘要</th></tr></thead><tbody>';
+  hits.forEach(x => {
+    const meta = x.meta || {};
+    const label = meta.zone_name || meta.crop || meta.name || meta.entity || "";
+    h += '<tr><td><b>'+esc(x.entity||"")+'</b>'+(label?'<br><span class="srcline">'+esc(label)+'</span>':'')+
+      '<br><span class="srcline mono">'+esc(x.source_file||"")+'</span></td>'+
+      '<td>'+esc(x.corpus||"")+'</td>'+
+      '<td class="num"><b>'+ (x.score!=null?x.score.toFixed(3):"—")+'</b></td>'+
+      '<td class="num">'+(x.exact!=null?x.exact.toFixed(3):"—")+'</td>'+
+      '<td class="num">'+(x.keyword!=null?x.keyword.toFixed(3):"—")+'</td>'+
+      '<td class="num">'+(x.vector!=null?x.vector.toFixed(3):"—")+'</td>'+
+      '<td style="font-size:12px">'+esc((x.snippet||"").slice(0,110))+'</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<div class="detail"><b>排序公式</b>：hybrid = 1.0×精确 + 0.5×关键词 + 0.4×向量。中文按连续 CJK 2-gram 切分，查询侧与文档侧统一，否则中文关键词层恒为 0 分。索引是派生产物，重建不触碰源 JSON。</div>';
+  return h;
+}
+
+/* ============================== 8 MEMORY + WORK ITEM ============================== */
+$("#btnRec2").addEventListener("click", async () => {
+  const out = $("#o-mem"), b = $("#btnRec2"); b.disabled = true; loading(out, "记忆召回");
+  try{
+    const r = await api("/api/memory_recall", {
+      query:$("#mQuery").value, skill:$("#mSkill").value, crop:$("#mCrop").value,
+      k:6, expand:$("#mExp").checked
+    });
+    out.innerHTML = renderMem(r);
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+function renderMem(r){
+  let h = '';
+  const st = r.stats || {};
+  const hits = r.hits || [];
+  h += '<div class="card"><h5>记忆库状态 Memory Store<span class="en">'+esc(st.schema||"")+'</span></h5>'+
+    kv("条目总数", '<b>'+(st.memories!=null?st.memories:"—")+'</b>') +
+    kv("超边 Hyperedges", esc(st.hyperedges!=null?st.hyperedges:"—")) +
+    kv("召回", '<b>'+hits.length+'</b> 条 / 查询「'+esc(r.query||"")+'」') +
+    kv("分布", (st.by_crop?esc(Object.keys(st.by_crop).join("、"))+" · 按作物":"") +
+        ' <span class="srcline">'+(st.by_skill?'按技能 '+esc(Object.keys(st.by_skill).join("、")):"")+'</span>') +
+    kv("存储模式", st.local_only?'<span class="tag n">本地 JSON，零依赖</span>':'—') +
+    kv("存储路径", '<span class="mono srcline">'+esc(st.path||"")+'</span>') +
+    '</div>';
+  if(!hits.length){
+    h += '<div class="empty">无匹配记忆<br><span class="srcline">这是诚实状态：真实记忆库当前为空。Demo 会话写入隔离存储，不污染真实数据。</span></div>';
+    return h;
+  }
+  h += '<div class="card gold"><h5>召回结果<span class="en">weighted recall</span></h5>';
+  hits.forEach(x => {
+    const m = x.memory || {};
+    const sub = m.subject || {};
+    const sc = x.scores || {};
+    h += '<div style="border:1px solid var(--line);border-radius:5px;padding:13px 16px;margin:10px 0;background:#fbfdfe">'+
+      '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">'+
+      '<span class="mono" style="font-size:11px;color:var(--muted)">'+esc(x.id)+'</span>'+
+      '<span style="font-size:11px;color:var(--muted)">'+esc(x.ts||"")+'</span>'+
+      '<span style="margin-left:auto;font-family:var(--serif);font-size:18px;font-weight:700;color:var(--un-blue-d)">'+
+        (x.score!=null?x.score.toFixed(3):"—")+'</span></div>'+
+      '<div style="font-size:14px;color:var(--ink);margin-top:7px;font-weight:600">'+esc(m.summary||"—")+'</div>'+
+      '<div style="margin-top:6px">'+tags([m.skill, m.kind, sub.crop, sub.zone, sub.scene, m.outcome].filter(Boolean), "n")+'</div>'+
+      '<div class="srcline" style="margin-top:6px">分层得分 · 查询 '+(sc.query!=null?sc.query.toFixed(2):"—")+
+        ' · 时效 '+(sc.recency!=null?sc.recency.toFixed(2):"—")+
+        ' · 向量 '+(sc.vector!=null?sc.vector.toFixed(2):"—")+
+        (sc.subject!=null?' · 主体 '+sc.subject.toFixed(2):"")+(sc.skill!=null?' · 技能 '+sc.skill.toFixed(2):"")+'</div>'+
+      '</div>';
+  });
+  h += '</div>';
+  h += '<div class="detail"><b>评分层次</b>：主体双命中 3.0 · 技能 1.5 · 标签 1.0 · 查询 0.5 · 时效（30 天半衰期）0.6 · 向量余弦 0.8 · 超边 0.4。硬过滤（技能/作物/分区）优先于评分。</div>';
+  return h;
+}
+$("#btnWI").addEventListener("click", async () => {
+  const out = $("#o-mem"), b = $("#btnWI"); b.disabled = true; loading(out, "工作项状态机流转");
+  try{
+    const r = await api("/api/work_item", {title:"前端 Demo 方案生成", actor:"demo_web"});
+    out.innerHTML = renderWI(r);
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+function renderWI(r){
+  let h = '';
+  const states = ["created","executing","pending_review","integrating","done","rework","blocked"];
+  h += '<div class="card '+(r.final_state==="done"?"ok":"")+'"><h5>工作项 Work Item<span class="en">'+esc(r.item_id||"")+'</span></h5>'+
+    '<div style="margin:8px 0 14px">'+states.map(s =>
+      '<span class="tag '+(s===r.final_state?"g":(s===r.state?"":"n"))+'" style="margin-right:4px">'+esc(s)+'</span>').join("")+'</div>'+
+    kv("最终状态", '<b>'+esc(r.final_state||r.state||"—")+'</b>') +
+    kv("当前允许动作", tags(r.allowed_modes||[], "n")) +
+    kv("注册表", esc(JSON.stringify(r.registry||{}))) +
+    '</div>';
+  if(r.history && r.history.length){
+    h += '<div class="card"><h5>流转轨迹 Trace<span class="en">mode sequence</span></h5><table><thead><tr>'+
+      '<th>#</th><th>动作模式</th><th>结果</th><th>说明</th></tr></thead><tbody>';
+    r.history.forEach((x,i) => {
+      h += '<tr><td>'+(i+1)+'</td><td><b>'+esc(x.mode)+'</b></td>'+
+        '<td>'+(x.ok?'<span class="ok">✓ 通过</span>':'<span class="warn">✗ 拒绝</span>')+'</td><td>'+esc(x.note||"")+'</td></tr>';
+    });
+    h += '</tbody></table></div>';
+  }
+  if(r.audit && r.audit.length){
+    h += '<div class="card gold"><h5>追加式审计审计 Log<span class="en">payload digest only</span></h5><table><thead><tr>'+
+      '<th>时点</th><th>动作</th><th>执行者</th><th>载荷摘要</th></tr></thead><tbody>';
+    r.audit.forEach(a => {
+      h += '<tr><td style="font-size:11.5px">'+esc(a.ts||a.timestamp||a.time||"")+'</td>'+
+        '<td><b>'+esc(a.mode||a.action||"")+'</b></td><td>'+esc(a.actor||"")+'</td>'+
+        '<td class="mono" style="font-size:11px">'+esc(a.payload_key||a.digest||"")+'</td></tr>';
+    });
+    h += '</tbody></table></div>';
+  }
+  if(r.transition_table && r.transition_table.length){
+    h += '<details><summary>查看声明式转移表（'+r.transition_table.length+' 条）</summary><table><thead><tr>'+
+      '<th>当前状态</th><th>动作模式</th><th>目标状态</th></tr></thead><tbody>'+
+      r.transition_table.map(t => '<tr><td><b>'+esc(t.from||t.state||"")+'</b></td><td>'+esc(t.mode||"")+'</td><td>'+esc(t.to||"")+'</td></tr>').join("")+
+      '</tbody></table></details>';
+  }
+  h += '<div class="detail"><b>关键性质</b>：非法转移被拒绝且<b>不改变状态</b>；审计只存 16 位载荷摘要而非完整载荷；done 为终态，仅 rework 可重新进入。</div>';
+  return h;
+}
+
+/* ============================== 9 FEEDBACK ============================== */
+$("#btnFeed").addEventListener("click", async () => {
+  const out = $("#o-feed"), b = $("#btnFeed"); b.disabled = true; loading(out, "写入回流");
+  try{
+    const r = await api("/api/feedback", {
+      zone_id:$("#fZone").value, crop:$("#fCrop").value,
+      survival_rate:+$("#fSurv").value, yield_rating:+$("#fYield").value,
+      user_rating:+$("#fRate").value, issues:+$("#fIssues").value, note:$("#fNote").value
+    });
+    out.innerHTML = '<div class="card ok"><h5>反馈已接收<span class="en">calibration updated</span></h5>'+
+      kv("作物", esc($("#fCrop").value)) + kv("分区", esc($("#fZone").value)) +
+      kv("校准影响", jsonbox(r)) +
+      '<div class="detail" style="margin-top:10px">这条记录将参与后续 adapt_score 的校准——也是平台数据飞轮从 0 到 1 的真实入口。</div></div>';
+  }catch(e){ fail(out,e); } finally { b.disabled=false; }
+});
+
+/* ============================== 10 PLATFORM ============================== */
+async function loadPlatform(){
+  const el = $("#o-platform");
+  try{
+    const s = await api("/api/stats");
+    $("#kCrops").textContent = s.crops != null ? s.crops : (s.env_recipes || "—");
+    $("#kRecipes").textContent = s.env_recipes || "—";
+    $("#kZones").textContent = s.zones || "—";
+    $("#kSkills").textContent = s.skills || "—";
+    $("#kCities").textContent = s.cities || "—";
+    $("#kMcp").textContent = (s.mcp_tools||9) + " MCP 工具";
+    $("#srvtime").textContent = (s.generated_at||"").replace("T"," ");
+    $("#footTime").textContent = "Build " + (s.generated_at||"").replace("T"," ");
+    $("#rsiNote").innerHTML = esc(s.trust && s.trust.note || "") + " — 指标不会因前端改版而改变。";
+
+    const tools = s.mcp_tool_names || [];
+    const trows = tools.map(t => '<tr><td class="mono">'+esc(t)+'</td></tr>').join("");
+    const si = s.search_index || {};
+    const sir = si.rows || {};
+    const soil = s.soil_probe_europe || {};
+    el.innerHTML =
+      '<div class="card"><h5>平台能力盘点 Capability Inventory<span class="en">as of '+(s.generated_at||"")+'</span></h5><table>'+
+        '<tbody>'+
+        '<tr><td>城市覆盖 Cities</td><td class="num"><b>'+esc(s.cities)+'</b></td><td>跨 6 大气候带，含中国境内与海外样本</td></tr>'+
+        '<tr><td>农业分区 Zones</td><td class="num"><b>'+esc(s.zones)+'</b></td><td>Köppen-Geiger + FAO 农业分区</td></tr>'+
+        '<tr><td>环境配置配方 Env Recipes</td><td class="num"><b>'+esc(s.env_recipes)+'</b></td><td>作物 × 分区 可执行参数集</td></tr>'+
+        '<tr><td>注册表技能 Skills</td><td class="num"><b>'+esc(s.skills)+'</b></td><td>含自动生成的新作物建议</td></tr>'+
+        '<tr><td>MCP 工具</td><td class="num"><b>'+esc(s.mcp_tools)+'</b></td><td>stdlib JSON-RPC over stdio，零依赖</td></tr>'+
+        '<tr><td>WOFOST 物候作物</td><td class="num"><b>'+esc((s.phenology_crops||[]).length)+'</b></td><td>'+tags(s.phenology_crops||[], "n")+'</td></tr>'+
+        '<tr><td>检索索引 Search Index</td><td class="num"><b>'+esc(si.total!=null?si.total:0)+'</b></td><td>'+
+          (si.built?'<span class="ok">已构建</span>':'<span class="warn">未构建（首次检索时自动重建）</span>')+
+          (si.fts?' · FTS5 可用':' · FTS5 不可用')+
+          (Object.keys(sir).length?' · '+Object.keys(sir).map(k=>esc(k)+' '+esc(sir[k])).join(" · "):"")+'</td></tr>'+
+        '<tr><td>SoilGrids 在线探测</td><td class="num">'+
+          (soil.available?'<span class="ok">可用</span>':'<span class="warn">不可用</span>')+'</td><td>'+
+          (soil.reason?esc(soil.reason):"—")+'<br><span class="srcline">中国坐标常超时，前端保持严格超时并降级为分区均值</span></td></tr>'+
+        '<tr><td>单测套件</td><td class="num"><b>358</b></td><td>v4 135 · v3 43 · v2 59 · agents 45 · v5 76，1 skip</td></tr>'+
+        '<tr><td>质量基线 Quality Baseline</td><td class="num"><span class="badge-rsi">RSI B0</span></td><td>HCI 0.0（0/6 门禁闭合）— 诚实基线，不随前端改版变化</td></tr>'+
+        '</tbody></table></div>'+
+      '<div class="card gold" id="mcp"><h5>MCP 工具清单 Tools<span class="en">agent-native</span></h5>'+
+        '<table><tbody>'+trows+'</tbody></table>'+
+        '<div class="detail"><b>零依赖实现</b>：stdlib JSON-RPC over stdio，无第三方包、无外部服务。外部智能体可直接调用，无需 Docker 或 API Key。</div></div>';
   }catch(e){
-    $('result').innerHTML=`<div class="err">❌ 请求失败：${esc(e)}</div>`;
-  }finally{
-    btn.disabled=false; btn.textContent='生成种植方案';
+    el.innerHTML = '<div class="empty">平台统计暂不可用：'+esc(e.message)+'</div>';
   }
 }
 
-function render(data){
-  const steps=data.pipeline_steps;
-  const climate=steps[0].output, crop=steps[1].output, growth=steps[2].output, eco=steps[3].output;
-  const micro=steps[0].microclimate||{};
-  const trust=data.trust_summary||{};
-  let html='';
-
-  // ClimateAgent
-  const ev=climate.evidence||{};
-  const cst=climate.constraints||{};
-  html+=agentCard('① ClimateAgent','分区匹配',(climate.confidence||{}).rubric_score||'-',`
-    <div class="kv"><b>气候分区：</b>${esc(ev.zone_name)}（${esc(ev.zone_id)} / ${esc(ev.climate_class)}）</div>
-    <div class="kv"><b>温度范围：</b>${cst.min_temp_c??'?'} ~ ${cst.max_temp_c??'?'} ℃ · 年降水 ${cst.precipitation_mm_yr??'?'} mm</div>
-    <div class="kv"><b>数据源：</b>${esc((ev.data_sources||[]).join('、'))}</div>
-    <div class="kv"><b>微气候修正：</b>${esc(micro.micro_climate_note||'—')}
-      （有效温差 ${micro.effective_temp_offset??0}℃，日照偏差 ${micro.effective_sun_hours_delta??0}h）</div>
-  `);
-
-  // CropAgent
-  const recs=crop.recommendation||[];
-  const chips=recs.map(c=>`<span class="crop">${esc(c.crop)} <span class="s">${c.adapt_score}</span>
-     · D${c.growth_days}<br><small>${esc(c.reason)}</small></span>`).join('');
-  html+=agentCard('② CropAgent','作物推荐',(crop.confidence||{}).rubric_score||'-',`
-    <div class="kv"><b>候选：</b>${(crop.evidence||{}).candidates_after_filter??'?'} / ${(crop.evidence||{}).total_crops_in_zone??'?'} 种匹配</div>
-    <div>${chips||'<span class="placeholder-note">无匹配作物</span>'}</div>
-  `);
-
-  // GrowthAgent
-  const gp=growth.recommendation||{};
-  const phases=(gp.phases||[]).map(p=>`<div class="phase"><b>${esc(p.phase)}</b> （D${p.day_range[0]}–D${p.day_range[1]}）<br>${(p.actions||[]).join('；')}</div>`).join('');
-  const risks=(gp.risk_alerts||[]).map(r=>`<div class="risk">⚠️ ${esc(r)}</div>`).join('');
-  html+=agentCard('③ GrowthAgent','种植计划',(growth.confidence||{}).rubric_score||'-',`
-    ${phases}
-    ${risks}
-    <div class="kv"><b>兜底救活：</b>${esc(gp.rescue_plan||'—')}</div>
-  `);
-
-  // EcoAgent
-  const devs=eco.recommendation||[];
-  const devHtml=devs.map(d=>`<div class="dev"><span>${esc(d.device)}<br><small>${esc(d.reason)}</small></span><span class="p">¥${d.price_cny}</span></div>`).join('');
-  html+=agentCard('④ EcoAgent','生态撮合',(eco.confidence||{}).rubric_score||(eco.confidence||{}).match_quality||'-',`
-    <div class="kv"><b>命中设备：</b>${(eco.evidence||{}).matched_count??devs.length} 件 · 估算总价 ¥${(eco.constraints||{}).total_estimated_price_cny??'?'}</div>
-    ${devHtml}
-  `);
-
-  // 总置信度 + 证书
-  html+=`<div class="kv" style="margin:8px 0"><b>整体可信评分 (AgriTrust rubric)：</b>
-    <span style="color:var(--green);font-weight:700;font-size:16px">${trust.overall_rubric_score??'-'}</span></div>`;
-  html+=`<button onclick="showCert()" style="background:var(--ink)">🔒 查看 AgriTrust 可复现证书</button>
-         <div id="certBox"></div>`;
-
-  $('result').innerHTML=html;
+/* ============================== TRUST SECTION ============================== */
+async function loadTrust(){
+  const el = $("#o-trust");
+  try{
+    const skills = (await api("/api/skills")).skills || [];
+    const rows = skills.map(s => {
+      const call = s.callable_via === "call_skill";
+      return '<tr><td><b>'+esc(s.name||s.label||"")+'</b></td>'+
+        '<td style="font-size:12px">'+esc((s.description||"").slice(0,80))+'</td>'+
+        '<td>'+(call?'<span class="tag g">可直接调用</span>':'<span class="tag n">流水线内</span>')+'</td></tr>';
+    }).join("");
+    el.innerHTML =
+      '<div class="card"><h5>技能注册表 Skill Registry<span class="en">'+skills.length+' skills</span></h5>'+
+        '<table><thead><tr><th>技能</th><th>说明</th><th>调用方式</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      '<div class="card gold"><h5>输出契约 Output Contract<span class="en">every recommendation</span></h5>'+
+        '<div class="crops">'+
+        '<div class="crop"><div class="nm">evidence</div><div class="meta">结论依据的具体数据与数据源，含时效标记</div></div>'+
+        '<div class="crop"><div class="nm">confidence</div><div class="meta">评分依据与覆盖度，不含主观乐观</div></div>'+
+        '<div class="crop"><div class="nm">constraints</div><div class="meta">适用边界与容差，超界需降级</div></div>'+
+        '<div class="crop"><div class="nm">known_limitations</div><div class="meta">明确写出不确定的部分，不掩盖</div></div>'+
+        '</div></div>'+
+      '<div class="detail"><b>零误报原则</b>：证据不足时明确返回「未确认」，不给出确定性结论。可信证书随每条建议签发，含运行参数、输入指纹与签发时点。</div>';
+  }catch(e){ el.innerHTML = '<div class="empty">技能目录暂不可用</div>'; }
 }
 
-async function showCert(){
-  const scene=$('scene').value;
-  const box=$('certBox');
-  box.innerHTML='<div class="loading">生成证书…</div>';
+/* ============================== 11 BP SCREEN ============================== */
+$("#btnBp").addEventListener("click", async () => {
+  const out = $("#o-bp"), b = $("#btnBp"); b.disabled = true; loading(out, "九层管线初筛");
   try{
-    const r=await fetch('/api/certificate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scene})});
-    const c=await r.json();
-    if(c.error){box.innerHTML=`<div class="err">${esc(c.error)}</div>`;return;}
-    const cov=c.data_coverage||{}, rb=c.rubric||{};
-    const rub=[];
-    for(const[k,v]of Object.entries(rb.detail||{})) rub.push(`${(v?'✅':'❌')} ${k}`);
-    box.innerHTML=`<div class="cert"><h3>AgriTrust 可复现证书</h3>
-      <div>作物覆盖：${cov.total_crops} 种 · 含气候带：${cov.zones_with_crops} 个</div>
-      <div>Skill 注册表：${(c.skill_registry||{}).total_skills} 个</div>
-      <div style="margin:6px 0">Rubric ${rb.passed}/${rb.total}：${rub.join(' ')}</div>
-      <div>签名：<code>${esc(c.signature)}</code></div>
-    </div>`;
-  }catch(e){box.innerHTML=`<div class="err">${esc(e)}</div>`;}
+    const r = await api("/api/bp_screen", {
+      text: $("#bpText").value,
+      company: $("#bpCompany").value,
+      category: $("#bpCategory").value || null
+    });
+    out.innerHTML = renderBpScreen(r);
+    loadBpList();
+  }catch(e){ fail(out, e); } finally { b.disabled = false; }
+});
+
+/* ---- 文件上传初筛（C） ---- */
+$("#btnBpFile").addEventListener("click", async () => {
+  const out = $("#o-bp"), b = $("#btnBpFile");
+  const files = Array.from($("#bpFiles").files || []);
+  if(!files.length){ alert("请先选择至少一个 BP 文件"); return; }
+  b.disabled = true; loading(out, "解析并初筛文件（" + files.length + " 个）");
+  try{
+    const payload = { company: $("#bpCompany").value, files: [] };
+    for(const f of files){
+      const buf = await f.arrayBuffer();
+      payload.files.push({
+        filename: f.name,
+        content_base64: btoa(String.fromCharCode.apply(null, new Uint8Array(buf)))
+      });
+    }
+    const r = await api("/api/bp_screen_file", payload);
+    out.innerHTML = renderBpScreen(r);
+    loadBpList();
+  }catch(e){ fail(out, e); } finally { b.disabled = false; }
+});
+
+/* ---- 我的评估列表（B） ---- */
+function renderBpList(items){
+  const box = $("#bpList");
+  if(!items || !items.length){
+    box.innerHTML = '<div class="detail">暂无归档记录。初筛后会自动写入「我的评估」。</div>';
+    $("#bpListCount").textContent = "";
+    return;
+  }
+  $("#bpListCount").textContent = items.length + " 条";
+  box.innerHTML = items.map(it => {
+    const sc = it.score != null ? it.score.toFixed(1) : "—";
+    const sbadge = it.score != null
+      ? '<span class="tag '+(it.status==="done"?"g":"n")+'">'+sc+'</span>' : "";
+    const st = it.status || "";
+    return '<div class="bp-item">'+
+      '<div class="bp-item-main"><b>'+esc(it.company||"（未命名）")+'</b> '+
+      '<span class="srcline">· '+esc(it.category_name||it.category||"")+'</span></div>'+
+      '<div class="bp-item-meta">'+sbadge+
+      ' <span class="tag '+(st==="done"?"g":(st==="need_classify"?"n":"w"))+'">'+esc(st)+'</span>'+
+      ' <span class="srcline">'+esc(fmtTime(it.created))+'</span></div>'+
+      '</div>';
+  }).join("");
+}
+async function loadBpList(){
+  try{
+    const r = await api("/api/bp_list");
+    renderBpList((r.items||[]).slice().reverse());
+  }catch(e){ /* 列表加载失败不阻断主流程 */ }
+}
+function fmtTime(t){
+  if(t == null) return "";
+  try{ const d = new Date(t * 1000); return d.toLocaleString("zh-CN", {hour12:false}); }
+  catch(e){ return String(t); }
+}
+$("#btnBpList").addEventListener("click", loadBpList);
+function renderBpScreen(r){
+  if(r.error) return '<div class="card warn"><h5>失败 Error</h5><div>'+esc(r.error)+'</div></div>';
+  let h = "";
+  const vname = r.verdict_name || "";
+  const vcls = vname === "通过" ? "ok" : (vname === "需深挖" ? "" : "warn");
+  h += '<div class="card '+vcls+'"><h5>初筛结论 Verdict<span class="en">'+esc(r.status||"")+'</span></h5>';
+  if(r.score != null){
+    h += '<div style="display:flex;align-items:baseline;gap:16px;margin-bottom:12px">'+
+         '<span style="font-size:34px;font-weight:700;color:var(--un-navy)">'+r.score.toFixed(1)+'</span>'+
+         '<span class="srcline">区间 '+(r.score_range||[]).join(' – ')+'</span></div>';
+  } else if(r.status === "need_classify"){
+    h += '<div style="font-size:14px;color:var(--muted);margin-bottom:8px">分数待分类确认后再给</div>';
+  }
+  h += kv("结论", tags([vname||"—"], vcls==="ok"?"g":(vcls==="warn"?"w":"n")));
+  h += kv("原因", esc(r.verdict_reason||"—"));
+  if(r.note){ h += kv("提示", '<span class="warn">'+esc(r.note)+'</span>'); }
+  if(r.llm_mode){ h += kv("抽取通道", esc(r.llm_mode)); }
+  if(r.rules_version){ h += kv("规则版本", '<span class="mono">'+esc(r.rules_version)+'</span>'); }
+  h += "</div>";
+
+  if(r.cls){
+    h += '<div class="card"><h5>六分类 Classification<span class="en">'+esc(r.category_name||r.category||"")+'</span></h5>'+
+      kv("分类", esc(r.category_name||r.category||"—")) +
+      kv("置信度", scorebar((r.cls.confidence||0)/100)) +
+      kv("判定来源", esc(r.cls.source||"—")) +
+      (r.cls.top3?kv("备选", tags(r.cls.top3.map(x => (x.category||"")+' '+(x.confidence||0).toFixed(0)+'%'), "n")):"") +
+      "</div>";
+  }
+
+  const gates = r.gates_fired||[], vetoes = r.vetoes_fired||[];
+  h += '<div class="card '+(vetoes.length?"warn":"")+'"><h5>五闸 + 一票否决 Gates<span class="en">'+gates.length+' 触发 · '+vetoes.length+' 否决</span></h5>';
+  if(gates.length===0 && vetoes.length===0){
+    h += '<div class="detail">所有门禁均未触发。</div>';
+  } else {
+    if(gates.length){
+      h += '<div style="margin-bottom:8px"><b>触发门禁</b></div><table><thead><tr><th>门禁</th><th class="num">当前值</th><th class="num">阈值</th><th>等级</th></tr></thead><tbody>';
+      gates.forEach(g => {
+        h += '<tr><td><b>'+esc(g.name||g.id||"")+'</b></td>'+
+             '<td class="num">'+esc(g.value!=null?g.value:"—")+'</td>'+
+             '<td class="num">'+esc(g.threshold!=null?g.threshold:"—")+'</td>'+
+             '<td>'+tags([g.level||g.severity||""], (g.level||"")==="critical"?"e":"w")+'</td></tr>';
+      });
+      h += "</tbody></table>";
+    }
+    if(vetoes.length){
+      h += '<div style="margin:10px 0 6px"><b class="warn">⚠ 一票否决</b></div><table><thead><tr><th>规则</th><th>原因</th></tr></thead><tbody>';
+      vetoes.forEach(v => {
+        h += '<tr><td><b>'+esc(v.rule||v.id||"")+'</b></td><td>'+esc(v.reason||v.detail||v.description||"")+'</td></tr>';
+      });
+      h += "</tbody></table>";
+    }
+  }
+  h += "</div>";
+
+  const gaps = r.gaps||[];
+  if(gaps.length){
+    h += '<div class="card"><h5>信息缺口 Gaps<span class="en">'+gaps.length+' 项</span></h5><table><thead><tr><th>字段</th><th>等级</th><th>说明</th></tr></thead><tbody>';
+    gaps.forEach(g => {
+      const lv = g.level||"";
+      h += '<tr><td><span class="mono">'+esc(g.field||g.id||g.name||"")+'</span></td>'+
+           '<td>'+tags([lv], lv==="critical"?"e":(lv==="high"?"w":"n"))+'</td>'+
+           '<td>'+esc(g.note||g.description||g.reason||"")+'</td></tr>';
+    });
+    h += "</tbody></table></div>";
+  }
+
+  if(r.sanity_observations && r.sanity_observations.length){
+    h += '<div class="card warn"><h5>合理性校验 Sanity<span class="en">'+r.sanity_observations.length+' 项越界</span></h5><table><thead><tr><th>字段</th><th class="num">观测值</th><th>处理</th><th>原因</th></tr></thead><tbody>';
+    r.sanity_observations.forEach(o => {
+      h += '<tr><td><span class="mono">'+esc(o.field||o.label||"")+'</span></td>'+
+           '<td class="num">'+esc(o.observed)+'</td>'+
+           '<td>'+esc(o.action||"置空")+'</td>'+
+           '<td>'+esc(o.reason||"")+'</td></tr>';
+    });
+    h += "</tbody></table></div>";
+  }
+
+  const vr = r.verify_results||[];
+  if(vr.length){
+    h += '<div class="card"><h5>证照核验 Verification<span class="en">本地演示库，非官方核验</span></h5><table><thead><tr><th>类型</th><th>值</th><th>状态</th><th>官方入口</th></tr></thead><tbody>';
+    vr.forEach(v => {
+      const st = v.status||"";
+      h += '<tr><td>'+esc(v.type||"")+'</td><td>'+esc(v.value||"")+'</td>'+
+           '<td>'+tags([st], st==="local_hit"?"n":(st==="unverified"?"w":"g"))+'</td>'+
+           '<td>'+esc(v.official_source||"—")+'</td></tr>';
+    });
+    h += "</tbody></table></div>";
+  }
+
+  if(r.boundary && r.boundary.length){
+    h += '<div class="trust"><h5>◆ 使用边界 Boundary</h5><ul>'+
+      r.boundary.map(x => '<li>'+esc(x)+'</li>').join("") +
+      '</ul></div>';
+  }
+  return h;
 }
 
-async function pestDiagnose(){
-  const btn=$('pestGo'); btn.disabled=true; btn.textContent='诊断中…';
-  const payload={
-    crop:$('pest_crop').value.trim(),
-    symptom_description:$('pest_symptom').value.trim(),
-    image_reference:$('pest_image').value.trim(),
-    growth_stage:$('pest_stage').value.trim()
-  };
-  $('pestResult').innerHTML='<div class="loading">⏳ 诊断中…</div>';
-  try{
-    const r=await fetch('/api/agent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({skill:'pest_diagnose',payload})});
-    const d=await r.json();
-    if(d.error){$('pestResult').innerHTML=`<div class="err">❌ ${esc(d.error)}</div>`;return;}
-    const sevMap={light:'轻',medium:'中',severe:'重'};
-    const actions=(d.actions||[]).map(a=>`<div class="phase">• ${esc(a)}</div>`).join('');
-    const alt=(d.alternative_diagnoses||[]).map(x=>`<span class="crop">${esc(x)}</span>`).join('');
-    const cons=(d.constraints||[]).map(x=>`<div class="risk" style="color:var(--muted)">⚠️ ${esc(x)}</div>`).join('');
-    const vision=d.evidence&&d.evidence.vision_used?'（视觉辅助）':'';
-    $('pestResult').innerHTML=`
-      <div class="agent-card" style="border-left-color:var(--warn)">
-        <h3>🔍 ${esc(d.diagnosis)} <span class="badge" style="background:#fff3e0;color:var(--warn)">严重度 ${sevMap[d.severity]||d.severity}</span>
-          <span class="score">置信 ${d.diagnosis_confidence}</span></h3>
-        <div class="kv"><b>来源：</b>${esc(d.knowledge_source)} ${vision}</div>
-        <div class="kv"><b>重点监测/匹配：</b>${(d.matched_risks||[]).map(x=>`<span class="crop">${esc(x)}</span>`).join('')||'—'}</div>
-        <div class="kv"><b>处理建议：</b></div>${actions}
-        ${alt?`<div class="kv"><b>替代诊断：</b>${alt}</div>`:''}
-        ${d.vision_finding?`<div class="kv"><b>视觉模型：</b>${esc(d.vision_finding)}</div>`:''}
-        <div class="kv"><b>建议：</b>${esc(d.recommendation)}</div>
-      </div>
-      ${cons}
-      <div class="hint">数字签名（可复现）：<code style="word-break:break-all">${esc(d.signature)}</code></div>
-    `;
-  }catch(e){
-    $('pestResult').innerHTML=`<div class="err">❌ 请求失败：${esc(e)}</div>`;
-  }finally{
-    btn.disabled=false; btn.textContent='诊断';
+/* ============================== 知识底座 DATA FOUNDATION ============================== */
+let FD_VIEW = "crops";
+let FD_DATA = { crops: [], zones: [], pests: [], recipes: [] };
+const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+$("#fdNav").querySelectorAll(".sbtn").forEach(b => b.addEventListener("click", () => {
+  $("#fdNav").querySelectorAll(".sbtn").forEach(x => x.classList.remove("on"));
+  b.classList.add("on");
+  FD_VIEW = b.dataset.v;
+  renderFoundationFilter();
+  loadFoundation();
+}));
+
+function renderFoundationFilter(){
+  const f = $("#fdFilter");
+  if(FD_VIEW === "crops"){
+    f.innerHTML = '<label>分区 Zone</label><select id="fdZone"><option value="">全部分区</option></select>' +
+      '<label>检索（名称 / 科属 / 风险）</label><input type="text" id="fdQ" placeholder="如：番茄 / 抗病 / 蚜虫">';
+    api("/api/zones").then(d => {
+      const sel = $("#fdZone");
+      (d.zones || []).forEach(z => {
+        const o = document.createElement("option");
+        o.value = z.zone_id; o.textContent = z.zone_id + " " + (z.zone_name || "");
+        sel.appendChild(o);
+      });
+      sel.addEventListener("change", loadFoundation);
+    }).catch(() => {});
+    $("#fdQ").addEventListener("input", debounce(loadFoundation, 300));
+  } else if(FD_VIEW === "recipes"){
+    f.innerHTML = '<label>检索（作物 / 阶段 / 设备）</label><input type="text" id="fdRQ" placeholder="如：番茄 / 育苗 / 阳台">';
+    $("#fdRQ").addEventListener("input", debounce(loadFoundation, 300));
+  } else {
+    f.innerHTML = "";
   }
 }
 
-async function nutritionPlan(){
-  const btn=$('nutGo'); btn.disabled=true; btn.textContent='生成中…';
-  const volRaw=$('nut_vol').value.trim();
-  const payload={
-    crop:$('nut_crop').value.trim(),
-    scene:$('nut_scene').value.trim(),
-    growth_stage:$('nut_stage').value.trim(),
-    container_volume_l: volRaw? parseFloat(volRaw): null
-  };
-  $('nutResult').innerHTML='<div class="loading">⏳ 生成施肥方案…</div>';
+async function loadFoundation(){
+  const out = $("#o-foundation");
+  loading(out, "加载知识底座");
   try{
-    const r=await fetch('/api/agent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({skill:'nutrition_plan',payload})});
-    const d=await r.json();
-    if(d.error){$('nutResult').innerHTML=`<div class="err">❌ ${esc(d.error)}</div>`;return;}
-    const rec=d.recommendation||{};
-    const phases=(rec.phases||[]).map(p=>`
-      <div class="phase"><b>${esc(p.phase)}</b> （D${p.day_range[0]}–D${p.day_range[1]}）<br>
-      <b>肥料：</b>${esc(p.fertilizer)} · <b>NPK：</b>${esc(p.npk)}<br>
-      <b>频率：</b>${esc(p.frequency)} · <b>${esc(p.dilution)}</b><br>
-      <b>用量：</b>${esc(p.amount_guidance)}<br>
-      <span style="color:var(--muted)">${esc(p.notes)}</span></div>`).join('');
-    const quick=(rec.deficiency_quickref||{});
-    const quickHtml=Object.entries(quick).map(([k,v])=>`<div class="kv"><b>${esc(k)}</b> → ${esc(v)}</div>`).join('');
-    const cons=(d.constraints||[]).map(x=>`<div class="risk" style="color:var(--muted)">⚠️ ${esc(x)}</div>`).join('');
-    $('nutResult').innerHTML=`
-      <div class="agent-card" style="border-left-color:var(--green)">
-        <h3>🌿 ${esc(rec.crop)} · ${esc(rec.profile_label)}
-          <span class="score">置信 ${(d.confidence||{}).rubric_score}</span></h3>
-        <div class="kv"><b>NPK 策略：</b>${esc(rec.npk_strategy)}</div>
-        <div class="kv"><b>原则：</b>${esc((rec.key_principles||[]).join('；'))}</div>
-        ${phases}
-        ${rec.current_stage_guidance?`<div class="kv"><b>当前阶段建议：</b>${esc(rec.current_stage_guidance)}</div>`:''}
-        <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--green);font-size:13px;font-weight:600">营养缺乏速查（桥接 PestAgent）</summary>${quickHtml}</details>
-        <div class="kv"><b>提示：</b>${esc(rec.manual_review_note)}</div>
-      </div>
-      ${cons}
-      <div class="hint">数字签名（可复现）：<code style="word-break:break-all">${esc(d.signature)}</code></div>
-    `;
-  }catch(e){
-    $('nutResult').innerHTML=`<div class="err">❌ 请求失败：${esc(e)}</div>`;
-  }finally{
-    btn.disabled=false; btn.textContent='生成施肥方案';
-  }
+    if(FD_VIEW === "crops"){
+      const zone = ($("#fdZone") || {}).value || "";
+      const q = ($("#fdQ") || {}).value || "";
+      const d = await api("/api/crops?zone=" + encodeURIComponent(zone) + "&q=" + encodeURIComponent(q));
+      FD_DATA.crops = d.crops || [];
+      out.innerHTML = renderCrops(d);
+    } else if(FD_VIEW === "zones"){
+      const d = await api("/api/zones");
+      FD_DATA.zones = d.zones || [];
+      out.innerHTML = renderZones(d);
+    } else if(FD_VIEW === "pests"){
+      const d = await api("/api/pests");
+      FD_DATA.pests = d.pests || [];
+      out.innerHTML = renderPests(d);
+    } else if(FD_VIEW === "recipes"){
+      const rq = ($("#fdRQ") || {}).value || "";
+      const d = await api("/api/recipes" + (rq ? ("?crop=" + encodeURIComponent(rq)) : ""));
+      FD_DATA.recipes = d.recipes || [];
+      out.innerHTML = renderRecipes(d, rq);
+    }
+  }catch(e){ fail(out, e); }
 }
+
+function renderCrops(d){
+  const list = d.crops || [];
+  if(!list.length) return '<div class="empty">无匹配作物，换关键词或分区试试</div>';
+  let h = '<div class="card"><h5>作物库<span class="en">' + list.length + ' 条真实条目</span></h5><div class="croplist">';
+  list.forEach((c, i) => {
+    const cal = c.calibrated ? '<span class="calbadge ok">已校准</span>' : '<span class="calbadge">未校准</span>';
+    h += '<div class="crop click" data-v="crops" data-i="' + i + '">' +
+      '<div class="nm">' + esc(c.crop) + ' <span class="la">' + esc(c.latin || "") + '</span></div>' +
+      '<div class="meta">' + esc(c.zone_name || c.zone_id) + ' · 适配 ' + scorebar(c.adapt_score) + ' ' + cal + '</div></div>';
+  });
+  h += '</div></div>';
+  return h;
+}
+function renderZones(d){
+  const list = d.zones || [];
+  if(!list.length) return '<div class="empty">分区库为空</div>';
+  let h = '<div class="card"><h5>分区库<span class="en">' + list.length + ' 个全球气候分区</span></h5><div class="croplist">';
+  list.forEach((z, i) => {
+    h += '<div class="crop click" data-v="zones" data-i="' + i + '">' +
+      '<div class="nm">' + esc(z.zone_name || z.zone_id) + '</div>' +
+      '<div class="meta mono">' + esc(z.zone_id) + ' · ' + esc(z.koppen_class || "") + '</div></div>';
+  });
+  h += '</div></div>';
+  return h;
+}
+function renderPests(d){
+  const list = d.pests || [];
+  if(!list.length) return '<div class="empty">病虫害库为空</div>';
+  let h = '<div class="card"><h5>病虫害库<span class="en">' + list.length + ' 条 KB</span></h5><div class="croplist">';
+  list.forEach((p, i) => {
+    h += '<div class="crop click" data-v="pests" data-i="' + i + '">' +
+      '<div class="nm">' + esc(p.name) + '</div>' +
+      '<div class="meta">' + (p.category ? esc(p.category) + " · " : "") + esc(p.sev || "") + '</div></div>';
+  });
+  h += '</div></div>';
+  return h;
+}
+function renderRecipes(d, rq){
+  const list = d.recipes || [];
+  if(!list.length) return '<div class="empty">无匹配配方</div>';
+  let h = '<div class="card"><h5>配方库<span class="en">' + list.length + ' 份 Env Recipe</span></h5><div class="croplist">';
+  list.forEach((r, i) => {
+    h += '<div class="crop click" data-v="recipes" data-i="' + i + '" data-rid="' + esc(r.recipe_id) + '">' +
+      '<div class="nm">' + esc((r.crop || "").replace(/_/g, " ")) + '</div>' +
+      '<div class="meta mono">' + esc(r.zone || "") + '</div></div>';
+  });
+  h += '</div></div>';
+  return h;
+}
+
+// 下钻详情（事件委托，innerHTML 重渲后依然有效）
+$("#o-foundation").addEventListener("click", e => {
+  const el = e.target.closest("[data-v]");
+  if(!el) return;
+  const v = el.dataset.v, i = +el.dataset.i;
+  const out = $("#o-foundation");
+  if(v === "crops"){ out.innerHTML = renderCropDetail(FD_DATA.crops[i]); }
+  else if(v === "zones"){ out.innerHTML = renderZoneDetail(FD_DATA.zones[i]); }
+  else if(v === "pests"){ out.innerHTML = renderPestDetail(FD_DATA.pests[i]); }
+  else if(v === "recipes"){ openRecipeDetail(el.dataset.rid); }
+});
+
+function renderCropDetail(c){
+  if(!c) return '<div class="empty">数据缺失</div>';
+  const tr = c.temp_range_c || [], pr = c.ph_range || [];
+  let h = '<div class="fd-detail"><button class="btn sm backbtn" onclick="loadFoundation()">← 返回作物库</button>';
+  h += '<div class="card"><h5>' + esc(c.crop) + ' <span class="la">' + esc(c.latin || "") + '</span></h5>';
+  h += kv("科属", esc(c.family || "—"));
+  // P2：GBIF 校验拉丁名（零用户下唯一实证来源）
+  if(c.latin_verified){
+    h += kv("拉丁名校验", '<span class="calbadge ok">GBIF 已校验</span> <span class="srcline">' +
+      esc(c.gbif_status || "") + ' · key ' + esc(c.gbif_key || "") + '</span>');
+    if(c.gbif_accepted_name && c.latin && c.gbif_accepted_name.lower() != c.latin.lower())
+      h += kv("GBIF 接受名", '<span class="srcline">' + esc(c.gbif_accepted_name) + '</span>');
+  } else {
+    h += kv("拉丁名校验", '<span class="calbadge">未校验 / GBIF 未匹配</span> <span class="srcline">' +
+      esc(c.gbif_match_note || "") + '</span>');
+  }
+  h += kv("所在分区", esc(c.zone_name || c.zone_id));
+  h += kv("校准状态", c.calibrated ? '<span class="calbadge ok">已校准（生态位反推）</span>' : '<span class="calbadge">未校准 · 种子数据</span>');
+  h += kv("适配度", scorebar(c.adapt_score));
+  h += kv("生长期", (c.growth_days != null ? c.growth_days + " 天" : "—"));
+  h += kv("适温区间", (tr.length === 2 ? tr[0] + " ~ " + tr[1] + " ℃" : "—"));
+  h += kv("pH 区间", (pr.length === 2 ? pr[0] + " ~ " + pr[1] : "—"));
+  h += kv("日耗水", (c.water_ml_day != null ? c.water_ml_day + " 毫升" : "—"));
+  h += kv("适宜场景", tags(c.suitable_scenes, "n"));
+  h += kv("关键风险", tags(c.key_risks, "w"));
+  h += kv("备选品种", esc(c.fallback_variety || "—"));
+  h += '</div></div>';
+  return h;
+}
+function renderZoneDetail(z){
+  if(!z) return '<div class="empty">数据缺失</div>';
+  const tr = z.temperature_range || {}, pr = z.precipitation_mm_yr || {}, soil = z.soil || {};
+  let h = '<div class="fd-detail"><button class="btn sm backbtn" onclick="loadFoundation()">← 返回分区库</button>';
+  h += '<div class="card"><h5>' + esc(z.zone_name || z.zone_id) + ' <span class="la mono">' + esc(z.zone_id) + '</span></h5>';
+  h += kv("柯本分类", esc(z.koppen_class || "—"));
+  h += kv("气温区间", (tr.min_c != null ? tr.min_c + " ~ " + tr.max_c + " ℃" : "—"));
+  h += kv("年降水", (pr.min != null ? pr.min + " ~ " + pr.max + " mm" : "—"));
+  h += kv("生长期", (z.growing_season_days != null ? z.growing_season_days + " 天" : "—"));
+  h += kv("霜冻风险", z.frost_risk ? '<span class="warn">有</span>' : "无");
+  h += kv("土壤质地", esc(soil.texture_hint || "—"));
+  h += kv("土壤 pH", (soil.ph_range ? (soil.ph_range[0] + " ~ " + soil.ph_range[1]) : "—"));
+  h += kv("水分供给", esc(z.water_availability || "—"));
+  h += kv("典型作物", tags(z.typical_crops, "n"));
+  h += kv("主要限制", tags(z.key_constraints, "w"));
+  h += kv("分布式农业潜力", esc(z.distributed_agri_potential || "—"));
+  // P1：已固化的真实气候基线（NASA POWER / Open-Meteo，离线可读）
+  const cb = z.climate_baseline;
+  if(cb && cb.monthly_mean_c && cb.monthly_mean_c.length === 12){
+    const mean = cb.monthly_mean_c.reduce((a,b)=>a+b,0)/12;
+    h += '<div class="card"><h5>真实气候基线<span class="en">' + esc(cb.source || "") + ' · 离线固化</span></h5>';
+    h += kv("代表点", '<span class="mono">' + cb.centroid_lat + ", " + cb.centroid_lon + '</span>');
+    h += kv("年均温（实测）", mean.toFixed(1) + " ℃");
+    h += kv("月均温序列", '<span class="srcline mono">' + cb.monthly_mean_c.map(x=>x.toFixed(1)).join(" / ") + ' ℃</span>');
+    if(cb.monthly_precip_mm) h += kv("月降水序列（月内日均，非月累计）", '<span class="srcline mono">' + cb.monthly_precip_mm.map(x=>x==null?"—":x.toFixed(0)).join(" / ") + ' mm/日</span>');
+    h += kv("许可", '<span class="srcline">' + esc(cb.license || "") + '</span>');
+    h += kv("取数时间", '<span class="srcline mono">' + esc(cb.accessed_at || "") + '</span>');
+    h += '</div>';
+  }
+  h += '</div></div>';
+  return h;
+}
+function renderPestDetail(p){
+  if(!p) return '<div class="empty">数据缺失</div>';
+  let h = '<div class="fd-detail"><button class="btn sm backbtn" onclick="loadFoundation()">← 返回病虫害库</button>';
+  h += '<div class="card"><h5>' + esc(p.name) + '</h5>';
+  h += kv("类别", esc(p.category || "—"));
+  h += kv("严重度", tags(p.sev ? [p.sev] : [], "e"));
+  h += kv("症状", tags(p.symptoms, "w"));
+  h += kv("处置", tags(p.actions, "g"));
+  h += kv("预防", tags(p.prevention, "n"));
+  h += '</div></div>';
+  return h;
+}
+async function openRecipeDetail(rid){
+  const out = $("#o-foundation");
+  loading(out, "读取配方");
+  try{
+    const d = await api("/api/recipe_detail?recipe_id=" + encodeURIComponent(rid));
+    if(d.error){ out.innerHTML = '<div class="errbox"><b>读取失败</b><br>' + esc(d.error) + "</div>"; return; }
+    const r = d.data || {};
+    const crop = r.crop || {}, env = r.environment || {};
+    const temp = env.temperature || {}, hum = env.humidity || {}, wn = env.water_nutrient || {}, af = env.airflow || {};
+    let h = '<div class="fd-detail"><button class="btn sm backbtn" onclick="loadFoundation()">← 返回配方库</button>';
+    h += '<div class="card"><h5>' + esc((crop.species || "") + " · " + (r.stage || "")) +
+      ' <span class="la mono">' + esc(rid) + '</span></h5>';
+    h += kv("拉丁名 / 科", esc((crop.latin || "—") + " / " + (crop.family || "—")));
+    h += kv("设备类", esc((r.device_profile || {}).device_class || "—"));
+    h += kv("温度（昼/夜）", (temp.day_c != null ? temp.day_c + " / " + temp.night_c + " ℃" : "—"));
+    h += kv("湿度", (hum.min_pct != null ? hum.min_pct + " ~ " + hum.max_pct + " %" : "—"));
+    h += kv("PPFD", esc(wn.ppfd != null ? wn.ppfd + " μmol" : "—"));
+    h += kv("pH / EC", esc((wn.ph || "—") + " / " + (wn.ec != null ? wn.ec + " mS/cm" : "—")));
+    h += kv("日灌溉", (wn.water_ml_day != null ? wn.water_ml_day + " 毫升" : "—"));
+    h += kv("气流", esc(af.level || "—"));
+    const eh = (r.exception_handling || []).map(e => esc(e.condition || "") + " → " + esc(e.action || ""));
+    if(eh.length) h += kv("异常处理", eh.map(x => '<div class="detail" style="margin:2px 0">' + x + "</div>").join(""));
+    if(r.sources && r.sources.length){
+      const sl = r.sources.map(s => {
+        const t = esc(s.title || "来源");
+        const u = s.url ? ' <a class="src-link" href="' + esc(s.url) + '" target="_blank" rel="noopener">↗</a>' : ' <span class="dim">(无链接)</span>';
+        const lic = s.license ? ' <span class="dim">[' + esc(s.license) + ']</span>' : '';
+        return '<div class="detail" style="margin:2px 0">' + t + u + lic + '</div>';
+      }).join("");
+      h += kv("来源（已回填真实链接）", sl);
+    }
+    if(r.license) h += kv("许可", esc(r.license));
+    h += '</div></div>';
+    out.innerHTML = h;
+  }catch(e){ fail(out, e); }
+}
+
+/* ============================== BOOT ============================== */
+loadCities();
+loadPlatform();
+loadTrust();
 </script>
 </body>
 </html>

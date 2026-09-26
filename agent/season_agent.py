@@ -74,10 +74,34 @@ class SeasonAgent:
     # ---------- mode: planting_window ----------
     def _planting_window(self, p: Dict[str, Any]) -> Dict[str, Any]:
         monthly = p.get("monthly_mean_c") or []
+        climate_provenance = None
+        climate_input = "caller_supplied"
         if len(monthly) != 12:
-            return {"available": False, "mode": "planting_window",
-                    "error": "需提供 monthly_mean_c（12 个月均温，1 月起）。",
-                    "covered_crops": covered_crops()}
+            # P0：给出经纬度则自动从 NASA POWER / Open-Meteo 拉真实气候，干掉手填 12 月均温
+            lat = p.get("lat")
+            lon = p.get("lon")
+            if lat is not None and lon is not None:
+                try:
+                    from .climate_data import fetch_monthly_climate
+                    cl = fetch_monthly_climate(float(lat), float(lon))
+                    if cl.get("monthly_mean_c") and len(cl["monthly_mean_c"]) == 12 \
+                            and all(m is not None for m in cl["monthly_mean_c"]):
+                        monthly = cl["monthly_mean_c"]
+                        climate_provenance = cl.get("provenance")
+                        climate_input = "auto_fetched_from_latlon"
+                    else:
+                        return {"available": False, "mode": "planting_window",
+                                "error": "未提供 monthly_mean_c，且按经纬度自动获取气候失败："
+                                         + (cl.get("error") or "返回无效序列") + "。",
+                                "covered_crops": covered_crops()}
+                except Exception as e:
+                    return {"available": False, "mode": "planting_window",
+                            "error": "未提供 monthly_mean_c，且按经纬度自动获取气候异常：%s" % e,
+                            "covered_crops": covered_crops()}
+            if len(monthly) != 12:
+                return {"available": False, "mode": "planting_window",
+                        "error": "需提供 monthly_mean_c（12 个月均温，1 月起），或提供 lat/lon 由系统自动获取。",
+                        "covered_crops": covered_crops()}
         try:
             monthly = [float(x) for x in monthly]
         except (TypeError, ValueError):
@@ -92,6 +116,10 @@ class SeasonAgent:
         r["mode"] = "planting_window"
         r["available_crops"] = covered_crops()
         r["confidence"] = self._confidence(r.get("available", False), None)
+        # 透明化气候输入来源：自动抓取 ≠ 手编近似
+        r["climate_input"] = climate_input
+        if climate_provenance:
+            r["climate_provenance"] = climate_provenance
         return r
 
     # ---------- mode: calendar ----------

@@ -9,6 +9,7 @@
 
 覆盖：
     - 四 Agent 流水线：杭州→亚热带湿润带、无 PLACEHOLDER、rubric 聚合正确
+    - 分区覆盖缺口：迪拜（热漠）/拉萨（高原）必须显式拒答，不得静默归入亚热带湿润
     - CropAgent 候选数 / EcoAgent 预算门控
     - Trust Layer 可复现证书 rubric 全通过
     - flywheel 反馈闭环：校准分随反馈变化（数据文件备份/重定向，不污染 seed 数据）
@@ -72,6 +73,79 @@ def tearDownModule():
             os.environ[k] = v
     if _TMP:
         shutil.rmtree(_TMP, ignore_errors=True)
+
+
+class TestZoneCoverageGap(unittest.TestCase):
+    """守住「已知覆盖缺口 → 显式拒答」，不许再静默给出错误分区的种植方案。
+
+    背景（2026-09-23）：启发式把迪拜/拉萨吞进最后的「亚热带湿润」默认分支，
+    运行时 rubric≈0.95、recommendation 还写「环境条件适宜」——错得高置信且
+    对调用方完全静默（迪拜实际是热漠：年均约 28°C、年降水约 100mm，按湿热区
+    参数种必然失败）。现改为返回真实气候类名（hot_arid / highland），分区库
+    没有该区 → 走既有降级路径显式失败（拒答优于错答）。
+    """
+
+    def setUp(self):
+        from agent.climate_agent import ClimateAgent
+        self.ca = ClimateAgent()
+
+    def _out(self, lat, lon):
+        return self.ca.match_zone(lat, lon)
+
+    def test_dubai_is_hot_arid_gap_not_humid(self):
+        out = self._out(25.2048, 55.2708)  # 迪拜
+        ev = out["evidence"]
+        self.assertEqual(ev["zone_id"], "hot_arid")
+        # 回归守卫：这曾是静默错判的目标值
+        self.assertNotEqual(ev["zone_id"], "subtropical_wet")
+        self.assertEqual(ev.get("coverage_gap"), "hot_arid")
+        # 不再高置信，且说明原因（而不是空泛的「数据缺失」）
+        self.assertEqual(out["confidence"]["rubric_score"], 0.0)
+        self.assertIn("未建模", out["confidence"]["confidence_note"])
+        # 必须给出可行动的替代路径，而不是只报错
+        self.assertIn("箱体", out["recommendation"])
+
+    def test_lhasa_is_highland_gap(self):
+        out = self._out(29.6520, 91.1721)  # 拉萨
+        self.assertEqual(out["evidence"]["zone_id"], "highland")
+        self.assertEqual(out["evidence"].get("coverage_gap"), "highland")
+        self.assertEqual(out["confidence"]["rubric_score"], 0.0)
+
+    def test_modeled_cities_unchanged(self):
+        """缺口识别只允许改变原本落到默认分支的点，不得动已归类正确的坐标。"""
+        cases = [
+            (1.3521, 103.8198, "tropical_rainforest"),     # 新加坡
+            (30.2741, 120.1551, "subtropical_wet"),        # 杭州
+            (23.1291, 113.2644, "subtropical_wet"),        # 广州
+            (30.5728, 104.0668, "subtropical_wet"),        # 成都（守住高原盒 lon≤100 不吃掉它）
+            (39.9042, 116.4074, "temperate_continental"),  # 北京
+            (43.8256, 87.6168, "arid"),                    # 乌鲁木齐
+            (34.0522, -118.2437, "mediterranean"),         # 洛杉矶
+            (55.7558, 37.6173, "subarctic"),               # 莫斯科
+        ]
+        for lat, lon, want in cases:
+            got = self._out(lat, lon)["evidence"]["zone_id"]
+            self.assertEqual(got, want, f"({lat},{lon}) 期望 {want}，实得 {got}")
+
+    def test_gap_is_hard_flagged_by_verifier(self):
+        """缺口必须在校验层判红（硬标记），不能只是软提示。"""
+        from agent.orchestrator import verify_agent_output
+        out = self._out(25.2048, 55.2708)
+        v = verify_agent_output("ClimateAgent", out)
+        self.assertFalse(v["ok"], "未建模分区必须校验不通过")
+        zone_check = [c for c in v["checks"] if c["name"] == "zone_id_known"]
+        self.assertEqual(len(zone_check), 1)
+        self.assertFalse(zone_check[0]["ok"])
+
+    def test_zone_consistency_eval_all_correct(self):
+        """评测样本的真值：10 个样本的气候类分类应全对（含两个缺口类）。"""
+        import engine.eval as ev
+        with open(os.path.join(ROOT, "data", "eval", "zone_checks.json"),
+                  encoding="utf-8") as f:
+            checks = json.load(f)
+        r = ev.eval_zone_consistency(checks, self.ca)
+        self.assertEqual(r["total"], 10)
+        self.assertEqual(r["rate"], 1.0, f"不一致样本: {r['mismatches']}")
 
 
 class TestPipeline(unittest.TestCase):
@@ -234,6 +308,37 @@ class TestCropDataIntegrity(unittest.TestCase):
                 bad.append(e.get("note", ""))
         self.assertEqual(bad, [], f"反馈日志含 {len(bad)} 条合成样本")
 
+    def test_feedback_dry_run_writes_nothing(self):
+        """回归：demo 演示模式下 record_feedback 必须只算不写，防污染真实数据。
+
+        2026-09-17 实踩：前端冒烟 3 次把 note="smoke" 写进真实 feedback_log.json，
+        并把 crop_adapt_db.json 里小白菜的 adapt_score 从 0.96 伪校准成 0.951。
+        这两个文件不受 git 跟踪，git status 恒为 clean，污染完全静默。
+        """
+        import hashlib
+        import engine.flywheel as fw
+
+        fb = os.path.join(ROOT, "data", "feedback_log.json")
+        db = os.path.join(ROOT, "data", "crop_adapt_db.json")
+        sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
+        fb_before, db_before = sha(fb), sha(db)
+
+        saved = dict(os.environ)
+        os.environ["AGRI_FEEDBACK_DRY_RUN"] = "1"
+        try:
+            r = fw.record_feedback("subtropical_wet", "小白菜",
+                                   survival_rate=1.0, yield_rating=4.5,
+                                   user_rating=4.5, note="unittest")
+            self.assertTrue(r.get("dry_run"), r)
+            # 计算结果仍在（演示前端还能看到「会校准成多少」）
+            self.assertIsNotNone(r.get("after"))
+        finally:
+            os.environ.clear()
+            os.environ.update(saved)
+
+        self.assertEqual(sha(fb), fb_before, "dry-run 仍写了 feedback_log")
+        self.assertEqual(sha(db), db_before, "dry-run 仍写了 crop_adapt_db")
+
 
 class TestPestAgent(unittest.TestCase):
     def setUp(self):
@@ -339,6 +444,49 @@ class TestOrchestratorSkills(unittest.TestCase):
         self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
         self.assertTrue(r["signature"])
         self.assertEqual(len(r["recommendation"]["phases"]), 4)
+
+    def test_nutrition_short_cycle_no_day_inversion(self):
+        """回归：短周期（20 天小容器叶菜）曾出现 phases[3].day_range=[22,20] 倒挂。
+
+        修复点 agent/nutrition_agent._phase_boundaries：比例切分 + 最小间隔 +
+        上限钳制 + 回向级联，对任意 gd>=20 保证段内 start<=end、段间连续、
+        末段终止于 gd。
+        """
+        from agent.nutrition_agent import _phase_boundaries, _build_fert_phases, PROFILES
+        prof = PROFILES["leafy"]
+        for gd in (20, 21, 23, 25, 30, 45, 60, 90, 120, 180):
+            sow_end, seedling_end, preharvest = _phase_boundaries(gd)
+            spans = [(1, sow_end), (sow_end + 1, seedling_end),
+                     (seedling_end + 1, preharvest), (preharvest + 1, gd)]
+            for i, (s, e) in enumerate(spans):
+                self.assertLessEqual(s, e, "gd=%d 第 %d 段倒挂 %s" % (gd, i + 1, spans))
+                self.assertLessEqual(e, gd, "gd=%d 第 %d 段越界 %s" % (gd, i + 1, spans))
+            for a, b in zip(spans, spans[1:]):
+                self.assertEqual(a[1] + 1, b[0], "gd=%d 段间不连续 %s" % (gd, spans))
+
+        # 端到端：plan() 走 orchestrator 的 20 天方案不得出现倒挂
+        r = self.orch.call_skill("nutrition_plan", {
+            "crop": "生菜", "growth_days": 20, "container_volume_l": 3.0,
+        })
+        phases = r["recommendation"]["phases"]
+        self.assertEqual(len(phases), 4)
+        for i, p in enumerate(phases):
+            s, e = p["day_range"]
+            self.assertLessEqual(s, e, "第 %d 段倒挂 %s" % (i + 1, p["day_range"]))
+            self.assertLessEqual(e, 20, "第 %d 段越出 20 天周期 %s" % (i + 1, p["day_range"]))
+        self.assertEqual(phases[-1]["day_range"][1], 20)
+
+    def test_nutrition_phase_guard_raises_on_inversion(self):
+        """防御性后置校验：人为构造倒挂边界时必须显式抛错，而非静默流出。"""
+        from agent.nutrition_agent import _build_fert_phases, PROFILES
+        import agent.nutrition_agent as na
+        orig = na._phase_boundaries
+        try:
+            na._phase_boundaries = lambda g: (30, 10, 5)  # 故意乱序
+            with self.assertRaises(ValueError):
+                _build_fert_phases(20, PROFILES["leafy"], 150, None, True)
+        finally:
+            na._phase_boundaries = orig
 
     def test_unknown_skill_raises(self):
         with self.assertRaises(ValueError):
@@ -471,6 +619,94 @@ class TestSoilProfile(unittest.TestCase):
         r = sp.get_soil_profile(zone_id="temperate_continental", online=False)
         self.assertTrue(r["limitations"])
         self.assertTrue(any("分区" in x for x in r["limitations"]))
+
+
+class TestPresetCitiesSingleSource(unittest.TestCase):
+    """预设城市清单必须是单一数据源（data/preset_cities.json）。
+
+    背景：清单曾在 app/demo_server.py 与 mcp/server.py 各硬编码一份完全相同的
+    副本 → 必然漂移（改一处忘另一处，前端与 MCP 给出不同城市集且不报错）。
+    2026-09-23 收敛到 data/preset_cities.json + agent/preset_cities.py 唯一读取
+    入口。本类锁定：两侧消费方与文件内容逐字节一致，且降级副本也不得漂移。
+    """
+
+    CITIES_FILE = os.path.join(ROOT, "data", "preset_cities.json")
+
+    def _cities_in_file(self):
+        with open(self.CITIES_FILE, encoding="utf-8") as f:
+            return json.load(f)["cities"]
+
+    @staticmethod
+    def _load(path, name):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(name, path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_file_schema_complete(self):
+        """每个城市必须有 name/lat/lon/zone/modeled，且坐标合法。"""
+        cities = self._cities_in_file()
+        self.assertEqual(len(cities), 12)
+        for c in cities:
+            for k in ("name", "lat", "lon", "zone", "modeled"):
+                self.assertIn(k, c, f"{c.get('name')} 缺字段 {k}")
+            self.assertIsInstance(c["lat"], (int, float))
+            self.assertIsInstance(c["lon"], (int, float))
+            self.assertIsInstance(c["modeled"], bool)
+            self.assertTrue(-90 <= c["lat"] <= 90 and -180 <= c["lon"] <= 180)
+
+    def test_both_consumers_read_the_single_source(self):
+        """demo 站点与 MCP server 必须返回与文件完全一致的城市清单。"""
+        from agent.preset_cities import load_preset_cities
+        expected = load_preset_cities()
+        self.assertEqual(expected, self._cities_in_file())
+
+        demo = self._load(os.path.join(ROOT, "app", "demo_server.py"), "demo_server")
+        mcp_srv = self._load(os.path.join(ROOT, "mcp", "server.py"), "mcp_server")
+        self.assertEqual(demo.PRESET_CITIES, self._cities_in_file(),
+                         "demo_server.PRESET_CITIES 与 data/preset_cities.json 不一致")
+        self.assertEqual(mcp_srv._PRESET_CITIES, self._cities_in_file(),
+                         "mcp.server._PRESET_CITIES 与 data/preset_cities.json 不一致")
+
+    def test_no_residual_hardcoded_city_block(self):
+        """两个消费方文件里不得再出现硬编码城市字典（防副本回归）。"""
+        for rel in ("app/demo_server.py", "mcp/server.py"):
+            with open(os.path.join(ROOT, rel), encoding="utf-8") as f:
+                src = f.read()
+            self.assertNotIn('"name": "杭州"', src,
+                             f"{rel} 疑似重新硬编码了城市清单（应读 data/preset_cities.json）")
+            self.assertIn("load_preset_cities", src, f"{rel} 未接入单一数据源")
+
+    def test_fallback_copy_does_not_drift(self):
+        """降级副本必须与主文件一致——否则文件缺失时会静默给出不同的城市集。"""
+        from agent.preset_cities import _FALLBACK_CITIES
+        self.assertEqual(_FALLBACK_CITIES, self._cities_in_file())
+
+    def test_missing_file_degrades_without_losing_gap_semantics(self):
+        """数据文件缺失时不崩，且 coverage_gap 语义（modeled=False）不随之消失。"""
+        from agent.preset_cities import load_preset_cities
+        cities = load_preset_cities(os.path.join(ROOT, "no_such_cities.json"))
+        self.assertEqual(len(cities), 12)
+        unmodeled = [c["name"] for c in cities if not c["modeled"]]
+        self.assertEqual(sorted(unmodeled), ["拉萨", "迪拜"],
+                         "降级副本丢失了未建模城市标记（coverage_gap 语义被降级吞掉）")
+
+    def test_unmodeled_cities_match_eval_truth(self):
+        """清单里 modeled=False 的城市，必须与 eval 真值登记的未建模类一致。"""
+        from agent.preset_cities import load_preset_cities
+        cities = {c["name"]: c for c in load_preset_cities()}
+        self.assertFalse(cities["拉萨"]["modeled"])
+        self.assertFalse(cities["迪拜"]["modeled"])
+        with open(os.path.join(ROOT, "data", "eval", "zone_checks.json"), encoding="utf-8") as f:
+            checks = json.load(f)
+        samples = checks["samples"] if isinstance(checks, dict) else checks
+        eval_unmodeled = {(s.get("lat"), s.get("lon")) for s in samples
+                          if s.get("modeled") is False}
+        for name in ("拉萨", "迪拜"):
+            c = cities[name]
+            self.assertIn((c["lat"], c["lon"]), eval_unmodeled,
+                          f"{name} 标记为未建模，但 eval 真值未登记")
 
 
 if __name__ == "__main__":

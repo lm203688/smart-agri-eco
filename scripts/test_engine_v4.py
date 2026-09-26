@@ -36,6 +36,14 @@ from engine import long_term_memory as ltm  # noqa: E402
 from engine import local_search as ls  # noqa: E402
 from engine import recipe_scheduler as rs  # noqa: E402
 from engine import work_item as wim  # noqa: E402
+from engine import derived as engine_derived  # noqa: E402
+
+import importlib.util as _ilu  # noqa: E402
+
+# scripts/env_recipe_diff.py 不是包内模块，按文件路径加载（与 harness_sync 的做法一致）
+_spec = _ilu.spec_from_file_location("erd_v4", os.path.join(ROOT, "scripts", "env_recipe_diff.py"))
+env_recipe_diff = _ilu.module_from_spec(_spec)
+_spec.loader.exec_module(env_recipe_diff)
 
 
 class _Isolated(unittest.TestCase):
@@ -939,6 +947,414 @@ class TestIntegration(_Isolated):
         self.assertGreater(obs["anchors_total"], 0)
         self.assertEqual(sum(obs["anchors_by_kind"].values()),
                          obs["anchors_total"])
+
+
+class TestDerivedVpd(unittest.TestCase):
+    """engine/derived.py —— VPD / 露点派生量（纯算术，零依赖）。
+
+    背景：竞品对照（docs/competitive_scan_2026-09-17.md）发现 Env Recipe 缺 VPD 与
+    露点两个行业事实标准派生量。本类锁住公式数值、单调性、缺字段不编造，
+    以及「派生量不落盘」的约定。
+    """
+
+    def test_vpd_known_value(self):
+        # 参考值：25°C / 50% RH 的 VPD 应约 1.58 kPa（Magnus 近似）
+        self.assertAlmostEqual(engine_derived.vpd(25.0, 50.0), 1.584, places=2)
+
+    def test_dew_point_known_value(self):
+        # 参考值：25°C / 60% RH 的露点应约 16.7°C
+        self.assertAlmostEqual(engine_derived.dew_point(25.0, 60.0), 16.70, places=1)
+
+    def test_vpd_zero_at_saturated(self):
+        # 100% 湿度 → VPD 应为 0（空气已饱和，无吸水能力）
+        self.assertAlmostEqual(engine_derived.vpd(20.0, 100.0), 0.0, places=6)
+
+    def test_vpd_monotonic_in_temp_and_humidity(self):
+        # 温度越高越干、湿度越低越干
+        self.assertGreater(engine_derived.vpd(30.0, 50.0), engine_derived.vpd(20.0, 50.0))
+        self.assertGreater(engine_derived.vpd(25.0, 40.0), engine_derived.vpd(25.0, 70.0))
+
+    def test_vpd_clamps_out_of_range_humidity(self):
+        # RH 越界应被钳制而不是产生负值或爆炸
+        self.assertGreaterEqual(engine_derived.vpd(25.0, 0.0), 0.0)
+        self.assertGreaterEqual(engine_derived.vpd(25.0, -5.0), 0.0)
+        self.assertLessEqual(engine_derived.vpd(25.0, 200.0),
+                             engine_derived.vpd(25.0, 0.0))
+
+    def test_dew_point_survives_zero_humidity(self):
+        # RH=0 会触发 ln(0)，必须钳到下限而不是抛异常
+        d = engine_derived.dew_point(25.0, 0.0)
+        self.assertTrue(-100.0 < d < 25.0)
+
+    def _recipe(self, day=26.0, night=16.0, hmin=55.0, hmax=75.0):
+        return {"environment": {
+            "temperature": {"day_c": day, "night_c": night},
+            "humidity": {"min_pct": hmin, "max_pct": hmax},
+        }}
+
+    def test_derive_from_recipe_computes_and_labels(self):
+        d = engine_derived.derive_from_recipe(self._recipe())
+        self.assertTrue(d["available"])
+        v = d["vkd"]
+        self.assertIn("nominal_kpa", v)
+        self.assertIn("envelope", v)
+        self.assertEqual(d["dew_point"]["day_max_c"],
+                         round(engine_derived.dew_point(26.0, 75.0), 2))
+        # 标称点 21°C / 65% 应落在舒适区
+        self.assertAlmostEqual(d["vkd"]["nominal_kpa"],
+                               engine_derived.vpd(21.0, 65.0), places=3)
+        self.assertIn("舒适区", d["vkd"]["nominal_label"])
+
+    def test_derive_from_recipe_missing_fields_does_not_fabricate(self):
+        d = engine_derived.derive_from_recipe({"environment": {"temperature": {"day_c": 25}}})
+        self.assertFalse(d["available"])
+        self.assertIsNone(d["vkd"])
+        self.assertTrue(any("缺字段" in n for n in d["notes"]))
+
+    def test_derive_from_recipe_empty_is_safe(self):
+        d = engine_derived.derive_from_recipe({})
+        self.assertFalse(d["available"])
+        self.assertIsNone(d["vkd"])
+
+    def test_all_110_recipes_computable_without_exception(self):
+        import glob
+        paths = sorted(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
+        self.assertEqual(len(paths), 110)
+        recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+        report = engine_derived.audit_recipes(recipes)
+        self.assertEqual(report["available"], 110,
+                         "所有配方都应能从温湿设定算出派生量")
+        self.assertIn("flag_kinds", report)
+        self.assertIn("observation_kinds", report)
+        # 结论必须是「区间偏宽」这类数据粒度线索（observations），而不是「算不出来」
+        self.assertGreater(report["with_observations"], 0)
+
+    def test_wide_envelope_is_observation_not_flag(self):
+        """包络跨度偏宽只作软提示，不计硬告警。
+
+        回归锁：曾把包络跨度当硬告警，110 份配方报出 63 份噪声，
+        淹没了唯一真问题（沙棘标称过湿）。硬告警只放可执行层面的判定。
+        """
+        # 干旱区气候描述：昼夜温差大，包络必然宽，但不是设定错误
+        r = {"environment": {
+            "temperature": {"day_c": 40.0, "night_c": 5.0},
+            "humidity": {"min_pct": 50.0, "max_pct": 80.0},
+        }}
+        d = engine_derived.derive_from_recipe(r)
+        self.assertEqual(d["flags"], [],
+                         "仅包络跨度宽不应产生硬告警")
+        self.assertTrue(d["observations"],
+                         "包络跨度宽应作为软提示保留，信息不能丢")
+        self.assertIn("包络跨度", d["observations"][0])
+
+    def test_nominal_vpd_out_of_band_is_hard_flag(self):
+        """标称点（区间中点）出舒适区是硬告警——这才是要修的。"""
+        # 夜间 -20 会把中点压到 7.5°C/65%，VPD≈0.36 kPa 过湿
+        r = {"environment": {
+            "temperature": {"day_c": 35.0, "night_c": -20.0},
+            "humidity": {"min_pct": 50.0, "max_pct": 80.0},
+        }}
+        d = engine_derived.derive_from_recipe(r)
+        self.assertTrue(any("标称" in f for f in d["flags"]),
+                         "标称点过湿必须是硬告警")
+
+    def test_all_real_recipes_have_no_hard_flags(self):
+        """当前 110 份配方的标称点全部在可执行范围内。
+
+        若将来新增配方把标称点推入胁迫/过湿/结露区，这里会报红——
+        那正是应该修的，而不是用「区间过宽」噪声掩盖。
+        """
+        import glob
+        paths = sorted(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
+        report = engine_derived.audit_recipes(
+            [json.load(open(p, encoding="utf-8")) for p in paths])
+        bad = [(x["recipe"], x["flags"]) for x in report["rows"] if x["flags"]]
+        self.assertEqual(report["with_flags"], 0,
+                         "当前配方库不应有硬告警，实际 %s" % (bad,))
+
+    def test_shekji_recipe_nominal_is_in_comfort_band(self):
+        """沙棘曾误把冬季休眠温度（-20°C）当生长期夜温，导致标称过湿。"""
+        r = json.load(open(os.path.join(ROOT, "data", "env_recipes",
+                                        "arid__沙棘.json"), encoding="utf-8"))
+        self.assertGreater(r["environment"]["temperature"]["night_c"], 0.0,
+                           "生长期夜温不应是冬季休眠值")
+        d = engine_derived.derive_from_recipe(r)
+        self.assertIn("舒适区", d["vkd"]["nominal_label"],
+                      "修正后标称 VPD 应落回舒适区")
+
+    def test_audit_separates_flags_from_observations(self):
+        recs = [
+            {"environment": {"temperature": {"day_c": 40.0, "night_c": 5.0},
+                             "humidity": {"min_pct": 50.0, "max_pct": 80.0}}},  # 仅软提示
+            {"environment": {"temperature": {"day_c": 35.0, "night_c": -20.0},
+                             "humidity": {"min_pct": 50.0, "max_pct": 80.0}}},  # 硬+软
+        ]
+        report = engine_derived.audit_recipes(recs)
+        self.assertEqual(report["with_flags"], 1)
+        self.assertEqual(report["with_observations"], 2)
+
+    def test_derived_values_are_not_written_back(self):
+        """派生量是即时的，落盘会造成两份可漂移的数据源。"""
+        r = json.load(open(os.path.join(ROOT, "data", "env_recipes",
+                                         "arid__仙人掌.json"), encoding="utf-8"))
+        engine_derived.derive_from_recipe(r)
+        self.assertNotIn("vkd", r)
+        self.assertNotIn("dew_point", r)
+        self.assertNotIn("vpd", json.dumps(r).lower())
+
+
+class TestEnvRecipeSourceLicense(unittest.TestCase):
+    """Env Recipe 混合许可治理：sources[].license + license_scope。
+
+    背景：原 schema 只有一句 recipe 级 "license": "CC-BY-4.0"，但 sources 里混着
+    FAO（CC BY-NC-SA，非商用）、USDA（公有领域）、IPNI（CC BY 3.0）——单一断言在
+    混合许可下是错的，会让「整包能否商用」无从判断。schema 的 additionalProperties
+    是 false，所以新增字段必须先改 schema 才能通过校验。
+    """
+
+    def _recipes(self):
+        import glob
+        paths = sorted(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
+        self.assertEqual(len(paths), 110)
+        return [(os.path.relpath(p, ROOT),
+                 json.load(open(p, encoding="utf-8"))) for p in paths]
+
+    def test_schema_allows_new_fields(self):
+        schema = json.load(open(os.path.join(ROOT, "schemas", "env_recipe.schema.json"),
+                                encoding="utf-8"))
+        self.assertIn("license",
+                      schema["properties"]["sources"]["items"]["properties"])
+        self.assertIn("license_scope", schema["properties"])
+        # 关键：additionalProperties 仍是 false，说明新字段是显式声明而非放开
+        self.assertFalse(schema["additionalProperties"])
+        self.assertFalse(schema["properties"]["sources"]["items"]["additionalProperties"])
+
+    def test_every_recipe_has_per_source_license_and_scope(self):
+        for rel, r in self._recipes():
+            self.assertTrue(r.get("license_scope"), "%s 缺 license_scope" % rel)
+            self.assertTrue(r.get("sources"), "%s 无 sources" % rel)
+            for s in r["sources"]:
+                self.assertIn("license", s, "%s 的 %s 缺 license" % (rel, s.get("title")))
+                self.assertIsInstance(s["license"], str)
+                self.assertTrue(s["license"].strip(), rel)
+
+    def test_fao_sources_are_marked_noncommercial(self):
+        """FAO 来源必须显式标注非商用，这是整包能否收费的关键。"""
+        fao = 0
+        for _, r in self._recipes():
+            for s in r["sources"]:
+                if "fao" in s["title"].lower():
+                    fao += 1
+                    self.assertIn("NC", s["license"],
+                                  "FAO 来源未标非商用: %s -> %s" % (s["title"], s["license"]))
+        self.assertGreater(fao, 0, "应至少存在一条 FAO 来源")
+
+    def test_unknown_licenses_are_flagged_not_guessed(self):
+        """未核实的许可必须标 unknown，不得凭名字猜。"""
+        unknowns = set()
+        for _, r in self._recipes():
+            for s in r["sources"]:
+                if s["license"].startswith("unknown"):
+                    unknowns.add(s["title"])
+        # 已知的唯一 unknown 来源；新增来源时此集合应显式扩展而不是静默放行
+        self.assertEqual(unknowns, {"中国作物栽培数据库"})
+
+
+class TestEnvRecipeDiff(unittest.TestCase):
+    """Env Recipe 生命周期工具（scripts/env_recipe_diff.py）：快照 / 差异 / 校验。
+
+    背景：Env Recipe 此前只有「写」和「校验」，缺「变更可追溯」——批量改 110 份
+    配方后无法回答「谁改了什么」，也无法回滚。对标 Horticulture-Assistant 的
+    profile 生命周期设计（export / diff / versioning）。
+
+    关键设计约束：
+      1) 快照只存指纹不存全文——快照文件不得变成第二份配方数据源；
+      2) execution_log / outcome 不进语义字段——用户一旦开始回流数据，
+         diff 会天天因回流数据变红，淹没真正的「配置变更」信号。
+    全部测试用 tempfile 隔离，不碰 data/env_recipes/ 真实配方。
+    """
+
+    def setUp(self):
+        self._dir = tempfile.mkdtemp(prefix="agri_rcdiff_")
+        # 快照故意与配方放在同一目录：验证 `_` 前缀约定能把它排除在配方集合之外。
+        # 命名 `snap.json`（无前缀）时会被当成配方读进来，导致 diff 恒报
+        # 「新增 1 份：snap.json」的假变更——这个脚枪已用 `_` 前缀约定封掉。
+        self._snap = os.path.join(self._dir, "_snap.json")
+        self._seed()
+
+    def tearDown(self):
+        shutil.rmtree(self._dir, ignore_errors=True)
+
+    def _seed(self, a_day=26.0, a_night=16.0, b_ph=6.5):
+        with open(os.path.join(self._dir, "crop_a.json"), "w", encoding="utf-8") as f:
+            json.dump({"protocol": "env-recipe", "recipe_version": "1.0.0",
+                       "crop": "番茄", "stage": "full_cycle",
+                       "environment": {"temperature": {"day_c": a_day, "night_c": a_night},
+                                       "water_nutrient": {"ph": b_ph}},
+                       "execution_log": [], "outcome": {}}, f, ensure_ascii=False)
+        with open(os.path.join(self._dir, "crop_b.json"), "w", encoding="utf-8") as f:
+            json.dump({"protocol": "env-recipe", "recipe_version": "1.0.0",
+                       "crop": "生菜", "stage": "full_cycle",
+                       "environment": {"temperature": {"day_c": 24.0, "night_c": 14.0}},
+                       "execution_log": [], "outcome": {}}, f, ensure_ascii=False)
+
+    def _read(self, name):
+        with open(os.path.join(self._dir, name), encoding="utf-8") as f:
+            return json.load(f)
+
+    def _write(self, name, recipe):
+        with open(os.path.join(self._dir, name), "w", encoding="utf-8") as f:
+            json.dump(recipe, f, ensure_ascii=False)
+
+    def test_snapshot_records_count_and_field_digests(self):
+        snap = env_recipe_diff.build_snapshot(self._dir)
+        self.assertEqual(snap["recipe_count"], 2)
+        self.assertEqual(len(snap["recipes"]), 2)
+        self.assertEqual(snap["errors"], [])
+        self.assertIn("field_sha256", snap["recipes"]["crop_a.json"])
+        self.assertEqual(len(snap["recipes"]["crop_a.json"]["field_sha256"]),
+                         len(env_recipe_diff.SEMANTIC_KEYS))
+
+    def test_snapshot_stores_digests_not_full_recipe(self):
+        """快照不得持有配方全文，否则它就是第二份配方数据源。"""
+        snap = env_recipe_diff.build_snapshot(self._dir)
+        blob = json.dumps(snap, ensure_ascii=False)
+        self.assertNotIn("temperature", blob, "快照不应内嵌配方字段值")
+        self.assertNotIn("26.0", blob.replace('"semantic_sha256"', ""))
+
+    def test_no_change_diff_is_clean_and_exit_zero(self):
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        report = env_recipe_diff.diff_against(self._dir, self._snap)
+        self.assertEqual(report["summary"], {
+            "baseline_count": 2, "current_count": 2,
+            "added": 0, "removed": 0, "modified": 0})
+        self.assertEqual(report["errors"], [])
+
+    def test_unchanged_file_count_is_order_independent(self):
+        """指纹必须与 JSON 键顺序无关——重写同一份配方不应产生假差异。"""
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        r = self._read("crop_a.json")
+        shuffled = {k: r[k] for k in reversed(list(r.keys()))}
+        self._write("crop_a.json", shuffled)
+        report = env_recipe_diff.diff_against(self._dir, self._snap)
+        self.assertEqual(report["summary"]["modified"], 0)
+
+    def test_semantic_change_reports_exact_fields(self):
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        r = self._read("crop_a.json")
+        r["environment"]["temperature"]["night_c"] = 99.0
+        self._write("crop_a.json", r)
+        report = env_recipe_diff.diff_against(self._dir, self._snap)
+        self.assertEqual(report["summary"]["modified"], 1)
+        m = report["modified"][0]
+        self.assertTrue(m["semantic_changed"])
+        self.assertEqual(m["changed_keys"], ["environment"],
+                         "只改了 environment，字段级定位必须精确到这一个")
+
+    def test_reflow_data_change_does_not_flag_semantic_change(self):
+        """回流数据变更不等于配置变更——这是把 execution_log/outcome 排除在语义字段外的原因。"""
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        r = self._read("crop_a.json")
+        r["execution_log"] = [{"ts": "2026-09-20T13:00", "city": "上海"}]
+        r["outcome"] = {"yield_kg": 1.2, "note": "首轮真实回流"}
+        self._write("crop_a.json", r)
+        report = env_recipe_diff.diff_against(self._dir, self._snap)
+        self.assertEqual(report["summary"]["modified"], 1, "全文指纹应发现变更")
+        m = report["modified"][0]
+        self.assertFalse(m["semantic_changed"], "回流数据变更不应被当成配置变更")
+        self.assertNotIn("changed_keys", m)
+
+    def test_added_and_removed_are_detected(self):
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        self._write("crop_c.json", {"protocol": "env-recipe", "recipe_version": "1.0.0",
+                                    "crop": "薄荷", "stage": "full_cycle",
+                                    "environment": {}, "execution_log": [], "outcome": {}})
+        os.remove(os.path.join(self._dir, "crop_b.json"))
+        report = env_recipe_diff.diff_against(self._dir, self._snap)
+        self.assertEqual(report["added"], ["crop_c.json"])
+        self.assertEqual(report["removed"], ["crop_b.json"])
+        self.assertEqual(report["summary"]["added"], 1)
+        self.assertEqual(report["summary"]["removed"], 1)
+
+    def test_verify_snapshot_passes_on_own_output(self):
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        ok, problems = env_recipe_diff.verify_snapshot(self._snap)
+        self.assertTrue(ok, problems)
+
+    def test_verify_rejects_wrong_schema_and_count_mismatch(self):
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        snap = self._read("_snap.json")
+        snap["snapshot_schema"] = "bogus"
+        snap["recipe_count"] = 99
+        self._write("_snap.json", snap)
+        ok, problems = env_recipe_diff.verify_snapshot(self._snap)
+        self.assertFalse(ok)
+        self.assertTrue(any("snapshot_schema" in p for p in problems))
+        self.assertTrue(any("recipe_count" in p for p in problems))
+
+    def test_verify_reports_missing_file(self):
+        ok, problems = env_recipe_diff.verify_snapshot(
+            os.path.join(self._dir, "no_such.json"))
+        self.assertFalse(ok)
+        self.assertTrue(problems)
+
+    def test_underscore_files_are_excluded_from_recipe_set(self):
+        """脚枪回归：快照写进配方目录时不得被当成配方（否则 diff 恒报假变更）。"""
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        # 快照本身躺在配方目录里，但它必须以 `_` 开头被跳过
+        recipes, errors = env_recipe_diff.load_recipes(self._dir)
+        self.assertEqual(len(recipes), 2, "内部文件不应计入配方集合")
+        self.assertNotIn("_snap.json", recipes)
+        # 无变化 diff 必须干净
+        report = env_recipe_diff.diff_against(self._dir, self._snap)
+        self.assertEqual(report["summary"]["added"], 0)
+
+    def test_prefixless_json_inside_dir_would_be_picked_up(self):
+        """对照组：无前缀的 .json 确实会被读入——证明上面的排除是有针对性的。"""
+        with open(os.path.join(self._dir, "plain.json"), "w", encoding="utf-8") as f:
+            json.dump({"protocol": "env-recipe"}, f)
+        recipes, _ = env_recipe_diff.load_recipes(self._dir)
+        self.assertIn("plain.json", recipes)
+        os.remove(os.path.join(self._dir, "plain.json"))
+
+    def test_load_recipes_reports_read_errors_instead_of_raising(self):
+        bad = os.path.join(self._dir, "broken.json")
+        with open(bad, "w", encoding="utf-8") as f:
+            f.write("{not valid json")
+        recipes, errors = env_recipe_diff.load_recipes(self._dir)
+        self.assertEqual(len(recipes), 2)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("broken.json", errors[0])
+
+    def test_diff_report_renders_without_raising(self):
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        r = self._read("crop_a.json")
+        r["environment"]["temperature"]["night_c"] = 1.0
+        self._write("crop_a.json", r)
+        text = env_recipe_diff.fmt_report(env_recipe_diff.diff_against(self._dir, self._snap))
+        self.assertIn("修改 1", text)
+        self.assertIn("crop_a.json", text)
+        self.assertIn("environment", text)
+
+    def test_cli_snapshot_verify_diff_lifecycle(self):
+        """CLI 三动作端到端：snapshot → verify → diff（无变化）。"""
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        rc = env_recipe_diff.main(["x", "verify", self._snap])
+        self.assertEqual(rc, 0)
+        rc = env_recipe_diff.main(["x", "diff", self._dir, self._snap])
+        self.assertEqual(rc, 0, "无变化应退出 0")
+
+    def test_cli_diff_returns_one_when_changed(self):
+        env_recipe_diff.export_snapshot(self._dir, self._snap)
+        r = self._read("crop_a.json")
+        r["crop"] = "辣椒"
+        self._write("crop_a.json", r)
+        rc = env_recipe_diff.main(["x", "diff", self._dir, self._snap])
+        self.assertEqual(rc, 1, "有差异应退出 1（可接入 CI 门禁）")
+
+    def test_cli_bad_usage_returns_two(self):
+        self.assertEqual(env_recipe_diff.main(["x", "diff", self._dir]), 2)
+        self.assertEqual(env_recipe_diff.main(["x", "unknown", self._dir, "y"]), 2)
 
 
 if __name__ == "__main__":

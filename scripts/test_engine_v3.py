@@ -523,6 +523,25 @@ class TestHarnessTree(unittest.TestCase):
         blocker = [r for r in ht_mod.RULES if r["id"] == "no_unconfirmed_diagnosis"]
         self.assertEqual(blocker[0]["severity"], "blocker")
 
+    def test_manifest_harness_tree_blockers_listed(self):
+        """manifest.harness_tree 必须显式列出 blocker 规则 id 列表。
+
+        理由：巡检 automation 每日读 manifest 判断「哪 3 条是硬门禁」，
+        若清单里没有 blockers 字段，只能回读 engine/harness_tree.py，
+        一旦有人改 severity 而没重跑 harness_sync init，manifest 会静默漂移。
+        显式列出后本测试就能直接发现。
+        """
+        mpath = os.path.join(ROOT, "harness", "manifest.json")
+        with open(mpath, "r", encoding="utf-8") as f:
+            m = json.load(f)
+        ht_m = m.get("harness_tree") or {}
+        self.assertIn("blockers", ht_m,
+                      "manifest.harness_tree 必须含 blockers 字段（否则巡检脚本无法判硬门禁）")
+        expected = {r["id"] for r in ht_mod.RULES if r.get("severity") == "blocker"}
+        self.assertEqual(set(ht_m["blockers"]), expected,
+                         "manifest 的 blockers 清单必须与 engine.harness_tree.RULES 中 severity=blocker 完全一致")
+        self.assertGreater(len(ht_m["blockers"]), 0, "blockers 不得为空（否则所有门禁都失效）")
+
 
 class TestHarnessManifestIntegration(unittest.TestCase):
     """A1-A5 必须体现在 harness 清单里（防静默漂移）。"""
