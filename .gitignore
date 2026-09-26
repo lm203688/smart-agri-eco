@@ -19,3 +19,6 @@ data/search_index/
 
 # Logs
 *.log
+data/_test_feedback_log.json
+data/*.bak
+data/*.test.*
