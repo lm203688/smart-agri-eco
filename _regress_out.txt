@@ -1,0 +1,1160 @@
+.C:\Users\xing\Desktop\智慧农业生态\scripts\test_agents.py:249: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\feedback_log.json'>
+  sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_agents.py:249: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\crop_adapt_db.json'>
+  sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..............................................ss.............C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v2.py:700: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\scripts\\agri_cli.py' mode='r' encoding='utf-8'>
+  encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+........................C:\Users\xing\Desktop\智慧农业生态\scripts\harness_sync.py:100: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\mcp\\server.py' mode='r' encoding='utf-8'>
+  src = open(server_path, "r", encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.C:\Users\xing\Desktop\智慧农业生态\scripts\harness_sync.py:100: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\mcp\\server.py' mode='r' encoding='utf-8'>
+  src = open(server_path, "r", encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..C:\Users\xing\Desktop\智慧农业生态\scripts\harness_sync.py:100: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\mcp\\server.py' mode='r' encoding='utf-8'>
+  src = open(server_path, "r", encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.C:\Users\xing\Desktop\智慧农业生态\scripts\harness_sync.py:100: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\mcp\\server.py' mode='r' encoding='utf-8'>
+  src = open(server_path, "r", encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+................................C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v3.py:392: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\AppData\\Local\\Temp\\agri_evo_sgs93ao7\\crop_adapt_db.json' mode='r' encoding='utf-8'>
+  d = json.load(open(db, encoding="utf-8"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v3.py:394: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\AppData\\Local\\Temp\\agri_evo_sgs93ao7\\crop_adapt_db.json' mode='w' encoding='utf-8'>
+  json.dump(d, open(db, "w", encoding="utf-8"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+......C:\Users\xing\Desktop\智慧农业生态\scripts\harness_sync.py:100: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\mcp\\server.py' mode='r' encoding='utf-8'>
+  src = open(server_path, "r", encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.................................C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__仙人掌.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__仙人掌果.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__棉花.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙棘.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙漠玫瑰.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙葱.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__瓜尔豆.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__红薯.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__绿豆.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__耐旱香草（牛至）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__耐旱香草（迷迭香）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__耐旱香草（鼠尾草）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__芦荟.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__花生.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__苜蓿.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__谷子.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__高粱.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__鹰嘴豆.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__大蒜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__开心果.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__无花果.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__朝鲜蓟.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__橄榄.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__油莎豆.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__生菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__番茄.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__胡萝卜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__芝麻菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__茄子.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__葡萄.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__豌豆苗.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__辣椒.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__香草（百里香）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__香草（罗勒）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__香草（迷迭香）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__黄瓜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__大麦.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__微绿菜（Microgreens）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__樱桃萝卜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__燕麦.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__甜菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__耐寒香草（莳萝）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__耐寒香草（薄荷）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__菌菇类（平菇）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__菌菇类（木耳）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__菠菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__葱.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__蓝莓.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__蔓越莓.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__豆芽.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__豌豆苗.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__速生菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__韭菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__黑麦.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__丝瓜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__冬瓜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__南瓜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__大蒜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__小白菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__生菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__番茄.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__紫苏.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__芹菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__苦瓜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__茄子.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__茼蒿.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__草莓.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__萝卜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__薄荷.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__豆角.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__辣椒.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__香菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__黄瓜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__向日葵.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__土豆.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__大葱.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__大蒜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__大豆.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__小麦.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__洋葱.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__玉米.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__生菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__番茄.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__白菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__胡萝卜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__茄子.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__菠菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__萝卜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__葱.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__薄荷.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__韭菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__黄瓜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__可可.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__咖啡.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__木瓜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__木薯.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__火龙果.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__玉米.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__生姜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__百香果.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__秋葵.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__空心菜.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__红薯叶.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__芋头.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__芒果.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__菠萝.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__辣椒.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__香茅.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__香草（柠檬草）.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1023: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__香蕉.json' mode='r' encoding='utf-8'>
+  recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__仙人掌.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__仙人掌果.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__棉花.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙棘.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙漠玫瑰.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙葱.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__瓜尔豆.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__红薯.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__绿豆.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__耐旱香草（牛至）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__耐旱香草（迷迭香）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__耐旱香草（鼠尾草）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__芦荟.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__花生.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__苜蓿.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__谷子.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__高粱.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__鹰嘴豆.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__大蒜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__开心果.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__无花果.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__朝鲜蓟.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__橄榄.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__油莎豆.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__生菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__番茄.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__胡萝卜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__芝麻菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__茄子.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__葡萄.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__豌豆苗.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__辣椒.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__香草（百里香）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__香草（罗勒）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__香草（迷迭香）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__黄瓜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__大麦.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__微绿菜（Microgreens）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__樱桃萝卜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__燕麦.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__甜菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__耐寒香草（莳萝）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__耐寒香草（薄荷）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__菌菇类（平菇）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__菌菇类（木耳）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__菠菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__葱.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__蓝莓.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__蔓越莓.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__豆芽.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__豌豆苗.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__速生菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__韭菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__黑麦.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__丝瓜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__冬瓜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__南瓜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__大蒜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__小白菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__生菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__番茄.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__紫苏.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__芹菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__苦瓜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__茄子.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__茼蒿.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__草莓.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__萝卜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__薄荷.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__豆角.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__辣椒.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__香菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__黄瓜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__向日葵.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__土豆.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__大葱.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__大蒜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__大豆.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__小麦.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__洋葱.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__玉米.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__生菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__番茄.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__白菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__胡萝卜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__茄子.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__菠菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__萝卜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__葱.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__薄荷.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__韭菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__黄瓜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__可可.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__咖啡.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__木瓜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__木薯.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__火龙果.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__玉米.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__生姜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__百香果.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__秋葵.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__空心菜.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__红薯叶.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__芋头.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__芒果.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__菠萝.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__辣椒.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__香茅.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__香草（柠檬草）.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1070: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__香蕉.json' mode='r' encoding='utf-8'>
+  [json.load(open(p, encoding="utf-8")) for p in paths])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.....C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1098: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__仙人掌.json' mode='r' encoding='utf-8'>
+  r = json.load(open(os.path.join(ROOT, "data", "env_recipes",
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+....C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1077: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙棘.json' mode='r' encoding='utf-8'>
+  r = json.load(open(os.path.join(ROOT, "data", "env_recipes",
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.......................C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__仙人掌.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__仙人掌果.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__棉花.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙棘.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙漠玫瑰.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__沙葱.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__瓜尔豆.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__红薯.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__绿豆.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__耐旱香草（牛至）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__耐旱香草（迷迭香）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__耐旱香草（鼠尾草）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__芦荟.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__花生.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__苜蓿.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__谷子.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__高粱.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\arid__鹰嘴豆.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__大蒜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__开心果.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__无花果.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__朝鲜蓟.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__橄榄.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__油莎豆.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__生菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__番茄.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__胡萝卜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__芝麻菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__茄子.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__葡萄.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__豌豆苗.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__辣椒.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__香草（百里香）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__香草（罗勒）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__香草（迷迭香）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\mediterranean__黄瓜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__大麦.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__微绿菜（Microgreens）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__樱桃萝卜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__燕麦.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__甜菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__耐寒香草（莳萝）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__耐寒香草（薄荷）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__菌菇类（平菇）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__菌菇类（木耳）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__菠菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__葱.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__蓝莓.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__蔓越莓.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__豆芽.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__豌豆苗.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__速生菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__韭菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subarctic__黑麦.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__丝瓜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__冬瓜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__南瓜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__大蒜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__小白菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__生菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__番茄.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__紫苏.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__芹菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__苦瓜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__茄子.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__茼蒿.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__草莓.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__萝卜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__薄荷.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__豆角.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__辣椒.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__香菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\subtropical_wet__黄瓜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__向日葵.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__土豆.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__大葱.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__大蒜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__大豆.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__小麦.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__洋葱.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__玉米.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__生菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__番茄.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__白菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__胡萝卜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__茄子.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__菠菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__萝卜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__葱.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__薄荷.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__韭菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\temperate_continental__黄瓜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__可可.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__咖啡.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__木瓜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__木薯.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__火龙果.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__玉米.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__生姜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__百香果.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__秋葵.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__空心菜.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__红薯叶.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__芋头.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__芒果.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__菠萝.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__辣椒.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__香茅.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__香草（柠檬草）.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1120: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\env_recipes\\tropical_rainforest__香蕉.json' mode='r' encoding='utf-8'>
+  json.load(open(p, encoding="utf-8"))) for p in paths]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:1123: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\schemas\\env_recipe.schema.json' mode='r' encoding='utf-8'>
+  schema = json.load(open(os.path.join(ROOT, "schemas", "env_recipe.schema.json"),
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..C:\Users\xing\Desktop\智慧农业生态\scripts\harness_sync.py:100: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\mcp\\server.py' mode='r' encoding='utf-8'>
+  src = open(server_path, "r", encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.C:\Users\xing\Desktop\智慧农业生态\scripts\harness_sync.py:100: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\mcp\\server.py' mode='r' encoding='utf-8'>
+  src = open(server_path, "r", encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..s..............C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:466: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\crop_adapt_db.json'>
+  before = open(src, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v4.py:468: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\xing\\Desktop\\智慧农业生态\\data\\crop_adapt_db.json'>
+  self.assertEqual(open(src, "rb").read(), before,
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..........................................................................................................................C:\Users\xing\Desktop\智慧农业生态\scripts\test_engine_v5.py:747: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\xing\\Desktop\\智慧农业生态\\bp_screen\\llm.py' mode='r' encoding='utf-8'>
+  src = open(os.path.join(_ROOT, "bp_screen", "llm.py"), encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.........................................................
+----------------------------------------------------------------------
+Ran 395 tests in 26.140s
+
+OK (skipped=3)
+{
+  "autonomy_level": "B0",
+  "autonomy_name": "无自主（人工全程）",
+  "hci": 0.333,
+  "closed": 2,
+  "total": 6,
+  "closed_gates": [
+    "calibration",
+    "generalization"
+  ],
+  "open_gates": [
+    "execution_log",
+    "feedback_inflow",
+    "skill_generation",
+    "meta_improvement"
+  ],
+  "gate_gaps": {
+    "execution_log": "Env Recipe 尚无真实执行设备回填 execution_log",
+    "feedback_inflow": "feedback_log.json 无真实用户回流（0 条）",
+    "skill_generation": "有自动生成技能但零调用路径引用（YAGNI 应复核）",
+    "meta_improvement": "门禁口径从未修订（gate_version 仍为初始值）或历史 hci 从未变化（反复重测 ≠ 自我改进）"
+  },
+  "status": "IMPLEMENTED",
+  "note": "HCI 只度量闭环完成度，不度量能力对错；与 eval_zone_consistency 并列。"
+}
+🔒 只读模式：C:\Users\xing\AppData\Local\Temp\agri_cli_4oi96n_8\data\execution_log.json 将写入 1 条空日志占位。加 --write 才会真正写盘。
+   当前状态： 不存在
+✅ 已创建空执行日志：data\execution_log.json
+ℹ️  已存在，未覆盖：data\execution_log.json
+⛔ 已拒绝：'rm_rf_everything' 不是可按需调用的技能
+   可用: ['nutrition_plan', 'pest_diagnose', 'season_advisory']
+✅ 已生成 harness 清单：..\..\AppData\Local\Temp\agri_harness__kt490mz\manifest.json
+   版本 2.2.0 | MCP 工具 10 个 | 技能 9 个 | 指纹 f74d713541db727f
+   说明：`check` 只门禁「声明区」；rsi/长期记忆/检索索引/锚点等为自指或派生观测区，仅信息展示。
+❌ 声明区发现 1 处漂移：
+   ~ mcp.tool_count: 99 → 10
+
+修复：运行 `python scripts/harness_sync.py init` 更新清单，随后走 scripts/gh_push.py 提交。
+ℹ️  观测区（自指/派生字段）变化 1 处，仅供参考：
+   ~ rsi.history: list 变更 1→2 项
+✅ 已生成 harness 清单：..\..\AppData\Local\Temp\agri_harness_8kprbex8\manifest.json
+   版本 2.2.0 | MCP 工具 10 个 | 技能 9 个 | 指纹 f74d713541db727f
+   说明：`check` 只门禁「声明区」；rsi/长期记忆/检索索引/锚点等为自指或派生观测区，仅信息展示。
+✅ harness 声明区无漂移（清单与代码/数据现状一致）
+ℹ️  观测区（自指/派生字段）变化 1 处，仅供参考：
+   ~ rsi.history: list 变更 1→2 项
+✅ harness 声明区无漂移（清单与代码/数据现状一致）
+ℹ️  观测区（自指/派生字段）变化 1 处，仅供参考：
+   ~ rsi.history: list 变更 1→2 项
+⛔ 拒绝提交。本脚本永不执行 git commit/push。
+   请按项目既有链路操作：
+     1) python scripts/harness_sync.py init      # 更新清单
+     2) python scripts/harness_sync.py check      # 确认无漂移
+     3) python scripts/gh_push.py                 # 走 Contents API 推送
+   （本机直连 github.com:443 被封，仅 api.github.com 可达）
+用法: diff <recipes_dir> <snapshot.json>
+未知动作: 'unknown'（支持 snapshot / diff / verify）
+== Env Recipe 差异报告 ==
+基线 2 份 → 当前 2 份
+新增 0 / 删除 0 / 修改 1
+修改:
+  ~ crop_a.json（语义变更：crop）
+快照校验通过
+== Env Recipe 差异报告 ==
+基线 2 份 → 当前 2 份
+新增 0 / 删除 0 / 修改 0
+## Jev 数据源异常归因（2026-09-22）
+
+- Jev 状态：未启用（无 key，走确定性 fallback）
+- 说明：本节点只用 Jev 做**归因解释**，绝不回写任何校准数据；低置信结论一律升级人工。
+
+| 源 | HTTP | exit | 耗时 | 归因 |
+|---|---|---|---|---|
+| — | — | — | — | 本轮 7 源全部 200，无需归因 |
+| gaez.fao.org | 200 | 0 | 1.1s | 正常（200） |
+
+
+[written] C:\Users\xing\Desktop\智慧农业生态\.workbuddy\tmp\jev_attr_vitrnsjo\attrib.md
+## Jev 数据源异常归因（2026-09-22）
+
+- Jev 状态：未启用（无 key，走确定性 fallback）
+- 说明：本节点只用 Jev 做**归因解释**，绝不回写任何校准数据；低置信结论一律升级人工。
+
+| 源 | HTTP | exit | 耗时 | 归因 |
+|---|---|---|---|---|
+| rest.isric.org | 000 | 28 | 61.0s | 缺 key · 确定性规则：exit 28 = 超时 → 区域慢/代理抖，不得判死源 |
+
+
+[written] C:\Users\xing\Desktop\智慧农业生态\.workbuddy\tmp\jev_attr_v8yj1xdg\attrib.md
+## Jev 数据源异常归因（2026-09-22）
+
+- Jev 状态：启用（TYPESAFE_API_KEY 已设）
+- 说明：本节点只用 Jev 做**归因解释**，绝不回写任何校准数据；低置信结论一律升级人工。
+
+| 源 | HTTP | exit | 耗时 | 归因 |
+|---|---|---|---|---|
+| rest.isric.org | 000 | 28 | 61.0s | 区域网络慢或临时超时 (conf=0.90) |
+
+
+[written] C:\Users\xing\Desktop\智慧农业生态\.workbuddy\tmp\jev_attr_u4f58hcv\attrib.md
+## Jev 数据源异常归因（2026-09-22）
+
+- Jev 状态：启用（TYPESAFE_API_KEY 已设）
+- 说明：本节点只用 Jev 做**归因解释**，绝不回写任何校准数据；低置信结论一律升级人工。
+
+| 源 | HTTP | exit | 耗时 | 归因 |
+|---|---|---|---|---|
+| gd.eppo.int | 503 | 0 | 2.0s | Jev 无法判断（low confidence）→ 升级人工 |
+
+
+[written] C:\Users\xing\Desktop\智慧农业生态\.workbuddy\tmp\jev_attr_ijrl8qnb\attrib.md
