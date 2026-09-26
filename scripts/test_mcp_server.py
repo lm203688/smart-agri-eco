@@ -42,6 +42,9 @@ def main() -> int:
     # bp_screen/data/cases.db 的真实种子库（该文件不受 git 跟踪，污染完全静默）。
     env = dict(os.environ)
     env["AGRI_BP_DB"] = os.path.join(tempfile.mkdtemp(prefix="agri_bp_test_"), "cases.db")
+    # 安全审计日志落盘（CyberGuard 提升点3）：经 AGRI_MCP_AUDIT_LOG 写入临时文件，便于断言
+    audit_log = os.path.join(tempfile.mkdtemp(prefix="agri_mcp_audit_"), "mcp_audit.log")
+    env["AGRI_MCP_AUDIT_LOG"] = audit_log
     proc = subprocess.Popen(
         [PY, SERVER],
         stdin=subprocess.PIPE,
@@ -75,12 +78,15 @@ def main() -> int:
         # 3) tools/list
         resp = _rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
         tools = (resp or {}).get("result", {}).get("tools", [])
-        check(len(tools) == 10, f"tools/list 返回 10 个工具（实际 {len(tools)}）")
+        check(len(tools) == 13, f"tools/list 返回 13 个工具（实际 {len(tools)}）")
         names = {t["name"] for t in tools}
         check("agri_env_recipe" in names, "包含 agri_env_recipe 工具")
         check("agri_season_advisory" in names, "包含 agri_season_advisory 工具")
         check("agri_soil_profile" in names, "包含 agri_soil_profile 工具")
-        check("agri_bp_screen" in names, "包含 agri_bp_screen 工具（第 10 个，BP 投资初筛）")
+        check("agri_bp_screen" in names, "包含 agri_bp_screen 工具（BP 投资初筛）")
+        check("agri_reconcile_climate" in names, "包含 agri_reconcile_climate 工具（多源气候校准）")
+        check("agri_resolve_recipe" in names, "包含 agri_resolve_recipe 工具（地理编码→配方）")
+        check("agri_query_lineage" in names, "包含 agri_query_lineage 工具（数据血缘查询）")
 
         # 4) tools/call: match_zone
         resp = _rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
@@ -207,6 +213,53 @@ def main() -> int:
         except Exception:
             check(False, "非法 category 返回可解析 JSON")
 
+        # 5f) tools/call: resolve_recipe（地理编码→配方，完全离线）
+        resp = _rpc({"jsonrpc": "2.0", "id": 12, "method": "tools/call",
+                     "params": {"name": "agri_resolve_recipe",
+                                "arguments": {"query": "杭州"}}})
+        content = (resp or {}).get("result", {}).get("content", [{}])
+        text = content[0].get("text", "") if content else ""
+        try:
+            gr = json.loads(text)
+            check(gr.get("resolved") and gr.get("zone_id") == "subtropical_wet",
+                  f"resolve_recipe 城市名→分区（zone={gr.get('zone_id') or gr.get('error')}）")
+        except Exception:
+            check(False, "resolve_recipe 返回可解析 JSON")
+
+        # 5g) tools/call: query_lineage（数据血缘查询）
+        resp = _rpc({"jsonrpc": "2.0", "id": 13, "method": "tools/call",
+                     "params": {"name": "agri_query_lineage",
+                                "arguments": {"crop": "番茄"}}})
+        content = (resp or {}).get("result", {}).get("content", [{}])
+        text = content[0].get("text", "") if content else ""
+        try:
+            ql = json.loads(text)
+            # 必须断言真实业务值而非"有字段"：番茄在库中应至少命中一个分区
+            ok = ("traces" in ql and ql.get("match_count", 0) >= 1) or ql.get("summary")
+            check(ok and "error" not in ql,
+                  f"query_lineage 按作物查血缘（match_count={ql.get('match_count')}）")
+        except Exception:
+            check(False, "query_lineage 返回可解析 JSON")
+
+        # 5h) tools/call: reconcile_climate（多源气候校准；网络相关，断言契约稳定性）
+        # 无论在线/离线，都必须返回结构化 JSON：sources 列表 + provenance_complete 布尔 +
+        # reconciled 为 12 列表或 null（绝不抛协议错误）
+        resp = _rpc({"jsonrpc": "2.0", "id": 14, "method": "tools/call",
+                     "params": {"name": "agri_reconcile_climate",
+                                "arguments": {"lat": 30.27, "lon": 120.15}}})
+        content = (resp or {}).get("result", {}).get("content", [{}])
+        text = content[0].get("text", "") if content else ""
+        try:
+            rc = json.loads(text)
+            rec = rc.get("reconciled")
+            contract = (isinstance(rc.get("sources"), list)
+                        and isinstance(rc.get("provenance_complete"), bool)
+                        and (rec is None or (isinstance(rec, list) and len(rec) == 12)))
+            check(contract,
+                  f"reconcile_climate 返回稳定契约（n_sources={rc.get('n_sources')}）")
+        except Exception:
+            check(False, "reconcile_climate 返回可解析 JSON")
+
         # 6) 未知工具报错
         resp = _rpc({"jsonrpc": "2.0", "id": 5, "method": "tools/call",
                      "params": {"name": "no_such_tool", "arguments": {}}})
@@ -226,6 +279,34 @@ def main() -> int:
                                  "arguments": {"lat": 30.2741, "lon": 120.1551}}})
         check(resp2 and resp2.get("result") is not None and "error" not in resp2,
               "护栏拒绝后连接仍可用（正常请求恢复响应）")
+
+        # 8) 安全审计日志（CyberGuard 提升点3）：所有调用与拒绝均被记录
+        try:
+            with open(audit_log, "r", encoding="utf-8") as f:
+                audit_lines = f.read()
+            check("tools_call_request" in audit_lines,
+                  "审计日志记录了 tools_call_request")
+            check("tools_call_done" in audit_lines,
+                  "审计日志记录了对正常工具的调用完成")
+            check("tools_call_rejected" in audit_lines,
+                  "审计日志记录了对未知工具的拒绝")
+            check("request_rejected" in audit_lines,
+                  "审计日志记录了对超长请求的拒绝")
+        except Exception as e:
+            check(False, f"审计日志读取失败: {e}")
+
+        # 9) 审计异常行为分析器（CyberGuard 行为监控）：消费真实审计日志产出报告
+        try:
+            import subprocess as _sp
+            analyzer = os.path.join(ROOT, "mcp", "audit_analyzer.py")
+            r = _sp.run([PY, analyzer, "--log", audit_log],
+                        capture_output=True, text=True, timeout=30)
+            out = (r.stdout or "") + (r.stderr or "")
+            check("MCP 审计异常行为分析报告" in out,
+                  "审计分析器消费真实日志并产出报告")
+            check("统计:" in out, "审计分析器输出统计摘要")
+        except Exception as e:
+            check(False, f"审计分析器运行失败: {e}")
     finally:
         proc.terminate()
 

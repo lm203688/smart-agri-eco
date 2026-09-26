@@ -30,6 +30,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import hashlib
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
@@ -333,6 +334,41 @@ def _tool_bp_screen(args: dict) -> dict:
     }
 
 
+def _tool_reconcile_climate(args: dict) -> dict:
+    """多源气候调和：给定 lat/lon，并行拉 NASA POWER + Open-Meteo，逐月平均得调和基线 +
+    一致度 + 分歧告警（壁垒④ 真实结果回流校准）。WorldClim 列为扩展点。无网络时优雅降级。
+    """
+    try:
+        lat = float(args["lat"])
+        lon = float(args["lon"])
+    except (KeyError, TypeError, ValueError):
+        return {"error": "需要数值 lat/lon"}
+    years = int(args.get("years", 5))
+    sources = tuple(args["sources"]) if args.get("sources") else None
+    from core.climate_reconcile import reconcile_climate
+    return reconcile_climate(lat, lon, years=years, sources=sources)
+
+
+def _tool_resolve_recipe(args: dict) -> dict:
+    """地理编码 → 分区 → 配方：城市名（中文/英文）或经纬度 → 匹配气候分区 + 检索 Env Recipe。
+    核心「城市种植生成箱」分发价值，完全离线。
+    """
+    from core.geo_recipe import resolve
+    query = args.get("query")
+    lat = args.get("lat")
+    lon = args.get("lon")
+    return resolve(query=query, lat=lat, lon=lon)
+
+
+def _tool_query_lineage(args: dict) -> dict:
+    """数据血缘查询：按作物/分区查配方的数据溯源（外部 API 参与 + 本地文件指纹 + 校准实证）。
+    对齐 GOAI DataFlow-Agent 提升点3 + 壁垒④。"""
+    from core.data_lineage import query_lineage
+    crop = args.get("crop")
+    zone = args.get("zone_id")
+    return query_lineage(crop=crop or None, zone_id=zone or None)
+
+
 TOOLS = [
     {
         "name": "agri_list_cities",
@@ -502,6 +538,56 @@ TOOLS = [
             },
         },
     },
+    {
+        "name": "agri_reconcile_climate",
+        "description": (
+            "（多源气候校准）给定经纬度，并行拉 NASA POWER + Open-Meteo，逐月平均得调和月均温基线，"
+            "并计算逐月一致度（多源标准差）与分歧月份告警（标准差超 3℃ 标记）。"
+            "WorldClim 2.1 列为扩展点（暂未接逐点取数）。无网络时优雅降级（reconciled=null + "
+            "provenance_complete=false），绝不返回编造值。对齐壁垒④ 真实结果回流校准。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "lat": {"type": "number", "description": "纬度"},
+                "lon": {"type": "number", "description": "经度"},
+                "years": {"type": "integer", "description": "取数年数，默认 5"},
+                "sources": {"type": "array", "items": {"type": "string"},
+                            "description": "源 id 列表，默认 [power, open_meteo]；可含 worldclim（扩展点）"},
+            },
+            "required": ["lat", "lon"],
+        },
+    },
+    {
+        "name": "agri_resolve_recipe",
+        "description": (
+            "（地理编码→配方）城市名（中文/英文）或经纬度 → 匹配气候分区 → 检索该分区的 Env Recipe 清单。"
+            "返回 zone_id / zone_name / 坐标 / 匹配配方（作物名+阶段+设备类+路径）。"
+            "核心「城市种植生成箱」分发价值，完全离线。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string",
+                          "description": "城市名（如 杭州）或 \"lat,lon\" 坐标串；与 lat/lon 二选一"},
+                "lat": {"type": "number", "description": "纬度（与 lon 同用；可与 query 二选一）"},
+                "lon": {"type": "number", "description": "经度"},
+            },
+        },
+    },
+    {
+        "name": "agri_query_lineage",
+        "description": (
+            "（数据血缘查询）按作物/分区查配方的数据溯源：外部 API 参与情况 + 本地权威文件 SHA256 指纹 + "
+            "校准实证（壁垒④）。传入 crop+zone_id 做单点追踪；仅 crop 查全分区；仅 zone_id 查全作物；"
+            "皆空返回全局摘要。对齐 GOAI DataFlow-Agent 提升点3。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "crop": {"type": "string", "description": "作物名（中文）；与 zone_id 可组合"},
+                "zone_id": {"type": "string",
+                            "description": "分区 ID，如 subtropical_wet / temperate_continental / arid"},
+            },
+        },
+    },
 ]
 
 _DISPATCH = {
@@ -515,6 +601,9 @@ _DISPATCH = {
     "agri_season_advisory": _tool_season_advisory,
     "agri_soil_profile": _tool_soil_profile,
     "agri_bp_screen": _tool_bp_screen,
+    "agri_reconcile_climate": _tool_reconcile_climate,
+    "agri_resolve_recipe": _tool_resolve_recipe,
+    "agri_query_lineage": _tool_query_lineage,
 }
 
 
@@ -523,6 +612,31 @@ _DISPATCH = {
 def _send(obj: dict):
     sys.stdout.write(json.dumps(obj, ensure_ascii=False) + "\n")
     sys.stdout.flush()
+
+
+def _audit(event: dict):
+    """安全审计日志（对齐 GOAI CyberGuard 提升点3 安全审计）。
+
+    默认写 stderr（JSON 行），绝不写 stdout（stdout 是 JSON-RPC 协议通道，
+    任何写 stdout 的字节都会破坏协议）。若设 ``AGRI_MCP_AUDIT_LOG`` 环境变量，
+    则追加写该路径（落盘由调用方自担；默认不落盘，避免产生未跟踪文件）。
+
+    不记录参数明文：仅记方法/工具名 + 参数指纹 + 时间戳 + 状态。
+    """
+    import datetime
+    event.setdefault("ts", datetime.datetime.now().isoformat(timespec="seconds"))
+    line = json.dumps(event, ensure_ascii=False, separators=(",", ":"))
+    log_path = os.environ.get("AGRI_MCP_AUDIT_LOG")
+    if log_path:
+        try:
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(line + "\n")
+        except Exception:
+            sys.stderr.write("[mcp_audit] " + line + "\n")
+            sys.stderr.flush()
+    else:
+        sys.stderr.write("[mcp_audit] " + line + "\n")
+        sys.stderr.flush()
 
 
 def _handle(msg: dict) -> dict | None:
@@ -547,8 +661,14 @@ def _handle(msg: dict) -> dict | None:
         params = msg.get("params", {}) or {}
         name = params.get("name", "")
         arguments = params.get("arguments", {}) or {}
+        arg_hash = hashlib.sha256(
+            json.dumps(arguments, ensure_ascii=False, sort_keys=True).encode("utf-8")
+        ).hexdigest()[:16]
+        _audit({"event": "tools_call_request", "tool": name, "arg_hash": arg_hash})
         fn = _DISPATCH.get(name)
         if not fn:
+            _audit({"event": "tools_call_rejected", "tool": name,
+                    "reason": "unknown_tool", "arg_hash": arg_hash})
             return {
                 "jsonrpc": "2.0", "id": mid,
                 "error": {"code": -32601, "message": f"未知工具: {name}"},
@@ -556,7 +676,12 @@ def _handle(msg: dict) -> dict | None:
         try:
             result = fn(arguments)
         except Exception as e:  # noqa: BLE001
+            _audit({"event": "tools_call_error", "tool": name,
+                    "arg_hash": arg_hash, "error": str(e)[:120]})
             result = {"error": f"工具执行失败: {e}"}
+        has_err = isinstance(result, dict) and "error" in result
+        _audit({"event": "tools_call_done", "tool": name,
+                "arg_hash": arg_hash, "has_error": bool(has_err)})
         return {
             "jsonrpc": "2.0", "id": mid,
             "result": {
@@ -582,6 +707,8 @@ def main():
             break  # EOF：客户端关闭 stdin
         # 安全护栏：拒绝超长行，防止内存耗尽型 DoS（MCP 分发通道）
         if len(line.encode("utf-8", "ignore")) > MAX_LINE_BYTES:
+            _audit({"event": "request_rejected", "reason": "oversize",
+                    "bytes": len(line.encode("utf-8", "ignore"))})
             _send({"jsonrpc": "2.0", "id": None,
                    "error": {"code": -32700, "message": "请求过长，已拒绝"}})
             continue

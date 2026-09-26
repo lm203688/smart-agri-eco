@@ -1,22 +1,26 @@
 {
   "schema": "agri-harness-manifest/v1",
   "version": "2.2.0",
-  "generated_at": "2026-09-16T17:33:40",
+  "generated_at": "2026-09-26T09:02:02",
   "project": "智慧农业生态 (smart-agri-eco)",
   "protocols": {
     "env_recipe": "v1",
     "mcp_protocol": "2024-11-05"
   },
   "mcp": {
-    "tool_count": 9,
+    "tool_count": 13,
     "tools": [
+      "agri_bp_screen",
       "agri_diagnose_pest",
       "agri_env_recipe",
       "agri_growth_plan",
       "agri_list_cities",
       "agri_match_zone",
       "agri_nutrition_plan",
+      "agri_query_lineage",
       "agri_recommend_crops",
+      "agri_reconcile_climate",
+      "agri_resolve_recipe",
       "agri_season_advisory",
       "agri_soil_profile"
     ]
@@ -81,6 +85,11 @@
       ],
       "blocker": 3
     },
+    "blockers": [
+      "no_unconfirmed_diagnosis",
+      "no_placeholder_output",
+      "safe_rollback_on_regression"
+    ],
     "lint_ok": true,
     "exported_to": "skills/harness/",
     "six_layers": [
@@ -96,14 +105,14 @@
   "data_baselines": [
     {
       "path": "data/crop_adapt_db.json",
-      "sha256_16": "47950676dc1d7224",
+      "sha256_16": "9f23027f981e7c70",
       "zones": 6,
       "crops": 110,
-      "calibrated": 0
+      "calibrated": 107
     },
     {
       "path": "data/zone_meta/global_zones.json",
-      "sha256_16": "872326c4a393fa90"
+      "sha256_16": "e5e13b5ce12f77c1"
     },
     {
       "path": "data/wofost_phenology_reference.json",
@@ -111,8 +120,12 @@
     },
     {
       "path": "data/feedback_log.json",
-      "sha256_16": "a5338d955b09046e",
+      "sha256_16": "4f53cda18c2baa0c",
       "entries": 0
+    },
+    {
+      "path": "data/preset_cities.json",
+      "sha256_16": "ad7d5ac102a833c7"
     }
   ],
   "eval_baseline": {
@@ -132,7 +145,7 @@
       "eval_recipe_expert_adoption": "需 3-5 位农艺专家盲评 50 份配方 vs 现行栽培规程（评审 §2.3）",
       "eval_source_traceability": "需溯源层埋点：每条建议的引用 url 可访问性校验（评审 §2.3）"
     },
-    "updated_at": "2026-09-16T17:33:40"
+    "updated_at": "2026-09-26T09:02:02"
   },
   "knowledge_graph": {
     "schema": "agri-knowledge-graph/v1",
@@ -157,10 +170,14 @@
   },
   "long_term_memory": {
     "schema": "agri-long-term-memory/v1",
-    "memories": 0,
+    "memories": 2,
     "hyperedges": 0,
-    "by_kind": {},
-    "by_skill": {},
+    "by_kind": {
+      "plan": 2
+    },
+    "by_skill": {
+      "run_pipeline": 2
+    },
     "by_crop": {},
     "sessions": 0,
     "local_only": true
@@ -306,29 +323,82 @@
         "ts": "2026-09-16T17:33:40",
         "level": "B0",
         "hci": 0.0
+      },
+      {
+        "ts": "2026-09-17T14:57:32",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-19T09:56:27",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-20T15:18:23",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-20T15:21:09",
+        "level": "B0",
+        "hci": 0.0
+      },
+      {
+        "ts": "2026-09-23T16:02:37",
+        "level": "B0",
+        "hci": 0.333
+      },
+      {
+        "ts": "2026-09-23T16:53:25",
+        "level": "B0",
+        "hci": 0.333
+      },
+      {
+        "ts": "2026-09-24T09:23:18",
+        "level": "B0",
+        "hci": 0.333
+      },
+      {
+        "ts": "2026-09-25T20:14:23",
+        "level": "B0",
+        "hci": 0.333
+      },
+      {
+        "ts": "2026-09-26T09:02:02",
+        "level": "B0",
+        "hci": 0.333
       }
     ],
     "autonomy_level": "B0",
-    "hci": 0.0,
+    "hci": 0.333,
     "open_gates": [
       "execution_log",
       "feedback_inflow",
-      "calibration",
-      "generalization",
       "skill_generation",
       "meta_improvement"
     ]
   },
   "env_vars": [
+    "AGRI_ASSESS_PORT",
+    "AGRI_BP_DB",
+    "AGRI_BP_LLM_KEY",
+    "AGRI_BP_LLM_MODEL",
+    "AGRI_BP_LLM_URL",
+    "AGRI_BP_WEB_HOST",
+    "AGRI_BP_WEB_PORT",
     "AGRI_CROP_DB",
     "AGRI_DEMO_HOST",
     "AGRI_DEMO_PORT",
     "AGRI_EVOLUTION_BENCHMARK",
     "AGRI_EVOLUTION_SNAPSHOTS",
+    "AGRI_FEEDBACK_DRY_RUN",
     "AGRI_FEEDBACK_LOG",
     "AGRI_GH_BRANCH",
     "AGRI_GH_REPO",
     "AGRI_KG_PATH",
+    "AGRI_LIVE_TEST",
+    "AGRI_MCP_AUDIT_LOG",
     "AGRI_MEMORY_SYNTHETIC",
     "AGRI_ORG_MEMORY",
     "AGRI_SOILGRIDS_HOST",
