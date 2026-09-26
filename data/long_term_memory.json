@@ -1,5 +1,46 @@
 {
   "schema": "agri-long-term-memory/v1",
-  "memories": [],
+  "memories": [
+    {
+      "id": "mem-20260923160012-00001",
+      "ts": "2026-09-23T16:00:12",
+      "session_id": "",
+      "skill": "run_pipeline",
+      "kind": "plan",
+      "subject": {
+        "zone": "hot_arid",
+        "scene": "balcony"
+      },
+      "summary": "分区 hot_arid，推荐 （无推荐）；信任分 0.24",
+      "outcome": "unverified",
+      "recipe_id": "",
+      "confidence": 0.24,
+      "tags": [
+        "hot_arid",
+        "unverified"
+      ],
+      "source_ref": ""
+    },
+    {
+      "id": "mem-20260923160033-00002",
+      "ts": "2026-09-23T16:00:33",
+      "session_id": "",
+      "skill": "run_pipeline",
+      "kind": "plan",
+      "subject": {
+        "zone": "hot_arid",
+        "scene": "balcony"
+      },
+      "summary": "分区 hot_arid，推荐 （无推荐）；信任分 0.24",
+      "outcome": "unverified",
+      "recipe_id": "",
+      "confidence": 0.24,
+      "tags": [
+        "hot_arid",
+        "unverified"
+      ],
+      "source_ref": ""
+    }
+  ],
   "hyperedges": []
 }
