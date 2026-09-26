@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "description": "预设城市清单 · 单一数据源（single source of truth）",
+    "since": "2026-09-23",
+    "note": "此前 app/demo_server.py 与 mcp/server.py 各持一份硬编码副本，属漂移风险源（见 outputs/zone_coverage_decision_2026-09-23.md 残留项 6）。现统一收敛到本文件，两处消费方均经 agent/preset_cities.py 读取。",
+    "field_semantics": {
+      "name": "城市中文名（展示用）",
+      "lat/lon": "WGS84 坐标（度）",
+      "zone": "人类可读的气候带标签（展示用，非分区 id）",
+      "modeled": "该坐标所属气候类是否已被分区库建模。false = 覆盖缺口，运行时由 ClimateAgent._detect_unmodeled_zone 显式标记 coverage_gap，前端/调用方可见，不再静默误判。"
+    }
+  },
+  "cities": [
+    {"name": "杭州", "lat": 30.2741, "lon": 120.1551, "zone": "亚热带湿润带", "modeled": true},
+    {"name": "北京", "lat": 39.9042, "lon": 116.4074, "zone": "温带大陆性", "modeled": true},
+    {"name": "深圳", "lat": 22.5431, "lon": 114.0579, "zone": "亚热带湿润带", "modeled": true},
+    {"name": "广州", "lat": 23.1291, "lon": 113.2644, "zone": "亚热带湿润带", "modeled": true},
+    {"name": "成都", "lat": 30.5728, "lon": 104.0668, "zone": "亚热带湿润带", "modeled": true},
+    {"name": "武汉", "lat": 30.5928, "lon": 114.3055, "zone": "亚热带湿润带", "modeled": true},
+    {"name": "乌鲁木齐", "lat": 43.8256, "lon": 87.6168, "zone": "干旱带", "modeled": true},
+    {"name": "拉萨", "lat": 29.6520, "lon": 91.1721, "zone": "高原（未建模）", "modeled": false},
+    {"name": "洛杉矶", "lat": 34.0522, "lon": -118.2437, "zone": "地中海带", "modeled": true},
+    {"name": "新加坡", "lat": 1.3521, "lon": 103.8198, "zone": "热带雨林", "modeled": true},
+    {"name": "迪拜", "lat": 25.2048, "lon": 55.2708, "zone": "热漠（未建模）", "modeled": false},
+    {"name": "莫斯科", "lat": 55.7558, "lon": 37.6173, "zone": "亚寒带", "modeled": true}
+  ]
+}

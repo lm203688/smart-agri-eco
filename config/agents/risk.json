@@ -1,0 +1,24 @@
+{
+  "name": "risk",
+  "type": "risk",
+  "class_name": "RiskAgent",
+  "module_path": "agent.risk_agent",
+  "version": "1.0.0",
+  "enabled": false,
+  "dependencies": [
+    "climate",
+    "crop",
+    "market",
+    "finance"
+  ],
+  "config_params": {
+    "risk_types": [
+      "natural",
+      "market",
+      "technical",
+      "policy"
+    ],
+    "insurance_database": "data/insurance_database.json"
+  },
+  "resource_requirements": {}
+}

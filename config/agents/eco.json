@@ -1,0 +1,22 @@
+{
+  "name": "eco",
+  "type": "eco",
+  "class_name": "EcoAgent",
+  "module_path": "agent.eco_agent",
+  "version": "1.0.0",
+  "enabled": true,
+  "dependencies": [
+    "climate",
+    "crop",
+    "growth"
+  ],
+  "config_params": {
+    "eco_models": "data/eco_models.json",
+    "sustainability_metrics": [
+      "biodiversity",
+      "carbon_footprint",
+      "water_usage"
+    ]
+  },
+  "resource_requirements": {}
+}

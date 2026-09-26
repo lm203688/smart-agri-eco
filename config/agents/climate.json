@@ -1,0 +1,19 @@
+{
+  "name": "climate",
+  "type": "climate",
+  "class_name": "ClimateAgent",
+  "module_path": "agent.climate_agent",
+  "version": "1.0.0",
+  "enabled": true,
+  "dependencies": [],
+  "config_params": {
+    "data_sources": [
+      "NASA_POWER",
+      "Open-Meteo",
+      "WorldClim"
+    ],
+    "cache_enabled": true,
+    "cache_expiry": 3600
+  },
+  "resource_requirements": {}
+}
