@@ -1,7 +1,7 @@
 {
   "schema": "agri-harness-manifest/v1",
   "version": "2.2.0",
-  "generated_at": "2026-09-27T21:09:20",
+  "generated_at": "2026-09-29T16:06:59",
   "project": "智慧农业生态 (smart-agri-eco)",
   "protocols": {
     "env_recipe": "v1",
@@ -105,7 +105,7 @@
   "data_baselines": [
     {
       "path": "data/crop_adapt_db.json",
-      "sha256_16": "9f23027f981e7c70",
+      "sha256_16": "be062d7bca7f99ee",
       "zones": 6,
       "crops": 110,
       "calibrated": 107
@@ -120,7 +120,7 @@
     },
     {
       "path": "data/feedback_log.json",
-      "sha256_16": "4f53cda18c2baa0c",
+      "sha256_16": "37517e5f3dc66819",
       "entries": 0
     },
     {
@@ -145,7 +145,7 @@
       "eval_recipe_expert_adoption": "需 3-5 位农艺专家盲评 50 份配方 vs 现行栽培规程（评审 §2.3）",
       "eval_source_traceability": "需溯源层埋点：每条建议的引用 url 可访问性校验（评审 §2.3）"
     },
-    "updated_at": "2026-09-27T21:09:20"
+    "updated_at": "2026-09-29T16:06:59"
   },
   "knowledge_graph": {
     "schema": "agri-knowledge-graph/v1",
@@ -381,6 +381,16 @@
       },
       {
         "ts": "2026-09-27T21:09:20",
+        "level": "B0",
+        "hci": 0.333
+      },
+      {
+        "ts": "2026-09-29T16:00:19",
+        "level": "B0",
+        "hci": 0.333
+      },
+      {
+        "ts": "2026-09-29T16:06:59",
         "level": "B0",
         "hci": 0.333
       }
