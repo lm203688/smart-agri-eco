@@ -5,8 +5,8 @@
 修改规则 = 修改本文件并 bump RULES_VERSION，历史报告锁定旧版本。
 """
 
-RULES_VERSION = "v2.0.0"
-RELEASED = "2026-09-20"
+RULES_VERSION = "v2.1.0"
+RELEASED = "2026-09-30"
 
 # 版本变更日志：每次改规则必须 bump RULES_VERSION 并在此追加一行。
 # 历史报告锁定生成时的版本（rule_versions 表），旧报告不随本文件变更而重算。
@@ -16,6 +16,10 @@ VERSION_HISTORY = [
     "cash_ratio 闸的 metric 原写 cash_to_revenue、bio_asset 闸原写 bio_asset_pct，"
     "与 extractor.normalize 实际产出的 cash_ratio / bio_inventory_pct 均不匹配，"
     "导致这两个闸在任何输入下都永不触发（静默死代码）。",
+    "v2.1.0 (2026-09-30) 新增 farmer_roi 闸（AgTech Seed 硬指标）："
+    "Harvest Returns 2025 调研显示农户 ROI < 3:1 是投资人 Deal-Killer #1，"
+    "原 6 闸全部财务/客户侧，缺农业特有硬指标。farmer_roi 阈值 3.0，"
+    "severity=warn（非一票否决，但报告置顶提示）。",
 ]
 
 # ============================================================
@@ -123,6 +127,17 @@ GATES = [
         "default": 50.0, "op": "gt", "severity": "verify",
         "extract_fields": ["bio_inventory_pct"],
         "note": ">50% 需实地盘点，触发核查项",
+    },
+    # v2.1.0 新增：AgTech Seed 硬指标 —— 农户 ROI 3:1 门槛
+    # 依据 Harvest Returns 2025 (Chris Rawley)：AgTech Seed 投资人要求
+    # "You need to show a 3:1 ROI for farmers if they're your customer."
+    {
+        "id": "farmer_roi", "name": "农户ROI倍数（Seed硬指标）", "metric": "farmer_roi",
+        "default": 3.0, "op": "lt", "severity": "warn",
+        "extract_fields": ["farmer_roi"],
+        "note": "农户ROI<3:1 触发预警（Harvest Returns 2025）。"
+                "非一票否决：早期项目数据不完整常见，但报告置顶提示。"
+                "缺失时静默跳过（无法从BP抽取→视为未披露，不判为违规）。",
     },
 ]
 

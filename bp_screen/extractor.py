@@ -67,6 +67,15 @@ FIELD_PATTERNS = {
     "runway_months": [
         r"(?:现金跑道|runway)[^0-9\-]{0,10}" + NUM + r"\s*个?月?",
     ],
+    # ---- v2.1.0 新增（2026-09-30）：AgTech Seed 硬指标 ----
+    # Harvest Returns 2025：Seed 阶段农户 ROI < 3:1 是投资人常见 deal-killer。
+    # 匹配 "农户ROI 3:1" / "农民投入产出比约 4" / "农户净收益 3 倍" 等常见表述。
+    "farmer_roi": [
+        r"(?:农户|农民|种植户)[^\d]{0,12}(?:ROI|投产比|投入产出比|净收益倍数)[^\d]{0,8}"
+        + r"(\d+(?:\.\d+)?)\s*(?:[:：]\s*1|\s*(?:倍|:)?\s*1)?",
+        r"(?:农户|农民|种植户)\s*(?:每[吨亩]净收益|回报率)[^\d]{0,10}"
+        + r"(\d+(?:\.\d+)?)\s*(?:倍)",
+    ],
     # 分类特异指标
     "approved_varieties": [
         # 修：原式量词 `(?:个|项)?` 可选，「品种审定：金玉188（国审玉20250012）」中的品种名
@@ -240,6 +249,7 @@ def normalize(extracted: dict, prev_extracted: dict = None) -> dict:
         n["subsidy_pct_derived"] = "由政府补助金额/营业收入计算"
     n["subsidy_pct"] = sub_pct
     n["ue_margin"] = g("ue_margin")
+    n["farmer_roi"] = g("farmer_roi")  # v2.1.0：AgTech Seed 硬指标
     n["ue_trend_negative_years"] = g("ue_trend_negative_years")
     n["gross_margin_prev"] = g("gross_margin_prev")
     if n["gross_margin"] is not None and n["gross_margin_prev"] is not None:

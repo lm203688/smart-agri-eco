@@ -505,10 +505,85 @@ class TestColdStart(unittest.TestCase):
         self.assertEqual(row["version"], rules.RULES_VERSION)
 
     def test_rules_version_bumped_with_history(self):
-        self.assertEqual(rules.RULES_VERSION, "v2.0.0")
-        self.assertGreaterEqual(len(rules.VERSION_HISTORY), 2)
-        self.assertIn("cash_to_revenue", rules.VERSION_HISTORY[-1],
+        self.assertEqual(rules.RULES_VERSION, "v2.1.0")
+        self.assertGreaterEqual(len(rules.VERSION_HISTORY), 3)
+        self.assertIn("cash_to_revenue", rules.VERSION_HISTORY[-2],
                       "版本历史必须记录死门禁修复，否则下次改规则的人不知道坑在哪")
+        self.assertIn("farmer_roi", rules.VERSION_HISTORY[-1],
+                      "v2.1.0 必须记录新增 farmer_roi 闸（AgTech Seed 硬指标）")
+
+    # ------------------------------------------------------------------
+    # v2.1.0 新增：farmer_roi 闸（AgTech Seed 硬指标）
+    # ------------------------------------------------------------------
+    def test_farmer_roi_gate_registered(self):
+        """v2.1.0 必须新增 farmer_roi 闸，否则新增规则就是死改动。"""
+        g = next((x for x in rules.GATES if x["id"] == "farmer_roi"), None)
+        self.assertIsNotNone(g, "farmer_roi 闸未注册到 rules.GATES")
+        self.assertEqual(g["metric"], "farmer_roi")
+        self.assertEqual(g["op"], "lt")
+        self.assertEqual(g["default"], 3.0)
+        self.assertEqual(g["severity"], "warn")
+
+    def test_farmer_roi_normalize_field_present(self):
+        """normalize 必须产出 farmer_roi 字段（可为 None 或数值，但键必须存在）。
+
+        如果 normalize 不写这个键，则 gate 的 metric 永远取不到值，
+        该闸成为另一个静默死代码（v2.0.0 前车之鉴）。
+        """
+        pf = parser.ParsedFile(filename="t.txt", ftype="text",
+                               pages=[{"text": "本 BP 未披露农户 ROI", "source": "inline"}],
+                               error="")
+        ext, _ = extractor.extract([{"filename": "t.txt", "parsed": pf}])
+        n = extractor.normalize(ext)
+        self.assertIn("farmer_roi", n,
+                      "normalize 必须无条件写入 farmer_roi 键（缺失=未披露，不判为违规）")
+
+    def test_farmer_roi_regex_extraction_3_to_1(self):
+        """正则必须能提取「农户 ROI 3:1」/「农民投入产出比 4」等常见表述。"""
+        cases = {
+            "农户 ROI 3:1，投入产出比清晰": 3.0,
+            "农民投入产出比约 4": 4.0,
+            "农户每亩净收益 3.5 倍": 3.5,
+        }
+        for text, expected in cases.items():
+            pf = parser.ParsedFile(filename="t.txt", ftype="text",
+                                   pages=[{"text": text, "source": "inline"}],
+                                   error="")
+            ext, _ = extractor.extract([{"filename": "t.txt", "parsed": pf}])
+            n = extractor.normalize(ext)
+            self.assertAlmostEqual(n["farmer_roi"], expected, places=1,
+                                   msg=f"文本 {text!r} 应提取 farmer_roi={expected}，实得 {n['farmer_roi']}")
+
+    def test_farmer_roi_gate_fires_below_threshold(self):
+        """farmer_roi=2.0 低于 3.0 红线必须触发 warn 门禁。"""
+        n = {"farmer_roi": 2.0, "category": "bioinputs"}
+        fired = scorer.run_gates(n, "bioinputs")
+        ids = [g["id"] for g in fired]
+        self.assertIn("farmer_roi", ids,
+                      f"farmer_roi=2.0 低于 3:1 却未触发，实际 fired={ids}")
+        gate_hit = next(g for g in fired if g["id"] == "farmer_roi")
+        self.assertEqual(gate_hit["severity"], "warn")
+
+    def test_farmer_roi_gate_not_fired_at_or_above_threshold(self):
+        """farmer_roi>=3.0 不触发（含边界 3.0，运营者预期：3:1 达标即通过）。"""
+        for val in (3.0, 3.5, 5.0, 10.0):
+            n = {"farmer_roi": val, "category": "bioinputs"}
+            fired = scorer.run_gates(n, "bioinputs")
+            ids = [g["id"] for g in fired]
+            self.assertNotIn("farmer_roi", ids,
+                             f"farmer_roi={val} 达到或超过 3:1 却触发了 warn，误报")
+
+    def test_farmer_roi_gate_skipped_when_missing(self):
+        """farmer_roi 缺失时 gate 静默跳过（不触发，也不判为违规）。
+
+        原因：早期项目 BP 常不披露此指标，无法从文本抽取即视为「未披露」，
+        与 v2.0.0 verify 类门禁的语义一致——缺失不是违规。
+        """
+        n = {"category": "bioinputs"}  # 不含 farmer_roi
+        fired = scorer.run_gates(n, "bioinputs")
+        ids = [g["id"] for g in fired]
+        self.assertNotIn("farmer_roi", ids,
+                         "farmer_roi 缺失却触发了 warn，会把未披露误判为违规")
 
 
 # ---------------------------------------------------------------------------
