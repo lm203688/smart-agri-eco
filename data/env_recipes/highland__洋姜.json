@@ -1,0 +1,71 @@
+{
+  "protocol": "env-recipe",
+  "recipe_version": "1.0.0",
+  "crop": {
+    "species": "洋姜",
+    "latin": "Helianthus tuberosus",
+    "family": "菊科"
+  },
+  "stage": "full_cycle",
+  "device_profile": {
+    "device_class": "other",
+    "sensor_capability": [
+      "temp",
+      "humidity"
+    ]
+  },
+  "environment": {
+    "temperature": {
+      "day_c": 20,
+      "night_c": 8
+    },
+    "humidity": {
+      "min_pct": 55,
+      "max_pct": 75
+    },
+    "water_nutrient": {
+      "ph": 6.5,
+      "water_ml_day": 70
+    },
+    "airflow": {
+      "level": "low"
+    }
+  },
+  "exception_handling": [
+    {
+      "condition": "出现「低温霜冻」相关症状",
+      "action": "经 agri_diagnose_pest 工具诊断后按建议处理",
+      "severity": "warn"
+    }
+  ],
+  "execution_log": [],
+  "outcome": {},
+  "image_consent": {
+    "captured": false,
+    "license": "",
+    "attribution": ""
+  },
+  "sources": [
+    {
+      "title": "FAO CropInfo",
+      "url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/home",
+      "accessed_at": "2026-09-30",
+      "license": "CC BY-NC-SA 3.0 IGO（FAO 官方；非商用，禁止作为付费资产转售）"
+    },
+    {
+      "title": "USDA Plant Guides",
+      "url": "https://plants.usda.gov/plantguides",
+      "accessed_at": "2026-09-30",
+      "license": "公有领域（美国联邦政府作品）"
+    },
+    {
+      "title": "IPNI",
+      "url": "https://www.ipni.net/",
+      "accessed_at": "2026-09-30",
+      "license": "CC BY 3.0"
+    }
+  ],
+  "license": "CC-BY-4.0",
+  "license_scope": "本配方聚合多个来源，逐条许可见 sources[].license；recipe 级 license 仅代表本配方编排层的分发条款，不代表任何单一来源的授权。含 FAO/FAOSTAT（CC BY-NC-SA，非商用）来源时，整包不得作为付费资产转售。",
+  "zone_note": "2026-09-30 新增 hot_arid/highland 分区配套配方。"
+}

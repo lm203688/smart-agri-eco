@@ -76,13 +76,13 @@ def tearDownModule():
 
 
 class TestZoneCoverageGap(unittest.TestCase):
-    """守住「已知覆盖缺口 → 显式拒答」，不许再静默给出错误分区的种植方案。
+    """守住「覆盖缺口 → 显式拒答」，不许再静默给出错误分区的种植方案。
 
     背景（2026-09-23）：启发式把迪拜/拉萨吞进最后的「亚热带湿润」默认分支，
     运行时 rubric≈0.95、recommendation 还写「环境条件适宜」——错得高置信且
     对调用方完全静默（迪拜实际是热漠：年均约 28°C、年降水约 100mm，按湿热区
-    参数种必然失败）。现改为返回真实气候类名（hot_arid / highland），分区库
-    没有该区 → 走既有降级路径显式失败（拒答优于错答）。
+    参数种必然失败）。2026-09-30（v1.1）已在 global_zones.json 新增 hot_arid /
+    highland 两分区建模，此测试组从「gap 断言」升级为「已建模断言」。
     """
 
     def setUp(self):
@@ -92,24 +92,26 @@ class TestZoneCoverageGap(unittest.TestCase):
     def _out(self, lat, lon):
         return self.ca.match_zone(lat, lon)
 
-    def test_dubai_is_hot_arid_gap_not_humid(self):
+    def test_dubai_is_hot_arid_not_humid(self):
+        """迪拜必须归到 hot_arid，不再被吞进亚热带湿润，且不再是未建模 gap。"""
         out = self._out(25.2048, 55.2708)  # 迪拜
         ev = out["evidence"]
         self.assertEqual(ev["zone_id"], "hot_arid")
         # 回归守卫：这曾是静默错判的目标值
         self.assertNotEqual(ev["zone_id"], "subtropical_wet")
-        self.assertEqual(ev.get("coverage_gap"), "hot_arid")
-        # 不再高置信，且说明原因（而不是空泛的「数据缺失」）
-        self.assertEqual(out["confidence"]["rubric_score"], 0.0)
-        self.assertIn("未建模", out["confidence"]["confidence_note"])
-        # 必须给出可行动的替代路径，而不是只报错
-        self.assertIn("箱体", out["recommendation"])
+        # v1.1 起 hot_arid 已建模，不再是 coverage_gap
+        self.assertIsNone(ev.get("coverage_gap"),
+                          "v1.1 已建模 hot_arid，coverage_gap 应为 None")
+        # 高置信（不再是 rubric=0.0 的拒答状态）
+        self.assertGreater(out["confidence"]["rubric_score"], 0.5)
 
-    def test_lhasa_is_highland_gap(self):
+    def test_lhasa_is_highland(self):
+        """拉萨必须归到 highland，不再是未建模 gap。"""
         out = self._out(29.6520, 91.1721)  # 拉萨
         self.assertEqual(out["evidence"]["zone_id"], "highland")
-        self.assertEqual(out["evidence"].get("coverage_gap"), "highland")
-        self.assertEqual(out["confidence"]["rubric_score"], 0.0)
+        self.assertIsNone(out["evidence"].get("coverage_gap"),
+                          "v1.1 已建模 highland，coverage_gap 应为 None")
+        self.assertGreater(out["confidence"]["rubric_score"], 0.5)
 
     def test_modeled_cities_unchanged(self):
         """缺口识别只允许改变原本落到默认分支的点，不得动已归类正确的坐标。"""
@@ -127,18 +129,23 @@ class TestZoneCoverageGap(unittest.TestCase):
             got = self._out(lat, lon)["evidence"]["zone_id"]
             self.assertEqual(got, want, f"({lat},{lon}) 期望 {want}，实得 {got}")
 
-    def test_gap_is_hard_flagged_by_verifier(self):
-        """缺口必须在校验层判红（硬标记），不能只是软提示。"""
+    def test_unknown_zone_hard_flagged_by_verifier(self):
+        """未建模分区（假造 zone_id）必须在校验层判红，不允许静默通过。"""
         from agent.orchestrator import verify_agent_output
-        out = self._out(25.2048, 55.2708)
-        v = verify_agent_output("ClimateAgent", out)
+        # 构造一个含假造 zone_id 的输出（模拟一个未知分区的分类结果）
+        fake_out = {
+            "evidence": {"zone_id": "nonexistent_zone", "coverage_gap": None},
+            "confidence": {"rubric_score": 0.9},
+            "recommendation": "测试",
+        }
+        v = verify_agent_output("ClimateAgent", fake_out)
         self.assertFalse(v["ok"], "未建模分区必须校验不通过")
         zone_check = [c for c in v["checks"] if c["name"] == "zone_id_known"]
         self.assertEqual(len(zone_check), 1)
         self.assertFalse(zone_check[0]["ok"])
 
     def test_zone_consistency_eval_all_correct(self):
-        """评测样本的真值：10 个样本的气候类分类应全对（含两个缺口类）。"""
+        """评测样本的真值：10 个样本的气候类分类应全对（含两个已建模分区）。"""
         import engine.eval as ev
         with open(os.path.join(ROOT, "data", "eval", "zone_checks.json"),
                   encoding="utf-8") as f:

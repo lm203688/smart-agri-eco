@@ -76,6 +76,50 @@ FIELD_PATTERNS = {
         r"(?:农户|农民|种植户)\s*(?:每[吨亩]净收益|回报率)[^\d]{0,10}"
         + r"(\d+(?:\.\d+)?)\s*(?:倍)",
     ],
+    # ---- v2.2.0 新增（2026-09-30）：5 大 DD deal-killers + AgTech 合规 ----
+    # 依据 Harvest Returns / iGrow News 2025 调研：种子轮 AgTech 项目常见 5 大 deal-killers
+    # 以及 EPA 农药注册 / USDA 有机认证 / 水权许可三合规维度。
+    # 均为布尔存在型（命中即 True，表示"披露了此风险"或"已获该合规"）；缺失即跳过。
+    # 5 大 DD deal-killers（负面事件披露 → 触发 verify/warn 门禁）
+    "intellectual_property_issues": [
+        r"(?:IP|知识产权|核心专利|技术)[^\n]{0,15}(?:归属不清|归属争议|未明确|共有|纠纷|转让争议|尚未确权)",
+        r"(?:核心专利|技术秘密|源代码|技术资产)[^\n]{0,15}(?:共有|联名|共同所有|外部持有)",
+        r"(?:知识产权|专利)[^\n]{0,15}(?:诉讼|仲裁|侵权)",
+    ],
+    "contract_restrictions": [
+        r"(?:客户合同|核心客户)[^\n]{0,15}(?:竞业禁止|排他|竞业限制|独家供应|排他性)",
+        r"(?:主要客户|大客户)[^\n]{0,15}(?:终止条款|单方解除|随时终止|90天终止|30天终止)",
+        r"(?:合同|协议)[^\n]{0,15}(?:限制条款|排他条款|竞业条款|回购条款)",
+    ],
+    "cap_table_issues": [
+        r"(?:cap\s*table|股权架构|股权结构|股本)[^\n]{0,15}(?:混乱|错误|未清理|稀释严重|期权池不足|期权池耗尽|历史遗留)",
+        r"(?:期权池|ESOP)[^\n]{0,10}" + NUM + r"\s*%?\s*(?:低于|不足|已耗尽)",
+        r"(?:创始团队|创始股东)[^\n]{0,15}(?:股权代持|名义持股|代持|协议控制)",
+    ],
+    "founder_litigation": [
+        r"(?:创始人|联合创始人|核心创始团队)[^\n]{0,15}(?:诉讼|起诉|被告|原告|判决|仲裁|失信)",
+        r"(?:创始人|联创)[^\n]{0,15}(?:未决诉讼|被起诉|诉讼中|执行案件)",
+    ],
+    "financial_restatement": [
+        r"(?:财务|会计|报表|财报)[^\n]{0,15}(?:重述|追溯调整|审计意见保留|非标意见|重大错报|虚假)",
+        r"(?:审计)[^\n]{0,10}(?:保留意见|无法表示意见|否定意见)",
+    ],
+    # AgTech 合规三维度（正向合规披露 → 表示"已获该合规"）
+    "pesticide_registration": [
+        r"(?:EPA\s*农药|农药登记证|农药登记号|农药批准文号)[^\n]{0,15}"
+        + r"[（(A-Za-z0-9\-]+[）)]?",
+        r"农药(?:登记|批准)[^\n]{0,10}(?:已获|已批准|获批|通过|编号)",
+    ],
+    "organic_certification": [
+        r"(?:USDA\s*有机|有机认证|有机种植认证|有机产品认证)[^\n]{0,15}"
+        + r"(?:编号|证书|获批|通过|已获)?",
+        r"(?:有机|organic)[^\n]{0,10}(?:认证|证书|批准|通过)",
+    ],
+    "water_rights": [
+        r"(?:水权|取水许可|灌溉许可|水权许可)[^\n]{0,15}"
+        + r"(?:编号|证书|已获|通过|批准)?",
+        r"取水(?:许可证|许可)[^\n]{0,10}" + r"[（(A-Za-z0-9\-]+[）)]?",
+    ],
     # 分类特异指标
     "approved_varieties": [
         # 修：原式量词 `(?:个|项)?` 可选，「品种审定：金玉188（国审玉20250012）」中的品种名
@@ -125,7 +169,20 @@ UNIT = {"万": 1e4, "亿": 1e8, "元": 1, "万元": 1e4, "亿元": 1e8}
 
 # 布尔存在型字段：正则命中即记 True，不参与数值转换。
 # 只对显式声明的字段生效——不能让任意正则失败都变成 True（那会把「正则写错」伪装成「命中」）。
-BOOL_FIELDS = {"eia_passed"}
+# v2.2.0 新增：5 大 DD deal-killers（负面事件披露）+ AgTech 三合规（正向合规披露）。
+BOOL_FIELDS = {
+    "eia_passed",
+    # 5 大 DD deal-killers（触发 verify 门禁，让 DD 尽调方人工复核）
+    "intellectual_property_issues",
+    "contract_restrictions",
+    "cap_table_issues",
+    "founder_litigation",
+    "financial_restatement",
+    # AgTech 三合规维度（触发 verify 门禁，合规性核查）
+    "pesticide_registration",
+    "organic_certification",
+    "water_rights",
+}
 
 
 def _to_number(num_s, unit_s, is_pct=False):
@@ -260,11 +317,19 @@ def normalize(extracted: dict, prev_extracted: dict = None) -> dict:
     # 分类特异
     for f in ["approved_varieties", "safety_certs", "reg_certs", "pipeline_certs", "units_sold",
               "arr", "arr_ratio", "renewal_rate", "store_count", "sku_count", "output_volume",
-              "invest_output_ratio", "gov_fund_ratio", "irr", "eia_passed", "pe_ratio", "ps_ratio",
+              "invest_output_ratio", "gov_fund_ratio", "irr", "pe_ratio", "ps_ratio",
               "patents", "team_size", "rd_pct"]:
         v = g(f)
         if v is not None:
             n[f] = v
+    # eia_passed 与 v2.2.0 新增的 5 大 DD deal-killers + AgTech 三合规：
+    # 都是布尔存在型字段，缺失=未披露（键写入值为 None），
+    # 与 v2.0.0 verify 类门禁语义一致——缺失不判违规，但报告中呈现"未披露"。
+    for f in ["eia_passed",
+              "intellectual_property_issues", "contract_restrictions", "cap_table_issues",
+              "founder_litigation", "financial_restatement",
+              "pesticide_registration", "organic_certification", "water_rights"]:
+        n[f] = g(f)
     # 万元展示口径
     n["_unit_note"] = "金额字段以原始口径提取，报告展示统一换算为万元/亿元"
     return n

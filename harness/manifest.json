@@ -1,20 +1,21 @@
 {
   "schema": "agri-harness-manifest/v1",
   "version": "2.2.0",
-  "generated_at": "2026-09-30T10:07:51",
+  "generated_at": "2026-09-30T23:18:26",
   "project": "智慧农业生态 (smart-agri-eco)",
   "protocols": {
     "env_recipe": "v1",
     "mcp_protocol": "2024-11-05"
   },
   "mcp": {
-    "tool_count": 13,
+    "tool_count": 14,
     "tools": [
       "agri_bp_screen",
       "agri_diagnose_pest",
       "agri_env_recipe",
       "agri_growth_plan",
       "agri_list_cities",
+      "agri_list_ecosystem",
       "agri_match_zone",
       "agri_nutrition_plan",
       "agri_query_lineage",
@@ -112,7 +113,7 @@
     },
     {
       "path": "data/zone_meta/global_zones.json",
-      "sha256_16": "e5e13b5ce12f77c1"
+      "sha256_16": "810c0548c1eb166d"
     },
     {
       "path": "data/wofost_phenology_reference.json",
@@ -145,7 +146,7 @@
       "eval_recipe_expert_adoption": "需 3-5 位农艺专家盲评 50 份配方 vs 现行栽培规程（评审 §2.3）",
       "eval_source_traceability": "需溯源层埋点：每条建议的引用 url 可访问性校验（评审 §2.3）"
     },
-    "updated_at": "2026-09-30T10:07:51"
+    "updated_at": "2026-09-30T23:18:26"
   },
   "knowledge_graph": {
     "schema": "agri-knowledge-graph/v1",
@@ -195,11 +196,11 @@
     "schema_ver": 2
   },
   "recipe_scheduler": {
-    "recipes_scanned": 110,
-    "anchors_total": 957,
+    "recipes_scanned": 116,
+    "anchors_total": 1005,
     "anchors_by_kind": {
-      "threshold": 770,
-      "keyword": 187
+      "threshold": 812,
+      "keyword": 193
     },
     "operators_supported": [
       ">=",
@@ -401,6 +402,11 @@
       },
       {
         "ts": "2026-09-30T10:07:51",
+        "level": "B0",
+        "hci": 0.333
+      },
+      {
+        "ts": "2026-09-30T23:18:26",
         "level": "B0",
         "hci": 0.333
       }

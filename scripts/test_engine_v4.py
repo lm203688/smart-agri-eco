@@ -455,11 +455,16 @@ class TestLocalStorage(_Isolated):
     def test_rebuild_counts_four_corpora(self):
         r = ls.rebuild(force=True)
         self.assertTrue(r["fts"])
-        self.assertEqual(r["rows"]["crops"], 110)
-        self.assertEqual(r["rows"]["zones"], 6)
+        # v1.1 (2026-09-30) 新增 hot_arid / highland 两分区 + 6 个配套配方
+        self.assertEqual(r["rows"]["crops"], 110,
+                         "crops 来自 crop_adapt_db.json，v1.1 未变")
+        self.assertEqual(r["rows"]["zones"], 8,
+                         "v1.1 分区从 6 → 8（新增 hot_arid + highland）")
         self.assertEqual(r["rows"]["pests"], 23)
-        self.assertEqual(r["rows"]["recipes"], 110)
-        self.assertEqual(r["total"], 249)
+        self.assertEqual(r["rows"]["recipes"], 116,
+                         "v1.1 配方从 110 → 116（新增 6 个 hot_arid/highland 配套）")
+        self.assertEqual(r["total"], 257,
+                         "110+8+23+116=257（原 110+6+23+110=249）")
 
     def test_rebuild_does_not_modify_source_json(self):
         src = os.path.join(ROOT, "data", "crop_adapt_db.json")
@@ -521,7 +526,8 @@ class TestLocalStorage(_Isolated):
         ls.rebuild(force=True)
         s = ls.stats()
         self.assertTrue(s["built"])
-        self.assertEqual(s["total"], 249)
+        self.assertEqual(s["total"], 257,
+                         "v1.1 后总数从 249 → 257（+6 配方 +2 分区）")
         self.assertIn("crops", s["rows"])
         self.assertTrue(s["path"], "stats 应报告索引文件路径")
 
@@ -943,7 +949,7 @@ class TestIntegration(_Isolated):
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         obs = mod._recipe_scheduler_obs()
-        self.assertEqual(obs["recipes_scanned"], 110)
+        self.assertEqual(obs["recipes_scanned"], 116)
         self.assertGreater(obs["anchors_total"], 0)
         self.assertEqual(sum(obs["anchors_by_kind"].values()),
                          obs["anchors_total"])
@@ -1019,10 +1025,10 @@ class TestDerivedVpd(unittest.TestCase):
     def test_all_110_recipes_computable_without_exception(self):
         import glob
         paths = sorted(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
-        self.assertEqual(len(paths), 110)
+        self.assertEqual(len(paths), 116)
         recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
         report = engine_derived.audit_recipes(recipes)
-        self.assertEqual(report["available"], 110,
+        self.assertEqual(report["available"], 116,
                          "所有配方都应能从温湿设定算出派生量")
         self.assertIn("flag_kinds", report)
         self.assertIn("observation_kinds", report)
@@ -1115,7 +1121,7 @@ class TestEnvRecipeSourceLicense(unittest.TestCase):
     def _recipes(self):
         import glob
         paths = sorted(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
-        self.assertEqual(len(paths), 110)
+        self.assertEqual(len(paths), 116)
         return [(os.path.relpath(p, ROOT),
                  json.load(open(p, encoding="utf-8"))) for p in paths]
 

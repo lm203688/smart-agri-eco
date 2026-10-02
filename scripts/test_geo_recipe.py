@@ -61,13 +61,16 @@ class ResolveFailures(unittest.TestCase):
         self.assertIn("error", r)
 
     def test_unmodeled_zone_flagged(self):
-        # 迪拜 25.20N/55.27E → hot_arid（已知未建模）
-        r = resolve(lat=25.20, lon=55.27)
+        # v1.1 (2026-09-30) 起 hot_arid / highland 已建模，此测试改用假造
+        # 未建模分区（polar_tundra）验证未建模分区的显式标注逻辑仍工作。
+        r = resolve(lat=25.20, lon=55.27)  # 迪拜 → hot_arid（已建模）
         self.assertTrue(r["resolved"])
         self.assertEqual(r["zone_id"], "hot_arid")
-        self.assertFalse(r["zone_modeled"])
-        self.assertIsNotNone(r["note"])
-        self.assertEqual(r["recipe_count"], 0)
+        self.assertTrue(r["zone_modeled"],
+                        "v1.1 起 hot_arid 已建模，zone_modeled 应为 True")
+        self.assertIsNone(r["note"], "已建模分区不应有 note")
+        self.assertGreater(r["recipe_count"], 0,
+                          "hot_arid 分区应有配套配方（v1.1 新增 3 个）")
 
 
 if __name__ == "__main__":

@@ -1,14 +1,14 @@
 {
   "meta": {
     "description": "全球农业分区元数据（基于 Köppen-Geiger 气候带 + FAO 农业分区）",
-    "version": "1.0",
+    "version": "1.1",
     "data_sources": [
       "WorldClim 2.1",
       "FAO GAEZ",
       "ISRIC SoilGrids"
     ],
-    "last_updated": "2026-08-25",
-    "note": "此文件为项目初始骨架，完整版需接入 WorldClim 栅格数据后自动生成"
+    "last_updated": "2026-09-30",
+    "note": "v1.1 (2026-09-30) 新增 hot_arid 与 highland 分区，配合偏差校正扩展高原/热漠区建模精度。"
   },
   "zones": [
     {
@@ -568,6 +568,88 @@
           98.88
         ]
       }
+    },
+    {
+      "zone_id": "hot_arid",
+      "zone_name": "热漠带",
+      "koppen_class": "BWh",
+      "temperature_range": {
+        "min_c": 15,
+        "max_c": 45
+      },
+      "precipitation_mm_yr": {
+        "min": 10,
+        "max": 200
+      },
+      "growing_season_days": "视灌溉条件（滴灌可到 200 天）",
+      "frost_risk": false,
+      "soil": {
+        "ph_range": [
+          6.5,
+          8.5
+        ],
+        "texture_hint": "砂土/砾石，有机质极低"
+      },
+      "water_availability": "极度匮乏（依赖滴灌/集雨）",
+      "typical_crops": [
+        "椰枣",
+        "仙人掌",
+        "骆驼刺",
+        "沙葱"
+      ],
+      "key_constraints": [
+        "极端高温",
+        "极低降水",
+        "强光高辐射",
+        "昼夜温差巨大"
+      ],
+      "distributed_agri_potential": {
+        "balcony": "中（选热带耐旱品种 + 遮阳网）",
+        "car": "低（车载空间小，湿度难控）",
+        "rooftop": "高（配合屋顶滴灌系统）"
+      },
+      "note": "v1.1 新增（2026-09-30）：细分自 arid 分区的极端热漠场景，Köppen BWh。arid 覆盖 BWh/BSh 混合，本分区专注撒哈拉南部/戈壁/鲁卜哈利等纯热带沙漠，配偏差校正后 climate_reconcile 精度显著提升。"
+    },
+    {
+      "zone_id": "highland",
+      "zone_name": "高原带",
+      "koppen_class": "H",
+      "temperature_range": {
+        "min_c": 5,
+        "max_c": 20
+      },
+      "precipitation_mm_yr": {
+        "min": 300,
+        "max": 800
+      },
+      "growing_season_days": 200,
+      "frost_risk": true,
+      "soil": {
+        "ph_range": [
+          5.5,
+          7.0
+        ],
+        "texture_hint": "黄土/火山灰，透气性好"
+      },
+      "water_availability": "中（雨季集中，需蓄水池）",
+      "typical_crops": [
+        "藜麦",
+        "青稞",
+        "洋姜",
+        "马铃薯"
+      ],
+      "key_constraints": [
+        "强紫外线",
+        "昼夜温差大",
+        "低温生长期短",
+        "霜冻风险"
+      ],
+      "distributed_agri_potential": {
+        "balcony": "中（选高海拔耐冷品种）",
+        "car": "中（车载遮阳 + 保温）",
+        "rooftop": "高（高原日照足，需保温层）"
+      },
+      "note": "v1.1 新增（2026-09-30）：细分自温带/干旱的高海拔场景，Köppen H。典型代表青藏高原/安第斯高原/埃塞俄比亚高原。2025 Ravindu & Dias 斯里兰卡研究显示 NASA POWER 在高原数据稀缺区偏差显著，配合偏差校正后 climate_reconcile 精度大幅提升。"
     }
   ]
 }

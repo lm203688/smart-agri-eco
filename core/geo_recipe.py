@@ -23,7 +23,9 @@ RECIPE_DIR = os.path.join(DATA, "env_recipes")
 ZONE_META = os.path.join(DATA, "zone_meta", "global_zones.json")
 
 # 当前分区库未建模的气候类（与 climate_agent.UNMODELED_ZONE_CLASSES 对齐）
-_UNMODELED = ("hot_arid", "highland")
+# v1.1 (2026-09-30) 起 hot_arid / highland 已建模，此元组清空；
+# 未来若有新气候类需再扩展（如 polar_tundra / wet_tundra）。
+_UNMODELED = ()
 
 
 def _resolve_coords(query: Optional[str], lat: Any, lon: Any) -> Tuple[Optional[float], Optional[float], Optional[str]]:

@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "description": "智慧农业生态对接的开源/商业生态清单（MCP 生态可见性声明）",
+    "version": "1.0.0",
+    "last_updated": "2026-09-30",
+    "principle": "只做 MCP 分发，不建 C 端/SaaS；能对接的开源标准不重复造轮子；对接状态诚实标注，绝不把「想接」说成「已接」。"
+  },
+  "ecosystems": [
+    {
+      "id": "agstack-opensource-pestmodels",
+      "org": "Linux Foundation AgStack",
+      "type": "open_source_standard",
+      "status": "evaluating",
+      "relevance": "病虫害与威胁模型生态（13 models / 19 crops / 54 threats，fuzzy Mamdani 推理）",
+      "value_to_us": "填补 pest_diagnose 视觉后端未接入前的模型层空缺；作为 MCP 生态对接而非自建",
+      "integration_plan": "评估 agstack API 后决定是否作为 pest_diagnose 的模型引擎后端（不锁定，等用户拍板视觉后端选型后决定）",
+      "url": "https://github.com/agstack/opensource-pestmodels",
+      "license": "Apache-2.0 / 混合（详见仓库）",
+      "notes": "2025-2026 农业 MCP 开源事实标准；我们定位为互补而非替代。"
+    },
+    {
+      "id": "field-mcp",
+      "org": "FieldMCP（商业）",
+      "type": "commercial_platform",
+      "status": "competitor_reference",
+      "relevance": "150+ 农艺规则 / 12 领域；$29/org/month",
+      "value_to_us": "证明农业 MCP 商业模式可行；我们不追工具数量，走方法深度路线（107 双源校准 / 4 血缘 / 偏差校正）",
+      "integration_plan": "商业竞品，不接入；仅作为定价锚点与差异化对照",
+      "url": "https://fieldmcp.com",
+      "license": "Commercial proprietary",
+      "notes": "数量 vs 深度的差异化定位见 docs/block_improvement_roadmap_2026-09-30.md"
+    },
+    {
+      "id": "leaf-agriculture-mcp",
+      "org": "Leaf Agriculture MCP",
+      "type": "commercial_platform",
+      "status": "competitor_reference",
+      "relevance": "唯一商业统一 farm data API，聚合 John Deere/CFV/CNHi/AGCO/Trimble",
+      "value_to_us": "数据入口型竞品；我们的差异化在于知识配方而非数据管道",
+      "integration_plan": "不接入；定位互补（数据管道 vs 知识配方）",
+      "url": "https://leaf-agriculture.com",
+      "license": "Commercial proprietary",
+      "notes": "生态位不同，无直接冲突。"
+    },
+    {
+      "id": "mcp-agriculture-rust",
+      "org": "社区开源（Rust）",
+      "type": "open_source_implementation",
+      "status": "evaluating",
+      "relevance": "35 tools 全栈，内置 Kenyan farm backend，Apache-2.0",
+      "value_to_us": "非洲精准农业细分参考；数量最多的开源实现",
+      "integration_plan": "作为技术参考，不接入；后续如评估非洲分区扩展可考虑其数据源",
+      "url": "https://github.com/mcp-agriculture",
+      "license": "Apache-2.0",
+      "notes": "覆盖分区与我们重叠度低，直接竞争风险小。"
+    },
+    {
+      "id": "kilimo-mcp",
+      "org": "Kenya 精准农业",
+      "type": "open_source_implementation",
+      "status": "not_evaluated",
+      "relevance": "6 工具 + Africa Coordination Stack 32 MCP 生态",
+      "value_to_us": "非洲小农户场景参考",
+      "integration_plan": "非洲分区扩展时评估",
+      "url": "https://github.com/kilimo-mcp",
+      "license": "Apache-2.0",
+      "notes": "暂缓。"
+    },
+    {
+      "id": "aggateway-adapt",
+      "org": "AgGateway Consortium",
+      "type": "data_exchange_standard",
+      "status": "planned_mapping",
+      "relevance": "Aggregation Exchange Standard；ADAPT 数据模式",
+      "value_to_us": "让 Env Recipe 字段跨平台互操作（未来）",
+      "integration_plan": "docs/aggateway_adapt_mapping.md 声明字段映射；实际互操作待 AgGateway 会员评估",
+      "url": "https://www.aggateway.org",
+      "license": "Public standard",
+      "notes": "工程上无风险；商业落地需评估会员/许可。"
+    },
+    {
+      "id": "worldclim-2.1",
+      "org": "WorldClim",
+      "type": "data_source",
+      "status": "partial",
+      "relevance": "0.5° 全球气候栅格；作为 climate_reconcile 第 3 源",
+      "value_to_us": "打破两源（NASA POWER + Open-Meteo）天花板；提升高原/热漠区交叉验证强度",
+      "integration_plan": "core/climate_reconcile.py 已预留 worldclim 扩展点；栅格下载管道工程实现中",
+      "url": "https://worldclim.org",
+      "license": "CC BY 4.0",
+      "notes": "2025 Ravindu & Dias Sri Lanka 研究验证 NASA POWER 在数据稀缺区偏差，三源融合必须。"
+    },
+    {
+      "id": "nasa-power",
+      "org": "NASA",
+      "type": "data_source",
+      "status": "integrated",
+      "relevance": "0.5° 重分析气候数据",
+      "value_to_us": "climate_reconcile 主源之一",
+      "integration_plan": "已集成",
+      "url": "https://power.larc.nasa.gov",
+      "license": "Public domain (NASA)",
+      "notes": "无需注册；免费。"
+    },
+    {
+      "id": "open-meteo",
+      "org": "Open-Meteo",
+      "type": "data_source",
+      "status": "integrated",
+      "relevance": "0.1° 高分辨率实时+历史气候 API",
+      "value_to_us": "climate_reconcile 主源之二；补齐 NASA POWER 的低分辨率缺口",
+      "integration_plan": "已集成",
+      "url": "https://open-meteo.com",
+      "license": "CC BY 4.0 / Aggregated from ECMWF/GFS/MeteoFrance 等",
+      "notes": "无需密钥。"
+    },
+    {
+      "id": "isric-soilgrids",
+      "org": "ISRIC",
+      "type": "data_source",
+      "status": "integrated",
+      "relevance": "0.25° 土壤属性栅格",
+      "value_to_us": "分区土壤数据源",
+      "integration_plan": "已集成（分区骨架数据）",
+      "url": "https://soilgrids.org",
+      "license": "CC BY 4.0",
+      "notes": "中国坐标偶发超时；已加坐标 fallback。"
+    },
+    {
+      "id": "wofost-phenology",
+      "org": "Wageningen UR",
+      "type": "model_engine",
+      "status": "integrated",
+      "relevance": "作物物候动态模型",
+      "value_to_us": "播期/生长天数预测的权威模型",
+      "integration_plan": "agent/phenology.py 已集成",
+      "url": "https://www.wur.nl/en/research-institutes/wageningen-environmental-research-institute-wur-fgi/research/wo-forst.html",
+      "license": "Custom research license",
+      "notes": "学术许可，非商用需另申请。"
+    }
+  ],
+  "integration_matrix": {
+    "integrated": ["nasa-power", "open-meteo", "isric-soilgrids", "wofost-phenology"],
+    "partial": ["worldclim-2.1"],
+    "planned_mapping": ["aggateway-adapt"],
+    "evaluating": ["agstack-opensource-pestmodels", "mcp-agriculture-rust"],
+    "competitor_reference": ["field-mcp", "leaf-agriculture-mcp"],
+    "not_evaluated": ["kilimo-mcp"]
+  }
+}

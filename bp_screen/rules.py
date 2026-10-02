@@ -5,7 +5,7 @@
 修改规则 = 修改本文件并 bump RULES_VERSION，历史报告锁定旧版本。
 """
 
-RULES_VERSION = "v2.1.0"
+RULES_VERSION = "v2.2.0"
 RELEASED = "2026-09-30"
 
 # 版本变更日志：每次改规则必须 bump RULES_VERSION 并在此追加一行。
@@ -20,6 +20,14 @@ VERSION_HISTORY = [
     "Harvest Returns 2025 调研显示农户 ROI < 3:1 是投资人 Deal-Killer #1，"
     "原 6 闸全部财务/客户侧，缺农业特有硬指标。farmer_roi 阈值 3.0，"
     "severity=warn（非一票否决，但报告置顶提示）。",
+    "v2.2.0 (2026-09-30) 新增 5 大 DD deal-killers 门禁（触发 verify 人工核查）："
+    "intellectual_property_issues（IP 归属不清/共有纠纷）、contract_restrictions（客户合同"
+    "竞业/排他/单方终止）、cap_table_issues（股权代持/期权池耗尽）、founder_litigation"
+    "（创始人未决诉讼）、financial_restatement（财务重述/非标审计意见）。依据 Harvest "
+    "Returns 2025 + iGrow News 2025 AgTech DD 调研。所有新门禁 severity=verify，"
+    "op=eq, default=True（正则命中即触发，让 DD 尽调方人工复核，不阻断主流程）。"
+    "AgTech 三合规（pesticide_registration/organic_certification/water_rights）作为"
+    "披露信息字段加入 extractor，报告中呈现是否披露，让 DD 人工核查合规性。",
 ]
 
 # ============================================================
@@ -138,6 +146,46 @@ GATES = [
         "note": "农户ROI<3:1 触发预警（Harvest Returns 2025）。"
                 "非一票否决：早期项目数据不完整常见，但报告置顶提示。"
                 "缺失时静默跳过（无法从BP抽取→视为未披露，不判为违规）。",
+    },
+    # ---- v2.2.0 新增：5 大 DD deal-killers（触发 verify 人工核查）----
+    # 依据 Harvest Returns / iGrow News 2025 AgTech DD 调研：种子轮 AgTech 项目常见
+    # 5 大 deal-killers，任一被披露即需 DD 尽调方人工复核（可能影响估值/推进节奏）。
+    # op=eq + default=True + severity=verify：正则命中 True 时触发 verify，
+    # 让 DD 尽调方人工核查真实性（避免误报为一票否决）。缺失即跳过。
+    {
+        "id": "ip_issues", "name": "IP 归属争议", "metric": "intellectual_property_issues",
+        "default": True, "op": "eq", "severity": "verify",
+        "extract_fields": ["intellectual_property_issues"],
+        "note": "核心 IP 归属不清 / 共有纠纷 / 专利诉讼 → 触发人工核查。"
+                "Harvest Returns 2025 列为 AgTech Seed Deal-Killer #1。",
+    },
+    {
+        "id": "contract_restrictions", "name": "客户合同限制", "metric": "contract_restrictions",
+        "default": True, "op": "eq", "severity": "verify",
+        "extract_fields": ["contract_restrictions"],
+        "note": "客户合同含竞业禁止/排他/单方终止条款 → 触发人工核查。"
+                "AgTech Seed Deal-Killer #2，常见于政企 SaaS 大客户合同。",
+    },
+    {
+        "id": "cap_table_issues", "name": "股权架构问题", "metric": "cap_table_issues",
+        "default": True, "op": "eq", "severity": "verify",
+        "extract_fields": ["cap_table_issues"],
+        "note": "股权代持 / 期权池耗尽 / 历史遗留问题 → 触发人工核查。"
+                "AgTech Seed Deal-Killer #3，影响本轮估值与后续融资。",
+    },
+    {
+        "id": "founder_litigation", "name": "创始人未决诉讼", "metric": "founder_litigation",
+        "default": True, "op": "eq", "severity": "verify",
+        "extract_fields": ["founder_litigation"],
+        "note": "创始人未决诉讼 / 失信记录 → 触发人工核查。"
+                "AgTech Seed Deal-Killer #4，直接影响创始人执行力与合规风险。",
+    },
+    {
+        "id": "financial_restatement", "name": "财务重述/审计非标", "metric": "financial_restatement",
+        "default": True, "op": "eq", "severity": "verify",
+        "extract_fields": ["financial_restatement"],
+        "note": "财务被审计重述 / 非标审计意见 → 触发人工核查。"
+                "AgTech Seed Deal-Killer #5，直接导致数据可信度下降。",
     },
 ]
 

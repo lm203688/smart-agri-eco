@@ -256,10 +256,17 @@ class TestEiaPassedFix(unittest.TestCase):
         self.assertNotIn("eia_passed", ext)
 
     def test_non_bool_field_still_skipped_on_conversion_failure(self):
-        """安全约束：只有显式声明的布尔字段才能用 True 兜底，不能把任意正则失败都变成 True。"""
+        """安全约束：只有显式声明的布尔字段才能用 True 兜底，不能把任意正则失败都变成 True。
+
+        v2.2.0 起 BOOL_FIELDS 从 1 个（eia_passed）扩展到 9 个（新增 5 大 DD deal-killers
+        + AgTech 三合规），每个新增字段都必须有对应的 FIELD_PATTERNS 条目，
+        否则会成为正则写错伪装成"命中"的死改动。
+        """
         for f in extractor.BOOL_FIELDS:
-            self.assertIn(f, extractor.FIELD_PATTERNS)
-        self.assertEqual(len(extractor.BOOL_FIELDS), 1, "当前只应声明 eia_passed 一个布尔字段")
+            self.assertIn(f, extractor.FIELD_PATTERNS,
+                          f"BOOL_FIELDS 中的 {f} 必须也在 FIELD_PATTERNS 中声明正则")
+        self.assertGreaterEqual(len(extractor.BOOL_FIELDS), 9,
+                                "v2.2.0 应包含 9 个布尔字段（eia_passed + 5 DD deal-killers + 3 AgTech 合规）")
 
 
 # ---------------------------------------------------------------------------
@@ -505,12 +512,14 @@ class TestColdStart(unittest.TestCase):
         self.assertEqual(row["version"], rules.RULES_VERSION)
 
     def test_rules_version_bumped_with_history(self):
-        self.assertEqual(rules.RULES_VERSION, "v2.1.0")
-        self.assertGreaterEqual(len(rules.VERSION_HISTORY), 3)
-        self.assertIn("cash_to_revenue", rules.VERSION_HISTORY[-2],
+        self.assertEqual(rules.RULES_VERSION, "v2.2.0")
+        self.assertGreaterEqual(len(rules.VERSION_HISTORY), 4)
+        self.assertIn("cash_to_revenue", rules.VERSION_HISTORY[-3],
                       "版本历史必须记录死门禁修复，否则下次改规则的人不知道坑在哪")
-        self.assertIn("farmer_roi", rules.VERSION_HISTORY[-1],
+        self.assertIn("farmer_roi", rules.VERSION_HISTORY[-2],
                       "v2.1.0 必须记录新增 farmer_roi 闸（AgTech Seed 硬指标）")
+        self.assertIn("intellectual_property_issues", rules.VERSION_HISTORY[-1],
+                      "v2.2.0 必须记录 5 大 DD deal-killers（Harvest Returns 2025）")
 
     # ------------------------------------------------------------------
     # v2.1.0 新增：farmer_roi 闸（AgTech Seed 硬指标）
@@ -584,6 +593,105 @@ class TestColdStart(unittest.TestCase):
         ids = [g["id"] for g in fired]
         self.assertNotIn("farmer_roi", ids,
                          "farmer_roi 缺失却触发了 warn，会把未披露误判为违规")
+
+    # ------------------------------------------------------------------
+    # v2.2.0 新增：5 大 DD deal-killers（Harvest Returns 2025）
+    # ------------------------------------------------------------------
+    DD_KILLERS = [
+        ("ip_issues", "intellectual_property_issues", "核心专利归属存在争议，与高校共有"),
+        ("contract_restrictions", "contract_restrictions", "主要客户合同中包含90天单方终止条款"),
+        ("cap_table_issues", "cap_table_issues", "cap table 混乱，期权池已耗尽"),
+        ("founder_litigation", "founder_litigation", "联合创始人有未决诉讼被起诉"),
+        ("financial_restatement", "financial_restatement", "财务报表被审计重述，存在重大错报"),
+    ]
+
+    def _gate(self, gid):
+        g = next((x for x in rules.GATES if x["id"] == gid), None)
+        self.assertIsNotNone(g, f"{gid} 闸未注册到 rules.GATES")
+        return g
+
+    def test_dd_killers_all_registered(self):
+        """v2.2.0 必须新增 5 个 DD deal-killer 闸，且都是 verify（人工核查）。"""
+        for gid, metric, _ in self.DD_KILLERS:
+            g = self._gate(gid)
+            self.assertEqual(g["metric"], metric, f"{gid} 的 metric 应与正则字段名一致")
+            self.assertEqual(g["op"], "eq")
+            self.assertEqual(g["default"], True)
+            self.assertEqual(g["severity"], "verify",
+                             f"{gid} 必须是 verify（人工核查），不阻断主流程")
+
+    def test_dd_killers_normalize_fields_written(self):
+        """normalize 必须无条件写入 5 个 bool 键（缺失时键仍存在，值为 None）。
+
+        原因：同 farmer_roi，若 normalize 不写这些键，gate 的 metric 取不到值，
+        5 个闸全是静默死代码（v2.0.0 前车之鉴）。
+        """
+        pf = parser.ParsedFile(filename="t.txt", ftype="text",
+                               pages=[{"text": "本 BP 未披露任何风险", "source": "inline"}],
+                               error="")
+        ext, _ = extractor.extract([{"filename": "t.txt", "parsed": pf}])
+        n = extractor.normalize(ext)
+        for _, metric, _ in self.DD_KILLERS:
+            self.assertIn(metric, n,
+                          f"normalize 必须无条件写入 {metric} 键（缺失=未披露，不判为违规）")
+
+    def test_dd_killers_regex_extracts_from_bp_text(self):
+        """每个 DD deal-killer 必须能从真实 BP 表述中提取到 True。"""
+        for gid, metric, text in self.DD_KILLERS:
+            pf = parser.ParsedFile(filename="t.txt", ftype="text",
+                                   pages=[{"text": text, "source": "inline"}],
+                                   error="")
+            ext, _ = extractor.extract([{"filename": "t.txt", "parsed": pf}])
+            n = extractor.normalize(ext)
+            self.assertEqual(n.get(metric), True,
+                             f"文本 {text!r} 应提取 {metric}=True，实得 {n.get(metric)}")
+
+    def test_dd_killers_gate_fires_when_detected(self):
+        """bool=True 时必须触发 verify 门禁。"""
+        for gid, metric, _ in self.DD_KILLERS:
+            n = {metric: True, "category": "digag"}
+            fired = scorer.run_gates(n, "digag")
+            ids = [g["id"] for g in fired]
+            self.assertIn(gid, ids,
+                          f"{metric}=True 应触发 {gid}，实际 fired={ids}")
+            hit = next(g for g in fired if g["id"] == gid)
+            self.assertEqual(hit["severity"], "verify")
+
+    def test_dd_killers_gate_skipped_when_missing(self):
+        """5 大 DD deal-killers 缺失时静默跳过（不把未披露误判为违规）。"""
+        n = {"category": "digag"}  # 全部缺失
+        fired = scorer.run_gates(n, "digag")
+        ids = [g["id"] for g in fired]
+        for gid, _, _ in self.DD_KILLERS:
+            self.assertNotIn(gid, ids,
+                             f"{gid} 缺失却触发了 verify，会把未披露误判为违规")
+
+    def test_agtech_compliance_fields_extracted(self):
+        """AgTech 三合规（pesticide/organic/water）作为披露信息字段，regex 命中即 True。"""
+        cases = [
+            ("pesticide_registration", "农药登记证：PD2024001 已获批"),
+            ("organic_certification", "USDA 有机认证编号 USDA-ORG-123"),
+            ("water_rights", "取水许可证编号 水许可[2024]001"),
+        ]
+        for field, text in cases:
+            pf = parser.ParsedFile(filename="t.txt", ftype="text",
+                                   pages=[{"text": text, "source": "inline"}],
+                                   error="")
+            ext, _ = extractor.extract([{"filename": "t.txt", "parsed": pf}])
+            n = extractor.normalize(ext)
+            self.assertEqual(n.get(field), True,
+                             f"文本 {text!r} 应提取 {field}=True，实得 {n.get(field)}")
+
+    def test_agtech_compliance_fields_written_when_missing(self):
+        """AgTech 三合规字段必须在 normalize 中无条件写入（即使未披露）。"""
+        pf = parser.ParsedFile(filename="t.txt", ftype="text",
+                               pages=[{"text": "本 BP 未披露任何合规资质", "source": "inline"}],
+                               error="")
+        ext, _ = extractor.extract([{"filename": "t.txt", "parsed": pf}])
+        n = extractor.normalize(ext)
+        for field in ("pesticide_registration", "organic_certification", "water_rights"):
+            self.assertIn(field, n,
+                          f"normalize 必须无条件写入 {field} 键（缺失=未披露，需 DD 人工核查）")
 
 
 # ---------------------------------------------------------------------------
@@ -714,9 +822,10 @@ class TestMCPIntegration(unittest.TestCase):
     def test_tool_registered(self):
         names = [t["name"] for t in self.m.TOOLS]
         self.assertIn("agri_bp_screen", names)
-        for new_tool in ("agri_reconcile_climate", "agri_resolve_recipe", "agri_query_lineage"):
+        for new_tool in ("agri_reconcile_climate", "agri_resolve_recipe", "agri_query_lineage",
+                          "agri_list_ecosystem"):
             self.assertIn(new_tool, names, f"新增工具未注册：{new_tool}")
-        self.assertEqual(len(names), 13, f"应为 13 个工具，实测 {len(names)}")
+        self.assertEqual(len(names), 14, f"应为 14 个工具，实测 {len(names)}")
 
     def test_tools_and_dispatch_consistent(self):
         self.assertEqual(set(t["name"] for t in self.m.TOOLS), set(self.m._DISPATCH),

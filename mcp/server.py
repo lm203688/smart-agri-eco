@@ -369,6 +369,29 @@ def _tool_query_lineage(args: dict) -> dict:
     return query_lineage(crop=crop or None, zone_id=zone or None)
 
 
+def _tool_list_ecosystem(args: dict) -> dict:
+    """生态对接清单：返回 config/ecosystem.json 声明的开源/商业生态清单。
+    声明对接状态（integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated），
+    让 MCP 客户端知道我们的开放生态策略与差异化定位。"""
+    import json as _json
+    cfg_path = os.path.join(ROOT, "config", "ecosystem.json")
+    try:
+        with open(cfg_path, "r", encoding="utf-8") as f:
+            cfg = _json.load(f)
+    except (FileNotFoundError, _json.JSONDecodeError) as e:
+        return {"error": "ecosystem.json 未找到或解析失败", "detail": str(e)}
+    status_filter = args.get("status")
+    ecosystems = cfg.get("ecosystems", [])
+    if status_filter:
+        ecosystems = [e for e in ecosystems if e.get("status") == status_filter]
+    return {
+        "meta": cfg.get("meta", {}),
+        "ecosystems": ecosystems,
+        "integration_matrix": cfg.get("integration_matrix", {}),
+        "count": len(ecosystems),
+    }
+
+
 TOOLS = [
     {
         "name": "agri_list_cities",
@@ -588,6 +611,23 @@ TOOLS = [
             },
         },
     },
+    {
+        "name": "agri_list_ecosystem",
+        "description": (
+            "（生态对接清单）返回智慧农业生态对接的开源/商业生态清单（config/ecosystem.json），"
+            "含对接状态（integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated）、"
+            "许可、URL、用途说明与集成计划。让 MCP 客户端一次看清我们的开放生态策略：能对接的不重复造轮子，"
+            "只做 MCP 分发不做 SaaS。可选按 status 过滤。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "status": {"type": "string",
+                           "description": "可选过滤：integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated",
+                           "enum": ["integrated", "partial", "planned_mapping",
+                                    "evaluating", "competitor_reference", "not_evaluated"]},
+            },
+        },
+    },
 ]
 
 _DISPATCH = {
@@ -604,6 +644,7 @@ _DISPATCH = {
     "agri_reconcile_climate": _tool_reconcile_climate,
     "agri_resolve_recipe": _tool_resolve_recipe,
     "agri_query_lineage": _tool_query_lineage,
+    "agri_list_ecosystem": _tool_list_ecosystem,
 }
 
 

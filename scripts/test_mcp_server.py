@@ -78,7 +78,7 @@ def main() -> int:
         # 3) tools/list
         resp = _rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
         tools = (resp or {}).get("result", {}).get("tools", [])
-        check(len(tools) == 13, f"tools/list 返回 13 个工具（实际 {len(tools)}）")
+        check(len(tools) == 14, f"tools/list 返回 14 个工具（实际 {len(tools)}）")
         names = {t["name"] for t in tools}
         check("agri_env_recipe" in names, "包含 agri_env_recipe 工具")
         check("agri_season_advisory" in names, "包含 agri_season_advisory 工具")
@@ -87,6 +87,7 @@ def main() -> int:
         check("agri_reconcile_climate" in names, "包含 agri_reconcile_climate 工具（多源气候校准）")
         check("agri_resolve_recipe" in names, "包含 agri_resolve_recipe 工具（地理编码→配方）")
         check("agri_query_lineage" in names, "包含 agri_query_lineage 工具（数据血缘查询）")
+        check("agri_list_ecosystem" in names, "包含 agri_list_ecosystem 工具（生态对接清单）")
 
         # 4) tools/call: match_zone
         resp = _rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
@@ -259,6 +260,37 @@ def main() -> int:
                   f"reconcile_climate 返回稳定契约（n_sources={rc.get('n_sources')}）")
         except Exception:
             check(False, "reconcile_climate 返回可解析 JSON")
+
+        # 5i) tools/call: list_ecosystem（生态对接清单；声明生态可见性，含过滤）
+        resp = _rpc({"jsonrpc": "2.0", "id": 15, "method": "tools/call",
+                     "params": {"name": "agri_list_ecosystem", "arguments": {}}})
+        content = (resp or {}).get("result", {}).get("content", [{}])
+        text = content[0].get("text", "") if content else ""
+        try:
+            ec = json.loads(text)
+            # 断言真实业务值：至少有 10 项生态；含已知 ID（nasa-power 应为 integrated）
+            ok = (ec.get("count", 0) >= 10
+                  and isinstance(ec.get("integration_matrix"), dict)
+                  and "nasa-power" in ec["integration_matrix"].get("integrated", []))
+            check(ok and "error" not in ec,
+                  f"list_ecosystem 返回生态清单（count={ec.get('count')}）")
+        except Exception:
+            check(False, "list_ecosystem 返回可解析 JSON")
+
+        # 5j) tools/call: list_ecosystem 按 status 过滤
+        resp = _rpc({"jsonrpc": "2.0", "id": 16, "method": "tools/call",
+                     "params": {"name": "agri_list_ecosystem",
+                                "arguments": {"status": "integrated"}}})
+        content = (resp or {}).get("result", {}).get("content", [{}])
+        text = content[0].get("text", "") if content else ""
+        try:
+            ec = json.loads(text)
+            # 过滤后每条目 status 都必须是 integrated
+            all_integrated = all(e.get("status") == "integrated" for e in ec.get("ecosystems", []))
+            check(ec.get("count", 0) >= 4 and all_integrated,
+                  f"list_ecosystem status=integrated 过滤生效（count={ec.get('count')}）")
+        except Exception:
+            check(False, "list_ecosystem 过滤调用返回可解析 JSON")
 
         # 6) 未知工具报错
         resp = _rpc({"jsonrpc": "2.0", "id": 5, "method": "tools/call",
