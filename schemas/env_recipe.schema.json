@@ -20,7 +20,7 @@
     "recipe_version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+\\.\\d+$",
-      "description": "Env Recipe 协议版本（语义化版本）。当前规范版本 1.0.0。"
+      "description": "Env Recipe 协议版本（语义化版本）。当前规范版本 1.0.0（协议层不变；schema 版本 1.1.0 新增 zone_note 可选字段）。"
     },
     "crop": {
       "type": "object",
@@ -398,7 +398,11 @@
     "license_scope": {
       "type": "string",
       "description": "许可适用范围声明：说明 recipe 级 license 与 sources[].license 的关系，以及是否存在限制整包商用性的来源（如 CC BY-NC-SA）。"
+    },
+    "zone_note": {
+      "type": "string",
+      "description": "可选：分区/场景上下文备注。用于标注配方引入背景（如 v1.1 新增 hot_arid/highland 分区配套配方）、特殊气候特征说明、或未来版本演进说明。不承载可执行参数。"
     }
   },
-  "schema_version": "1.0.0"
+  "schema_version": "1.1.0"
 }

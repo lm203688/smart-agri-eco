@@ -1131,9 +1131,42 @@ class TestEnvRecipeSourceLicense(unittest.TestCase):
         self.assertIn("license",
                       schema["properties"]["sources"]["items"]["properties"])
         self.assertIn("license_scope", schema["properties"])
+        # v1.1.0 新增 zone_note 可选字段（分区/场景上下文备注）
+        self.assertIn("zone_note", schema["properties"])
         # 关键：additionalProperties 仍是 false，说明新字段是显式声明而非放开
         self.assertFalse(schema["additionalProperties"])
         self.assertFalse(schema["properties"]["sources"]["items"]["additionalProperties"])
+
+    def test_schema_version_is_1_1_0_with_zone_note(self):
+        """schema v1.1.0 引入 zone_note 字段；schema_version 必须同步到 1.1.0。
+
+        背景：6 份 hot_arid/highland 新配方（v1.1 分区配套）带 zone_note 字段，
+        但旧 schema v1.0.0 未声明导致 6 份校验失败（daily 巡检 2026-10-01 遗留未修）。
+        本测试锁死 schema_version 与 zone_note 的存在关系，防止回退。
+        """
+        schema = json.load(open(os.path.join(ROOT, "schemas", "env_recipe.schema.json"),
+                                encoding="utf-8"))
+        self.assertEqual(schema.get("schema_version"), "1.1.0")
+        # zone_note 是可选字段（不在 required 中）
+        self.assertNotIn("zone_note", schema.get("required", []))
+        self.assertEqual(schema["properties"]["zone_note"]["type"], "string")
+
+    def test_all_116_recipes_pass_full_schema_validation(self):
+        """全量 116 份配方必须通过完整 schema 校验（含 zone_note）。
+
+        daily 巡检 2026-10-01 遗留 6 份 zone_note 未通过 schema 校验（schema 110/116）；
+        本测试锁死 schema 与配方的对齐，防止分区扩展时忘记同步 schema。
+        """
+        from scripts.validate_env_recipe import validate_recipe
+        schema = json.load(open(os.path.join(ROOT, "schemas", "env_recipe.schema.json"),
+                                encoding="utf-8"))
+        paths = sorted(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
+        self.assertEqual(len(paths), 116, "预期 116 份 Env Recipe")
+        for p in paths:
+            with open(p, encoding="utf-8") as f:
+                r = json.load(f)
+            errs = validate_recipe(r, schema)
+            self.assertFalse(errs, "%s schema 校验失败: %s" % (os.path.basename(p), errs[:2]))
 
     def test_every_recipe_has_per_source_license_and_scope(self):
         for rel, r in self._recipes():
