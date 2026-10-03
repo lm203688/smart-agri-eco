@@ -193,10 +193,6 @@ class TestNicheEnvelope(unittest.TestCase):
             self.assertTrue(0 <= c["adapt_score"] <= 1)
 
 
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
-
-
 class TestPrecipUnitsContract(unittest.TestCase):
     """降水口径契约（2026-09-23 核实并固化）。
 

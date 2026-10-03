@@ -1,6 +1,6 @@
 {
   "schema": "agri-knowledge-graph/v1",
-  "generated_at": "2026-09-16T06:59:56",
+  "generated_at": "2026-10-04T06:27:25",
   "sources": [
     "data\\crop_adapt_db.json",
     "data\\zone_meta\\global_zones.json"
@@ -16,7 +16,7 @@
       "type": "Crop",
       "latin": "Musa acuminata",
       "family": "芭蕉科",
-      "adapt_score": 0.95,
+      "adapt_score": 0.73,
       "growth_days": 365
     },
     {
@@ -32,7 +32,7 @@
       "type": "Crop",
       "latin": "Carica papaya",
       "family": "番木瓜科",
-      "adapt_score": 0.93,
+      "adapt_score": 0.45,
       "growth_days": 120
     },
     {
@@ -48,7 +48,7 @@
       "type": "Crop",
       "latin": "Zingiber officinale",
       "family": "姜科",
-      "adapt_score": 0.92,
+      "adapt_score": 0.37,
       "growth_days": 180
     },
     {
@@ -64,7 +64,7 @@
       "type": "Crop",
       "latin": "Colocasia esculenta",
       "family": "天南星科",
-      "adapt_score": 0.9,
+      "adapt_score": 0.67,
       "growth_days": 150
     },
     {
@@ -76,7 +76,7 @@
       "type": "Crop",
       "latin": "Capsicum annuum",
       "family": "茄科",
-      "adapt_score": 0.88,
+      "adapt_score": 0.52,
       "growth_days": 90
     },
     {
@@ -92,7 +92,7 @@
       "type": "Crop",
       "latin": "Ipomoea aquatica",
       "family": "旋花科",
-      "adapt_score": 0.95,
+      "adapt_score": 0.67,
       "growth_days": 30
     },
     {
@@ -108,7 +108,7 @@
       "type": "Crop",
       "latin": "Ipomoea batatas",
       "family": "旋花科",
-      "adapt_score": 0.94,
+      "adapt_score": 0.83,
       "growth_days": 45
     },
     {
@@ -124,7 +124,7 @@
       "type": "Crop",
       "latin": "Abelmoschus esculentus",
       "family": "锦葵科",
-      "adapt_score": 0.9,
+      "adapt_score": 0.17,
       "growth_days": 60
     },
     {
@@ -132,7 +132,7 @@
       "type": "Crop",
       "latin": "Cymbopogon citratus",
       "family": "禾本科",
-      "adapt_score": 0.96,
+      "adapt_score": 0.67,
       "growth_days": 90
     },
     {
@@ -144,7 +144,7 @@
       "type": "Crop",
       "latin": "Mangifera indica",
       "family": "漆树科",
-      "adapt_score": 0.85,
+      "adapt_score": 0.73,
       "growth_days": 1095
     },
     {
@@ -156,7 +156,7 @@
       "type": "Crop",
       "latin": "Passiflora edulis",
       "family": "西番莲科",
-      "adapt_score": 0.93,
+      "adapt_score": 0.63,
       "growth_days": 120
     },
     {
@@ -164,7 +164,7 @@
       "type": "Crop",
       "latin": "Zea mays",
       "family": "禾本科",
-      "adapt_score": 0.82,
+      "adapt_score": 0.3,
       "growth_days": 90
     },
     {
@@ -176,7 +176,7 @@
       "type": "Crop",
       "latin": "Manihot esculenta",
       "family": "Euphorbiaceae",
-      "adapt_score": 0.8,
+      "adapt_score": 0.63,
       "growth_days": 240
     },
     {
@@ -192,7 +192,7 @@
       "type": "Crop",
       "latin": "Ananas comosus",
       "family": "Bromeliaceae",
-      "adapt_score": 0.82,
+      "adapt_score": 0.87,
       "growth_days": 365
     },
     {
@@ -208,7 +208,7 @@
       "type": "Crop",
       "latin": "Selenicereus undatus",
       "family": "Cactaceae",
-      "adapt_score": 0.84,
+      "adapt_score": 0.35,
       "growth_days": 300
     },
     {
@@ -224,7 +224,7 @@
       "type": "Crop",
       "latin": "Theobroma cacao",
       "family": "Malvaceae",
-      "adapt_score": 0.7,
+      "adapt_score": 0.67,
       "growth_days": 365
     },
     {
@@ -236,7 +236,7 @@
       "type": "Crop",
       "latin": "Coffea arabica",
       "family": "Rubiaceae",
-      "adapt_score": 0.75,
+      "adapt_score": 0.65,
       "growth_days": 300
     },
     {
@@ -252,7 +252,7 @@
       "type": "Crop",
       "latin": "Cymbopogon flexuosus",
       "family": "Poaceae",
-      "adapt_score": 0.9,
+      "adapt_score": 0.03,
       "growth_days": 120
     },
     {
@@ -269,7 +269,7 @@
       "type": "Crop",
       "latin": "Lactuca sativa",
       "family": "菊科",
-      "adapt_score": 0.92,
+      "adapt_score": 1.0,
       "growth_days": 45
     },
     {
@@ -281,7 +281,7 @@
       "type": "Crop",
       "latin": "Solanum lycopersicum",
       "family": "茄科",
-      "adapt_score": 0.88,
+      "adapt_score": 0.5,
       "growth_days": 75
     },
     {
@@ -301,7 +301,7 @@
       "type": "Crop",
       "latin": "Cucumis sativus",
       "family": "葫芦科",
-      "adapt_score": 0.9,
+      "adapt_score": 0.72,
       "growth_days": 50
     },
     {
@@ -313,7 +313,7 @@
       "type": "Crop",
       "latin": "Vigna radiata",
       "family": "豆科",
-      "adapt_score": 0.94,
+      "adapt_score": 0.43,
       "growth_days": 45
     },
     {
@@ -325,7 +325,7 @@
       "type": "Crop",
       "latin": "Solanum melongena",
       "family": "茄科",
-      "adapt_score": 0.87,
+      "adapt_score": 0.55,
       "growth_days": 60
     },
     {
@@ -341,7 +341,7 @@
       "type": "Crop",
       "latin": "Raphanus sativus",
       "family": "十字花科",
-      "adapt_score": 0.93,
+      "adapt_score": 0.62,
       "growth_days": 35
     },
     {
@@ -353,7 +353,7 @@
       "type": "Crop",
       "latin": "Brassica rapa var. parachinensis",
       "family": "十字花科",
-      "adapt_score": 0.96,
+      "adapt_score": 0.62,
       "growth_days": 30
     },
     {
@@ -361,7 +361,7 @@
       "type": "Crop",
       "latin": "Coriandrum sativum",
       "family": "伞形科",
-      "adapt_score": 0.9,
+      "adapt_score": 0.38,
       "growth_days": 40
     },
     {
@@ -373,7 +373,7 @@
       "type": "Crop",
       "latin": "Allium sativum",
       "family": "百合科",
-      "adapt_score": 0.94,
+      "adapt_score": 0.1,
       "growth_days": 90
     },
     {
@@ -385,7 +385,7 @@
       "type": "Crop",
       "latin": "Perilla frutescens",
       "family": "唇形科",
-      "adapt_score": 0.95,
+      "adapt_score": 0.83,
       "growth_days": 35
     },
     {
@@ -393,7 +393,7 @@
       "type": "Crop",
       "latin": "Mentha haplocalyx",
       "family": "唇形科",
-      "adapt_score": 0.96,
+      "adapt_score": 0.75,
       "growth_days": 30
     },
     {
@@ -405,7 +405,7 @@
       "type": "Crop",
       "latin": "Fragaria × ananassa",
       "family": "蔷薇科",
-      "adapt_score": 0.88,
+      "adapt_score": 0.87,
       "growth_days": 90
     },
     {
@@ -413,7 +413,7 @@
       "type": "Crop",
       "latin": "Apium graveolens",
       "family": "Apiaceae",
-      "adapt_score": 0.82,
+      "adapt_score": 0.33,
       "growth_days": 90
     },
     {
@@ -429,7 +429,7 @@
       "type": "Crop",
       "latin": "Chrysanthemum coronarium",
       "family": "Asteraceae",
-      "adapt_score": 0.9,
+      "adapt_score": 0.25,
       "growth_days": 40
     },
     {
@@ -437,7 +437,7 @@
       "type": "Crop",
       "latin": "Momordica charantia",
       "family": "Cucurbitaceae",
-      "adapt_score": 0.83,
+      "adapt_score": 0.48,
       "growth_days": 80
     },
     {
@@ -449,7 +449,7 @@
       "type": "Crop",
       "latin": "Luffa aegyptiaca",
       "family": "Cucurbitaceae",
-      "adapt_score": 0.84,
+      "adapt_score": 0.47,
       "growth_days": 70
     },
     {
@@ -461,7 +461,7 @@
       "type": "Crop",
       "latin": "Benincasa hispida",
       "family": "Cucurbitaceae",
-      "adapt_score": 0.83,
+      "adapt_score": 0.9,
       "growth_days": 100
     },
     {
@@ -469,7 +469,7 @@
       "type": "Crop",
       "latin": "Cucurbita moschata",
       "family": "Cucurbitaceae",
-      "adapt_score": 0.85,
+      "adapt_score": 0.37,
       "growth_days": 100
     },
     {
@@ -490,7 +490,7 @@
       "type": "Crop",
       "latin": "Solanum tuberosum",
       "family": "茄科",
-      "adapt_score": 0.96,
+      "adapt_score": 0.58,
       "growth_days": 90
     },
     {
@@ -510,7 +510,7 @@
       "type": "Crop",
       "latin": "Brassica rapa",
       "family": "十字花科",
-      "adapt_score": 0.94,
+      "adapt_score": 0.43,
       "growth_days": 50
     },
     {
@@ -522,7 +522,7 @@
       "type": "Crop",
       "latin": "Daucus carota",
       "family": "伞形科",
-      "adapt_score": 0.92,
+      "adapt_score": 0.22,
       "growth_days": 70
     },
     {
@@ -534,7 +534,7 @@
       "type": "Crop",
       "latin": "Allium cepa",
       "family": "百合科",
-      "adapt_score": 0.9,
+      "adapt_score": 0.82,
       "growth_days": 90
     },
     {
@@ -550,7 +550,7 @@
       "type": "Crop",
       "latin": "Allium tuberosum",
       "family": "百合科",
-      "adapt_score": 0.97,
+      "adapt_score": 0.58,
       "growth_days": 30
     },
     {
@@ -562,7 +562,7 @@
       "type": "Crop",
       "latin": "Allium fistulosum",
       "family": "百合科",
-      "adapt_score": 0.96,
+      "adapt_score": 0.82,
       "growth_days": 25
     },
     {
@@ -570,7 +570,7 @@
       "type": "Crop",
       "latin": "Spinacia oleracea",
       "family": "苋科",
-      "adapt_score": 0.93,
+      "adapt_score": 0.4,
       "growth_days": 30
     },
     {
@@ -590,7 +590,7 @@
       "type": "Crop",
       "latin": "Triticum aestivum",
       "family": "Poaceae",
-      "adapt_score": 0.88,
+      "adapt_score": 0.45,
       "growth_days": 230
     },
     {
@@ -602,7 +602,7 @@
       "type": "Crop",
       "latin": "Glycine max",
       "family": "Fabaceae",
-      "adapt_score": 0.84,
+      "adapt_score": 0.87,
       "growth_days": 110
     },
     {
@@ -618,7 +618,7 @@
       "type": "Crop",
       "latin": "Helianthus annuus",
       "family": "Asteraceae",
-      "adapt_score": 0.85,
+      "adapt_score": 0.7,
       "growth_days": 100
     },
     {
@@ -634,7 +634,7 @@
       "type": "Crop",
       "latin": "Allium fistulosum",
       "family": "Amaryllidaceae",
-      "adapt_score": 0.9,
+      "adapt_score": 0.82,
       "growth_days": 120
     },
     {
@@ -659,7 +659,7 @@
       "type": "Crop",
       "latin": "Rosmarinus officinalis",
       "family": "唇形科",
-      "adapt_score": 0.97,
+      "adapt_score": 0.2,
       "growth_days": 60
     },
     {
@@ -671,7 +671,7 @@
       "type": "Crop",
       "latin": "Thymus vulgaris",
       "family": "唇形科",
-      "adapt_score": 0.96,
+      "adapt_score": 0.7,
       "growth_days": 45
     },
     {
@@ -679,7 +679,7 @@
       "type": "Crop",
       "latin": "Ocimum basilicum",
       "family": "唇形科",
-      "adapt_score": 0.94,
+      "adapt_score": 0.97,
       "growth_days": 30
     },
     {
@@ -699,7 +699,7 @@
       "type": "Crop",
       "latin": "Pisum sativum",
       "family": "豆科",
-      "adapt_score": 0.9,
+      "adapt_score": 1.0,
       "growth_days": 15
     },
     {
@@ -719,7 +719,7 @@
       "type": "Crop",
       "latin": "Olea europaea",
       "family": "木犀科",
-      "adapt_score": 0.96,
+      "adapt_score": 0.85,
       "growth_days": 1825
     },
     {
@@ -731,7 +731,7 @@
       "type": "Crop",
       "latin": "Vitis vinifera",
       "family": "葡萄科",
-      "adapt_score": 0.94,
+      "adapt_score": 0.63,
       "growth_days": 180
     },
     {
@@ -739,7 +739,7 @@
       "type": "Crop",
       "latin": "Ficus carica",
       "family": "Moraceae",
-      "adapt_score": 0.85,
+      "adapt_score": 0.92,
       "growth_days": 180
     },
     {
@@ -747,7 +747,7 @@
       "type": "Crop",
       "latin": "Cynara cardunculus",
       "family": "Asteraceae",
-      "adapt_score": 0.8,
+      "adapt_score": 0.75,
       "growth_days": 150
     },
     {
@@ -755,7 +755,7 @@
       "type": "Crop",
       "latin": "Eruca vesicaria",
       "family": "Brassicaceae",
-      "adapt_score": 0.92,
+      "adapt_score": 1.0,
       "growth_days": 35
     },
     {
@@ -763,7 +763,7 @@
       "type": "Crop",
       "latin": "Pistacia vera",
       "family": "Anacardiaceae",
-      "adapt_score": 0.78,
+      "adapt_score": 0.35,
       "growth_days": 365
     },
     {
@@ -779,7 +779,7 @@
       "type": "Crop",
       "latin": "Cyperus esculentus",
       "family": "Cyperaceae",
-      "adapt_score": 0.8,
+      "adapt_score": 0.47,
       "growth_days": 180
     },
     {
@@ -792,7 +792,7 @@
       "type": "Crop",
       "latin": "Aloe vera",
       "family": "阿福花科",
-      "adapt_score": 0.96,
+      "adapt_score": 0.57,
       "growth_days": 180
     },
     {
@@ -804,7 +804,7 @@
       "type": "Crop",
       "latin": "Opuntia ficus-indica",
       "family": "仙人掌科",
-      "adapt_score": 0.97,
+      "adapt_score": 0.65,
       "growth_days": 365
     },
     {
@@ -816,7 +816,7 @@
       "type": "Crop",
       "latin": "Origanum vulgare",
       "family": "唇形科",
-      "adapt_score": 0.93,
+      "adapt_score": 0.42,
       "growth_days": 45
     },
     {
@@ -824,7 +824,7 @@
       "type": "Crop",
       "latin": "Salvia officinalis",
       "family": "唇形科",
-      "adapt_score": 0.92,
+      "adapt_score": 0.25,
       "growth_days": 45
     },
     {
@@ -836,7 +836,7 @@
       "type": "Crop",
       "latin": "Rosmarinus officinalis",
       "family": "唇形科",
-      "adapt_score": 0.95,
+      "adapt_score": 0.22,
       "growth_days": 60
     },
     {
@@ -844,7 +844,7 @@
       "type": "Crop",
       "latin": "Ipomoea batatas",
       "family": "旋花科",
-      "adapt_score": 0.88,
+      "adapt_score": 0.13,
       "growth_days": 90
     },
     {
@@ -856,7 +856,7 @@
       "type": "Crop",
       "latin": "Vigna radiata",
       "family": "豆科",
-      "adapt_score": 0.85,
+      "adapt_score": 0.52,
       "growth_days": 60
     },
     {
@@ -868,7 +868,7 @@
       "type": "Crop",
       "latin": "Arachis hypogaea",
       "family": "豆科",
-      "adapt_score": 0.87,
+      "adapt_score": 0.38,
       "growth_days": 100
     },
     {
@@ -876,7 +876,7 @@
       "type": "Crop",
       "latin": "Opuntia ficus-indica",
       "family": "仙人掌科",
-      "adapt_score": 0.94,
+      "adapt_score": 0.65,
       "growth_days": 1095
     },
     {
@@ -884,7 +884,7 @@
       "type": "Crop",
       "latin": "Adenium obesum",
       "family": "夹竹桃科",
-      "adapt_score": 0.91,
+      "adapt_score": 0.0,
       "growth_days": 180
     },
     {
@@ -896,7 +896,7 @@
       "type": "Crop",
       "latin": "Cicer arietinum",
       "family": "豆科",
-      "adapt_score": 0.84,
+      "adapt_score": 0.6,
       "growth_days": 90
     },
     {
@@ -908,7 +908,7 @@
       "type": "Crop",
       "latin": "Hippophae rhamnoides",
       "family": "胡颓子科",
-      "adapt_score": 0.89,
+      "adapt_score": 0.3,
       "growth_days": 730
     },
     {
@@ -920,7 +920,7 @@
       "type": "Crop",
       "latin": "Gossypium hirsutum",
       "family": "Malvaceae",
-      "adapt_score": 0.82,
+      "adapt_score": 0.43,
       "growth_days": 150
     },
     {
@@ -932,7 +932,7 @@
       "type": "Crop",
       "latin": "Sorghum bicolor",
       "family": "Poaceae",
-      "adapt_score": 0.85,
+      "adapt_score": 0.3,
       "growth_days": 120
     },
     {
@@ -944,7 +944,7 @@
       "type": "Crop",
       "latin": "Setaria italica",
       "family": "Poaceae",
-      "adapt_score": 0.86,
+      "adapt_score": 0.25,
       "growth_days": 110
     },
     {
@@ -960,7 +960,7 @@
       "type": "Crop",
       "latin": "Medicago sativa",
       "family": "Fabaceae",
-      "adapt_score": 0.84,
+      "adapt_score": 0.4,
       "growth_days": 120
     },
     {
@@ -968,7 +968,7 @@
       "type": "Crop",
       "latin": "Allium mongolicum",
       "family": "Alliaceae",
-      "adapt_score": 0.88,
+      "adapt_score": 0.07,
       "growth_days": 90
     },
     {
@@ -976,7 +976,7 @@
       "type": "Crop",
       "latin": "Cyamopsis tetragonoloba",
       "family": "Fabaceae",
-      "adapt_score": 0.8,
+      "adapt_score": 0.43,
       "growth_days": 120
     },
     {
@@ -989,7 +989,7 @@
       "type": "Crop",
       "latin": "Lactuca sativa var. capitata",
       "family": "菊科",
-      "adapt_score": 0.88,
+      "adapt_score": 0.62,
       "growth_days": 30
     },
     {
@@ -1033,7 +1033,7 @@
       "type": "Crop",
       "latin": "Pleurotus ostreatus",
       "family": "侧耳科",
-      "adapt_score": 0.93,
+      "adapt_score": 0.37,
       "growth_days": 20
     },
     {
@@ -1045,7 +1045,7 @@
       "type": "Crop",
       "latin": "Auricularia auricula-judae",
       "family": "木耳科",
-      "adapt_score": 0.91,
+      "adapt_score": 0.43,
       "growth_days": 60
     },
     {
@@ -1057,7 +1057,7 @@
       "type": "Crop",
       "latin": "Anethum graveolens",
       "family": "伞形科",
-      "adapt_score": 0.88,
+      "adapt_score": 0.55,
       "growth_days": 30
     },
     {
@@ -1065,7 +1065,7 @@
       "type": "Crop",
       "latin": "Mentha haplocalyx",
       "family": "唇形科",
-      "adapt_score": 0.92,
+      "adapt_score": 0.68,
       "growth_days": 25
     },
     {
@@ -1085,7 +1085,7 @@
       "type": "Crop",
       "latin": "Secale cereale",
       "family": "Poaceae",
-      "adapt_score": 0.86,
+      "adapt_score": 0.52,
       "growth_days": 240
     },
     {
@@ -1097,7 +1097,7 @@
       "type": "Crop",
       "latin": "Hordeum vulgare",
       "family": "Poaceae",
-      "adapt_score": 0.85,
+      "adapt_score": 0.65,
       "growth_days": 110
     },
     {
@@ -1109,7 +1109,7 @@
       "type": "Crop",
       "latin": "Avena sativa",
       "family": "Poaceae",
-      "adapt_score": 0.84,
+      "adapt_score": 0.45,
       "growth_days": 100
     },
     {
@@ -1121,7 +1121,7 @@
       "type": "Crop",
       "latin": "Beta vulgaris",
       "family": "Amaranthaceae",
-      "adapt_score": 0.83,
+      "adapt_score": 0.5,
       "growth_days": 90
     },
     {
@@ -1137,7 +1137,7 @@
       "type": "Crop",
       "latin": "Vaccinium macrocarpon",
       "family": "Ericaceae",
-      "adapt_score": 0.78,
+      "adapt_score": 0.15,
       "growth_days": 150
     },
     {
@@ -1153,7 +1153,7 @@
       "type": "Crop",
       "latin": "Vaccinium corymbosum",
       "family": "Ericaceae",
-      "adapt_score": 0.8,
+      "adapt_score": 0.1,
       "growth_days": 180
     },
     {
@@ -1163,6 +1163,20 @@
     {
       "id": "PestDisease:果蝇",
       "type": "PestDisease"
+    },
+    {
+      "id": "Zone:hot_arid",
+      "type": "Zone",
+      "zone_name": "热漠带",
+      "frost_risk": false,
+      "growing_season_days": "视灌溉条件（滴灌可到 200 天）"
+    },
+    {
+      "id": "Zone:highland",
+      "type": "Zone",
+      "zone_name": "高原带",
+      "frost_risk": true,
+      "growing_season_days": 200
     }
   ],
   "edges": [
@@ -1170,7 +1184,7 @@
       "src": "Crop:香蕉",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.95,
+      "weight": 0.73,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1198,7 +1212,7 @@
       "src": "Crop:木瓜",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.93,
+      "weight": 0.45,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1226,7 +1240,7 @@
       "src": "Crop:生姜",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.92,
+      "weight": 0.37,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1254,7 +1268,7 @@
       "src": "Crop:芋头",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.9,
+      "weight": 0.67,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1282,7 +1296,7 @@
       "src": "Crop:辣椒",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.88,
+      "weight": 0.52,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1319,7 +1333,7 @@
       "src": "Crop:空心菜",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.95,
+      "weight": 0.67,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1347,7 +1361,7 @@
       "src": "Crop:红薯叶",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.94,
+      "weight": 0.83,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1375,7 +1389,7 @@
       "src": "Crop:秋葵",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.9,
+      "weight": 0.17,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1403,7 +1417,7 @@
       "src": "Crop:香草（柠檬草）",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.96,
+      "weight": 0.67,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1422,7 +1436,7 @@
       "src": "Crop:芒果",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.85,
+      "weight": 0.73,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1450,7 +1464,7 @@
       "src": "Crop:百香果",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.93,
+      "weight": 0.63,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1478,7 +1492,7 @@
       "src": "Crop:玉米",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.82,
+      "weight": 0.3,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1506,7 +1520,7 @@
       "src": "Crop:木薯",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.8,
+      "weight": 0.63,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1534,7 +1548,7 @@
       "src": "Crop:菠萝",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.82,
+      "weight": 0.87,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1562,7 +1576,7 @@
       "src": "Crop:火龙果",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.84,
+      "weight": 0.35,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1590,7 +1604,7 @@
       "src": "Crop:可可",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.7,
+      "weight": 0.67,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1618,7 +1632,7 @@
       "src": "Crop:咖啡",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.75,
+      "weight": 0.65,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1646,7 +1660,7 @@
       "src": "Crop:香茅",
       "rel": "grows_in",
       "dst": "Zone:tropical_rainforest",
-      "weight": 0.9,
+      "weight": 0.03,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "tropical_rainforest"
@@ -1665,7 +1679,7 @@
       "src": "Crop:生菜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.92,
+      "weight": 1.0,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1693,7 +1707,7 @@
       "src": "Crop:番茄",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.88,
+      "weight": 0.5,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1730,7 +1744,7 @@
       "src": "Crop:黄瓜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.9,
+      "weight": 0.72,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1758,7 +1772,7 @@
       "src": "Crop:豆角",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.94,
+      "weight": 0.43,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1786,7 +1800,7 @@
       "src": "Crop:茄子",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.87,
+      "weight": 0.55,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1814,7 +1828,7 @@
       "src": "Crop:辣椒",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.95,
+      "weight": 0.55,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1842,7 +1856,7 @@
       "src": "Crop:萝卜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.93,
+      "weight": 0.62,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1870,7 +1884,7 @@
       "src": "Crop:小白菜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.96,
+      "weight": 0.62,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1898,7 +1912,7 @@
       "src": "Crop:香菜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.9,
+      "weight": 0.38,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1926,7 +1940,7 @@
       "src": "Crop:大蒜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.94,
+      "weight": 0.1,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1954,7 +1968,7 @@
       "src": "Crop:紫苏",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.95,
+      "weight": 0.83,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1973,7 +1987,7 @@
       "src": "Crop:薄荷",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.96,
+      "weight": 0.75,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -1992,7 +2006,7 @@
       "src": "Crop:草莓",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.88,
+      "weight": 0.87,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -2020,7 +2034,7 @@
       "src": "Crop:芹菜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.82,
+      "weight": 0.33,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -2048,7 +2062,7 @@
       "src": "Crop:茼蒿",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.9,
+      "weight": 0.25,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -2067,7 +2081,7 @@
       "src": "Crop:苦瓜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.83,
+      "weight": 0.48,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -2095,7 +2109,7 @@
       "src": "Crop:丝瓜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.84,
+      "weight": 0.47,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -2114,7 +2128,7 @@
       "src": "Crop:冬瓜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.83,
+      "weight": 0.9,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -2142,7 +2156,7 @@
       "src": "Crop:南瓜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.85,
+      "weight": 0.37,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -2170,7 +2184,7 @@
       "src": "Crop:生菜",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.94,
+      "weight": 0.45,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2189,7 +2203,7 @@
       "src": "Crop:番茄",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.9,
+      "weight": 0.48,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2217,7 +2231,7 @@
       "src": "Crop:黄瓜",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.88,
+      "weight": 0.62,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2245,7 +2259,7 @@
       "src": "Crop:土豆",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.96,
+      "weight": 0.58,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2273,7 +2287,7 @@
       "src": "Crop:萝卜",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.95,
+      "weight": 0.42,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2301,7 +2315,7 @@
       "src": "Crop:白菜",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.94,
+      "weight": 0.43,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2329,7 +2343,7 @@
       "src": "Crop:胡萝卜",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.92,
+      "weight": 0.22,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2357,7 +2371,7 @@
       "src": "Crop:洋葱",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.9,
+      "weight": 0.82,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2385,7 +2399,7 @@
       "src": "Crop:韭菜",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.97,
+      "weight": 0.58,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2413,7 +2427,7 @@
       "src": "Crop:葱",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.96,
+      "weight": 0.82,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2432,7 +2446,7 @@
       "src": "Crop:菠菜",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.93,
+      "weight": 0.4,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2460,7 +2474,7 @@
       "src": "Crop:茄子",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.85,
+      "weight": 0.23,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2488,7 +2502,7 @@
       "src": "Crop:薄荷",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.95,
+      "weight": 0.77,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2507,7 +2521,7 @@
       "src": "Crop:玉米",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.9,
+      "weight": 0.33,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2535,7 +2549,7 @@
       "src": "Crop:小麦",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.88,
+      "weight": 0.45,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2563,7 +2577,7 @@
       "src": "Crop:大豆",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.84,
+      "weight": 0.87,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2591,7 +2605,7 @@
       "src": "Crop:向日葵",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.85,
+      "weight": 0.7,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2619,7 +2633,7 @@
       "src": "Crop:大葱",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.9,
+      "weight": 0.82,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2647,7 +2661,7 @@
       "src": "Crop:大蒜",
       "rel": "grows_in",
       "dst": "Zone:temperate_continental",
-      "weight": 0.9,
+      "weight": 0.42,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "temperate_continental"
@@ -2675,7 +2689,7 @@
       "src": "Crop:番茄",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.93,
+      "weight": 0.9,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2703,7 +2717,7 @@
       "src": "Crop:香草（迷迭香）",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.97,
+      "weight": 0.2,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2722,7 +2736,7 @@
       "src": "Crop:香草（百里香）",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.96,
+      "weight": 0.7,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2741,7 +2755,7 @@
       "src": "Crop:香草（罗勒）",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.94,
+      "weight": 0.97,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2769,7 +2783,7 @@
       "src": "Crop:黄瓜",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.86,
+      "weight": 0.67,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2797,7 +2811,7 @@
       "src": "Crop:茄子",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.92,
+      "weight": 0.38,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2816,7 +2830,7 @@
       "src": "Crop:辣椒",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.95,
+      "weight": 0.58,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2844,7 +2858,7 @@
       "src": "Crop:生菜",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.88,
+      "weight": 0.73,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2872,7 +2886,7 @@
       "src": "Crop:豌豆苗",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.9,
+      "weight": 1.0,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2891,7 +2905,7 @@
       "src": "Crop:大蒜",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.94,
+      "weight": 0.2,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2910,7 +2924,7 @@
       "src": "Crop:胡萝卜",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.9,
+      "weight": 0.5,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2929,7 +2943,7 @@
       "src": "Crop:橄榄",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.96,
+      "weight": 0.85,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2948,7 +2962,7 @@
       "src": "Crop:葡萄",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.94,
+      "weight": 0.63,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -2976,7 +2990,7 @@
       "src": "Crop:无花果",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.85,
+      "weight": 0.92,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -3004,7 +3018,7 @@
       "src": "Crop:朝鲜蓟",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.8,
+      "weight": 0.75,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -3032,7 +3046,7 @@
       "src": "Crop:芝麻菜",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.92,
+      "weight": 1.0,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -3060,7 +3074,7 @@
       "src": "Crop:开心果",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.78,
+      "weight": 0.35,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -3088,7 +3102,7 @@
       "src": "Crop:油莎豆",
       "rel": "grows_in",
       "dst": "Zone:mediterranean",
-      "weight": 0.8,
+      "weight": 0.47,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "mediterranean"
@@ -3107,7 +3121,7 @@
       "src": "Crop:芦荟",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.96,
+      "weight": 0.57,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3135,7 +3149,7 @@
       "src": "Crop:仙人掌",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.97,
+      "weight": 0.65,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3163,7 +3177,7 @@
       "src": "Crop:耐旱香草（牛至）",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.93,
+      "weight": 0.42,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3182,7 +3196,7 @@
       "src": "Crop:耐旱香草（鼠尾草）",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.92,
+      "weight": 0.25,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3201,7 +3215,7 @@
       "src": "Crop:耐旱香草（迷迭香）",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.95,
+      "weight": 0.22,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3220,7 +3234,7 @@
       "src": "Crop:红薯",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.88,
+      "weight": 0.13,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3248,7 +3262,7 @@
       "src": "Crop:绿豆",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.85,
+      "weight": 0.52,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3276,7 +3290,7 @@
       "src": "Crop:花生",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.87,
+      "weight": 0.38,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3304,7 +3318,7 @@
       "src": "Crop:仙人掌果",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.94,
+      "weight": 0.65,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3323,7 +3337,7 @@
       "src": "Crop:沙漠玫瑰",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.91,
+      "weight": 0.0,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3351,7 +3365,7 @@
       "src": "Crop:鹰嘴豆",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.84,
+      "weight": 0.6,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3379,7 +3393,7 @@
       "src": "Crop:沙棘",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.89,
+      "weight": 0.3,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3398,7 +3412,7 @@
       "src": "Crop:棉花",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.82,
+      "weight": 0.43,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3426,7 +3440,7 @@
       "src": "Crop:高粱",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.85,
+      "weight": 0.3,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3454,7 +3468,7 @@
       "src": "Crop:谷子",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.86,
+      "weight": 0.25,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3482,7 +3496,7 @@
       "src": "Crop:苜蓿",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.84,
+      "weight": 0.4,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3510,7 +3524,7 @@
       "src": "Crop:沙葱",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.88,
+      "weight": 0.07,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3529,7 +3543,7 @@
       "src": "Crop:瓜尔豆",
       "rel": "grows_in",
       "dst": "Zone:arid",
-      "weight": 0.8,
+      "weight": 0.43,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "arid"
@@ -3548,7 +3562,7 @@
       "src": "Crop:速生菜",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.88,
+      "weight": 0.62,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3595,7 +3609,7 @@
       "src": "Crop:菠菜",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.92,
+      "weight": 0.2,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3614,7 +3628,7 @@
       "src": "Crop:韭菜",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.94,
+      "weight": 0.38,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3633,7 +3647,7 @@
       "src": "Crop:葱",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.95,
+      "weight": 0.37,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3652,7 +3666,7 @@
       "src": "Crop:豌豆苗",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.92,
+      "weight": 0.37,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3690,7 +3704,7 @@
       "src": "Crop:菌菇类（平菇）",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.93,
+      "weight": 0.37,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3709,7 +3723,7 @@
       "src": "Crop:菌菇类（木耳）",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.91,
+      "weight": 0.43,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3728,7 +3742,7 @@
       "src": "Crop:耐寒香草（莳萝）",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.88,
+      "weight": 0.55,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3747,7 +3761,7 @@
       "src": "Crop:耐寒香草（薄荷）",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.92,
+      "weight": 0.68,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3785,7 +3799,7 @@
       "src": "Crop:黑麦",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.86,
+      "weight": 0.52,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3813,7 +3827,7 @@
       "src": "Crop:大麦",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.85,
+      "weight": 0.65,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3841,7 +3855,7 @@
       "src": "Crop:燕麦",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.84,
+      "weight": 0.45,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3869,7 +3883,7 @@
       "src": "Crop:甜菜",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.83,
+      "weight": 0.5,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3897,7 +3911,7 @@
       "src": "Crop:蔓越莓",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.78,
+      "weight": 0.15,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -3925,7 +3939,7 @@
       "src": "Crop:蓝莓",
       "rel": "grows_in",
       "dst": "Zone:subarctic",
-      "weight": 0.8,
+      "weight": 0.1,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subarctic"
@@ -4132,21 +4146,101 @@
       "evidence": {
         "source": "zone_meta/global_zones.json"
       }
+    },
+    {
+      "src": "Zone:hot_arid",
+      "rel": "koppen_of",
+      "dst": "Koppen:BWh",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
+    },
+    {
+      "src": "Zone:hot_arid",
+      "rel": "constrains",
+      "dst": "Constraint:极端高温",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
+    },
+    {
+      "src": "Zone:hot_arid",
+      "rel": "constrains",
+      "dst": "Constraint:极低降水",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
+    },
+    {
+      "src": "Zone:hot_arid",
+      "rel": "constrains",
+      "dst": "Constraint:强光高辐射",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
+    },
+    {
+      "src": "Zone:hot_arid",
+      "rel": "constrains",
+      "dst": "Constraint:昼夜温差巨大",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
+    },
+    {
+      "src": "Zone:highland",
+      "rel": "koppen_of",
+      "dst": "Koppen:H",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
+    },
+    {
+      "src": "Zone:highland",
+      "rel": "constrains",
+      "dst": "Constraint:强紫外线",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
+    },
+    {
+      "src": "Zone:highland",
+      "rel": "constrains",
+      "dst": "Constraint:昼夜温差大",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
+    },
+    {
+      "src": "Zone:highland",
+      "rel": "constrains",
+      "dst": "Constraint:低温生长期短",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
+    },
+    {
+      "src": "Zone:highland",
+      "rel": "constrains",
+      "dst": "Constraint:霜冻风险",
+      "evidence": {
+        "source": "zone_meta/global_zones.json"
+      }
     }
   ],
   "stats": {
-    "nodes": 198,
-    "edges": 320,
+    "nodes": 200,
+    "edges": 330,
     "nodes_by_type": {
-      "Zone": 6,
+      "Zone": 8,
       "Crop": 90,
       "PestDisease": 102
     },
     "edges_by_rel": {
       "grows_in": 110,
       "sensitive_to": 187,
-      "koppen_of": 6,
-      "constrains": 17
+      "koppen_of": 8,
+      "constrains": 25
     },
     "zones": 6,
     "crops": 90,
