@@ -81,8 +81,8 @@
 | 数据扩展脚本 | `scripts/enrich_crop_data.py` | 每气候带补充适生作物至 ≥18 种 |
 | 端到端验证 | `scripts/verify_all.py` | 多城市 pipeline + Trust 证书 PASS/FAIL |
 | Skill 自动生成 | `engine/skill_factory.py` | 新作物/能力点 → 自动生成符合 Schema 的 Skill |
-| 单元测试 | `scripts/test_agents.py` | **42 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + **作物库数据完整性守卫** |
-| MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **9 个** agri 工具（分区/推荐/计划/诊断/养分/Env Recipe/物候播期/土壤剖面）；注册与投递见 `mcp/README.md` |
+| 单元测试 | `scripts/test_agents.py` | **56 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + **作物库数据完整性守卫** |
+| MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **14 个** agri 工具（分区匹配/作物推荐/种植计划/病虫害诊断/养分管理/Env Recipe 配方/物候播期/土壤剖面/BP 投资初筛/多源气候调和/地理编码→配方/数据血缘查询/预设城市/生态对接清单）；注册与投递见 `mcp/README.md` |
 | Env Recipe 协议 | `schemas/env_recipe.schema.json` + `docs/env_recipe_protocol_v1.md` | 配置协议 v1：作物×阶段×箱体 → 可执行环境参数；day-1 留位 `execution_log`/`outcome`/`image_consent` 独占数据字段；校验 `scripts/validate_env_recipe.py` |
 | AI 评测基线 | `engine/eval.py` + `scripts/run_eval.py` | P0-H：分区分类一致率（真实基线）+ 4 个脚手架项（绝不谎报）；评测集 `data/eval/zone_checks.json` |
 | 预览残留清理 | `scripts/clean_preview_artifacts.py` | 清除预览工具注入 HTML 的 `data-page-node-id` 属性（曾一次性注入 115 处） |
@@ -130,8 +130,8 @@ for f in skills/registry/*.json; do python -c "import json; s=json.load(open('$f
 
 | 提升项 | 交付物 | 验证 |
 |---|---|---|
-| P0-G Env Recipe v1 协议 | `schemas/env_recipe.schema.json` + `docs/env_recipe_protocol_v1.md` + `data/examples/sample_env_recipe.json` | `python scripts/validate_env_recipe.py data/examples/sample_env_recipe.json` |
-| P0-E/F 零依赖 MCP server | `mcp/server.py`（10 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
+| P0-G Env Recipe v1 协议 | `schemas/env_recipe.schema.json`（schema v1.1.0）+ `docs/env_recipe_protocol_v1.md` + `data/examples/sample_env_recipe.json` | `python scripts/validate_env_recipe.py data/env_recipes` |
+| P0-E/F 零依赖 MCP server | `mcp/server.py`（14 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
 | P0-H 评测基线 | `engine/eval.py` + `scripts/run_eval.py` + `data/eval/zone_checks.json` | `python scripts/run_eval.py` |
 
 **决策门**（评审 §3.5）：P0-F/G 若 3 个月内零外部调用 / 零社区响应 → 降级为个人知识库项目，停止对外投入。
@@ -270,7 +270,7 @@ python scripts/submit_feedback.py --zone subtropical_wet --crop 生菜 \
 
 执行内容（全部只读，禁改代码 / 禁 git / 禁推送）：
 
-1. **回归七项（477 项单测 + MCP 自测）**：`test_engine_v4.py`（135 项）、`test_engine_v3.py`（43 项）、`test_engine_v2.py`（59 项）、`test_agents.py`（45 项）、`test_engine_v5.py`（77 项，BP 初筛引擎）、`test_mcp_server.py`（10 工具）、`verify_all.py`（5 城 PLACEHOLDER=0）、`diff_daily_loop.py --selftest`
+1. **回归八项（499 项单测 + MCP 自测）**：`test_engine_v4.py`（137 项）、`test_engine_v3.py`（43 项）、`test_engine_v2.py`（59 项）、`test_agents.py`（56 项）、`test_engine_v5.py`（90 项，BP 初筛引擎）、`test_climate_data.py`（19 项）、`test_climate_reconcile.py`（14 项）、`test_data_lineage.py`（25 项）、`test_geo_recipe.py`（7 项）、`test_audit_analyzer.py`（16 项）、`test_mcp_server.py`（14 工具）、`verify_all.py`（5 城 PLACEHOLDER=0）、`diff_daily_loop.py --selftest`
 2. **数据源存活探测**：GAEZ / WorldClim / SoilGrids(`rest.isric.org`) / PlantVillage / EPPO / GitHub 等 7 个外部源 —— 防止引用死数据源（Ecocrop / OpenFarm / @pondlog 三次教训）
 3. **回流通路健康检查**：跑 `check_feedback_loop.py`，**区分「通路故障（≠0 报警）」与「数据量缺口（=0 条、不报警）」**（JSON 字段 `snapshot.feedback_path` = ok/broken）
 4. **状态快照 + 跨日 diff**：feedback 条数 / recipes 数 / wofost 作物数；与昨日报告对比，零漂移即静默，漂移即暴露

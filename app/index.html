@@ -518,8 +518,8 @@
         <div class="grid2">
           <div class="form" style="max-width:340px">
             <h4>知识底座浏览</h4>
-            <div class="fs">110 作物 · 6 分区 · 23 病虫害 · 110 配方</div>
-            <div class="prov">⚠️ 数据性质：本库为 <b>AI 依据公开农艺通识 + 权威资料（GAEZ/WorldClim/USDA/FAO/IPNI/WOFOST）编撰的冷启动种子</b>，<b>非</b>经自动化管道从外部源实时抓取入库。适配分（adapt_score）现已对 <b>107/110 作物</b>用<b>生态位包络反推</b>实证校准：以 GBIF 真实物种分布点 + NASA POWER / Open-Meteo 真实气候反推气候适宜包络，对照 6 分区基线得出（<code>calibration_method=niche_envelope</code>），<b>非手编近似</b>；另有 <b>3/110</b>（樱桃萝卜/豆芽/微绿菜，属栽培品种或加工形态，GBIF 无物种分布点）仍 <code>calibrated:false</code>。注意：此校准为<b>「0 用户下唯一能实证」的气候生态位反推，仍不同于「真实种植结果回流校准」</b>——后者需用户反馈，数据飞轮目前 0 条记录。数值仅供方案生成参考，正式商用前须以权威源逐条核验。</div>
+            <div class="fs">110 作物 · 8 分区 · 23 病虫害 · 116 配方</div>
+            <div class="prov">⚠️ 数据性质：本库为 <b>AI 依据公开农艺通识 + 权威资料（GAEZ/WorldClim/USDA/FAO/IPNI/WOFOST）编撰的冷启动种子</b>，<b>非</b>经自动化管道从外部源实时抓取入库。适配分（adapt_score）现已对 <b>107/110 作物</b>用<b>生态位包络反推</b>实证校准：以 GBIF 真实物种分布点 + NASA POWER / Open-Meteo 真实气候反推气候适宜包络，对照 8 分区基线得出（<code>calibration_method=niche_envelope</code>），<b>非手编近似</b>；另有 <b>3/110</b>（樱桃萝卜/豆芽/微绿菜，属栽培品种或加工形态，GBIF 无物种分布点）仍 <code>calibrated:false</code>。注意：此校准为<b>「0 用户下唯一能实证」的气候生态位反推，仍不同于「真实种植结果回流校准」</b>——后者需用户反馈，数据飞轮目前 0 条记录。数值仅供方案生成参考，正式商用前须以权威源逐条核验。</div>
             <div class="subnav" id="fdNav">
               <button class="sbtn on" data-v="crops">作物库</button>
               <button class="sbtn" data-v="zones">分区库</button>
@@ -645,7 +645,7 @@
 现金及现金等价物期末余额3.2亿元，月均净支出800万元。
 单位经济模型为正，ue_margin 32%。客户集中度35%。</textarea>
             <button class="btn" id="btnBp">初筛 Screen</button>
-            <div class="hint"><b>完备性 + 风险初筛</b>：三档结论（通过 / 需深挖 / 淘汰）+ 六评分卡 + 五闸一票否决 + 11 区块报告。<br>
+            <div class="hint"><b>完备性 + 风险初筛</b>：三档结论（通过 / 需深挖 / 淘汰）+ 六评分卡 + <b>12 道闸</b>（7 财务预警 + 农户 ROI 3:1 + 5 DD deal-killer + 3 AgTech 合规，其中 verify 级仅触发人工核查不自动否决）+ 11 区块报告。<br>
             <b>不构成投资决策建议</b>——本地核验库是演示数据，仅做字段完备度与红旗检测。</div>
             <hr class="sep">
             <label>上传 BP 文件 Upload（PDF / Word / Excel / CSV / TXT）</label>
@@ -682,7 +682,7 @@
       <span class="idx">§ 03</span>
       <h3>可信与开放接口</h3>
       <span class="en">Trust &amp; Agent-Native API</span>
-      <p>每条建议都可追溯到具体数据源与决策链路，并随附可验证的可信证书；平台同时以 MCP 协议对外提供九个工具，供外部智能体直接调用。</p>
+      <p>每条建议都可追溯到具体数据源与决策链路，并随附可验证的可信证书；平台同时以 MCP 协议对外提供十四个工具，供外部智能体直接调用。</p>
     </div>
     <div id="o-trust"></div>
   </div>
@@ -1579,7 +1579,7 @@ function renderBpScreen(r){
   }
 
   const gates = r.gates_fired||[], vetoes = r.vetoes_fired||[];
-  h += '<div class="card '+(vetoes.length?"warn":"")+'"><h5>五闸 + 一票否决 Gates<span class="en">'+gates.length+' 触发 · '+vetoes.length+' 否决</span></h5>';
+  h += '<div class="card '+(vetoes.length?"warn":"")+'"><h5>门禁 Gates（12 道）<span class="en">'+gates.length+' 触发 · '+vetoes.length+' 否决</span></h5>';
   if(gates.length===0 && vetoes.length===0){
     h += '<div class="detail">所有门禁均未触发。</div>';
   } else {

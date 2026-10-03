@@ -959,5 +959,87 @@ class TestLLMGateway(unittest.TestCase):
                     os.environ[k] = v
 
 
+class TestDocCapabilityNumbersInSync(unittest.TestCase):
+    """对外文档的能力数字必须与代码实际一致（防漂移守卫）。
+
+    背景（2026-10-03 发现）：Round 2 扩张（分区 6→8、配方 110→116、MCP 13→14、
+    bp_screen 6→12 闸、单测 414→499）之后，README / mcp/README / app/index.html
+    仍写着 9-10 工具、6 分区、110 配方、五闸、477 项单测——**商业化文档数字失真**，
+    直接影响 MCP 分发可信度。手工改一次会再漂，所以用测试锁死。
+
+    判读口径：数字必须**从代码/数据实算**，不允许硬编码期望值之外的绕过。
+    """
+
+    def _read(self, rel):
+        with open(os.path.join(_ROOT, rel), encoding="utf-8") as f:
+            return f.read()
+
+    def test_mcp_tool_count_matches_docs(self):
+        """MCP 工具数：代码 TOOLS 长度 == README / mcp/README / 前端声明的数字。"""
+        import importlib
+        mcp_server = importlib.import_module("mcp.server")
+        n = len(mcp_server.TOOLS)
+        self.assertEqual(n, 14, "MCP 工具数变了，本测试的文档期望值需同步更新")
+
+        readme = self._read("README.md")
+        self.assertIn("**%d 个** agri 工具" % n, readme,
+                      "README.md 的 MCP 工具数与 mcp/server.py TOOLS 长度不符")
+        self.assertIn("`mcp/server.py`（%d 工具）" % n, readme,
+                      "README.md 交付物表的 MCP 工具数不符")
+
+        mcp_readme = self._read("mcp/README.md")
+        self.assertIn("- %d 个工具：" % n, mcp_readme,
+                      "mcp/README.md 投递模板的工具数不符")
+
+        html = self._read("app/index.html")
+        self.assertIn("提供十四个工具", html,
+                      "app/index.html 的 MCP 工具数中文表述不符")
+
+    def test_recipe_and_zone_count_matches_docs(self):
+        """配方数 / 分区数：数据实算 == 前端「知识底座浏览」声明。"""
+        import glob
+        recipes = [p for p in glob.glob(os.path.join(_ROOT, "data", "env_recipes", "*.json"))
+                   if not os.path.basename(p).startswith("_")]
+        self.assertEqual(len(recipes), 116, "配方数变了，前端数字需同步")
+
+        with open(os.path.join(_ROOT, "data", "zone_meta", "global_zones.json"),
+                  encoding="utf-8") as f:
+            zones = json.load(f)
+        self.assertEqual(len(zones["zones"]), 8, "分区数变了，前端数字需同步")
+
+        html = self._read("app/index.html")
+        self.assertIn("%d 作物 · %d 分区" % (110, len(zones["zones"])), html,
+                      "app/index.html 的分区数与 global_zones.json 不符")
+        self.assertIn("%d 配方" % len(recipes), html,
+                      "app/index.html 的配方数与 data/env_recipes/ 实际份数不符")
+
+    def test_bp_gate_count_matches_docs(self):
+        """bp_screen 闸数：rules.GATES 长度 == 前端「12 道闸」表述。"""
+        from bp_screen import rules
+        n = len(rules.GATES)
+        self.assertEqual(n, 12, "闸数变了（v2.2.0 = 7 财务 + 1 农户ROI + 5 DD + 3 AgTech）")
+        html = self._read("app/index.html")
+        self.assertIn("<b>%d 道闸</b>" % n, html,
+                      "app/index.html 的闸数与 bp_screen/rules.py GATES 长度不符")
+        self.assertIn("门禁 Gates（%d 道）" % n, html,
+                      "app/index.html 报告区的闸数标题不符")
+
+    def test_no_stale_capability_numbers_in_docs(self):
+        """反向守卫：这些过期数字不得再出现在对外文档里。
+
+        锁死 Round 2 之前的历史数字。任何一个回来 = 有人在按旧基线写文档。
+        """
+        stale = {
+            "README.md": ["**9 个** agri 工具", "（10 工具）", "477 项单测",
+                          "`test_agents.py`（45 项）"],
+            "mcp/README.md": ["- 10 个工具："],
+            "app/index.html": ["提供九个工具", "五闸 + 一票否决", "· 6 分区"],
+        }
+        for rel, needles in stale.items():
+            text = self._read(rel)
+            for n in needles:
+                self.assertNotIn(n, text, "%s 仍含过期能力数字 %r" % (rel, n))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
