@@ -21,6 +21,8 @@ on:
       - "schemas/**"
       - "scripts/**"
       - "tests/**"
+      - "plugin/**"
+      - ".well-known/**"
       - "Dockerfile"
       - "docker-compose.yml"
       - ".github/workflows/ci.yml"
@@ -127,6 +129,12 @@ jobs:
               json.load(open(p, encoding='utf-8'))
           print('all registry JSON valid')"
 
+      - name: A2A Agent Card 合法性（.well-known/agent.json）
+        run: python scripts/check_agent_card.py
+
+      - name: Agent Plugin 与注册表一致性（SKILL.md 不得手改漂移）
+        run: python scripts/build_agent_plugin.py --check
+
       - name: 数据自检（JSON 合法性 + 每带作物数）
         run: |
           python -c "import json
@@ -145,6 +153,12 @@ jobs:
 
       - name: 全量 Env Recipes 校验（data/env_recipes）
         run: python scripts/validate_env_recipe.py data/env_recipes
+
+      - name: 数据质量门禁（防漂移 / 防假数据）
+        run: python scripts/data_quality_gate.py
+
+      - name: 全量单测回归（发现 CI 未单独覆盖的模块）
+        run: python -m unittest discover scripts/
 
       - name: AI 评测基线（P0-H：分区一致率 + 脚手架项）
         run: python scripts/run_eval.py

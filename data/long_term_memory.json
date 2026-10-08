@@ -40,6 +40,28 @@
         "unverified"
       ],
       "source_ref": ""
+    },
+    {
+      "id": "mem-20261008080609-00003",
+      "ts": "2026-10-08T08:06:09",
+      "session_id": "",
+      "skill": "run_pipeline",
+      "kind": "plan",
+      "subject": {
+        "crop": "生菜",
+        "zone": "subtropical_wet",
+        "scene": "balcony"
+      },
+      "summary": "分区 subtropical_wet，推荐 生菜、冬瓜、草莓；信任分 0.92",
+      "outcome": "skipped",
+      "recipe_id": "",
+      "confidence": 0.92,
+      "tags": [
+        "skipped",
+        "subtropical_wet",
+        "生菜"
+      ],
+      "source_ref": ""
     }
   ],
   "hyperedges": []

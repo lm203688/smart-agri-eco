@@ -7,15 +7,18 @@ git clone，因此不能用 `git status` 判断待推改动。本项目所有提
 
 用法：
     python scripts/gh_push.py <token_file> <commit_message> <file1> [file2 ...]
+    python scripts/gh_push.py <token_file> <commit_message> --delete <path1> [path2 ...]
+    python scripts/gh_push.py <token_file> <commit_message> <file1> --delete <path1>
 
 参数说明：
     token_file    仅含一行 PAT 的临时文件（请勿用命令行参数直接传 token）
     commit_message 提交信息，支持多行
     files         相对仓库根的路径，可混合新文件与已存在文件
+    --delete      其后所有路径为「远端删除」项（在 tree entry 中记为 sha=null）
 
 行为：
-    - 单 commit、线性更新（force=false），远端其余文件保持不变
-    - 推送后回读远端 tree 校验每个文件的 blob sha 是否一致
+    - 单 commit、线性更新（force=false）
+    - 推送后回读远端 tree 校验：写入文件 sha 一致 且 删除文件确已不存在
     - 退出码 0 = 成功；非 0 = 失败（含 HTTP 错误详情）
 
 配套：推送前先跑 `python scripts/sync_check.py` 查看完整差异清单。
@@ -61,12 +64,25 @@ def call(token: str, repo: str, method: str, subpath: str, body=None) -> dict:
                          % (e.code, method, subpath, e.read().decode("utf-8")[:400]))
 
 
+def parse_args(argv: list) -> tuple:
+    """拆分普通文件与 --delete 删除项。"""
+    upserts, deletes, mode = [], [], "upsert"
+    for a in argv:
+        if a == "--delete":
+            mode = "delete"
+            continue
+        (deletes if mode == "delete" else upserts).append(a)
+    return upserts, deletes
+
+
 def main() -> int:
     if len(sys.argv) < 4:
         raise SystemExit(__doc__)
     token = open(sys.argv[1], encoding="utf-8").read().strip()
     message = sys.argv[2]
-    rels = sys.argv[3:]
+    rels, dels = parse_args(sys.argv[3:])
+    if not rels and not dels:
+        raise SystemExit("未指定任何待推送或待删除文件")
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     repo = os.environ.get("AGRI_GH_REPO", "lm203688/smart-agri-eco")
     branch = os.environ.get("AGRI_GH_BRANCH", "main")
@@ -76,7 +92,7 @@ def main() -> int:
     parent = call(token, repo, "GET", "git/commits/%s" % head_sha)
     base_tree = parent["tree"]["sha"]
     print("远端 HEAD: %s  base_tree: %s" % (head_sha[:10], base_tree[:10]))
-    print("待推送 %d 个文件" % len(rels))
+    print("待写入 %d 个文件 / 待删除 %d 个文件" % (len(rels), len(dels)))
 
     tree = call(token, repo, "GET", "git/trees/%s?recursive=1" % base_tree)
     remote = {i["path"]: i["sha"] for i in tree["tree"] if i["type"] == "blob"}
@@ -102,6 +118,17 @@ def main() -> int:
         print("  [%s] %s -> %s" % (state, rel, local_sha[:10]))
         entries.append({"path": rel, "mode": "100644", "type": "blob", "sha": local_sha})
 
+    for rel in dels:
+        if rel not in remote:
+            print("  [跳过] %s（远端本就不存在）" % rel)
+            continue
+        print("  [删除] %s" % rel)
+        entries.append({"path": rel, "mode": "100644", "type": "blob", "sha": None})
+
+    if not entries:
+        print("无实际变更，退出。")
+        return 0
+
     new_tree = call(token, repo, "POST", "git/trees",
                     {"base_tree": base_tree, "tree": entries})
     if new_tree.get("truncated"):
@@ -116,12 +143,20 @@ def main() -> int:
 
     chk = call(token, repo, "GET", "git/trees/%s?recursive=1" % commit["tree"]["sha"])
     got = {i["path"]: i["sha"] for i in chk["tree"] if i["type"] == "blob"}
-    missing = [e["path"] for e in entries if got.get(e["path"]) != e["sha"]]
-    if missing:
-        raise SystemExit("回读校验失败，远端缺: %s" % missing)
-    print("回读校验通过：%d/%d" % (len(entries), len(entries)))
+    bad = [e["path"] for e in entries
+           if e["sha"] is not None and got.get(e["path"]) != e["sha"]]
+    still = [e["path"] for e in entries
+             if e["sha"] is None and e["path"] in got]
+    if bad:
+        raise SystemExit("回读校验失败，远端缺: %s" % bad)
+    if still:
+        raise SystemExit("回读校验失败，远端未删除: %s" % still)
+    n_up = len([e for e in entries if e["sha"] is not None])
+    n_del = len([e for e in entries if e["sha"] is None])
+    print("回读校验通过：写入 %d / 删除 %d" % (n_up, n_del))
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
+

@@ -10,6 +10,26 @@ venv/
 .workbuddy/
 outputs/
 
+# Agent 工作区：memory 是交付物（供跨会话承接），但临时凭据/中间文件绝不入库
+.workbuddy-ai/tmp/
+.workbuddy-ai/*.pat
+.workbuddy-ai/pat*.txt
+.workbuddy-ai/push_args.txt
+.workbuddy-ai/push_cmd.txt
+*_pat*.txt
+
+# 历史归档（保留在本地供追溯，不进公开仓库；理由见 _archive/*/README.md）
+_archive/
+
+# main 分支只承载交付物；过程产物与历史副本在 prod 分支
+_*.txt
+_*.py
+_*.out
+x.db
+# 子目录内的临时探针/输出（根目录规则只作用于根，需单独列出）
+scripts/_*.py
+scripts/_*.txt
+
 # OS
 .DS_Store
 Thumbs.db
@@ -22,3 +42,10 @@ data/search_index/
 data/_test_feedback_log.json
 data/*.bak
 data/*.test.*
+
+# 数据备份与运行时缓存（非交付物，勿提交）
+data/*.bak_*
+data/_demo_runtime/
+data/shared_cache/
+data/snapshots/
+

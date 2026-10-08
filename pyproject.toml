@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aoci-smart-agri-eco"
+version = "0.9.0b0"
+description = "智慧农业生态 · 全球农业环境配置知识底座 + 城市种植生成箱（Agent-native MCP）"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Lexing" }]
+keywords = ["agriculture", "agent", "mcp", "climate", "env-recipe", "knowledge-graph"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+# 运行时零第三方依赖：纯 Python 标准库，无需 pip install（详见 docs/DEVELOPMENT.md）
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["ruff>=0.5"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agent*", "engine*", "core*", "scripts*", "mcp*", "bp_screen*", "skills*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/test_*.py" = ["E402"]

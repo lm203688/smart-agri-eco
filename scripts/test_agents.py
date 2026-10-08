@@ -29,6 +29,8 @@ sys.path.insert(0, ROOT)
 from agent import AgriOrchestrator  # noqa: E402
 from agent.pest_agent import PestAgent  # noqa: E402
 from agent.nutrition_agent import NutritionAgent  # noqa: E402
+from agent.control_agent import ControlAgent  # noqa: E402
+from agent.forecast_agent import ForecastAgent  # noqa: E402
 from agent.vision import call_vision_backend  # noqa: E402
 from agent import soil_profile as sp  # noqa: E402
 from core.trust_layer import issue_certificate  # noqa: E402
@@ -297,7 +299,9 @@ class TestCropDataIntegrity(unittest.TestCase):
         """回归守卫：feedback_log 只存真实用户反馈，demo/单测/冒烟样本不得入库。
 
         历史事实：仓库里曾累积 12 条合成样本，制造出「已有真实数据回流」的假象。
+        与 engine.rsi._is_synthetic 同源判定，避免守卫与测试漂移。
         """
+        import engine.rsi as rsi
         log_path = os.path.join(ROOT, "data", "feedback_log.json")
         if not os.path.exists(log_path):
             self.skipTest("feedback_log.json 不存在")
@@ -305,15 +309,22 @@ class TestCropDataIntegrity(unittest.TestCase):
             entries = json.load(f)
         if not isinstance(entries, list):
             self.fail("feedback_log.json 不是数组")
-        synthetic = {"unittest", "smoke"}
-        bad = []
-        for e in entries:
-            text = " ".join(
-                [str(e.get("note", ""))] + [str(i) for i in e.get("issues", [])]
-            ).lower()
-            if any(k in text for k in synthetic) or "[demo]" in text:
-                bad.append(e.get("note", ""))
+        bad = [e for e in entries
+               if isinstance(e, dict) and rsi._is_synthetic(e)]
         self.assertEqual(bad, [], f"反馈日志含 {len(bad)} 条合成样本")
+
+    def test_is_synthetic_catches_uppercase_demo(self):
+        """回归：大写 Demo 无方括号也必须判为合成样本（2026-10-06 修复的绕过）。"""
+        import engine.rsi as rsi
+        # 旧实现只匹配 "[demo]"，以下三条会漏判：
+        self.assertTrue(rsi._is_synthetic({"note": "Demo feedback: 阳台春播"}))
+        self.assertTrue(rsi._is_synthetic({"note": "DEMO run 001"}))
+        self.assertTrue(rsi._is_synthetic({"note": "[demo] 冒烟"}))
+        self.assertTrue(rsi._is_synthetic({"note": "unittest"}))
+        self.assertTrue(rsi._is_synthetic({"note": "smoke test"}))
+        # 真实反馈不应误判；"demonstration" 等含 demo 子串的普通词也不应误伤
+        self.assertFalse(rsi._is_synthetic({"note": "杭州阳台春播，存活率 0.92"}))
+        self.assertFalse(rsi._is_synthetic({"note": "现场 demonstration 演示会记录"}))
 
     def test_feedback_dry_run_writes_nothing(self):
         """回归：demo 演示模式下 record_feedback 必须只算不写，防污染真实数据。
@@ -327,7 +338,9 @@ class TestCropDataIntegrity(unittest.TestCase):
 
         fb = os.path.join(ROOT, "data", "feedback_log.json")
         db = os.path.join(ROOT, "data", "crop_adapt_db.json")
-        sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
+        def sha(p):
+            with open(p, "rb") as _f:
+                return hashlib.sha256(_f.read()).hexdigest()
         fb_before, db_before = sha(fb), sha(db)
 
         saved = dict(os.environ)
@@ -388,6 +401,20 @@ class TestPestAgent(unittest.TestCase):
         self.assertIsNone(call_vision_backend("", "番茄"))
         os.environ.pop("AGRI_VISION_URL", None)
         os.environ.pop("AGRI_VISION_KEY", None)
+
+    def test_offline_vision_falls_back_to_rule_based(self):
+        # E 决策（2026-10-06）：视觉后端未配置时，即便传入 image_reference，
+        # diagnose 也必须降级为 rule_based，不抛异常、不触发网络、不误标 vision_assisted。
+        os.environ.pop("AGRI_VISION_URL", None)
+        os.environ.pop("AGRI_VISION_KEY", None)
+        r = self.agent.run({
+            "crop": "番茄",
+            "symptom_description": "叶片黄色斑点，背面白色粉状物，像白粉病",
+            "image_reference": "http://example/x.jpg",  # 有图但无后端
+        })
+        self.assertEqual(r["knowledge_source"], "rule_based")
+        self.assertFalse(r["evidence"].get("vision_used"))
+        self.assertIn("signature", r)
 
 
 class TestNutritionAgent(unittest.TestCase):
@@ -509,6 +536,42 @@ class TestOrchestratorSkills(unittest.TestCase):
                 self.assertTrue(s["implemented"])
                 self.assertEqual(s["callable_via"], "call_skill")
 
+    def test_call_skill_control(self):
+        r = self.orch.call_skill("control_commands", {
+            "scene": "balcony", "crop": "番茄", "zone_id": "temperate_continental",
+            "growth_plan": {"recommendation": {"phases": [
+                {"phase": "播种育苗", "day_range": [1, 7], "actions": ["保持基质湿润约 20 ml/天"], "tasks": []},
+                {"phase": "营养生长", "day_range": [8, 40], "actions": [], "tasks": []},
+                {"phase": "开花", "day_range": [41, 60], "actions": [], "tasks": []},
+                {"phase": "采收", "day_range": [61, 75], "actions": [], "tasks": []},
+            ]}},
+            "devices": [{"device": "补光灯", "device_id": "d1", "category": "补光",
+                         "price_cny": 99, "reason": "", "good_for": ["通用"]}],
+        })
+        self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
+        self.assertTrue(r["constraints"]["needs_gateway"])
+        cmds = r["recommendation"]["actuator_commands"]
+        self.assertEqual(len(cmds), 4)
+        self.assertTrue(any(c["commands"] for c in cmds))
+        self.assertIn("compensation", r["recommendation"])
+
+    def test_call_skill_forecast(self):
+        r = self.orch.call_skill("harvest_forecast", {
+            "crop": "番茄", "zone_id": "temperate_continental", "start_date": "2026-03-01",
+            "growth_plan": {"recommendation": {"phases": [
+                {"phase": "播种育苗", "day_range": [1, 7]},
+                {"phase": "营养生长", "day_range": [8, 40]},
+                {"phase": "开花", "day_range": [41, 60]},
+                {"phase": "采收", "day_range": [61, 75]}],
+                "risk_alerts": ["注意白粉病"]}},
+            "adapt_score": 0.8,
+        })
+        self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
+        self.assertEqual(r["confidence"]["model"], "heuristic")
+        self.assertIsNotNone(r["recommendation"]["harvest_date"])
+        self.assertGreater(r["recommendation"]["yield_estimate_g"], 0)
+        self.assertIsInstance(r["recommendation"]["risk_forecast"], list)
+
 
 class TestSeasonAgent(unittest.TestCase):
     """验证 SeasonAgent（B1 物候推演 + B2 霜冻锚定播期窗口）。"""
@@ -628,6 +691,95 @@ class TestSoilProfile(unittest.TestCase):
         self.assertTrue(any("分区" in x for x in r["limitations"]))
 
 
+class TestControlAgent(unittest.TestCase):
+    """L3 执行控制 Agent：控制协议 + 执行补偿（硬件无关、诚实边界）。"""
+
+    def setUp(self):
+        self.agent = ControlAgent()
+
+    def _sample_plan(self):
+        return {"recommendation": {"phases": [
+            {"phase": "播种育苗", "day_range": [1, 7], "actions": ["保持基质湿润约 20 ml/天"], "tasks": []},
+            {"phase": "营养生长", "day_range": [8, 40], "actions": [], "tasks": []},
+            {"phase": "开花", "day_range": [41, 60], "actions": [], "tasks": []},
+            {"phase": "采收", "day_range": [61, 75], "actions": [], "tasks": []},
+        ]}}
+
+    def test_control_plan_marks_gateway(self):
+        r = self.agent.generate_control_plan(
+            scene="balcony", crop="番茄", zone_id="temperate_continental",
+            growth_plan=self._sample_plan(),
+            devices=[{"device": "补光灯", "device_id": "d1", "category": "补光",
+                      "price_cny": 99, "reason": "", "good_for": ["通用"]}],
+        )
+        self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
+        self.assertTrue(r["constraints"]["needs_gateway"])
+        self.assertEqual(len(r["recommendation"]["actuator_commands"]), 4)
+        # 播种育苗阶段应能解析出 20 ml/天 灌溉指令
+        seed = r["recommendation"]["actuator_commands"][0]
+        self.assertTrue(any(c["actuator"] == "irrigation" and c["value"] == 20.0
+                             for c in seed["commands"]))
+
+    def test_vehicle_compensation_present(self):
+        r = self.agent.generate_control_plan(
+            scene="car_herbs", crop="罗勒", zone_id="temperate_continental",
+            growth_plan=self._sample_plan(), devices=[],
+        )
+        comp = r["recommendation"]["compensation"]
+        kinds = {rule["type"] for rule in comp.get("rules", [])}
+        self.assertIn("vehicle_jolt", kinds)
+        # 无设备 → 应给出人工等效降级
+        self.assertGreaterEqual(comp["missing_device_categories"], 1)
+
+    def test_open_scene_compensation(self):
+        r = self.agent.generate_control_plan(
+            scene="balcony", crop="生菜", zone_id="subtropical_wet",
+            growth_plan=self._sample_plan(), devices=[],
+        )
+        kinds = {rule["type"] for rule in r["recommendation"]["compensation"].get("rules", [])}
+        self.assertIn("open_weather", kinds)
+
+
+class TestForecastAgent(unittest.TestCase):
+    """L2 预测 Agent：采收期/产量/风险（启发式、诚实标注）。"""
+
+    def setUp(self):
+        self.agent = ForecastAgent()
+
+    def _plan(self):
+        return {"recommendation": {"phases": [
+            {"phase": "播种育苗", "day_range": [1, 7]},
+            {"phase": "营养生长", "day_range": [8, 40]},
+            {"phase": "开花", "day_range": [41, 60]},
+            {"phase": "采收", "day_range": [61, 75]}],
+            "risk_alerts": ["注意白粉病"]}}
+
+    def test_forecast_heuristic_labeled(self):
+        r = self.agent.estimate(
+            crop="番茄", zone_id="temperate_continental", start_date="2026-03-01",
+            growth_plan=self._plan(), adapt_score=0.8,
+        )
+        self.assertNotIn("PLACEHOLDER", json.dumps(r, ensure_ascii=False))
+        self.assertEqual(r["confidence"]["model"], "heuristic")
+        self.assertIsNotNone(r["recommendation"]["harvest_date"])
+        self.assertGreater(r["recommendation"]["yield_estimate_g"], 0)
+        self.assertIsInstance(r["recommendation"]["risk_forecast"], list)
+
+    def test_cold_zone_extends_season(self):
+        """冷区（年均温低于作物适温）应拉长季节（adjusted_days > 基础总天数）。"""
+        warm = self.agent.estimate(crop="番茄", zone_climate=[24, 25, 26, 27, 28, 29, 30, 29, 28, 27, 26, 25],
+                                   growth_plan=self._plan())
+        cold = self.agent.estimate(crop="番茄", zone_climate=[4, 6, 10, 14, 18, 22, 24, 23, 19, 14, 9, 5],
+                                   growth_plan=self._plan())
+        self.assertGreater(cold["recommendation"]["adjusted_duration_days"],
+                           warm["recommendation"]["adjusted_duration_days"])
+
+    def test_unknown_crop_falls_back_to_default_base(self):
+        r = self.agent.estimate(crop="不存在的作物", zone_climate=[15, 16, 18, 20, 22, 24, 25, 24, 22, 20, 17, 14],
+                               growth_plan=self._plan())
+        self.assertGreater(r["recommendation"]["yield_estimate_g"], 0)
+
+
 class TestPresetCitiesSingleSource(unittest.TestCase):
     """预设城市清单必须是单一数据源（data/preset_cities.json）。
 
@@ -690,30 +842,32 @@ class TestPresetCitiesSingleSource(unittest.TestCase):
         from agent.preset_cities import _FALLBACK_CITIES
         self.assertEqual(_FALLBACK_CITIES, self._cities_in_file())
 
-    def test_missing_file_degrades_without_losing_gap_semantics(self):
-        """数据文件缺失时不崩，且 coverage_gap 语义（modeled=False）不随之消失。"""
+    def test_missing_file_degrades_without_losing_modeled_semantics(self):
+        """数据文件缺失时不崩，且 modeled 语义（v1.1 后拉萨/迪拜已建模）不随之消失。"""
         from agent.preset_cities import load_preset_cities
         cities = load_preset_cities(os.path.join(ROOT, "no_such_cities.json"))
         self.assertEqual(len(cities), 12)
         unmodeled = [c["name"] for c in cities if not c["modeled"]]
-        self.assertEqual(sorted(unmodeled), ["拉萨", "迪拜"],
-                         "降级副本丢失了未建模城市标记（coverage_gap 语义被降级吞掉）")
+        # v1.1（2026-09-30）已建模 hot_arid/highland，2026-10-06 P3 回填作物后
+        # 12 城全部 modeled=True；降级副本必须保持同一事实，不得回退成未建模。
+        self.assertEqual(unmodeled, [],
+                        "降级副本与 data/preset_cities.json 的 modeled 语义不一致")
 
-    def test_unmodeled_cities_match_eval_truth(self):
-        """清单里 modeled=False 的城市，必须与 eval 真值登记的未建模类一致。"""
+    def test_modeled_cities_match_eval_truth(self):
+        """清单里 modeled=True 的城市，必须与 eval 真值登记的已建模类一致（v1.1 后拉萨/迪拜已建模）。"""
         from agent.preset_cities import load_preset_cities
         cities = {c["name"]: c for c in load_preset_cities()}
-        self.assertFalse(cities["拉萨"]["modeled"])
-        self.assertFalse(cities["迪拜"]["modeled"])
+        self.assertTrue(cities["拉萨"]["modeled"])
+        self.assertTrue(cities["迪拜"]["modeled"])
         with open(os.path.join(ROOT, "data", "eval", "zone_checks.json"), encoding="utf-8") as f:
             checks = json.load(f)
         samples = checks["samples"] if isinstance(checks, dict) else checks
-        eval_unmodeled = {(s.get("lat"), s.get("lon")) for s in samples
-                          if s.get("modeled") is False}
+        eval_modeled = {(s.get("lat"), s.get("lon")) for s in samples
+                        if s.get("modeled") is True}
         for name in ("拉萨", "迪拜"):
             c = cities[name]
-            self.assertIn((c["lat"], c["lon"]), eval_unmodeled,
-                          f"{name} 标记为未建模，但 eval 真值未登记")
+            self.assertIn((c["lat"], c["lon"]), eval_modeled,
+                          f"{name} 标记为已建模，但 eval 真值未登记")
 
 
 if __name__ == "__main__":

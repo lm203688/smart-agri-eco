@@ -32,10 +32,10 @@ _FALLBACK_CITIES: List[Dict[str, Any]] = [
     {"name": "成都", "lat": 30.5728, "lon": 104.0668, "zone": "亚热带湿润带", "modeled": True},
     {"name": "武汉", "lat": 30.5928, "lon": 114.3055, "zone": "亚热带湿润带", "modeled": True},
     {"name": "乌鲁木齐", "lat": 43.8256, "lon": 87.6168, "zone": "干旱带", "modeled": True},
-    {"name": "拉萨", "lat": 29.6520, "lon": 91.1721, "zone": "高原（未建模）", "modeled": False},
+    {"name": "拉萨", "lat": 29.6520, "lon": 91.1721, "zone": "高原带", "modeled": True},
     {"name": "洛杉矶", "lat": 34.0522, "lon": -118.2437, "zone": "地中海带", "modeled": True},
     {"name": "新加坡", "lat": 1.3521, "lon": 103.8198, "zone": "热带雨林", "modeled": True},
-    {"name": "迪拜", "lat": 25.2048, "lon": 55.2708, "zone": "热漠（未建模）", "modeled": False},
+    {"name": "迪拜", "lat": 25.2048, "lon": 55.2708, "zone": "热漠带", "modeled": True},
     {"name": "莫斯科", "lat": 55.7558, "lon": 37.6173, "zone": "亚寒带", "modeled": True},
 ]
 

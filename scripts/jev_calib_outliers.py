@@ -1,7 +1,7 @@
-"""Jev calibration-outlier flagger — sanity-check the 107 niche-envelope scores.
+"""Jev calibration-outlier flagger — sanity-check the niche-envelope scores.
 
 CONTEXT
-- P3 calibrated 107/110 crops' adapt_score via GBIF distribution points + real
+- P3 calibrated 113/116 crops' adapt_score via GBIF distribution points + real
   climate (niche-envelope). At 0 users there is no real feedback loop to catch a
   bad calibration. This script is the 0-user stand-in: it asks Jev Noul whether
   each calibrated score is CONSISTENT with the raw climate evidence we fed in.

@@ -6,7 +6,19 @@ mcp/server.py —— 智慧农业生态 · 零依赖 MCP Server（Agent-native �
 实现方式：标准库 JSON-RPC 2.0 over stdio（不依赖 mcp SDK / 任何第三方包），
 与本项目「零依赖」理念一致，也契合评审「MCP 成本极低、是最强差异化赌注」的判断。
 
-协议版本：2024-11-05（initialize 返回此 protocolVersion，兼容 Claude Desktop / 各类 MCP 客户端）
+协议版本：2026-07-28（无状态规格）为主，向后兼容 2024-11-05 / 2025-06-18。
+
+2026-07-28 无状态规格适配（SEP-2575 / SEP-2567 / SEP-2243 / SEP-2549 / SEP-414）：
+  - SEP-2575 移除 initialize 握手：`initialize` 仍响应（兼容旧客户端），但**不是必需**；
+    未握手直接 `tools/list` / `tools/call` 也完整可用。
+  - SEP-2567 移除 `Mcp-Session-Id`：本 server 从设计上即无会话状态，不强校验该头。
+  - SEP-2243 强制请求头 `Mcp-Method` / `Mcp-Name`：stdio 传输无 header 概念，
+    等价信息从 JSON-RPC 的 `method` / `params.name` 取；HTTP 传输（若部署）由
+    ``_http_headers_ok()`` 校验。
+  - SEP-2549 缓存提示：`tools/list` 返回 `ttlMs` + `cacheScope`（配方为季度级数据，
+    故 TTL 取 30 天；scope=public，无用户态差异）。
+  - SEP-414 W3C Trace Context：接受 `_meta.traceparent`，透传进审计日志，
+    并在响应 `_meta` 回写 `traceparent` 以便调用方串链。
 
 暴露工具（对接现有 agent 包，不重复造轮子）：
     agri_list_cities       列出预设城市（经纬度 + 气候带），供 Agent 选点
@@ -39,9 +51,17 @@ if ROOT not in sys.path:
 from agent import AgriOrchestrator  # noqa: E402
 from agent.preset_cities import load_preset_cities  # noqa: E402
 
-PROTOCOL_VERSION = "2024-11-05"
+PROTOCOL_VERSION = "2026-07-28"
+# 兼容声明的历史版本：新客户端取 PROTOCOL_VERSION，旧客户端接受以下任一。
+SUPPORTED_PROTOCOL_VERSIONS = ("2026-07-28", "2025-06-18", "2024-11-05")
 SERVER_NAME = "agri-eco"
-SERVER_VERSION = "1.0.0"
+SERVER_VERSION = "1.1.0"
+
+# SEP-2549 缓存提示：Env Recipe / 分区 / 作物库均为季度级低频变更数据，
+# 30 天 TTL 足够且能显著减少客户端重复拉取。cacheScope=public 表示
+# 响应与调用方身份无关（本 server 无用户态），可被共享缓存复用。
+TOOLS_LIST_TTL_MS = 2592000000  # 30 天
+TOOLS_LIST_CACHE_SCOPE = "public"
 
 # 安全护栏：单次请求最大字节数，防止超长载荷导致内存耗尽（MCP 分发通道）
 MAX_LINE_BYTES = 1 << 20  # 1 MiB
@@ -655,6 +675,60 @@ def _send(obj: dict):
     sys.stdout.flush()
 
 
+# ---------- SEP-414 W3C Trace Context ----------
+
+def _meta_traceparent(msg: dict) -> str:
+    """从 JSON-RPC 请求的 ``_meta.traceparent`` 取 W3C Trace Context（SEP-414）。
+
+    格式：``00-<32hex trace-id>-<16hex parent-id>-<2hex flags>``。
+    非法或缺失时返回空串，绝不编造——审计日志里宁缺勿假。
+    """
+    meta = msg.get("_meta")
+    if not isinstance(meta, dict):
+        # 兼容 camelCase 与 params 内嵌两种历史写法
+        meta = msg.get("meta") if isinstance(msg.get("meta"), dict) else {}
+    tp = meta.get("traceparent") or ""
+    return tp if isinstance(tp, str) else ""
+
+
+def _valid_traceparent(tp: str) -> bool:
+    """轻量校验 W3C traceparent 形态（不引入正则依赖，逐段判长与字符集）。"""
+    if not tp:
+        return False
+    parts = tp.split("-")
+    if len(parts) != 4:
+        return False
+    ver, tid, pid, flags = parts
+    if len(ver) != 2 or len(tid) != 32 or len(pid) != 16 or len(flags) != 2:
+        return False
+    hexset = set("0123456789abcdef")
+    return (all(c in hexset for c in (ver + tid + pid + flags).lower())
+            and tid != "0" * 32 and pid != "0" * 16)
+
+
+def _http_headers_ok(method: str, name: str) -> tuple:
+    """SEP-2243 头部一致性校验（仅 HTTP 传输适用）。
+
+    stdio 传输没有 HTTP header，本函数在 stdio 下恒返回 (True, "")；
+    一旦本 server 以 HTTP 形态部署（如 ``AGRI_MCP_HTTP=1``），则要求
+    ``Mcp-Method`` / ``Mcp-Name`` 与 JSON-RPC body 一致，防止代理篡改导致
+    路由与执行错位。
+
+    返回 ``(ok, reason)``。
+    """
+    if not os.environ.get("AGRI_MCP_HTTP"):
+        return True, ""
+    hdr_method = os.environ.get("AGRI_MCP_HEADER_MCP_METHOD", "")
+    hdr_name = os.environ.get("AGRI_MCP_HEADER_MCP_NAME", "")
+    if hdr_method and hdr_method != method:
+        return False, "Mcp-Method 头与 body 不一致"
+    if name and hdr_name and hdr_name != name:
+        return False, "Mcp-Name 头与 body 不一致"
+    if method in ("tools/call",) and not hdr_name:
+        return False, "缺少 Mcp-Name 头"
+    return True, ""
+
+
 def _audit(event: dict):
     """安全审计日志（对齐 GOAI CyberGuard 提升点3 安全审计）。
 
@@ -684,32 +758,72 @@ def _handle(msg: dict) -> dict | None:
     method = msg.get("method")
     mid = msg.get("id")
 
+    # SEP-414：把调用方 W3C trace context 串进本次处理，响应原样回写。
+    traceparent = _meta_traceparent(msg)
+    resp_meta = {"traceparent": traceparent} if _valid_traceparent(traceparent) else {}
+
     if method == "initialize":
-        return {
-            "jsonrpc": "2.0", "id": mid,
-            "result": {
-                "protocolVersion": PROTOCOL_VERSION,
-                "capabilities": {"tools": {}},
-                "serverInfo": {"name": SERVER_NAME, "version": SERVER_VERSION},
-            },
+        # SEP-2575 后 initialize 已非必需；仍响应以兼容旧客户端。
+        # 客户端若声明 protocolVersion，回落在共同支持的最高版本（版本协商）。
+        client_ver = ""
+        params = msg.get("params")
+        if isinstance(params, dict):
+            client_ver = params.get("protocolVersion") or ""
+        negotiated = PROTOCOL_VERSION
+        if client_ver and client_ver not in SUPPORTED_PROTOCOL_VERSIONS:
+            negotiated = PROTOCOL_VERSION  # 未知版本按最新回，客户端自决是否继续
+        elif client_ver:
+            negotiated = client_ver
+        result = {
+            "protocolVersion": negotiated,
+            "capabilities": {"tools": {"listChanged": False}},
+            "serverInfo": {"name": SERVER_NAME, "version": SERVER_VERSION},
+            # 显式声明无状态（SEP-2567）：客户端不应期待 session header
+            "stateless": True,
         }
+        if resp_meta:
+            result["_meta"] = resp_meta
+        _audit({"event": "initialize", "client_protocol": client_ver,
+                "negotiated": negotiated, "traceparent": traceparent})
+        return {"jsonrpc": "2.0", "id": mid, "result": result}
+
     if method == "tools/list":
-        return {
-            "jsonrpc": "2.0", "id": mid,
-            "result": {"tools": TOOLS},
+        # SEP-2549：list 类响应带缓存提示，客户端可据 ttlMs 复用。
+        result = {
+            "tools": TOOLS,
+            "ttlMs": TOOLS_LIST_TTL_MS,
+            "cacheScope": TOOLS_LIST_CACHE_SCOPE,
         }
+        if resp_meta:
+            result["_meta"] = resp_meta
+        return {"jsonrpc": "2.0", "id": mid, "result": result}
+
     if method == "tools/call":
         params = msg.get("params", {}) or {}
         name = params.get("name", "")
         arguments = params.get("arguments", {}) or {}
+
+        # SEP-2243：HTTP 形态下校验头部一致性（stdio 恒通过）。
+        ok, reason = _http_headers_ok(method, name)
+        if not ok:
+            _audit({"event": "tools_call_rejected", "tool": name,
+                    "reason": "header_mismatch", "detail": reason,
+                    "traceparent": traceparent})
+            return {
+                "jsonrpc": "2.0", "id": mid,
+                "error": {"code": -32600, "message": reason},
+            }
+
         arg_hash = hashlib.sha256(
             json.dumps(arguments, ensure_ascii=False, sort_keys=True).encode("utf-8")
         ).hexdigest()[:16]
-        _audit({"event": "tools_call_request", "tool": name, "arg_hash": arg_hash})
+        _audit({"event": "tools_call_request", "tool": name,
+                "arg_hash": arg_hash, "traceparent": traceparent})
         fn = _DISPATCH.get(name)
         if not fn:
             _audit({"event": "tools_call_rejected", "tool": name,
-                    "reason": "unknown_tool", "arg_hash": arg_hash})
+                    "reason": "unknown_tool", "arg_hash": arg_hash,
+                    "traceparent": traceparent})
             return {
                 "jsonrpc": "2.0", "id": mid,
                 "error": {"code": -32601, "message": f"未知工具: {name}"},
@@ -718,23 +832,30 @@ def _handle(msg: dict) -> dict | None:
             result = fn(arguments)
         except Exception as e:  # noqa: BLE001
             _audit({"event": "tools_call_error", "tool": name,
-                    "arg_hash": arg_hash, "error": str(e)[:120]})
+                    "arg_hash": arg_hash, "error": str(e)[:120],
+                    "traceparent": traceparent})
             result = {"error": f"工具执行失败: {e}"}
         has_err = isinstance(result, dict) and "error" in result
         _audit({"event": "tools_call_done", "tool": name,
-                "arg_hash": arg_hash, "has_error": bool(has_err)})
-        return {
-            "jsonrpc": "2.0", "id": mid,
-            "result": {
-                "content": [
-                    {"type": "text", "text": json.dumps(result, ensure_ascii=False, indent=2)},
-                ],
-            },
+                "arg_hash": arg_hash, "has_error": bool(has_err),
+                "traceparent": traceparent})
+        payload = {
+            "content": [
+                {"type": "text", "text": json.dumps(result, ensure_ascii=False, indent=2)},
+            ],
         }
+        if resp_meta:
+            payload["_meta"] = resp_meta
+        # 工具执行结果含实时/半实时数据（在线土壤、气候调和），不做长缓存；
+        # 仅声明「可短时复用」，避免客户端误当季度级数据缓存。
+        payload["ttlMs"] = 60000
+        payload["cacheScope"] = "public"
+        return {"jsonrpc": "2.0", "id": mid, "result": payload}
+
     if method == "ping":
         return {"jsonrpc": "2.0", "id": mid, "result": {}}
     if method == "notifications/initialized":
-        return None  # 通知，无响应
+        return None  # 通知，无响应（SEP-2575 后此通知亦非必需）
     # 其他通知（无 id）忽略
     if mid is None:
         return None

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schema/1.0.0/mcp.json",
+  "mcpServers": {
+    "agri-eco": {
+      "command": "python",
+      "args": [
+        "mcp/server.py"
+      ],
+      "transport": "stdio",
+      "env": {
+        "AGRI_VISION_URL": "",
+        "AGRI_VISION_KEY": "",
+        "AGRI_VISION_MODEL": "",
+        "AGRI_MCP_AUDIT_LOG": ""
+      },
+      "description": "零依赖 MCP server（标准库 JSON-RPC 2.0 over stdio）。协议版本 2026-07-28（无状态），向后兼容 2024-11-05 / 2025-06-18。暴露 14 个农业工具。"
+    }
+  }
+}

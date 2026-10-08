@@ -1,0 +1,15 @@
+{
+  "id": "harvest_forecast",
+  "name": "L2 采收期/产量/风险预测",
+  "version": "1.0",
+  "description": "基于 start_date + 种植计划阶段时长 + 分区气候（GDD-lite 修正）+ Env Recipe 环境完备度，预测采收日期、产量与风险。经 orchestrator.call_skill('harvest_forecast') 统一调用。",
+  "domain": "forecast",
+  "agent": "ForecastAgent",
+  "inputs": ["crop (str)", "zone_id (str)", "start_date (str)", "growth_plan (dict)", "zone_climate (list, optional)", "env_recipe (dict, optional)", "adapt_score (float, optional)"],
+  "outputs": ["harvest_date (str)", "adjusted_duration_days (int)", "yield_estimate_g (int)", "risk_forecast (list)"],
+  "data_sources": ["global_zones 气候基线", "Env Recipe 协议 v1", "公开农艺基准产量表"],
+  "confidence_method": "环境完备度 + 气候适宜度 + 校准数据有无综合评分",
+  "safety_boundary": "产量为启发式估计（公开农艺基准 × 气候适宜度 × 环境完备度），非 WOFOST 机制模型；无实测校准时置信度压低并标注需 execution_log/outcome 回流",
+  "reuse_value": "预测系统（L2）补齐——决策引擎之上的产量/采收/风险预判，是 AI 介入点清单第 4 项",
+  "dependencies": ["growth_plan", "env_recipe", "climate_match"]
+}

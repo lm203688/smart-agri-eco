@@ -55,11 +55,18 @@ TRACKED_PATHS = [
 # 协议版本声明（与各 docs/env_recipe_protocol_v1.md 保持同步，人工维护）
 PROTOCOL_VERSIONS = {
     "env_recipe": "v1",
-    "mcp_protocol": "2024-11-05",
+    # MCP 2026-07-28 无状态规格（SEP-2575/2567/2243/2549/414）为主声明版本；
+    # 同时兼容 2025-06-18 / 2024-11-05（initialize 时按客户端版本协商）。
+    "mcp_protocol": "2026-07-28",
+    "mcp_protocol_compat": ["2025-06-18", "2024-11-05"],
+    # A2A v1.0：Agent Card 位于 .well-known/agent.json（Linux Foundation AAIF）
+    "a2a_protocol": "1.0",
+    # Agent Plugins 1.0.0（Google 2026-08-06）：plugin.json + skills/*/SKILL.md + mcp.json
+    "agent_plugins": "1.0.0",
 }
 
 # harness 清单自身版本（bump 时表示 harness 契约已被修订）
-MANIFEST_VERSION = "2.2.0"
+MANIFEST_VERSION = "2.3.0"
 # RSI 门禁定义版本（bump 时表示门禁口径已被修订）
 RSI_GATE_VERSION = "1.0"
 

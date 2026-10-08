@@ -9002,6 +9002,506 @@
           }
         }
       ]
+    },
+    "hot_arid": {
+      "zone_name": "热漠带",
+      "crops": [
+        {
+          "crop": "椰枣",
+          "latin": "Phoenix dactylifera",
+          "family": "棕榈科",
+          "growth_days": 2200,
+          "temp_range_c": [
+            15,
+            45
+          ],
+          "ph_range": [
+            6.5,
+            8.5
+          ],
+          "water_ml_day": 120,
+          "suitable_scenes": [
+            "rooftop",
+            "balcony"
+          ],
+          "key_risks": [
+            "红棕象甲",
+            "炭疽病"
+          ],
+          "fallback_variety": "自交系椰枣",
+          "latin_verified": true,
+          "adapt_score": 0.21,
+          "calibrated": true,
+          "calibration_method": "niche_envelope",
+          "calibration_provenance": {
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean": [
+              18.6,
+              18.8,
+              21.5,
+              24.6,
+              28.2,
+              31.0,
+              32.3,
+              31.7,
+              29.5,
+              26.9,
+              23.1,
+              20.0
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "measured_calibration": {
+            "calibrated_score": 0.21,
+            "method": "niche_envelope",
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean_c": [
+              18.6,
+              18.8,
+              21.5,
+              24.6,
+              28.2,
+              31.0,
+              32.3,
+              31.7,
+              29.5,
+              26.9,
+              23.1,
+              20.0
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 25.5℃",
+          "gbif_accepted_name": "Phoenix dactylifera L.",
+          "gbif_key": 6109699,
+          "gbif_status": "ACCEPTED",
+          "gbif_rank": "SPECIES",
+          "gbif_match_note": "GBIF 接受名与手写一致"
+        },
+        {
+          "crop": "骆驼刺",
+          "latin": "Alhagi camelorum",
+          "family": "豆科",
+          "growth_days": 120,
+          "temp_range_c": [
+            15,
+            40
+          ],
+          "ph_range": [
+            7.0,
+            8.5
+          ],
+          "water_ml_day": 20,
+          "suitable_scenes": [
+            "rooftop"
+          ],
+          "key_risks": [
+            "蚜虫"
+          ],
+          "fallback_variety": "野生骆驼刺",
+          "latin_verified": true,
+          "adapt_score": 0.35,
+          "calibrated": true,
+          "calibration_method": "niche_envelope",
+          "calibration_provenance": {
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean": [
+              24.5,
+              23.3,
+              24.4,
+              24.2,
+              23.2,
+              21.2,
+              19.3,
+              19.7,
+              20.7,
+              21.5,
+              21.5,
+              22.1
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "measured_calibration": {
+            "calibrated_score": 0.35,
+            "method": "niche_envelope",
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean_c": [
+              24.5,
+              23.3,
+              24.4,
+              24.2,
+              23.2,
+              21.2,
+              19.3,
+              19.7,
+              20.7,
+              21.5,
+              21.5,
+              22.1
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 22.1℃",
+          "gbif_accepted_name": "Alhagi camelorum DC.",
+          "gbif_key": 2945105,
+          "gbif_status": "SYNONYM",
+          "gbif_rank": "SPECIES",
+          "gbif_match_note": "GBIF 接受名与手写一致"
+        },
+        {
+          "crop": "沙葱",
+          "latin": "Allium mongolicum",
+          "family": "石蒜科",
+          "growth_days": 90,
+          "temp_range_c": [
+            12,
+            35
+          ],
+          "ph_range": [
+            6.8,
+            8.0
+          ],
+          "water_ml_day": 30,
+          "suitable_scenes": [
+            "balcony",
+            "rooftop"
+          ],
+          "key_risks": [
+            "葱蓟马"
+          ],
+          "fallback_variety": "蒙古野葱",
+          "latin_verified": true,
+          "adapt_score": 0.02,
+          "calibrated": true,
+          "calibration_method": "niche_envelope",
+          "calibration_provenance": {
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean": [
+              -12.9,
+              -9.4,
+              -1.0,
+              6.2,
+              14.0,
+              19.2,
+              21.4,
+              19.3,
+              12.6,
+              4.0,
+              -4.7,
+              -13.2
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "measured_calibration": {
+            "calibrated_score": 0.02,
+            "method": "niche_envelope",
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean_c": [
+              -12.9,
+              -9.4,
+              -1.0,
+              6.2,
+              14.0,
+              19.2,
+              21.4,
+              19.3,
+              12.6,
+              4.0,
+              -4.7,
+              -13.2
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 4.6℃",
+          "gbif_accepted_name": "Allium mongolicum Regel",
+          "gbif_key": 2857345,
+          "gbif_status": "ACCEPTED",
+          "gbif_rank": "SPECIES",
+          "gbif_match_note": "GBIF 接受名与手写一致"
+        }
+      ]
+    },
+    "highland": {
+      "zone_name": "高原带",
+      "crops": [
+        {
+          "crop": "藜麦",
+          "latin": "Chenopodium quinoa",
+          "family": "藜科",
+          "growth_days": 120,
+          "temp_range_c": [
+            5,
+            20
+          ],
+          "ph_range": [
+            6.5,
+            7.5
+          ],
+          "water_ml_day": 80,
+          "suitable_scenes": [
+            "balcony",
+            "rooftop",
+            "garden"
+          ],
+          "key_risks": [
+            "霜霉病",
+            "蚜虫"
+          ],
+          "fallback_variety": "高原藜麦种",
+          "latin_verified": true,
+          "adapt_score": 0.11,
+          "calibrated": true,
+          "calibration_method": "niche_envelope",
+          "calibration_provenance": {
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean": [
+              8.3,
+              8.4,
+              8.3,
+              9.0,
+              11.7,
+              14.4,
+              15.2,
+              16.0,
+              14.3,
+              11.5,
+              9.4,
+              9.0
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "measured_calibration": {
+            "calibrated_score": 0.11,
+            "method": "niche_envelope",
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean_c": [
+              8.3,
+              8.4,
+              8.3,
+              9.0,
+              11.7,
+              14.4,
+              15.2,
+              16.0,
+              14.3,
+              11.5,
+              9.4,
+              9.0
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 11.3℃",
+          "gbif_accepted_name": "Chenopodium quinoa Willd.",
+          "gbif_key": 3083935,
+          "gbif_status": "ACCEPTED",
+          "gbif_rank": "SPECIES",
+          "gbif_match_note": "GBIF 接受名与手写一致"
+        },
+        {
+          "crop": "青稞",
+          "latin": "Hordeum vulgare var. coeleste",
+          "family": "禾本科",
+          "growth_days": 110,
+          "temp_range_c": [
+            4,
+            20
+          ],
+          "ph_range": [
+            6.0,
+            7.0
+          ],
+          "water_ml_day": 60,
+          "suitable_scenes": [
+            "garden",
+            "rooftop"
+          ],
+          "key_risks": [
+            "条锈病",
+            "黑穗病"
+          ],
+          "fallback_variety": "藏青稞",
+          "latin_verified": true,
+          "adapt_score": 0.12,
+          "calibrated": true,
+          "calibration_method": "niche_envelope",
+          "calibration_provenance": {
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean": [
+              15.8,
+              15.8,
+              15.4,
+              15.4,
+              15.8,
+              15.2,
+              15.9,
+              16.6,
+              16.5,
+              15.4,
+              13.7,
+              14.6
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "measured_calibration": {
+            "calibrated_score": 0.12,
+            "method": "niche_envelope",
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean_c": [
+              15.8,
+              15.8,
+              15.4,
+              15.4,
+              15.8,
+              15.2,
+              15.9,
+              16.6,
+              16.5,
+              15.4,
+              13.7,
+              14.6
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.5℃",
+          "gbif_accepted_name": "Hordeum vulgare var. coeleste L.",
+          "gbif_key": 4932644,
+          "gbif_status": "SYNONYM",
+          "gbif_rank": "VARIETY",
+          "gbif_match_note": "GBIF 接受名与手写一致"
+        },
+        {
+          "crop": "洋姜",
+          "latin": "Helianthus tuberosus",
+          "family": "菊科",
+          "growth_days": 120,
+          "temp_range_c": [
+            6,
+            22
+          ],
+          "ph_range": [
+            6.5,
+            7.5
+          ],
+          "water_ml_day": 70,
+          "suitable_scenes": [
+            "balcony",
+            "garden"
+          ],
+          "key_risks": [
+            "蚜虫",
+            "白粉病"
+          ],
+          "fallback_variety": "块茎繁殖",
+          "latin_verified": true,
+          "adapt_score": 0.09,
+          "calibrated": true,
+          "calibration_method": "niche_envelope",
+          "calibration_provenance": {
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean": [
+              16.9,
+              16.6,
+              14.6,
+              12.9,
+              11.6,
+              14.5,
+              14.3,
+              13.9,
+              11.6,
+              11.1,
+              13.2,
+              15.4
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "measured_calibration": {
+            "calibrated_score": 0.09,
+            "method": "niche_envelope",
+            "gbif_occurrence_points": 30,
+            "climate_samples": 6,
+            "temp_env_mean_c": [
+              16.9,
+              16.6,
+              14.6,
+              12.9,
+              11.6,
+              14.5,
+              14.3,
+              13.9,
+              11.6,
+              11.1,
+              13.2,
+              15.4
+            ],
+            "sources": [
+              "GBIF occurrence (CC BY 4.0)",
+              "NASA POWER / Open-Meteo"
+            ],
+            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
+          },
+          "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.9℃",
+          "gbif_accepted_name": "Helianthus tuberosus L.",
+          "gbif_key": 3119175,
+          "gbif_status": "ACCEPTED",
+          "gbif_rank": "SPECIES",
+          "gbif_match_note": "GBIF 接受名与手写一致"
+        }
+      ]
     }
   }
 }

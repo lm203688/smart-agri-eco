@@ -456,15 +456,15 @@ class TestLocalStorage(_Isolated):
         r = ls.rebuild(force=True)
         self.assertTrue(r["fts"])
         # v1.1 (2026-09-30) 新增 hot_arid / highland 两分区 + 6 个配套配方
-        self.assertEqual(r["rows"]["crops"], 110,
-                         "crops 来自 crop_adapt_db.json，v1.1 未变")
+        self.assertEqual(r["rows"]["crops"], 116,
+                         "crops 来自 crop_adapt_db.json；v1.1 新增 hot_arid/highland 两分区各 3 作物（110→116）")
         self.assertEqual(r["rows"]["zones"], 8,
                          "v1.1 分区从 6 → 8（新增 hot_arid + highland）")
         self.assertEqual(r["rows"]["pests"], 23)
         self.assertEqual(r["rows"]["recipes"], 116,
                          "v1.1 配方从 110 → 116（新增 6 个 hot_arid/highland 配套）")
-        self.assertEqual(r["total"], 257,
-                         "110+8+23+116=257（原 110+6+23+110=249）")
+        self.assertEqual(r["total"], 263,
+                         "116+8+23+116=263（v1.1 作物回填后：原 110+8+23+116=257）")
 
     def test_rebuild_does_not_modify_source_json(self):
         src = os.path.join(ROOT, "data", "crop_adapt_db.json")
@@ -526,8 +526,8 @@ class TestLocalStorage(_Isolated):
         ls.rebuild(force=True)
         s = ls.stats()
         self.assertTrue(s["built"])
-        self.assertEqual(s["total"], 257,
-                         "v1.1 后总数从 249 → 257（+6 配方 +2 分区）")
+        self.assertEqual(s["total"], 263,
+                         "v1.1 作物回填后总数 116+8+23+116=263")
         self.assertIn("crops", s["rows"])
         self.assertTrue(s["path"], "stats 应报告索引文件路径")
 
@@ -930,7 +930,7 @@ class TestIntegration(_Isolated):
             self.assertNotIn("error", m[k], "%s 不应报错" % k)
         for k in ("long_term_memory", "local_search", "recipe_scheduler"):
             self.assertIn(k, mod.OBSERVED_SECTIONS)
-        self.assertEqual(m["version"], "2.2.0")
+        self.assertEqual(m["version"], mod.MANIFEST_VERSION)
 
     def test_manifest_new_sections_have_no_paths(self):
         import importlib.util

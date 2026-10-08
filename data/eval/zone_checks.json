@@ -1,12 +1,64 @@
 [
-  {"lat": 1.3521,  "lon": 103.8198, "expected_zone": "tropical_rainforest", "note": "新加坡：赤道热带雨林"},
-  {"lat": 30.2741, "lon": 120.1551, "expected_zone": "subtropical_wet",    "note": "杭州：东亚季风亚热带湿润"},
-  {"lat": 23.1291, "lon": 113.2644, "expected_zone": "subtropical_wet",    "note": "广州：华南亚热带湿润"},
-  {"lat": 30.5728, "lon": 104.0668, "expected_zone": "subtropical_wet",    "note": "成都：四川盆地亚热带湿润"},
-  {"lat": 39.9042, "lon": 116.4074, "expected_zone": "temperate_continental", "note": "北京：温带大陆性"},
-  {"lat": 43.8256, "lon": 87.6168,  "expected_zone": "arid",               "note": "乌鲁木齐：中亚内陆干旱"},
-  {"lat": 34.0522, "lon": -118.2437,"expected_zone": "mediterranean",      "note": "洛杉矶：加州地中海"},
-  {"lat": 55.7558, "lon": 37.6173,  "expected_zone": "subarctic",          "note": "莫斯科：亚寒带"},
-  {"lat": 29.6520, "lon": 91.1721,  "expected_zone": "highland",           "modeled": false, "note": "拉萨：青藏高原。2026-09-23 起分类器返回 highland（真实气候类，未建模）——此前静默归亚热带湿润，属高置信错判。分区库缺口待产品决策"},
-  {"lat": 25.2048, "lon": 55.2708,  "expected_zone": "hot_arid",           "modeled": false, "note": "迪拜：波斯湾热漠（年均约28°C/年降水约100mm）。2026-09-23 起分类器返回 hot_arid（真实气候类，未建模）——此前静默归亚热带湿润并给出 rubric≈0.95 的湿热区方案，属会种死的推荐。分区库缺口待产品决策"}
+  {
+    "lat": 1.3521,
+    "lon": 103.8198,
+    "expected_zone": "tropical_rainforest",
+    "note": "新加坡：赤道热带雨林"
+  },
+  {
+    "lat": 30.2741,
+    "lon": 120.1551,
+    "expected_zone": "subtropical_wet",
+    "note": "杭州：东亚季风亚热带湿润"
+  },
+  {
+    "lat": 23.1291,
+    "lon": 113.2644,
+    "expected_zone": "subtropical_wet",
+    "note": "广州：华南亚热带湿润"
+  },
+  {
+    "lat": 30.5728,
+    "lon": 104.0668,
+    "expected_zone": "subtropical_wet",
+    "note": "成都：四川盆地亚热带湿润"
+  },
+  {
+    "lat": 39.9042,
+    "lon": 116.4074,
+    "expected_zone": "temperate_continental",
+    "note": "北京：温带大陆性"
+  },
+  {
+    "lat": 43.8256,
+    "lon": 87.6168,
+    "expected_zone": "arid",
+    "note": "乌鲁木齐：中亚内陆干旱"
+  },
+  {
+    "lat": 34.0522,
+    "lon": -118.2437,
+    "expected_zone": "mediterranean",
+    "note": "洛杉矶：加州地中海"
+  },
+  {
+    "lat": 55.7558,
+    "lon": 37.6173,
+    "expected_zone": "subarctic",
+    "note": "莫斯科：亚寒带"
+  },
+  {
+    "lat": 29.652,
+    "lon": 91.1721,
+    "expected_zone": "highland",
+    "modeled": true,
+    "note": "拉萨：v1.1（2026-09-30）已建模对应分区，2026-10-06 P3 回填作物，分类器返回预期分区且可给出真实推荐。"
+  },
+  {
+    "lat": 25.2048,
+    "lon": 55.2708,
+    "expected_zone": "hot_arid",
+    "modeled": true,
+    "note": "迪拜：v1.1（2026-09-30）已建模对应分区，2026-10-06 P3 回填作物，分类器返回预期分区且可给出真实推荐。"
+  }
 ]

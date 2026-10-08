@@ -1,0 +1,50 @@
+{
+  "$schema": "https://agent-plugins.org/schema/1.0.0/plugin.json",
+  "name": "agri-eco",
+  "displayName": "智慧农业生态 Agri-Eco",
+  "version": "1.1.0",
+  "description": "面向分布式农业的 Agent-native 知识基座。提供可执行的 Env Recipe 环境配方、多源气候校准、物候与播期推演、土壤剖面、农业分区匹配、病虫害与养分诊断、数据血缘溯源与农业项目投资初筛。零第三方依赖、可离线运行、输出带来源与置信度标注。",
+  "author": {
+    "name": "smart-agri-eco",
+    "url": "https://github.com/lm203688/smart-agri-eco"
+  },
+  "license": "见仓库 LICENSE（代码）；数据为混合许可，含 CC BY-NC-SA 来源，不得转售",
+  "homepage": "https://github.com/lm203688/smart-agri-eco",
+  "repository": "https://github.com/lm203688/smart-agri-eco",
+  "keywords": [
+    "agriculture",
+    "agritech",
+    "mcp",
+    "a2a",
+    "agent",
+    "env-recipe",
+    "phenology",
+    "climate",
+    "soil",
+    "pest-diagnosis",
+    "offline-first",
+    "zero-dependency"
+  ],
+  "mcpServers": "./mcp.json",
+  "skills": [
+    "./skills/climate_match",
+    "./skills/control_commands",
+    "./skills/crop_adapt",
+    "./skills/device_recommend",
+    "./skills/growth_plan",
+    "./skills/harvest_forecast",
+    "./skills/iceplant_advisory",
+    "./skills/nutrition_plan",
+    "./skills/pest_diagnose",
+    "./skills/season_advisory",
+    "./skills/supply_match"
+  ],
+  "engines": {
+    "python": ">=3.10"
+  },
+  "runtime": "local",
+  "capabilities": {
+    "network": "optional",
+    "note": "核心计算与数据路径零第三方依赖、可完全离线。联网仅在 agri_soil_profile（SoilGrids）与 agri_reconcile_climate（NASA POWER / Open-Meteo）两个工具上使用，不可达时优雅降级并明确标注，绝不返回编造值。"
+  }
+}

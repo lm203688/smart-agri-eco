@@ -4,39 +4,44 @@
 
 ---
 
-## [v0.9-beta] - 2026-09-29（待发行）
+## [v0.9-beta] - 2026-10-06（发行）
 
 **发行形态**：开发者预览版 · 邀请制 · GitHub Release
 
 ### 工程指标
-- 单元测试 **477 OK**（3 skip 为 live API 探针）
+- 单元测试 **505 OK**（3 skip 为 live API 探针）
 - `verify_all.py` **PASS**（8 阶段全过）
-- MCP 工具 **13 个**（自测冒烟通过）
-- Harness manifest 版本 **2.2.0**，指纹 `7e073c0073973625`
+- `data_quality_gate.py` **全部通过**（6 文件）
+- MCP 工具 **14 个**（自测冒烟通过）
+- Harness manifest 版本 **2.2.0**（数据基线：8 区 / 116 作物 / 113 校准）
 
 ### 核心能力
-- **4 Agent 编排**：ClimateAgent → CropAgent → GrowthAgent → EcoAgent 串联，加 PestAgent / NutritionAgent / SeasonAgent 按需调用
-- **Env Recipe**：110 份可执行配方（`data/env_recipes/<zone>__<crop>.json`），温湿/光谱/PPFD/CO₂/EC/pH/水肥/气流/异常九维参数集
-- **作物覆盖**：110 种（6 分区 × 作物），**107 已用 NASA POWER + Open-Meteo 双源校准**（含 `measured_calibration` 实证）
+- **7 Agent 编排**：ClimateAgent → CropAgent → GrowthAgent → EcoAgent 串联，加 PestAgent / NutritionAgent / SeasonAgent 按需调用
+- **Env Recipe**：116 份可执行配方（`data/env_recipes/<zone>__<crop>.json`），温湿/光谱/PPFD/CO₂/EC/pH/水肥/气流/异常九维参数集
+- **作物覆盖**：116 种（8 分区 × 作物），**113 已用 NASA POWER + Open-Meteo 双源校准**（含 `measured_calibration` 实证）
 - **权威数据源**：NASA POWER / Open-Meteo / WorldClim / GBIF / SoilGrids（5 API + 4 本地文件），全量可血缘追溯
-- **决策层**：TypeSafe Jev System One 决策模型，配方门禁 110 安全 / 0 可疑
+- **决策层**：TypeSafe Jev System One 决策模型，配方门禁 116 安全 / 0 可疑
 
-### 新增 MCP 工具（3 个）
+### 分区覆盖（闭环）
+- **8 个已建模分区**：tropical_rainforest / subtropical_wet / temperate_continental / mediterranean / arid / subarctic / **hot_arid（迪拜等）/ highland（拉萨等）**
+- 2026-10-06 补 hot_arid / highland 真实气候基线 + 6 配套作物定向 P3 校准（椰枣/骆驼刺/沙葱/藜麦/青稞/洋姜），KG `grows_in` 110 → 116（8 区全有作物邻接），迪拜/拉萨跨元数据+测试全链路翻标 `modeled=True`，气候 Agent 死代码 `UNMODELED_ZONE_CLASSES` 已清
+
+### 病虫害诊断视觉后端（2026-10-06 决策）
+- **选型：离线规则降级（无外部依赖）**。`agent/vision.py` 未配置 `AGRI_VISION_*` 时返回 None，调用方 `pest_agent.diagnose()` 自动降级为 `rule_based`；任何异常/超时均不中断主流程。云端 VLM（ATEX / OpenAI）为可选插拔，不强制。
+
+### 新增 MCP 工具（3 个，2026-09-29 起）
 | 工具 | 用途 |
 |---|---|
 | `agri_reconcile_climate` | 多源气候调和：`(lat, lon)` 并行拉 NASA POWER + Open-Meteo，产出逐月调和均值/一致度/分歧告警 |
 | `agri_resolve_recipe` | 地理编码 → 分区 → Env Recipe 解析：城市名或坐标匹配 `<zone>__<crop>.json` |
 | `agri_query_lineage` | 数据血缘查询：作物 × 分区 × 数据源四档查询模式 |
 
-### 分区覆盖
-- **6 个已建模分区**（含 `subtropical_wet` / `temperate_continental` 等）
-- **2 个已知未建模分区**：`hot_arid`（迪拜等）/ `highland`（拉萨等），运行时降级为 `coverage_gap`，**不编造 recommendation**，明示箱体替代路径
-
-### 已修复
-- **合成样本污染守卫**：`agent/execution_log.py::_is_synthetic()` 与 `engine/rsi.py::_is_synthetic()` 统一扩展为 `.lower()` + 覆盖 `run_id/device_id/source`，防 `Demo feedback` 大写变体绕过（2026-09-27 复发教训）
+### 已修复（2026-09-27 → 2026-10-06）
+- **合成样本污染守卫硬化**：`engine/rsi._is_synthetic` 改为大小写不敏感 + 独立词匹配（原只匹小写 `[demo]`，大写 `Demo` 可绕过）；测试同源复用并新增回归用例 `test_is_synthetic_catches_uppercase_demo`
 - **测试缓存隔离**：`test_planting_window_autofetch_wires_provenance` 用 `tempfile.mkdtemp()` 隔离默认缓存目录，防磁盘缓存短路 mock
 - **测试临时文件排除**：`.gitignore` 追加 `data/_test_feedback_log.json` / `data/*.bak` / `data/*.test.*`
-- **文档 stale 数字**：`README.md` / `docs/intel_log.md` / `docs/commercialization_assessment_2026-09-19.md` 中 `358 → 477`、`MCP 10 → 13`
+- **文档 stale 数字**：README / CHANGELOG / release_checklist 同步 6→8 分区、110→116 配方、107→113 校准、单测 477→504、MCP 13→14
+- **气候 Agent 死代码清除**：`UNMODELED_ZONE_CLASSES` 清空（v1.1 已建模），保留 `_detect_unmodeled_zone` 做热漠/高原精确路由（迪拜→BWh/rubric 0.95，拉萨→H/rubric 0.95，均无 coverage_gap）
 
 ---
 
@@ -131,10 +136,10 @@
 - [ ] **eval_recipe_expert_adoption**：3-5 位农艺专家盲评 50 份配方
 - [ ] **eval_source_traceability**：溯源层埋点 + 引用 URL 可访问性校验
 
-### 待用户拍板的产品决策
-- [ ] 是否新增 hot_arid / highland 分区建模（产品扩张）
-- [ ] 高原是否改"就近已建模分区 + 显式近似标记"
-- [ ] 视觉后端选型（病虫害诊断方向）
+### 产品决策（2026-10-06 已拍板）
+- [x] ~~是否新增 hot_arid / highland 分区建模~~ → **已闭环**：8 分区全建模，hot_arid/highland 补真实气候基线 + 6 作物定向 P3 校准（见 v0.9-beta）
+- [x] ~~高原是否改"就近已建模分区 + 显式近似标记"~~ → 已建模闭环，无需近似标记
+- [x] ~~视觉后端选型（病虫害诊断方向）~~ → **离线规则降级**（无外部依赖，AGRI_VISION_* 未配置自动 rule_based）
 
 ---
 
@@ -146,4 +151,4 @@
 
 ---
 
-*本 CHANGELOG 生成于 2026-09-29，与 `harness/manifest.json` v2.2.0 对齐。*
+*本 CHANGELOG 更新于 2026-10-06，与 `harness/manifest.json` v2.2.0 对齐（数据基线：8 区 / 116 作物 / 113 校准）。*

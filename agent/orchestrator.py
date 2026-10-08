@@ -21,6 +21,8 @@ from .eco_agent import EcoAgent
 from .pest_agent import PestAgent
 from .nutrition_agent import NutritionAgent
 from .season_agent import SeasonAgent
+from .control_agent import ControlAgent
+from .forecast_agent import ForecastAgent
 
 import os
 import json
@@ -131,6 +133,38 @@ def verify_agent_output(name: str, output: Any,
             _check("device_budget_gate", float(total) <= float(budget),
                    f"总价 {total} <= 预算 {budget}")
 
+    elif name == "ControlAgent":
+        rec = output.get("recommendation", {})
+        cmds = rec.get("actuator_commands", [])
+        _check("actuator_commands_is_list", isinstance(cmds, list))
+        _check("actuator_commands_nonempty", isinstance(cmds, list) and len(cmds) > 0,
+               f"{len(cmds) if isinstance(cmds, list) else 'N/A'} 阶段指令")
+        # 每个阶段至少产出 1 条控制指令，且标注配方来源
+        empty = [c.get("phase") for c in cmds
+                 if not isinstance(c.get("commands"), list) or len(c["commands"]) == 0]
+        _check("each_phase_has_commands", not empty,
+               f"无指令阶段: {empty[:3]}")
+        _check("needs_gateway_flagged",
+               bool(output.get("constraints", {}).get("needs_gateway")),
+               "必须显式标注 needs_gateway（硬件无关意图需网关下发）")
+        comp = rec.get("compensation", {})
+        _check("compensation_present",
+               isinstance(comp, dict) and ("rules" in comp or "device_failure_fallback" in comp),
+               "必须有执行补偿（车载/开放环境/设备故障降级）")
+
+    elif name == "ForecastAgent":
+        rec = output.get("recommendation", {})
+        _check("harvest_date_present", bool(rec.get("harvest_date")),
+               f"harvest_date={rec.get('harvest_date')}")
+        _check("yield_estimate_present",
+               isinstance(rec.get("yield_estimate_g"), (int, float)) and rec["yield_estimate_g"] > 0,
+               f"yield={rec.get('yield_estimate_g')}")
+        conf = output.get("confidence", {})
+        _check("model_labeled_heuristic",
+               conf.get("model") == "heuristic",
+               "预测必须为启发式并显式标注 model=heuristic（非机制模型）")
+        _check("risk_forecast_is_list", isinstance(rec.get("risk_forecast"), list))
+
     return {"ok": all(c["ok"] for c in checks), "checks": checks}
 
 
@@ -168,6 +202,8 @@ ONDEMAND_SKILLS = {
     "pest_diagnose": {"agent": "pest", "label": "病虫害与营养缺乏诊断"},
     "nutrition_plan": {"agent": "nutrition", "label": "养分管理与阶段化施肥"},
     "season_advisory": {"agent": "season", "label": "物候推演与霜冻锚定播期窗口"},
+    "control_commands": {"agent": "control", "label": "L3 执行控制：生长计划→硬件无关控制指令+执行补偿"},
+    "harvest_forecast": {"agent": "forecast", "label": "L2 预测：采收期/产量/风险预测"},
 }
 
 # 注册表目录（用于技能目录自动发现）
@@ -191,6 +227,8 @@ class AgriOrchestrator:
         self.pest = PestAgent()
         self.nutrition = NutritionAgent()
         self.season = SeasonAgent()
+        self.control = ControlAgent()
+        self.forecast = ForecastAgent()
         # Session 幂等缓存（借 QoderWake 的幂等恢复）：
         # 同一 session_id + 同一输入 → 直接返回已算结果；崩溃后重跑可续上。
         self._sessions: Dict[str, Dict[str, Any]] = {}

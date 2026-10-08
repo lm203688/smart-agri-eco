@@ -69,8 +69,13 @@ def main() -> int:
                                 "clientInfo": {"name": "smoke", "version": "0"}}})
         check(resp and resp.get("result", {}).get("protocolVersion") == "2024-11-05",
               "initialize 返回协议版本")
-        check(resp and resp.get("result", {}).get("capabilities", {}).get("tools") == {},
+        _caps = (resp or {}).get("result", {}).get("capabilities", {})
+        # 断言语义：必须声明 tools 能力（tools 键存在且为 dict）；
+        # 内部子键可扩展（如 2026-07-28 的 listChanged），故不做等值比较。
+        check(isinstance(_caps.get("tools"), dict),
               "initialize 声明 tools 能力")
+        check((resp or {}).get("result", {}).get("stateless") is True,
+              "initialize 声明无状态（SEP-2567）")
 
         # 2) notifications/initialized（无响应，仅发送不读）
         _notify({"jsonrpc": "2.0", "method": "notifications/initialized"})

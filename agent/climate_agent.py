@@ -81,11 +81,13 @@ def _match_zone_by_coords(lat: float, lon: float) -> str:
     if 40 <= a <= 50 and -90 <= lon <= -60:
         return "temperate_continental"
 
-    # 5.5) 已知覆盖缺口：这些气候类当前在 global_zones.json 中**没有对应分区**。
-    #      必须在最后的默认分支之前判定，否则会被静默吞成「亚热带湿润」——
+    # 5.5) 热漠 / 高原坐标的精确路由：必须在最后的默认分支之前判定，
+    #      否则会被静默吞成「亚热带湿润」——
     #      2026-09-23 前迪拜就是这样拿到湿热区参数的（年均 17°C + 终年湿润的作物清单），
     #      而它实际是热漠（年均约 28°C、年降水约 100mm），属于错到会种死的推荐。
-    #      放在此处意味着：只改变原本会落到默认分支的点，不动任何已归类正确的坐标。
+    #      v1.1（2026-09-30）已把 hot_arid / highland 加入 global_zones.json 并回填作物
+    #      （2026-10-06 P3 校准），这两个分区现在**已建模**——此处把它们正确导向对应分区，
+    #      不再走「未建模降级」路径。放在此处意味着：只改变原本会落到默认分支的点。
     gap = _detect_unmodeled_zone(lat, lon)
     if gap:
         return gap
@@ -99,21 +101,17 @@ def _match_zone_by_coords(lat: float, lon: float) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 已知覆盖缺口（识别得出、但当前分区库未建模的气候类）
+# 未建模气候类（识别得出、但当前分区库仍未建模的气候类）
 # ---------------------------------------------------------------------------
-# 与上面「猜一个已建模分区」的区别：这里返回的是**真实气候类名**，global_zones.json
-# 里没有它，于是 match_zone 走既有的「分区数据缺失」降级路径——Verifier 的
-# zone_id_known 直接判红、trust 分数塌到 0.2 档、作物推荐为空。
-# 即：宁可显式失败，也不给一份基于错误气候假设的种植方案。
+# v1.1（2026-09-30）已把 hot_arid / highland 加入 global_zones.json 并回填作物
+# （2026-10-06 P3 校准），因此这两个类**不再未建模**，已从下方清单移除。
+# 该字典现在为空，作为「未来若出现分区库仍未覆盖的真实气候类」时显式拒答的预留位：
+# match_zone 在分区缺失时会走「分区数据缺失」降级路径（zone_id_known 判红、作物推荐为空），
+# 即：宁可显式失败，也不给基于错误气候假设的方案。
 #
-# 背景：data/eval/zone_checks.json 早已把迪拜/拉萨登记为「已知局限」，但运行时对调用方
-# 完全静默（rubric≈0.95、recommendation 写「环境条件适宜」）。本函数把这份「内部已知」
-# 变成对 Agent/用户可机读的显式信号。残留缺口（这两类气候没有作物库与 Env Recipe）
-# 属产品决策，见 outputs/zone_coverage_decision_2026-09-23.md。
-UNMODELED_ZONE_CLASSES = {
-    "hot_arid": "热漠（热带/亚热带干旱：阿拉伯半岛、波斯湾沿岸等）；当前分区库无热漠区",
-    "highland": "高原（青藏高原等）；当前分区库无高原区",
-}
+# 注：_detect_unmodeled_zone() 现仍负责把热漠/高原坐标路由到已建模的 hot_arid / highland
+# 分区（盒式启发式），与「未建模降级」是两件事，请勿混淆。
+UNMODELED_ZONE_CLASSES: Dict[str, str] = {}
 
 
 def _detect_unmodeled_zone(lat: float, lon: float) -> Optional[str]:

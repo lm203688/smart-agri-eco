@@ -1,0 +1,15 @@
+{
+  "id": "control_commands",
+  "name": "L3 执行控制指令生成",
+  "version": "1.0",
+  "description": "把 GrowthAgent 种植计划 + EcoAgent 设备推荐翻译为硬件无关的控制指令协议（灌溉/施肥/补光/温控/CO2/通风），并给出执行补偿（车载颠簸、开放环境波动、设备故障降级）。经 orchestrator.call_skill('control_commands') 统一调用。",
+  "domain": "control",
+  "agent": "ControlAgent",
+  "inputs": ["scene (str)", "crop (str)", "zone_id (str)", "growth_plan (dict)", "devices (list)", "env_recipe (dict, optional)"],
+  "outputs": ["actuator (str)", "command (str)", "value", "unit (str)", "schedule (str)", "compensation (dict)"],
+  "data_sources": ["Env Recipe 协议 v1", "global_zones 气候基线", "device_catalog"],
+  "confidence_method": "阶段覆盖度 + 设备类别覆盖度评分",
+  "safety_boundary": "指令为硬件无关意图，真实执行需经 MQTT/Node-RED 网关下发；不假设具体设备已接入，缺失设备给人工等效操作",
+  "reuse_value": "执行控制层核心——把决策引擎输出变成可下发的『驱动语言』，对应战略指引 L3 卡位",
+  "dependencies": ["growth_plan", "device_recommend", "env_recipe"]
+}

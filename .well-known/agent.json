@@ -1,0 +1,188 @@
+{
+  "protocolVersion": "1.0",
+  "name": "智慧农业生态 Agri-Eco",
+  "description": "面向分布式农业的 Agent-native 知识基座。提供可执行的 Env Recipe 环境配方（作物 × 生长阶段 × 设备类别 → 可落地环境参数）、多源气候校准、物候与播期推演、土壤剖面、农业分区匹配、病虫害与养分诊断、数据血缘溯源与农业项目投资初筛。零第三方依赖、可离线运行、全量输出带来源与置信度标注。作为 A2A 技能被其他 Agent 调用，不提供 C 端应用与 B 端 SaaS。",
+  "url": "https://github.com/lm203688/smart-agri-eco",
+  "preferredTransport": "JSONRPC",
+  "additionalInterfaces": [
+    {
+      "url": "https://github.com/lm203688/smart-agri-eco",
+      "transport": "JSONRPC"
+    },
+    {
+      "url": "stdio://python mcp/server.py",
+      "transport": "STDIO"
+    }
+  ],
+  "provider": {
+    "organization": "smart-agri-eco",
+    "url": "https://github.com/lm203688/smart-agri-eco"
+  },
+  "version": "1.1.0",
+  "documentationUrl": "https://github.com/lm203688/smart-agri-eco/blob/main/docs/CORE_OBJECTIVE.md",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": [
+      {
+        "uri": "https://github.com/lm203688/smart-agri-eco/blob/main/docs/env_recipe_protocol_v1.md",
+        "description": "Env Recipe v1 环境配方协议：作物 × 阶段 × 设备类 → 可执行环境参数（温度/湿度/光照 DLI/水肥 pH/气流/异常处置），116 份已发布配方。",
+        "required": false
+      }
+    ]
+  },
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/markdown"
+  ],
+  "skills": [
+    {
+      "id": "agri_env_recipe",
+      "name": "环境配方生成",
+      "description": "给定作物 + 生长阶段 + 设备类别，返回一份 Env Recipe v1 合规的可执行环境配方。优先命中已发布的 116 份配方库；未入库作物回退为作物适应库现场派生，并明确标注来源。",
+      "tags": ["env-recipe", "grow-box", "climate-control", "executable-config"],
+      "examples": [
+        "番茄 在 fruiting 阶段、indoor_cabinet 设备类别的环境配方",
+        "生菜 seed 阶段的育苗环境参数"
+      ],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_match_zone",
+      "name": "气候分区匹配",
+      "description": "输入经纬度，返回 Köppen-Geiger 气候带 + FAO 农业分区匹配结果，含温度/降水/土壤/pH/霜冻风险等关键约束与证据链。",
+      "tags": ["climate", "zone-matching", "geospatial"],
+      "examples": ["北纬 30.27 东经 120.15 属于什么农业分区"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_recommend_crops",
+      "name": "作物适配推荐",
+      "description": "根据分区（经纬度）与偏好（用途/空间面积/难度/场景）推荐适配作物，输出适配度评分、种植周期、易失败风险与兜底品种。",
+      "tags": ["crop-recommendation", "adaptation"],
+      "examples": ["1 平米阳台、新手、以食用为目的，推荐种什么"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_growth_plan",
+      "name": "种植计划生成",
+      "description": "作物 + 场景 + 分区 → 完整种植计划（播种→定植→管理→采收），含关键事件时间轴、风险提示与微气候修正（阳台朝向/楼层/遮挡）。",
+      "tags": ["growth-plan", "scheduling", "microclimate"],
+      "examples": ["北京阳台朝南 12 楼，3 月 1 日开始种番茄的计划"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_season_advisory",
+      "name": "物候推演与播期窗口",
+      "description": "三种模式：planting_window 由 12 个月均温推导无霜期与各作物最早/最晚安全播种日；stage_days 由作物 + 日均温推演出苗/开花/成熟天数（WOFOST 积温，覆盖 7 作物）；calendar 按 USDA 耐寒区与日期查外部种植日历。",
+      "tags": ["phenology", "sowing-window", "gdd", "wofost"],
+      "examples": [
+        "给出某地 12 个月均温，算番茄最早最晚安全播种日",
+        "日均温 22 度，黄瓜多久开花"
+      ],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_reconcile_climate",
+      "name": "多源气候校准",
+      "description": "给定经纬度并行拉取 NASA POWER 与 Open-Meteo，逐月平均得调和基线，并计算逐月一致度与分歧告警（标准差超阈值标记）。无网络时优雅降级，绝不返回编造值。WorldClim 2.1 列为扩展点。",
+      "tags": ["climate", "multi-source", "calibration", "provenance"],
+      "examples": ["杭州坐标近 5 年逐月均温，两源是否一致"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_soil_profile",
+      "name": "土壤剖面",
+      "description": "按经纬度或分区返回土壤剖面（质地/pH/有机碳/养分）。在线查询 ISRIC SoilGrids v2.0 优先，不可用时降级为离线分区均值并明确标注 resolution=zone、confidence=low。可选传入作物做 pH 适宜性拟合。",
+      "tags": ["soil", "soilgrids", "degradation-aware"],
+      "examples": ["某坐标的土壤 pH 与质地"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_diagnose_pest",
+      "name": "病虫害与营养缺乏诊断",
+      "description": "根据作物、症状描述、可选图像引用、生长阶段与环境数据，诊断病虫害或营养缺乏，输出诊断结果、严重程度、处理建议与替代诊断。视觉后端未配置时走规则降级。",
+      "tags": ["pest", "diagnosis", "nutrition-deficiency"],
+      "examples": ["番茄叶片有黄褐色斑点并卷曲，什么病"],
+      "inputModes": ["application/json", "text/plain"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_nutrition_plan",
+      "name": "养分管理方案",
+      "description": "作物 + 生长阶段 + 容器容积 → 阶段化施肥方案，给出 NPK 侧重、浓度、频率与单次用量。",
+      "tags": ["nutrition", "fertilizer", "stage-based"],
+      "examples": ["阳台番茄结果期怎么施肥"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_resolve_recipe",
+      "name": "地理编码到配方",
+      "description": "城市名（中文/英文）或经纬度 → 匹配气候分区 → 检索该分区的 Env Recipe 清单。完全离线，是「城市种植生成箱」的核心分发路径。",
+      "tags": ["geocoding", "recipe-retrieval", "offline"],
+      "examples": ["杭州有哪些可用的种植配方"],
+      "inputModes": ["application/json", "text/plain"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_query_lineage",
+      "name": "数据血缘溯源",
+      "description": "按作物或分区查询配方的数据溯源：外部 API 参与情况、本地权威文件 SHA256 指纹、双源校准实证。用于回答「这个数字从哪来、可复现吗」。",
+      "tags": ["data-lineage", "provenance", "reproducibility", "audit"],
+      "examples": ["番茄配方的数据来自哪里，有校准实证吗"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_list_cities",
+      "name": "预设城市清单",
+      "description": "列出预设城市（经纬度 + 气候带），供 Agent 选点或核对分区。",
+      "tags": ["cities", "reference"],
+      "examples": ["有哪些预设城市"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_list_ecosystem",
+      "name": "生态对接清单",
+      "description": "返回对接的开源/商业生态清单，含对接状态（integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated）、许可与用途。用于向调用方说明开放生态策略与差异化定位。",
+      "tags": ["ecosystem", "open-source", "interoperability"],
+      "examples": ["你们对接了哪些开源农业项目"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "agri_bp_screen",
+      "name": "农业项目投资初筛",
+      "description": "传入农业 BP / 审计报告 / 流水文本或已抽取字段，跑九层管线 → 六分类 + 五闸爆雷 + 六评分卡 + 一票否决 → 三档结论（≥75 通过 / 60-75 需深挖 / <60 淘汰），含归因决策路径、反事实边界与数据缺口清单。输出为初筛参考，不构成投资决策建议，也不生成 ROI 数字。",
+      "tags": ["investment-screening", "bp-analysis", "risk-gates"],
+      "examples": ["帮我初筛这份农业项目 BP"],
+      "inputModes": ["application/json", "text/plain"],
+      "outputModes": ["application/json"]
+    }
+  ],
+  "securitySchemes": {},
+  "security": [],
+  "supportsAuthenticatedExtendedCard": false,
+  "x-agri-integrity": {
+    "license": "见仓库 LICENSE（代码）与各数据源许可（数据，混合许可，含 CC BY-NC-SA 来源，不得转售）",
+    "dataLicenseWarning": "Env Recipe 的 sources[] 中含 FAO 等 CC BY-NC-SA 3.0 IGO 来源，整包不得作为付费资产转售。付费标的为服务能力，非数据本身。详见 docs/CORE_OBJECTIVE.md §五。",
+    "provenance": "所有输出带 sources / confidence / resolution 标注；不可测即标不可测，不编造数值。",
+    "zeroDependency": "核心计算与数据路径零第三方依赖，可离线运行、可私有化部署、可审计。",
+    "sla": "本项目不承诺 SLA。见 docs/CORE_OBJECTIVE.md §三边界不做清单。",
+    "contact": "https://github.com/lm203688/smart-agri-eco/issues"
+  }
+}

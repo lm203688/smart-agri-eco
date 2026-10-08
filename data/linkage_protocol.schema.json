@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/lm203688/smart-agri-eco/main/data/linkage_protocol.schema.json",
+  "title": "Linkage Data Protocol (链路数据协议) v1",
+  "description": "智慧农业生态 · L4 业务支撑层开源标准。定义「环境 × 操作 × 结果」三元组在链接全链路（生产→初加工→封装→运输→存储→深加工→消费）的统一数据结构，含鲜度衰减 / 损耗 / 货架期 / 认证溯源字段。本项目策略：数据标准与协议开源（抢生态话语权），模型与平台应用闭源（保利润）。本 schema 即对外开源的链路数据标准，任何生鲜/种植系统均可按此结构回流链路数据，接入鲜度中枢。",
+  "type": "object",
+  "required": ["protocol", "protocol_version", "batch_id", "product", "chain"],
+  "additionalProperties": false,
+  "properties": {
+    "protocol": {
+      "const": "linkage-data",
+      "description": "协议标识，固定为 linkage-data。"
+    },
+    "protocol_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "链路数据协议版本，当前 1.0.0。"
+    },
+    "batch_id": {
+      "type": "string",
+      "description": "链路批次 ID；同一批采收/加工/运输共用，用于全链路追踪。"
+    },
+    "product": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "description": "产品/作物品名，如 小白菜。" },
+        "latin": { "type": "string", "description": "拉丁学名（可选）。" },
+        "category": { "type": "string", "description": "品类，如 叶菜/果菜/香草。" },
+        "grade_in": { "type": "string", "description": "入链等级（A/B/C）。" }
+      }
+    },
+    "origin": {
+      "type": "object",
+      "description": "源头（分布式种植者侧）。",
+      "additionalProperties": false,
+      "properties": {
+        "grower_id": { "type": "string", "description": "种植者匿名 ID（社区/城市合伙人节点）。" },
+        "scene": { "type": "string", "description": "种植形态：balcony/community/roof/car/office/edu/special。" },
+        "zone_id": { "type": "string", "description": "农业分区 ID（来自 global_zones.json）。" },
+        "geo": { "type": "object", "properties": { "lat": { "type": "number" }, "lon": { "type": "number" } } }
+      }
+    },
+    "chain": {
+      "type": "array",
+      "description": "链路事件序列；按发生时间有序。每个事件是一个「操作 × 结果」结点。",
+      "items": {
+        "type": "object",
+        "required": ["stage", "timestamp"],
+        "additionalProperties": false,
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": ["harvest", "pre_process", "pack", "transport", "storage", "deep_process", "consume"],
+            "description": "链路环节。"
+          },
+          "timestamp": { "type": "string", "format": "date-time", "description": "事件时间（ISO8601）。" },
+          "actor": { "type": "string", "description": "操作方（种植者/加工厂/物流/仓/消费者）。" },
+          "location": { "type": "string", "description": "环节地点（节点/城市）。" },
+          "env": {
+            "type": "object",
+            "description": "该环节环境（操作侧），用于鲜度/损耗归因。",
+            "additionalProperties": false,
+            "properties": {
+              "temp_c": { "type": "number", "description": "环节温度 ℃。" },
+              "humidity_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+              "transit_h": { "type": "number", "minimum": 0, "description": "运输/暴露时长（小时）。" }
+            }
+          },
+          "result": {
+            "type": "object",
+            "description": "该环节结果（结果侧）。",
+            "additionalProperties": false,
+            "properties": {
+              "quality_grade": { "type": "string", "description": "出环节等级 A/B/C。" },
+              "loss_pct": { "type": "number", "minimum": 0, "maximum": 100, "description": "本环节损耗率 %。" },
+              "weight_g": { "type": "number", "minimum": 0, "description": "环节后净重 g。" },
+              "freshness_score": { "type": "number", "minimum": 0, "maximum": 1, "description": "环节后鲜度评分 0-1。" }
+            }
+          },
+          "trace_cert": {
+            "type": "object",
+            "description": "认证溯源（L5 信任层入口）。",
+            "additionalProperties": false,
+            "properties": {
+              "cert_type": { "type": "string", "description": "认证类型：organic/fresh_pick/local/self_grown。" },
+              "issuer": { "type": "string" },
+              "verifiable": { "type": "boolean", "description": "是否可链上/可验证溯源。" }
+            }
+          }
+        }
+      }
+    },
+    "freshness_model": {
+      "type": "object",
+      "description": "鲜度中枢输出（由链路数据 + 鲜度/损耗模型计算得，本项目闭源模型填充，此处仅定义结构）。",
+      "additionalProperties": false,
+      "properties": {
+        "shelf_life_days": { "type": "number", "minimum": 0, "description": "总货架期（天）。" },
+        "remaining_shelf_life_days": { "type": "number", "minimum": 0, "description": "剩余货架期（天）。" },
+        "cumulative_loss_pct": { "type": "number", "minimum": 0, "maximum": 100, "description": "全链路累计损耗 %。" },
+        "freshness_score": { "type": "number", "minimum": 0, "maximum": 1, "description": "当前鲜度评分 0-1。" },
+        "intervention_advice": { "type": "string", "description": "事中拦截建议（如 优先配送/降温/转深加工）。" }
+      }
+    },
+    "license": {
+      "type": "string",
+      "default": "CC-BY-4.0",
+      "description": "链路数据标准许可；结构开源，填入的具体业务数据归提供方所有。"
+    }
+  },
+  "schema_version": "1.0.0"
+}

@@ -108,11 +108,20 @@ def _crop_db_path() -> str:
 
 
 def _is_synthetic(entry: Dict[str, Any]) -> bool:
-    """合成样本（单测/demo/冒烟）不得计为真实回流证据。"""
+    """合成样本（单测/demo/冒烟）不得计为真实回流证据。
+
+    大小写不敏感；demo 以独立词匹配（含/不含方括号均可，如 "Demo feedback:"、
+    "[demo]"、"(demo)"），但不误伤 "demonstration" 等包含 demo 子串的普通词。
+    历史坑（2026-10-06）：旧实现只匹配 "[demo]"，大写 "Demo" 无方括号会绕过。
+    """
+    import re
     text = " ".join(
         [str(entry.get("note", ""))] + [str(i) for i in entry.get("issues", [])]
     ).lower()
-    return any(k in text for k in ("unittest", "smoke", "[demo]"))
+    if any(k in text for k in ("unittest", "smoke")):
+        return True
+    # (?:边界或[) + demo + (?:边界或]) —— 兼容 Demo/DEMO/[demo]/(demo)/demo:
+    return bool(re.search(r"(?:\b|\[|\()demo(?:\b|\]|\))", text))
 
 
 def project_state() -> Dict[str, Any]:

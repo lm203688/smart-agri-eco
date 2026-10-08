@@ -14,6 +14,7 @@ Git blob sha1 逐文件比对，给出精确差异清单。
 """
 from __future__ import annotations
 
+import fnmatch
 import hashlib
 import json
 import os
@@ -25,7 +26,38 @@ REPO = os.environ.get("AGRI_GH_REPO", "lm203688/smart-agri-eco")
 BRANCH = os.environ.get("AGRI_GH_BRANCH", "main")
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXCLUDE_DIRS = {".git", ".workbuddy", "__pycache__", ".venv", "node_modules",
-                "outputs", "search_index", "_demo_runtime"}
+                "outputs", "search_index", "_demo_runtime", "_archive"}
+
+# 精确排除的相对目录（避免用宽泛的 "tmp" 误伤合法同名目录）
+EXCLUDE_REL_DIRS = (".workbuddy-ai/tmp/",)
+
+# 与 .gitignore 保持同步：被忽略的路径不应出现在差异清单里，
+# 否则脚本会持续报出「远端缺失」，而推送端根本不会上传它们。
+#
+# 两类规则，语义必须区分开（曾因混用导致 bug）：
+#   ROOT_GLOBS —— 只匹配**仓库根目录**下的文件（对照 .gitignore 中无斜杠的
+#                 `_*.txt` / `_*.py` / `x.db` 等）。根目录外的同名文件**不忽略**，
+#                 否则会误伤 `agent/__init__.py` 这类包入口（`_*.py` 的 `*`
+#                 在 fnmatch 下会匹配到 `_init__`，把 `__init__.py` 吞掉）。
+#   PATH_GLOBS —— 匹配任意层级（对照 .gitignore 中带目录的规则）。
+ROOT_GLOBS = [
+    "_*.txt", "_*.py", "_*.out", "x.db",
+]
+PATH_GLOBS = [
+    "*.log", "*.pyc", "*.pyo",
+    "scripts/_*.py", "scripts/_*.txt",
+    # 凭据与 Agent 中间文件：安全红线，永不比对/推送
+    ".workbuddy-ai/tmp/*", ".workbuddy-ai/pat*.txt",
+    ".workbuddy-ai/push_args.txt", ".workbuddy-ai/push_cmd.txt",
+    "*_pat*.txt",
+    "data/_test_feedback_log.json", "data/*.bak", "data/*.test.*",
+    "data/*.bak_*",
+]
+# 前缀目录：任意层级出现即忽略
+IGNORE_DIR_PREFIXES = [
+    "_archive/", "data/_demo_runtime/", "data/shared_cache/",
+    "data/snapshots/", "data/search_index/",
+]
 EXCLUDE_FILES = {".env"}  # gitignored secret，不比对
 
 
@@ -35,6 +67,29 @@ def git_blob_sha(path: str) -> str:
     return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
 
 
+def is_ignored(rel: str) -> bool:
+    """按 .gitignore 同源规则判断，保持「差异清单 = 实际可推送集合」。
+
+    注意：``__init__.py`` 是 Python 包入口，**永远不忽略**——它看起来像
+    ``_*.py`` 的临时产物，实则是构建必需文件。
+    """
+    base = os.path.basename(rel)
+    if base == "__init__.py":
+        return False
+
+    if "/" not in rel:
+        for pat in ROOT_GLOBS:
+            if fnmatch.fnmatch(rel, pat):
+                return True
+    for pat in PATH_GLOBS:
+        if fnmatch.fnmatch(rel, pat):
+            return True
+    for pre in IGNORE_DIR_PREFIXES:
+        if rel.startswith(pre) or ("/" + pre) in ("/" + rel):
+            return True
+    return False
+
+
 def local_files() -> dict:
     out = {}
     for dirpath, dirnames, filenames in os.walk(ROOT):
@@ -42,7 +97,9 @@ def local_files() -> dict:
         for fn in filenames:
             full = os.path.join(dirpath, fn)
             rel = os.path.relpath(full, ROOT).replace(os.sep, "/")
-            if fn in EXCLUDE_FILES:
+            if fn in EXCLUDE_FILES or is_ignored(rel):
+                continue
+            if any(rel.startswith(d) for d in EXCLUDE_REL_DIRS):
                 continue
             out[rel] = git_blob_sha(full)
     return dict(sorted(out.items()))
