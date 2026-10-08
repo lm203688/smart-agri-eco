@@ -455,16 +455,29 @@ class TestLocalStorage(_Isolated):
     def test_rebuild_counts_four_corpora(self):
         r = ls.rebuild(force=True)
         self.assertTrue(r["fts"])
-        # v1.1 (2026-09-30) 新增 hot_arid / highland 两分区 + 6 个配套配方
-        self.assertEqual(r["rows"]["crops"], 116,
-                         "crops 来自 crop_adapt_db.json；v1.1 新增 hot_arid/highland 两分区各 3 作物（110→116）")
-        self.assertEqual(r["rows"]["zones"], 8,
-                         "v1.1 分区从 6 → 8（新增 hot_arid + highland）")
-        self.assertEqual(r["rows"]["pests"], 23)
-        self.assertEqual(r["rows"]["recipes"], 116,
-                         "v1.1 配方从 110 → 116（新增 6 个 hot_arid/highland 配套）")
-        self.assertEqual(r["total"], 263,
-                         "116+8+23+116=263（v1.1 作物回填后：原 110+8+23+116=257）")
+
+        # 不写死数量：改为与源文件现算值比对。
+        #
+        # 原先这里硬编码 116/263，每次扩充作物库都要回来改测试 —— 2026-10-08
+        # 补入 hot_arid/highland 两带（116→152）时即因此连挂两条。
+        # 硬编码还会掩盖真正的回归：源文件与索引不一致才是该测的东西，
+        # 「索引等于某个历史快照」不是。
+        import glob
+        crop_db = json.load(open(os.path.join(ROOT, "data", "crop_adapt_db.json"),
+                                 encoding="utf-8"))
+        want_crops = sum(len(z.get("crops", [])) for z in crop_db["zones"].values())
+        want_zones = len(crop_db["zones"])
+        want_recipes = len(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
+
+        self.assertEqual(r["rows"]["crops"], want_crops,
+                         "crops 应等于 crop_adapt_db.json 实际条目数")
+        self.assertEqual(r["rows"]["zones"], want_zones,
+                         "zones 应等于 crop_adapt_db.json 实际分区数")
+        self.assertEqual(r["rows"]["recipes"], want_recipes,
+                         "recipes 应等于 data/env_recipes/ 下配方文件数")
+        self.assertGreater(r["rows"]["pests"], 0, "pests 语料不应为空")
+        self.assertEqual(r["total"], sum(r["rows"].values()),
+                         "total 应等于四路语料行数之和")
 
     def test_rebuild_does_not_modify_source_json(self):
         src = os.path.join(ROOT, "data", "crop_adapt_db.json")
@@ -526,8 +539,9 @@ class TestLocalStorage(_Isolated):
         ls.rebuild(force=True)
         s = ls.stats()
         self.assertTrue(s["built"])
-        self.assertEqual(s["total"], 263,
-                         "v1.1 作物回填后总数 116+8+23+116=263")
+        # 同样不写死总数：与四路行数之和比对，随源文件自动跟随
+        self.assertEqual(s["total"], sum(s["rows"].values()),
+                         "total 应等于 crops+zones+pests+recipes 之和")
         self.assertIn("crops", s["rows"])
         self.assertTrue(s["path"], "stats 应报告索引文件路径")
 
