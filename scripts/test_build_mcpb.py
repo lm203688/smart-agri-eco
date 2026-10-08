@@ -82,6 +82,24 @@ class TestReproducibleBuild(unittest.TestCase):
             for k in ("manifest_version", "name", "version"):
                 self.assertIn(k, m, "manifest.json 缺关键字段 %s" % k)
 
+    def test_excludes_untracked_backups(self):
+        """只打"会入库"的文件：含 .bak/.orig/~/.tmp 标记的本地临时文件必须排除。
+
+        实踩（2026-10-08）：本地遗留 global_zones.json.bak_20261006 未入库，
+        于是本地包 201 文件、CI 包 200 文件，sha256 两边永远对不上。
+        """
+        rels = [rel for _, rel in B.collect_files()]
+        leak = [r for r in rels
+                if any(m in os.path.basename(r) for m in B.EXCLUDE_FILE_MARKERS)]
+        self.assertEqual(leak, [], "打包清单混入临时/备份文件: %s" % leak)
+
+    def test_no_excluded_dirs_leak(self):
+        """EXCLUDE_DIR_NAMES 里的目录不能出现在包内（docs/app/scripts 等）。"""
+        rels = [rel for _, rel in B.collect_files()]
+        leak = [r for r in rels
+                if any(part in B.EXCLUDE_DIR_NAMES for part in r.split("/")[:-1])]
+        self.assertEqual(leak, [], "打包清单混入排除目录: %s" % leak[:5])
+
     def test_check_detects_mismatch(self):
         """--check 语义：server.json 与产物不一致时必须能被发现。
 

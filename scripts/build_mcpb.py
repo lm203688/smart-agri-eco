@@ -48,6 +48,12 @@ EXCLUDE_DIR_NAMES = {"__pycache__", ".git", ".workbuddy", ".workbuddy-ai", ".ven
 EXCLUDE_FILE_SUFFIX = (".pyc", ".pyo", ".log")
 EXCLUDE_FILE_NAMES = {".env"}
 
+# 本地临时备份（如 global_zones.json.bak_20261006）——未入库，故本地打进包、
+# CI 打不进，两边文件数不同 -> sha256 必然不同。
+# 实踩（2026-10-08）：本地 201 文件 vs CI 200 文件，差的就是一个 .bak 文件，
+# 导致仓库里的 server.json 与 CI 发布的永远对不上。
+EXCLUDE_FILE_MARKERS = (".bak", ".orig", "~", ".tmp")
+
 # data/ 下要打包的内容（运行必需）：env_recipes + 核心 JSON 库
 DATA_INCLUDE = [
     "data/env_recipes",
@@ -113,6 +119,8 @@ def collect_files() -> list:
             for fn in filenames:
                 if fn.endswith(EXCLUDE_FILE_SUFFIX) or fn in EXCLUDE_FILE_NAMES:
                     continue
+                if any(m in fn for m in EXCLUDE_FILE_MARKERS):
+                    continue
                 full = os.path.join(dirpath, fn)
                 out.append((full, os.path.relpath(full, ROOT).replace(os.sep, "/")))
     for f in INCLUDE_FILES:
@@ -128,6 +136,8 @@ def collect_files() -> list:
                 dirnames[:] = [x for x in dirnames if _should_include_dir(x)]
                 for fn in filenames:
                     if fn.endswith(EXCLUDE_FILE_SUFFIX):
+                        continue
+                    if any(m in fn for m in EXCLUDE_FILE_MARKERS):
                         continue
                     full = os.path.join(dirpath, fn)
                     out.append((full, os.path.relpath(full, ROOT).replace(os.sep, "/")))
