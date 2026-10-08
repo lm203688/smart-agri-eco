@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.lm203688/agri-eco",
   "title": "智慧农业生态 Agri-Eco",
-  "description": "面向分布式农业的 Agent-native 知识基座：可执行 Env Recipe 环境配方（作物 × 生长阶段 × 设备类别 → 可落地环境参数，116 份已发布）+ 多源气候校准 + WOFOST 积温物候与播期窗口 + 土壤剖面 + 农业分区匹配 + 病虫害养分诊断 + 数据血缘溯源 + 农业项目投资初筛。零第三方依赖（纯 Python 标准库），可完全离线运行。14 个 MCP 工具。",
+  "description": "面向分布式农业的 Agent-native 知识基座：Env Recipe 环境配方 + 气候校准 + 物候播期 + 病虫害诊断。零依赖可离线，14 个 MCP 工具。",
   "version": "1.1.0",
   "repository": {
     "url": "https://github.com/lm203688/smart-agri-eco",

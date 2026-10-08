@@ -1,0 +1,104 @@
+# 智慧农业生态 · 发布到官方 MCP Registry
+#
+# 为什么放在 CI 而不是本地跑：
+#   `mcp-publisher login github` 是**交互式 device-code 流程**（要人工去
+#   https://github.com/login/device 输入一次性代码），在无人值守/自动化环境里
+#   无法完成。而 `login github-oidc` **只在 GitHub Actions 内可用**——它用
+#   workflow 自带的 OIDC token 换取 Registry JWT，全程无人工介入。
+#   因此把发布放在 Actions 里是唯一可自动化的路径。
+#
+# 前置（只需一次）：
+#   在 GitHub 仓库 Settings → Actions → General → Workflow permissions，
+#   确认 "Read repository contents permission" 已开，并允许 id-token: write
+#   （下方 permissions 已显式声明）。
+#
+# 触发：
+#   1. 手动：Actions → "Publish to MCP Registry" → Run workflow
+#   2. 自动：打 tag `v*` 时自动跑一次（例如 v1.1.0）
+#
+# 注意：Registry 侧要求先落实 MCPB 分发物。本仓库的 MCPB 由
+# scripts/build_mcpb.py 构建，挂在 GitHub Release 上。因此发布前需保证
+# 对应 tag 的 Release 已存在且已上传 agri-eco-mcp-<version>.mcpb，
+# 且 server.json 的 fileSha256 与该产物一致（scripts/build_mcpb.py --check 校验）。
+
+name: Publish to MCP Registry
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write   # github-oidc 认证必需
+
+jobs:
+  publish:
+    name: 发布 server.json 到官方 Registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 构建 MCPB 并校验 server.json 一致性
+        run: |
+          # 确保 server.json 的 fileSha256 与实际产物匹配；
+          # 若产物尚未挂到 Release，这一步仍会通过（校验的是本地一致性），
+          # 但 Registry 侧会因下载不到 identifier 而拒绝——故本步骤后
+          # 额外验证 Release 资产确实存在且哈希一致。
+          python scripts/build_mcpb.py
+          python scripts/build_mcpb.py --check
+
+      - name: 确认 Release 资产存在且 sha256 一致
+        run: |
+          python - <<'PY'
+          import hashlib, json, urllib.request, urllib.error, sys
+
+          doc = json.load(open("server.json", encoding="utf-8"))
+          pkg = doc["packages"][0]
+          url = pkg["identifier"]
+          want = pkg["fileSha256"]
+          print(f"server.json name    : {doc['name']}")
+          print(f"server.json version : {doc['version']}")
+          print(f"asset url           : {url}")
+          try:
+              data = urllib.request.urlopen(url, timeout=120).read()
+          except Exception as e:
+              sys.exit(f"❌ 下载 MCPB 失败：{e}\n"
+                       f"   请先创建 tag {doc['version']} 对应的 Release 并上传产物。")
+          got = hashlib.sha256(data).hexdigest()
+          print(f"asset size          : {len(data)} bytes")
+          print(f"declared sha256     : {want}")
+          print(f"actual   sha256     : {got}")
+          if got != want:
+              sys.exit("❌ sha256 不一致：请重新运行 scripts/build_mcpb.py 回填并提交。")
+          print("✅ Release 资产可下载且哈希一致")
+          PY
+
+      - name: 安装 mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" \
+            | tar xz mcp-publisher
+          ./mcp-publisher --help
+
+      - name: 校验 server.json（Registry 侧真实校验）
+        run: ./mcp-publisher validate
+
+      - name: GitHub OIDC 登录（Actions 内免人工）
+        run: ./mcp-publisher login github-oidc
+
+      - name: 发布
+        run: ./mcp-publisher publish
+
+      - name: 复核（查 Registry API）
+        run: |
+          NAME="$(python -c "import json;print(json.load(open('server.json',encoding='utf-8'))['name'])")"
+          echo "查询: $NAME"
+          curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=${NAME}" \
+            | python -c "import json,sys; d=json.load(sys.stdin); print(json.dumps(d, ensure_ascii=False, indent=2)[:2000])"
