@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/lm203688/smart-agri-eco/releases/download/v1.1.0/agri-eco-mcp-1.1.0.mcpb",
-      "fileSha256": "23ac377e95d6dadb23601ec69759bb18bfba470eddf8c12c0cddab151c95f217",
+      "fileSha256": "c2cf92e3f0b7effe17a52c1c63fb78a6c974ad55db227caa0a2974a2b8ef3c94",
       "transport": {
         "type": "stdio"
       }
