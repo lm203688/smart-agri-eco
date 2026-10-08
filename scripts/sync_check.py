@@ -59,6 +59,17 @@ PATH_GLOBS = [
 IGNORE_DIR_PREFIXES = [
     "_archive/", "data/_demo_runtime/", "data/shared_cache/",
     "data/snapshots/", "data/search_index/",
+    # `.workbuddy/`（无 -ai）是旧版 Agent 工作目录，含 2026-08/09 的会话日志，
+    # 其中 2026-09-27.md 曾明文记录过一个 PAT。该目录从不入仓（.gitignore 有，
+    # EXCLUDE_DIRS 也跳过），这里再挡一道：凭据安全不应依赖
+    # "调用路径恰好绕过了某层过滤"。
+    #
+    # 注意：不要整目录忽略 `.workbuddy-ai/` —— 该目录下的 memory/ 是项目
+    # 约定要随仓库分发的（远端已有 2026-10-08.md），整目录忽略会把公开
+    # 进度日志一起挡掉，反而制造"本地有、远端无"的假差异。
+    ".workbuddy/",
+    # 但 `.workbuddy-ai/` 下的凭据与临时产物必须挡死
+    ".workbuddy-ai/tmp/", ".workbuddy-ai/*.pat", ".workbuddy-ai/pat*.txt",
 ]
 EXCLUDE_FILES = {".env"}  # gitignored secret，不比对
 
