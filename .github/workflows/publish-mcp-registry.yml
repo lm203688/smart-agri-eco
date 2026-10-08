@@ -121,8 +121,66 @@ jobs:
       - name: GitHub OIDC 登录（Actions 内免人工）
         run: ./mcp-publisher login github-oidc
 
+      # 先做"内容漂移"检测：Registry 不允许同版本重复发布，若本次产物的 sha
+      # 与 Registry 上已发布的同版本不同，说明改了代码却忘了升版本——
+      # 这种情况必须显式失败，否则会被下面的幂等分支静默吞掉（新代码永远发不出去）。
+      - name: 检测版本漂移（内容变了但版本号没升）
+        run: |
+          python - <<'PY'
+          import json, sys, urllib.parse, urllib.request
+
+          doc = json.load(open("server.json", encoding="utf-8"))
+          name, ver = doc["name"], doc["version"]
+          want = doc["packages"][0]["fileSha256"]
+
+          url = ("https://registry.modelcontextprotocol.io/v0.1/servers?search="
+                 + urllib.parse.quote(name))
+          try:
+              data = json.load(urllib.request.urlopen(url, timeout=60))
+          except Exception as e:
+              print("ℹ️ 查询 Registry 失败（%s），跳过漂移检测" % e)
+              sys.exit(0)
+
+          for s in data.get("servers", []):
+              sd = s.get("server", s)
+              if sd.get("name") != name:
+                  continue
+              for p in sd.get("packages", []):
+                  if p.get("registryType") != "mcpb":
+                      continue
+                  if str(sd.get("version")) != str(ver):
+                      continue
+                  got = p.get("fileSha256")
+                  if got == want:
+                      print("✅ 版本 %s 已在架且产物一致（%s）" % (ver, got[:12]))
+                      sys.exit(0)
+                  sys.exit(
+                      "❌ 版本漂移：Registry 上 %s 的产物为 %s，本次构建为 %s。\n"
+                      "   同版本不可重复发布，请先升 scripts/build_mcpb.py 的 VERSION\n"
+                      "   并同步 CHANGELOG，再重新发布。" % (ver, got[:12], want[:12]))
+          print("ℹ️ Registry 上尚无 %s %s，将首次发布" % (name, ver))
+          PY
+
+      # 幂等：Registry 不允许同版本重复发布（400 "cannot publish duplicate
+      # version"）。首次发布成功后，任何重跑（或 tag 未升版本）都会撞这个错——
+      # 这不是故障，是"该版本已在架"的证明。区分处理：重复 => 视为成功；
+      # 其他错误 => 照常失败，绝不把真问题吞掉。
       - name: 发布
-        run: ./mcp-publisher publish
+        run: |
+          set +e
+          ./mcp-publisher publish 2>&1 | tee publish.out
+          rc=${PIPESTATUS[0]}
+          set -e
+          if [ "$rc" -eq 0 ]; then
+            echo "✅ 已发布"
+            exit 0
+          fi
+          if grep -q "cannot publish duplicate version" publish.out; then
+            echo "ℹ️ 该版本已在 Registry 上（重复发布被拒）——视为成功，不阻塞流程"
+            exit 0
+          fi
+          echo "❌ 发布失败（非重复版本错误，需人工排查）"
+          exit "$rc"
 
       - name: 复核（查 Registry API）
         run: |
