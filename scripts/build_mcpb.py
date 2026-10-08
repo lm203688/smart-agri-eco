@@ -135,13 +135,41 @@ def collect_files() -> list:
 
 
 def build(out_path: str) -> str:
+    """打包 MCPB（zip），**确定性可复现**：同一份源码 => 同一个 sha256。
+
+    实踩（2026-10-08）：原实现用 ``z.write(full, rel)``，而 zip 条目会记录
+    文件的 mtime —— 于是同一份源码间隔几十秒构建两次，sha256 就不同
+    （a7593649… / af4b7333…）。后果是 ``server.json`` 里的 ``fileSha256``
+    永远追不上产物，Registry 的"声明哈希 == 实际下载哈希"校验反复失败，
+    排查方向被误导到"资产没上传"上，实际根因在此。
+
+    修法：不落盘任何"当下时间"，显式构造 ZipInfo（固定 date_time、
+    固定权限位），条目顺序也已由 collect_files 的 sorted 保证。
+    """
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     files = collect_files()
     manifest = build_manifest()
+
+    # 固定为 1980-01-01 00:00:00（zip 纪元下限）。
+    # 不能用 datetime.now()，否则破坏可复现性。
+    FIXED_DT = (1980, 1, 1, 0, 0, 0)
+    FIXED_MODE = 0o644
+
+    def _info(name: str) -> zipfile.ZipInfo:
+        zi = zipfile.ZipInfo(filename=name, date_time=FIXED_DT)
+        zi.compress_type = zipfile.ZIP_DEFLATED
+        # 只保留权限位，去掉文件类型/可变位，避免平台差异
+        zi.external_attr = (FIXED_MODE & 0xFFFF) << 16
+        zi.create_system = 3  # 固定为 Unix，避免 Windows/Linux 产物不同
+        return zi
+
     with zipfile.ZipFile(out_path, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+        blob = json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8")
+        z.writestr(_info("manifest.json"), blob)
         for full, rel in files:
-            z.write(full, rel)
+            with open(full, "rb") as f:
+                payload = f.read()
+            z.writestr(_info(rel), payload)
     return out_path
 
 

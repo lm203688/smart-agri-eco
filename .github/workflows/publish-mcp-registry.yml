@@ -7,19 +7,21 @@
 #   workflow 自带的 OIDC token 换取 Registry JWT，全程无人工介入。
 #   因此把发布放在 Actions 里是唯一可自动化的路径。
 #
+# 为什么由 CI 自己构建并上传产物（而不是要求人工先传）：
+#   实踩（2026-10-08）：`server.json` 的 `fileSha256` 必须与 Release 上的
+#   asset **逐字节一致**。但产物是 zip，任何源码改动都会改变哈希——于是
+#   "本地构建 → 回填 → 提交 → 手工重传资产" 这条链每改一次代码就要走一遍，
+#   漏一步就报 `❌ sha256 不一致`（旧资产 99968070 / 新构建 aed3c122）。
+#   CI 内部一条龙：构建 → 上传/覆盖 Release asset → 用**同一个**文件回填
+#   server.json → 立即发布。三处 sha 来源唯一，结构上不可能不一致。
+#
 # 前置（只需一次）：
 #   在 GitHub 仓库 Settings → Actions → General → Workflow permissions，
-#   确认 "Read repository contents permission" 已开，并允许 id-token: write
-#   （下方 permissions 已显式声明）。
+#   选择 "Read and write permissions"（上传 Release asset 需要 contents: write）。
 #
 # 触发：
 #   1. 手动：Actions → "Publish to MCP Registry" → Run workflow
 #   2. 自动：打 tag `v*` 时自动跑一次（例如 v1.1.0）
-#
-# 注意：Registry 侧要求先落实 MCPB 分发物。本仓库的 MCPB 由
-# scripts/build_mcpb.py 构建，挂在 GitHub Release 上。因此发布前需保证
-# 对应 tag 的 Release 已存在且已上传 agri-eco-mcp-<version>.mcpb，
-# 且 server.json 的 fileSha256 与该产物一致（scripts/build_mcpb.py --check 校验）。
 
 name: Publish to MCP Registry
 
@@ -30,7 +32,7 @@ on:
       - "v*"
 
 permissions:
-  contents: read
+  contents: write   # 创建/更新 Release 并上传 asset
   id-token: write   # github-oidc 认证必需
 
 jobs:
@@ -46,39 +48,65 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: 构建 MCPB 并校验 server.json 一致性
+      # 单一事实源：先构建产物，得到本次唯一的 sha256。
+      - name: 构建 MCPB
         run: |
-          # 确保 server.json 的 fileSha256 与实际产物匹配；
-          # 若产物尚未挂到 Release，这一步仍会通过（校验的是本地一致性），
-          # 但 Registry 侧会因下载不到 identifier 而拒绝——故本步骤后
-          # 额外验证 Release 资产确实存在且哈希一致。
           python scripts/build_mcpb.py
           python scripts/build_mcpb.py --check
 
-      - name: 确认 Release 资产存在且 sha256 一致
+      # 把本次构建的产物挂到 Release（存在则覆盖），
+      # 再用 GitHub API 回读校验，确保 Registry 稍后下载到的就是这一份。
+      - name: 上传/覆盖 Release 资产并回读校验
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
-          import hashlib, json, urllib.request, urllib.error, sys
+          import hashlib, json, os, subprocess, sys, time, urllib.request
 
           doc = json.load(open("server.json", encoding="utf-8"))
+          tag = "v" + doc["version"]
           pkg = doc["packages"][0]
-          url = pkg["identifier"]
           want = pkg["fileSha256"]
-          print(f"server.json name    : {doc['name']}")
-          print(f"server.json version : {doc['version']}")
-          print(f"asset url           : {url}")
-          try:
-              data = urllib.request.urlopen(url, timeout=120).read()
-          except Exception as e:
-              sys.exit(f"❌ 下载 MCPB 失败：{e}\n"
-                       f"   请先创建 tag {doc['version']} 对应的 Release 并上传产物。")
-          got = hashlib.sha256(data).hexdigest()
-          print(f"asset size          : {len(data)} bytes")
-          print(f"declared sha256     : {want}")
-          print(f"actual   sha256     : {got}")
-          if got != want:
-              sys.exit("❌ sha256 不一致：请重新运行 scripts/build_mcpb.py 回填并提交。")
-          print("✅ Release 资产可下载且哈希一致")
+          asset_name = pkg["identifier"].rsplit("/", 1)[-1]
+          path = os.path.join("dist", asset_name)
+
+          got = hashlib.sha256(open(path, "rb").read()).hexdigest()
+          print(f"本地产物 sha256 : {got}")
+          assert got == want, f"回填不一致：server.json={want} 产物={got}"
+
+          # Release 不存在则创建（幂等）；已存在则复用。
+          create = subprocess.run(
+              ["gh", "release", "create", tag, "--title", tag,
+               "--notes", f"自动化发布 {tag}（CI 构建）"],
+              capture_output=True, text=True)
+          if create.returncode != 0 and "already exists" not in (create.stderr or ""):
+              print(create.stdout); print(create.stderr)
+              sys.exit("❌ 创建 Release 失败")
+
+          # 覆盖上传（--clobber），避免旧资产残留导致哈希不一致。
+          up = subprocess.run(
+              ["gh", "release", "upload", tag, path, "--clobber"],
+              capture_output=True, text=True)
+          if up.returncode != 0:
+              print(up.stdout); print(up.stderr)
+              sys.exit("❌ 上传 Release 资产失败")
+          print(f"已上传 {asset_name} -> {tag}")
+
+          # 回读校验：匿名 URL 可能受 CDN 影响，重试若干次。
+          url = pkg["identifier"]
+          last = ""
+          for i in range(6):
+              try:
+                  data = urllib.request.urlopen(url, timeout=120).read()
+                  got = hashlib.sha256(data).hexdigest()
+                  if got == want:
+                      print(f"✅ 回读一致：{len(data)} bytes  {got}")
+                      sys.exit(0)
+                  last = f"远端 {got} != 声明 {want}"
+              except Exception as e:
+                  last = f"{type(e).__name__}: {e}"
+              time.sleep(5)
+          sys.exit(f"❌ 回读校验失败（重试 6 次）：{last}")
           PY
 
       - name: 安装 mcp-publisher

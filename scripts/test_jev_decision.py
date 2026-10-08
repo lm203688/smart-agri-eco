@@ -105,6 +105,8 @@ class TestRecipeGateRun(unittest.TestCase):
     def setUp(self):
         self.saved = _clear_key()
         self.date = "2026-09-23"
+        # outputs/ 不入库（产物目录），干净 checkout 中不存在 —— 自建。
+        os.makedirs(os.path.join(PROJ_ROOT, "outputs"), exist_ok=True)
         self.out = os.path.join(PROJ_ROOT, "outputs", "_t_recipe_gate.md")
         self.idx = RG.GATE_INDEX
 
@@ -139,6 +141,7 @@ class TestCalibOutlierRun(unittest.TestCase):
     def setUp(self):
         self.saved = _clear_key()
         self.date = "2026-09-23"
+        os.makedirs(os.path.join(PROJ_ROOT, "outputs"), exist_ok=True)
         self.out = os.path.join(PROJ_ROOT, "outputs", "_t_calib_out.md")
         self.idx = CO.OUTLIER_INDEX
 

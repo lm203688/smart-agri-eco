@@ -23,7 +23,11 @@ import agent.jev_gate as jg  # noqa: E402
 
 class _Tmp:
     def __init__(self):
-        self.d = tempfile.mkdtemp(prefix="jev_attr_", dir=os.path.join(ROOT, ".workbuddy", "tmp"))
+        # .workbuddy/ 在 .gitignore 里（含旧版会话日志），干净 checkout 中不存在，
+        # 故不能假设它已存在 —— 必须自己建，否则 CI 上 mkdtemp 直接 FileNotFoundError。
+        tmp_root = os.path.join(ROOT, ".workbuddy", "tmp")
+        os.makedirs(tmp_root, exist_ok=True)
+        self.d = tempfile.mkdtemp(prefix="jev_attr_", dir=tmp_root)
         self.probe = os.path.join(self.d, "probe.json")
         self.out = os.path.join(self.d, "attrib.md")
 
