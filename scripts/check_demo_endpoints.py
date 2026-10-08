@@ -232,6 +232,10 @@ def main() -> int:
     env["AGRI_DEMO_PORT"] = str(port)
     # 不缓冲，便于父进程在出错时把子进程日志打出来
     env["PYTHONUNBUFFERED"] = "1"
+    # 强制 UTF-8：服务启动横幅含 emoji，若落到 GBK/ascii 控制台会
+    # UnicodeEncodeError 并在 serve_forever() 之前崩掉（端口已 bind，
+    # 表现却像"启动超时"）。此处与 app/demo_server.py 的 _safe_print 双保险。
+    env["PYTHONIOENCODING"] = "utf-8"
     # 清掉代理变量：Demo 只监听回环，子进程不必也不应经代理出网；
     # 留着反而会让内部自请求（若有）绕到代理上。
     for k in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy",

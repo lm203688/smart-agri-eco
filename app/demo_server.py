@@ -706,17 +706,39 @@ def _recipe_detail(rid: str) -> dict:
         return {"error": str(e)[:160]}
 
 
+def _safe_print(text: str) -> None:
+    """打印启动横幅，兼容非 UTF-8 控制台。
+
+    实踩（2026-10-08）：Windows 控制台默认 GBK，横幅里的 🌱 会让 print 抛
+    UnicodeEncodeError。而横幅在 serve_forever() **之前**执行，于是进程直接
+    死在启动阶段——服务没起来，但端口已经 bind 过，表现像"启动超时"，
+    排查时极具误导性。CI/服务化场景里 stdout 编码不受我们控制，
+    因此这里降级为 ASCII 而不是让整个服务崩掉。
+    """
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        enc = getattr(sys.stdout, "encoding", None) or "ascii"
+        print(text.encode(enc, errors="replace").decode(enc, errors="replace"))
+
+
 def main():
     server = ThreadingHTTPServer((HOST, PORT), Handler)
-    print("=" * 56)
-    print("🌱 智慧农业生态 · 交互式 Demo")
-    print(f"   访问: http://{HOST}:{PORT}")
-    print("   零依赖：仅 Python 标准库（http.server）")
-    print("=" * 56)
+    _safe_print("=" * 56)
+    _safe_print("🌱 智慧农业生态 · 交互式 Demo")
+    _safe_print(f"   访问: http://{HOST}:{PORT}")
+    _safe_print("   零依赖：仅 Python 标准库（http.server）")
+    _safe_print("=" * 56)
+    # 关键：把已就绪信号显式刷出去，父进程/编排器据此判断可用，
+    # 不用靠轮询猜。flush 失败不影响服务本身。
+    try:
+        sys.stdout.flush()
+    except Exception:
+        pass
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\n已停止")
+        _safe_print("\n已停止")
         server.shutdown()
 
 
