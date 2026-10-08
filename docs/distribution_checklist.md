@@ -17,9 +17,10 @@
 | P0-3 | Agent Plugins 打包 | ✅ **已完成** | `plugin/`，13 文件 |
 | P0-7 | 消除硬编码密钥 | ✅ **已完成** | `grep secret_key` = 0 命中 |
 | P0-6 | GitHub 推送 | ✅ **已完成** | commit `6ef8b6c8cdeb`，332 文件，`sync_check` 差异 **0** |
-| P0-4a | MCPB 分发包构建 | ✅ **已完成** | `dist/agri-eco-mcp-1.1.0.mcpb`（201 文件 / 0.44 MB），实测解压可跑 |
+| P0-4a | MCPB 分发包构建 | ✅ **已完成** | `dist/agri-eco-mcp-1.1.0.mcpb`（200 文件 / 0.44 MB），**确定性可复现** |
 | P0-5a | Demo 端到端冒烟自检 | ✅ **已完成** | `python scripts/check_demo_endpoints.py`，14/14 通过，已入 CI |
-| P0-4b | 上架 4 个市场 | ⏸ **需你操作** | 材料全备：`docs/market_listing_pack.md` |
+| P0-4c | 官方 MCP Registry 上架 | ✅ **已完成** | `io.github.lm203688/agri-eco` v1.1.0，2026-10-08 上架，CI 一键可重发 |
+| P0-4b | 上架其余 3 个市场 | ⏸ **需你操作** | Glama / LobeHub / Smithery，材料全备：`docs/market_listing_pack.md` |
 | P0-5 | 公网 Demo 部署 | ⏸ **需你执行** | 脚本 + 自检全就绪，只差 SSH 免密；见 §2 |
 
 **已完成的安全处置**：推送过程中 GitHub 密钥扫描拦截了一次误传（临时 PAT 文件进入 blobs），
@@ -129,20 +130,63 @@ curl http://150.158.119.19:8001/api/cities
 | **LobeHub MCP** | 社区提交 PR 到其仓库 | 提 PR 或在其站内提交 |
 | **Smithery** | 站内提交 `mcp.json` 或仓库地址 | 提交表单 |
 
-### 3.2 提交材料
+### 3.2 ✅ 官方 MCP Registry 已上架（2026-10-08）
+
+**验收结果**（Registry API 实时可查）：
+
+```
+name        : io.github.lm203688/agri-eco
+version     : 1.1.0
+registryType: mcpb
+identifier  : https://github.com/lm203688/smart-agri-eco/releases/download/v1.1.0/agri-eco-mcp-1.1.0.mcpb
+sha256      : 390e977940676f856fc6c7fe9b7a4bb087f1abf6388a72ab01c917c10ef57b24
+publishedAt : 2026-10-08T05:33:32Z
+```
+
+复核命令：
+
+```bash
+curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.lm203688/agri-eco"
+```
+
+**为什么能自动化**：`mcp-publisher login github` 是交互式 device-code 流程（要人工
+去 github.com/login/device 输一次性码），无人值守环境做不了；而
+`login github-oidc` **只在 GitHub Actions 内可用**。所以发布做成了
+`.github/workflows/publish-mcp-registry.yml`，手动 dispatch 或打 `v*` tag 即触发。
+
+**过程中的三个真坑（都已修，别回退）**：
+
+1. **`description` 必须 ≤100 字符**。Registry 返回 422 才暴露，本地 `validate`
+   不报错。现已缩到 84 字符。
+2. **`fileSha256` 必须与 Release 上的 asset 逐字节一致**。最初设计成"本地构建 →
+   回填 server.json → 手工上传 asset"，每改一次代码就得重走一遍，漏一步就
+   `❌ sha256 不一致`。现已改为 **CI 内部一条龙**：构建 → `gh release upload --clobber`
+   → 用同一文件回填 → 回读校验 → 发布。三处 sha 来源唯一，结构上不可能不一致。
+3. **zip 曾混入 mtime**，导致同一份源码两次构建 sha 不同（`a7593649` vs
+   `af4b7333`），排查方向被误导到"资产没上传"。修法：显式构造 `ZipInfo`，
+   固定 `date_time=(1980,1,1,0,0,0)`、`create_system=3`、权限 `0644`。
+   另有本地未入库的 `.bak` 文件混入打包清单（本地 201 / CI 200），已加
+   `EXCLUDE_FILE_MARKERS`。现在**本地 = CI = `390e9779`**。
+   回归测试锁死：`python -m unittest scripts.test_build_mcpb`。
+
+**幂等行为**：Registry 不允许同版本重复发布（400 `cannot publish duplicate
+version`）。workflow 已区分处理——重复视为成功；但若**内容变了而版本没升**，
+会先被「版本漂移检测」拦下并显式报错，避免新代码静默发不出去。
+
+### 3.3 提交材料（其余 3 家）
 
 **完整材料已移入独立文件：[`docs/market_listing_pack.md`](market_listing_pack.md)**
 
 该文件包含：
 - 所有市场复用的通用字段（短名 / One-liner / 完整描述 / 分类 / 安装配置 / 许可）
 - 14 个工具的逐条说明表（可作亮点列举）
-- **Official MCP Registry** 的完整 3 步操作（含 `server.json` 与 MCPB 产物说明）
 - **Glama / LobeHub / Smithery** 各自的表单字段映射与需要新增的文件
 - 提交后的验收清单
 
-### 3.3 提交后的验收标准
+### 3.4 提交后的验收标准
 
-- [ ] 4 个市场搜索 `agri-eco` / `agriculture mcp` 均可见
+- [x] 官方 MCP Registry 搜索 `agri-eco` 可见（✅ 已达成）
+- [ ] Glama / LobeHub / Smithery 搜索 `agri-eco` / `agriculture mcp` 均可见
 - [ ] 从任一市场按指引安装后，`tools/list` 返回 **14** 个工具
 - [ ] 出现第 1 次**非本人**的外部调用（P0 出口指标）
 
@@ -150,10 +194,11 @@ curl http://150.158.119.19:8001/api/cities
 
 ## 4. 一页速查：你现在要做的两件事
 
-**前提已就绪**：仓库同步完成（332 文件 / 差异 0）、MCPB 分发包已构建并通过运行验证、四个市场的提交材料已备齐。
+**前提已就绪**：仓库同步完成（340 文件 / 差异 0）、MCPB 分发包已构建且确定性可复现、
+**官方 MCP Registry 已上架**、CI 与 Publish 两条 workflow 全绿、其余 3 家的提交材料已备齐。
 
-1. **跑部署**（§2）→ 三条命令，拿到公网 Demo 链接
-2. **提交市场**（`docs/market_listing_pack.md`）→ 先建 GitHub Release 上传 `.mcpb`，再逐家提交
+1. **跑部署**（§2）→ 先 `ssh-copy-id root@150.158.119.19`，再 `bash deploy/deploy_local.sh`，拿到公网 Demo 链接
+2. **提交其余 3 家市场**（`docs/market_listing_pack.md`）→ Glama / LobeHub / Smithery 各需独立账号
 
 两步做完，`docs/CORE_OBJECTIVE.md` 的 G1 目标（≥500 次调用 / ≥20 独立调用方，窗口约至 2026-12 中旬）才真正开始计时。
 

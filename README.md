@@ -7,6 +7,14 @@
 > **一级目标**：让 MCP server 被外部 agent 真实调用（≥500 次 / ≥20 独立调用方）。
 > 阶段门禁数字见 [`docs/north_star_and_phase_gates.md`](docs/north_star_and_phase_gates.md)；全面扫描与提升报告见 [`docs/full_liftup_assessment_2026-10-08.md`](docs/full_liftup_assessment_2026-10-08.md)。
 
+**🚀 已上架官方 MCP Registry**：`io.github.lm203688/agri-eco` v1.1.0（2026-10-08）
+
+```bash
+curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.lm203688/agri-eco"
+```
+
+CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 533 OK · Demo 端点 14/14 · MCPB 构建确定性可复现。
+
 ---
 
 ## 项目定位

@@ -4,6 +4,44 @@
 
 ---
 
+## [v1.1.0] - 2026-10-08（官方 MCP Registry 上架）
+
+**发行形态**：MCPB 分发包 · GitHub Release · 官方 MCP Registry
+
+### 上架结果
+- 官方 MCP Registry：**`io.github.lm203688/agri-eco` v1.1.0** 已发布（2026-10-08T05:33:32Z）
+- `registryType: mcpb`，产物 `agri-eco-mcp-1.1.0.mcpb`（200 文件 / 0.44 MB）
+- `fileSha256 = 390e977940676f856fc6c7fe9b7a4bb087f1abf6388a72ab01c917c10ef57b24`
+- 发布链路已 CI 化（`.github/workflows/publish-mcp-registry.yml`），GitHub OIDC 免人工
+
+### 工程指标
+- 单元测试 **533 OK**（3 skip 为 live API 探针），较 v0.9-beta 的 505 新增 28 项
+- `verify_all.py` **PASS**（8 阶段全过）
+- CI 22 步 × Python 3.10/3.11/3.12 **全绿**
+- Demo 端点冒烟 **14/14 通过**（`scripts/check_demo_endpoints.py`，已入 CI）
+
+### 本版修复（均为 CI 上真实失败后定位）
+- **MCPB 确定性构建**：zip 曾写入文件 mtime，同一份源码两次构建 sha 不同，
+  导致 `server.json` 的 `fileSha256` 永远追不上产物。改为固定 `ZipInfo`
+  （`date_time=(1980,1,1,0,0,0)` / `create_system=3` / 权限 `0644`）。
+- **打包清单排除未入库文件**：本地遗留 `.bak` 混入包内（本地 201 / CI 200 文件），
+  新增 `EXCLUDE_FILE_MARKERS`，现本地 = CI = `390e9779`。
+- **CI 发布一条龙**：改为 CI 内构建 → `gh release upload --clobber` → 回读校验 →
+  发布，消除"本地构建 / 手工传资产"的手工同步环节。
+- **Publish 幂等**：同版本重复发布（400）视为成功；但内容变而版本未升时，
+  由「版本漂移检测」显式报错，防止新代码静默发不出去。
+- **CI 数据门禁**：修复推导式作用域 bug（`NameError: name 'k' is not defined`），
+  提取为 `scripts/check_data_integrity.py` + 13 项回归。
+- **作物库补齐**：`hot_arid` / `highland` 各补 18 条，8 分区全部 ≥18（116 → 152 作物）。
+- **安全**：`.workbuddy/` 加入 `.gitignore`（旧会话日志曾明文记录 PAT），
+  历史日志就地脱敏，全盘残留审计 = 0。
+
+### 已知限制（需用户操作，非代码问题）
+- 公网 Demo 部署待执行：需先 `ssh-copy-id root@150.158.119.19`
+- Glama / LobeHub / Smithery 上架待提交：各需独立账号
+
+---
+
 ## [v0.9-beta] - 2026-10-06（发行）
 
 **发行形态**：开发者预览版 · 邀请制 · GitHub Release

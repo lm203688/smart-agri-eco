@@ -162,16 +162,22 @@
 | P0-3 | Agent Plugins 打包 | ✅ 完成 | `python scripts/build_agent_plugin.py --check`（13 文件） |
 | P0-7 | 消除硬编码密钥 | ✅ 完成 | `grep -rn "secret_key" --include=*.py .` = 0 |
 | P0-6 | GitHub 推送 | ✅ 完成 | commit `6ef8b6c8cdeb`；`python scripts/sync_check.py` 差异 0（332 文件） |
-| P0-4a | MCPB 分发包构建 | ✅ 完成 | `python scripts/build_mcpb.py`（201 文件 / 0.44 MB，解压实测可跑） |
+| P0-4a | MCPB 分发包构建 | ✅ 完成 | `python scripts/build_mcpb.py`（200 文件 / 0.44 MB，**确定性可复现**：本地 = CI = `390e9779`） |
 | P0-5a | Demo 端到端冒烟自检 | ✅ 完成 | `python scripts/check_demo_endpoints.py`（14/14 端点通过，已入 CI） |
-| P0-4b | 上架 4 个市场 | ⏸ 待你操作 | 材料见 `docs/market_listing_pack.md` |
-| P0-5 | 公网 Demo 部署 | ⏸ 待你执行 | 脚本就绪；见 `docs/distribution_checklist.md` §2 |
+| P0-4c | 官方 MCP Registry 上架 | ✅ 完成 | Registry API 可查：`io.github.lm203688/agri-eco` v1.1.0，publishedAt `2026-10-08T05:33:32Z` |
+| P0-4b | 上架其余市场（Glama / LobeHub / Smithery） | ⏸ 待你操作 | 材料见 `docs/market_listing_pack.md`；各需独立账号 |
+| P0-5 | 公网 Demo 部署 | ⏸ 待你执行 | 脚本就绪；需先 `ssh-copy-id root@150.158.119.19`，见 `docs/distribution_checklist.md` §2 |
 
 **出口指标**：出现第 1 次非本人外部调用。在此之前，P1 及以下**一律不开工**。
 
-> **累计进度：P0 完成 7/8 项。** P0-5 拆为两半：本机可做的
-> 「部署链路自检」已完成（P0-5a，14 端点全绿并入 CI），剩下的
-> 「公网 ECS 上线」（P0-5）与上架（P0-4b）均需外部账号或服务器权限。
+> **累计进度：P0 完成 8/9 项。** 已完全闭环的部分：代码、CI（22 步 × 3 Python
+> 版本全绿）、Release、官方 Registry 上架。
+>
+> 剩余两项均**必须你本人操作**，本机无论怎么跑都替代不了：
+> - **P0-4b 其余市场**：Glama / LobeHub / Smithery 各有独立账号体系与提交入口。
+> - **P0-5 公网 Demo**：ECS `150.158.119.19` 未配置 SSH 免密（`Permission denied
+>   (publickey,password)`），需你先执行 `ssh-copy-id root@150.158.119.19`，
+>   之后 `bash deploy/deploy_local.sh` 即可一键上线。
 
 ---
 
