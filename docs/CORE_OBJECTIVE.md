@@ -161,11 +161,17 @@
 | P0-2 | A2A Agent Card | ✅ 完成 | `python scripts/check_agent_card.py`（14 skill ↔ 14 MCP 工具） |
 | P0-3 | Agent Plugins 打包 | ✅ 完成 | `python scripts/build_agent_plugin.py --check`（13 文件） |
 | P0-7 | 消除硬编码密钥 | ✅ 完成 | `grep -rn "secret_key" --include=*.py .` = 0 |
-| P0-6 | GitHub 推送 | ⏸ 待 PAT | `python scripts/sync_check.py`（83 处差异待推） |
+| P0-6 | GitHub 推送 | ✅ 完成 | commit `6ef8b6c8cdeb`；`python scripts/sync_check.py` 差异 0（332 文件） |
+| P0-4a | MCPB 分发包构建 | ✅ 完成 | `python scripts/build_mcpb.py`（201 文件 / 0.44 MB，解压实测可跑） |
+| P0-5a | Demo 端到端冒烟自检 | ✅ 完成 | `python scripts/check_demo_endpoints.py`（14/14 端点通过，已入 CI） |
+| P0-4b | 上架 4 个市场 | ⏸ 待你操作 | 材料见 `docs/market_listing_pack.md` |
 | P0-5 | 公网 Demo 部署 | ⏸ 待你执行 | 脚本就绪；见 `docs/distribution_checklist.md` §2 |
-| P0-4 | 上架 4 个市场 | ⏸ 依赖 P0-6 | 提交字段已备；见 `docs/distribution_checklist.md` §3 |
 
 **出口指标**：出现第 1 次非本人外部调用。在此之前，P1 及以下**一律不开工**。
+
+> **累计进度：P0 完成 7/8 项。** P0-5 拆为两半：本机可做的
+> 「部署链路自检」已完成（P0-5a，14 端点全绿并入 CI），剩下的
+> 「公网 ECS 上线」（P0-5）与上架（P0-4b）均需外部账号或服务器权限。
 
 ---
 

@@ -16,70 +16,37 @@
 | P0-2 | A2A Agent Card | ✅ **已完成** | `.well-known/agent.json`，14 skill |
 | P0-3 | Agent Plugins 打包 | ✅ **已完成** | `plugin/`，13 文件 |
 | P0-7 | 消除硬编码密钥 | ✅ **已完成** | `grep secret_key` = 0 命中 |
-| P0-6 | GitHub 推送 | ⏸ **需你提供 PAT** | 见 §1 |
-| P0-5 | 公网 Demo 部署 | ⏸ **需你执行** | 脚本已就绪，见 §2 |
-| P0-4 | 上架 4 个市场 | ⏸ **依赖 P0-6** | 材料已备，见 §3 |
+| P0-6 | GitHub 推送 | ✅ **已完成** | commit `6ef8b6c8cdeb`，332 文件，`sync_check` 差异 **0** |
+| P0-4a | MCPB 分发包构建 | ✅ **已完成** | `dist/agri-eco-mcp-1.1.0.mcpb`（201 文件 / 0.44 MB），实测解压可跑 |
+| P0-5a | Demo 端到端冒烟自检 | ✅ **已完成** | `python scripts/check_demo_endpoints.py`，14/14 通过，已入 CI |
+| P0-4b | 上架 4 个市场 | ⏸ **需你操作** | 材料全备：`docs/market_listing_pack.md` |
+| P0-5 | 公网 Demo 部署 | ⏸ **需你执行** | 脚本 + 自检全就绪，只差 SSH 免密；见 §2 |
+
+**已完成的安全处置**：推送过程中 GitHub 密钥扫描拦截了一次误传（临时 PAT 文件进入 blobs），
+随后修正 `.gitignore` 与 `sync_check.py` 的忽略规则，**凭据文件已永久排除在比对与推送范围外**。
+推送完成后所有临时凭据已删除，并做了全盘残留审计（结果：无残留，远端亦无）。
 
 ---
 
-## 1. P0-6 · GitHub 推送（阻塞全部上架动作）
+## 1. P0-6 · GitHub 推送 ✅ 已完成
 
-### 为什么这是瓶颈
+**结果**：commit `6ef8b6c8cdeb`，写入 73 文件 / 删除 29 文件，`sync_check` 差异归零。
 
-所有 MCP 市场（Glama / LobeHub / Smithery / Official Registry）都是**从 GitHub 仓库抓取**元数据与清单。
-仓库没同步 = 市场看不到 = 零外部调用。这是当前唯一的关键路径卡点。
+推送前 HEAD 为 `a9f331b7dc`（如需回滚，用此 sha reset）。
 
-### 你需要做（仅此一步）
+### 过程中的一个安全事件（值得记录）
 
-1. 打开 https://github.com/settings/personal-access-tokens/new
-2. 按以下参数创建 **fine-grained** token：
-   - **Token name**: `agri-eco-push`
-   - **Expiration**: 7 days（够用即可，不必长期）
-   - **Repository access**: Only select repositories → `lm203688/smart-agri-eco`
-   - **Permissions**:
-     - `Contents`: **Read and write**（必需）
-     - `Workflows`: **Read and write**（必需——本次要更新 `.github/workflows/ci.yml`）
-     - 其余全部保持 No access
-3. 生成后复制 token，粘贴到一个临时文件，例如 `C:\Users\xing\Desktop\pat.txt`（只有一行，不要有空格或换行以外的字符）
+首次推送被 GitHub 的 **secret scanning** 拦截（HTTP 422，`Secret detected in content`）。
+原因：我把 PAT 存到了 `.workbuddy-ai/tmp/pat4.txt`，而该目录当时未被忽略，
+`sync_check.py` 把它当成待推送文件收集了进去。
 
-### 然后我执行（已封装成一键脚本）
+**处置**：
+1. 立即在 `.gitignore` 与 `sync_check.py` 中加入凭据排除规则（`.workbuddy-ai/tmp/`、`*_pat*.txt` 等）
+2. 加"凭据二次检查"断言，推送前若发现含 `pat` 的路径则中止
+3. 推送成功后删除全部临时凭据，并做全盘 + 远端双向残留审计
 
-```bash
-# 一条命令完成：算差异 → 推送（含删除）→ 回读校验 → 复核归零
-bash scripts/push_all.sh /path/to/pat.txt
-
-# 脚本结束后立即删 PAT
-rm /path/to/pat.txt
-```
-
-`scripts/push_all.sh` 的行为：
-1. 实时调 `sync_check` 算差异（不依赖预生成清单，避免清单过期）
-2. 单 commit 推送全部新增 + 更新 + 删除
-3. `gh_push.py` 内置回读校验（写入项 sha 一致 + 删除项确已不存在）
-4. 再跑一次 `sync_check` 确认差异归零
-
-### 本次推送清单（102 处差异，已实测逐条核对）
-
-- **新增 45**：`docs/CORE_OBJECTIVE.md`、`.well-known/agent.json`、`plugin/**`（13 文件）、`docs/distribution_checklist.md`、`Makefile`、`pyproject.toml` 等
-- **更新 28**：`mcp/server.py`、`mcp/README.md`、`README.md`、`.github/workflows/ci.yml`、`harness/manifest.json`、`scripts/sync_check.py` 等
-- **远端删除 29**：根目录旧布局遗留 + 归档模块 + 临时产物
-
-> ⚠️ **删除项已逐条核对本地副本（全部确认有留存或确为临时产物）**：
->
-> | 类别 | 数量 | 本地留存位置 |
-> |---|---|---|
-> | 根目录旧规划文档 | 10 | `docs/planning/`（同名副本） |
-> | 部署包 | 2 | `deploy/releases/`（同名副本） |
-> | 归档 agent 模块 | 5 | `_archive/agent_legacy_20261008/` |
-> | `config/agents/*.json` | 7 | `_archive/agent_legacy_20261008/config_agents/agents/` |
-> | 临时产物（`_jev_out.txt` 等） | 3 | `_archive/workbuddy_tmp_20261008/` |
-> | 探针脚本 | 1 | 已确认为一次性探针，无引用 |
-> | 旧备份 | 1 | `data/crop_adapt_db.json.bak_20261006` 为更新版本，且 `.gitignore` 已忽略 |
-
-> **重要修正**：`agent/__init__.py` / `bp_screen/__init__.py` / `engine/__init__.py` 曾一度出现在删除清单中——
-> 原因是 `sync_check.py` 的 `_*.py` 忽略规则用 `fnmatch` 匹配时会误吞 `__init__.py`（`*` 匹配到 `_init__`）。
-> 已修正为「根目录 glob 只作用于根 + `__init__.py` 永不禁用」，并加了 16 个用例的回归验证。
-> 这三个包入口文件**不应删除**，推送清单中已正确移出。
+> 教训：**凭据文件绝不应放在会被版本控制的目录里**。GitHub 的扫描这次起了作用，
+> 但不能依赖外部防护——本地忽略规则才是根本。
 
 ---
 
@@ -94,15 +61,43 @@ rm /path/to/pat.txt
 | `deploy/docker-compose.prod.yml` | ✅ 就绪 |
 | `deploy/nginx.conf` | ✅ 就绪 |
 | `deploy/deploy_config.example.sh` | ✅ 就绪（模板，含默认 ECS IP） |
-| `deploy/deploy_config.sh` | ❌ **未创建** |
+| `deploy/deploy_config.sh` | ✅ 已创建（端口 8001；已加入 `.gitignore`，不随仓库分发） |
+| 本机部署链路自检 | ✅ **14/14 端点通过**（`python scripts/check_demo_endpoints.py`） |
+| SSH 免密登录 | ❌ **未配置**（`Permission denied (publickey,password)`） |
+
+### 部署前已消除的未知风险
+
+因为 SSH 未通，无从在真实 ECS 上试跑，我改为在**本机把整条部署链路完整跑一遍**，
+把「部署后才发现哑端点」这个风险提前消掉。结果：
+
+```
+$ python scripts/check_demo_endpoints.py
+汇总: 14 通过 / 0 失败 / 共 14 项
+```
+
+- 8 个 GET 端点全部 200，且体积高于哑响应下限
+  （`/api/cities` 1659B、`/api/skills` 4941B、`/api/recipes` 9280B、
+  `/api/crops` 165410B、`/api/zones` 17281B、`/api/pests` 9826B、
+  `/api/stats` 1828B、`/api/bp_list` 1256B）
+- 6 个 POST 端点全部 200 且响应契约键齐备，其中 `/api/recommend`
+  真实跑通整条 pipeline（返回 `pipeline_steps` / `final_recommendation`）
+- 该脚本已并入 CI（见 `.github/workflows/ci.yml`「Demo 站点端到端冒烟」步骤），
+  以后新增端点若静默变哑，CI 会直接拦下
+
+> **踩坑记录（重要，部署到 ECS 时同样适用）**：环境里若有
+> `HTTP_PROXY=http://127.0.0.1:<port>`，`urllib` 会把发往
+> `127.0.0.1:<本地端口>` 的请求也塞进代理，代理不认这个端口就回
+> **502 Bad Gateway**。表现极具误导性——服务日志里一条请求都没有，
+> 所有端点"全挂"，看着像服务崩了，其实是代理拦的。
+> `check_demo_endpoints.py` 内已用空 `ProxyHandler` 只对回环地址装直连，
+> 不动环境变量（否则会误伤 NASA POWER 等真实出网请求）。
 
 ### 你需要做
 
 ```bash
-# 1. 复制配置模板（已含默认 ECS 150.158.119.19 / 端口 8001）
-cp deploy/deploy_config.example.sh deploy/deploy_config.sh
+# 1. 配置模板已创建（deploy/deploy_config.sh，端口 8001，ECS 150.158.119.19）
 
-# 2. 确认 SSH 免密登录可用
+# 2. 只需配一次 SSH 免密登录
 ssh-copy-id root@150.158.119.19
 
 # 3. 一键部署
@@ -134,60 +129,44 @@ curl http://150.158.119.19:8001/api/cities
 | **LobeHub MCP** | 社区提交 PR 到其仓库 | 提 PR 或在其站内提交 |
 | **Smithery** | 站内提交 `mcp.json` 或仓库地址 | 提交表单 |
 
-### 3.2 提交时可直接复用的字段
+### 3.2 提交材料
 
-以下内容已备好，粘贴即可（与 `.well-known/agent.json`、`plugin/plugin.json` 完全一致，无口径冲突）：
+**完整材料已移入独立文件：[`docs/market_listing_pack.md`](market_listing_pack.md)**
 
-**Name**: `agri-eco`
-
-**One-liner**（≤120 字符）:
-```
-面向分布式农业的 Agent-native 知识基座：可执行 Env Recipe 环境配方 + 物候播期 + 多源气候校准，零依赖可离线
-```
-
-**Description**:
-```
-面向分布式农业的 Agent-native 知识基座。提供可执行的 Env Recipe 环境配方（作物 × 生长阶段 × 设备类别 → 可落地环境参数，116 份已发布）、多源气候校准（NASA POWER + Open-Meteo 逐月调和与分歧告警）、WOFOST 积温物候与霜冻锚定播期窗口、土壤剖面、农业分区匹配、病虫害与养分诊断、数据血缘溯源与农业项目投资初筛。
-
-差异化：零第三方依赖（纯标准库）、可完全离线、可私有化部署、可审计；所有输出带 sources / confidence / resolution 标注，不可测即标不可测，绝不编造数值。
-
-协议合规：MCP 2026-07-28 无状态规格（SEP-2575/2567/2243/2549/414）、A2A v1.0 Agent Card、Agent Plugins 1.0.0。
-
-边界（诚实声明）：不提供 C 端应用与 B 端 SaaS；不承诺 SLA；付费标的为服务能力，数据始终免费开源。
-```
-
-**Categories**: `agriculture`, `agritech`, `environment`, `data`, `science`
-
-**Transport**: `stdio`
-
-**Install**:
-```json
-{
-  "mcpServers": {
-    "agri-eco": {
-      "command": "python",
-      "args": ["mcp/server.py"]
-    }
-  }
-}
-```
-
-**Repository**: `https://github.com/lm203688/smart-agri-eco`
-
-**License**: 见仓库 LICENSE（代码）；数据为混合许可（含 CC BY-NC-SA 3.0 IGO 来源），不得转售
+该文件包含：
+- 所有市场复用的通用字段（短名 / One-liner / 完整描述 / 分类 / 安装配置 / 许可）
+- 14 个工具的逐条说明表（可作亮点列举）
+- **Official MCP Registry** 的完整 3 步操作（含 `server.json` 与 MCPB 产物说明）
+- **Glama / LobeHub / Smithery** 各自的表单字段映射与需要新增的文件
+- 提交后的验收清单
 
 ### 3.3 提交后的验收标准
 
 - [ ] 4 个市场搜索 `agri-eco` / `agriculture mcp` 均可见
-- [ ] 从任一市场按指引安装后，`tools/list` 返回 14 个工具
+- [ ] 从任一市场按指引安装后，`tools/list` 返回 **14** 个工具
 - [ ] 出现第 1 次**非本人**的外部调用（P0 出口指标）
 
 ---
 
-## 4. 一页速查：你现在要做的三件事
+## 4. 一页速查：你现在要做的两件事
 
-1. **给 PAT**（§1）→ 我立刻完成推送，这是解锁所有后续动作的唯一前提
-2. **跑部署**（§2）→ 三条命令，拿到公网 Demo 链接
-3. **提交市场**（§3）→ 用 §3.2 的现成字段，逐家粘贴
+**前提已就绪**：仓库同步完成（332 文件 / 差异 0）、MCPB 分发包已构建并通过运行验证、四个市场的提交材料已备齐。
 
-三步做完，`docs/CORE_OBJECTIVE.md` 的 G1 目标（≥500 次调用 / ≥20 独立调用方，窗口约至 2026-12 中旬）才真正开始计时。
+1. **跑部署**（§2）→ 三条命令，拿到公网 Demo 链接
+2. **提交市场**（`docs/market_listing_pack.md`）→ 先建 GitHub Release 上传 `.mcpb`，再逐家提交
+
+两步做完，`docs/CORE_OBJECTIVE.md` 的 G1 目标（≥500 次调用 / ≥20 独立调用方，窗口约至 2026-12 中旬）才真正开始计时。
+
+---
+
+## 5. 若需要我代劳的部分
+
+以下操作我可以做，**只需要你临时提供一次凭据**，用完即删：
+
+| 操作 | 需要什么 | 我做的时长 |
+|---|---|---|
+| 更新仓库元数据（描述 / topics / 主页） | GitHub PAT（repo 权限） | 1 分钟 |
+| 创建 GitHub Release 并上传 `.mcpb` | GitHub PAT（Contents + Releases 写权限） | 2 分钟 |
+| 创建 `smithery.yaml` 并推送 | GitHub PAT（Contents 写权限） | 2 分钟 |
+
+> 凭据请**不要在对话中长期保留**。用完我会立即删除，并做残留审计（如 §1 所做）。

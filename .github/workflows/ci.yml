@@ -135,6 +135,11 @@ jobs:
       - name: Agent Plugin 与注册表一致性（SKILL.md 不得手改漂移）
         run: python scripts/build_agent_plugin.py --check
 
+      - name: MCPB 分发包可构建 + server.json 校验
+        run: |
+          python scripts/build_mcpb.py
+          python scripts/build_mcpb.py --check
+
       - name: 数据自检（JSON 合法性 + 每带作物数）
         run: |
           python -c "import json
@@ -147,6 +152,13 @@ jobs:
 
       - name: MCP server 自测（零依赖 JSON-RPC over stdio）
         run: python scripts/test_mcp_server.py
+
+      - name: Demo 站点端到端冒烟（14 个端点，防哑端点）
+        run: |
+          # 自动选空闲端口拉起 app/demo_server.py，校验全部 GET/POST 端点
+          # 的状态码、体积下限与响应契约键。CI runner 无出网限制问题，
+          # 脚本内已显式绕开 HTTP 代理直连回环地址。
+          python scripts/check_demo_endpoints.py
 
       - name: Env Recipe v1 Schema 校验
         run: python scripts/validate_env_recipe.py data/examples/sample_env_recipe.json

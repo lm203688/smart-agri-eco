@@ -26,7 +26,7 @@ REPO = os.environ.get("AGRI_GH_REPO", "lm203688/smart-agri-eco")
 BRANCH = os.environ.get("AGRI_GH_BRANCH", "main")
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXCLUDE_DIRS = {".git", ".workbuddy", "__pycache__", ".venv", "node_modules",
-                "outputs", "search_index", "_demo_runtime", "_archive"}
+                "outputs", "search_index", "_demo_runtime", "_archive", "dist"}
 
 # 精确排除的相对目录（避免用宽泛的 "tmp" 误伤合法同名目录）
 EXCLUDE_REL_DIRS = (".workbuddy-ai/tmp/",)
@@ -50,6 +50,8 @@ PATH_GLOBS = [
     ".workbuddy-ai/tmp/*", ".workbuddy-ai/pat*.txt",
     ".workbuddy-ai/push_args.txt", ".workbuddy-ai/push_cmd.txt",
     "*_pat*.txt",
+    # 部署配置含 ECS 主机地址，不入公开仓库
+    "deploy/deploy_config.sh",
     "data/_test_feedback_log.json", "data/*.bak", "data/*.test.*",
     "data/*.bak_*",
 ]

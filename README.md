@@ -100,6 +100,7 @@
 | AI 评测基线 | `engine/eval.py` + `scripts/run_eval.py` | P0-H：分区分类一致率（真实基线）+ 4 个脚手架项（绝不谎报）；评测集 `data/eval/zone_checks.json` |
 | 预览残留清理 | `scripts/clean_preview_artifacts.py` | 清除预览工具注入 HTML 的 `data-page-node-id` 属性（曾一次性注入 115 处） |
 | 演示数据重置 | `scripts/clean_demo_data.py` | 清空 demo/单测污染的 feedback_log + 剥离作物库假校准标记 |
+| Demo 端点冒烟 | `scripts/check_demo_endpoints.py` | 零依赖端到端自检：自动选空闲端口拉起 `app/demo_server.py`，打 **14 个端点**（8 GET + 6 POST），校验状态码 / 体积下限 / 响应契约键，部署前先在本机消除哑端点风险；已入 CI |
 | 同步状态检查 | `scripts/sync_check.py` | 本地工作区 vs GitHub main 逐文件 blob sha 比对（本仓非 git clone，无法用 git status） |
 | 反馈回流 CLI | `scripts/submit_feedback.py` | 内测用户提交种植结果 → 校准 adapt_score |
 | 物候/播期层 | `agent/phenology.py` + `agent/plant_calendar.py` + `agent/season_agent.py` | WOFOST 积温物候（7 作物，EUPL 1.2 署名）+ 霜冻锚定播期窗口；技能 `season_advisory` |
