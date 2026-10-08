@@ -122,18 +122,23 @@ def http(base: str, path: str, payload: dict | None = None, timeout: float = 60.
 # ---------------------------------------------------------------------------
 # 用例定义
 # ---------------------------------------------------------------------------
-# GET 端点：(路径, 期望最小字节数)
-# 最小字节数是「哑响应」探针——空数组/空对象返回 200 但体积很小，
-# 设下限可捕捉「端点活着但没数据」这种情况。
+# GET 端点：(路径, 期望最小字节数, 期望存在的顶层键 or None)
+#
+# min_bytes 是「哑响应」探针，但它**只对与仓库数据绑定的端点可信**。
+# 凡是读运行时状态的端点（如 /api/bp_list 读 cases.db 的评估历史），
+# 在干净的 CI checkout 里合法地就是空的 —— 给它设字节下限会误报。
+# 这类端点改为校验响应结构（顶层键），而不是体积。
 GET_CASES = [
-    ("/api/cities", 300),
-    ("/api/skills", 1500),
-    ("/api/recipes", 2000),
-    ("/api/crops", 30000),
-    ("/api/zones", 3000),
-    ("/api/pests", 3000),
-    ("/api/stats", 500),
-    ("/api/bp_list", 300),
+    ("/api/cities", 300, None),
+    ("/api/skills", 1500, None),
+    ("/api/recipes", 2000, None),
+    ("/api/crops", 30000, None),
+    ("/api/zones", 3000, None),
+    ("/api/pests", 3000, None),
+    ("/api/stats", 500, None),
+    # 读 cases.db（运行时状态）：CI 上是空列表，故不设体积下限——
+    # 「total」+"items" 存在即说明端点健康。曾因设 300B 下限在 CI 全红。
+    ("/api/bp_list", 0, ["total", "items"]),
 ]
 
 # POST 端点：(路径, 请求体, 期望存在于响应中的顶层键)
@@ -267,7 +272,7 @@ def main() -> int:
         print("[ OK ] 服务已就绪\n")
 
         print("--- GET 端点 ---")
-        for path, min_bytes in GET_CASES:
+        for path, min_bytes, expect_keys in GET_CASES:
             status, raw, parsed, dt = http(base, path)
             n = len(raw)
             ok = status == 200 and n >= min_bytes
@@ -277,6 +282,12 @@ def main() -> int:
             if parsed is None and status == 200:
                 note += "  (响应非 JSON)"
                 ok = False
+            # 读运行时状态的端点：不设体积下限，改为校验顶层键存在
+            if ok and expect_keys and isinstance(parsed, dict):
+                missing = [k for k in expect_keys if k not in parsed]
+                if missing:
+                    ok = False
+                    note += "  缺失键: %s" % ",".join(missing)
             results.append((path, ok, note))
             print("  %s  %-18s %s" % ("[ OK ]" if ok else "[FAIL]", path, note))
 
