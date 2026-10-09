@@ -13,6 +13,22 @@
 curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.lm203688/agri-eco"
 ```
 
+**🔎 市场入口（4 家，其中官方 Registry + Smithery 已就绪）**：
+
+- 官方 MCP Registry：`io.github.lm203688/agri-eco` v1.1.0 ✅
+- Smithery：`smithery.yaml` 已就绪，仓库自动发现（[搜索入口](https://smithery.ai/search?q=agri-eco)）✅
+- Glama：[提交表单](https://glama.ai/mcp/servers)（待你提交，材料见 `docs/market_listing_pack.md` §2）
+- LobeHub：[站内提交](https://lobehub.com/mcp)（待你提交，材料见 `docs/market_listing_pack.md` §3）
+
+**📋 分发就绪度自检**（每次评审/发布前跑一次）：
+
+```bash
+python scripts/check_distribution_readiness.py
+```
+
+一次性验证 10 类分发入口：MCP server / A2A Card / Agent Plugin / Smithery / 官方 Registry /
+MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步。
+
 CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 533 OK · Demo 端点 14/14 · MCPB 构建确定性可复现。
 
 ---

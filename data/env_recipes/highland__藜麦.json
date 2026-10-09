@@ -50,19 +50,28 @@
       "title": "FAO CropInfo",
       "url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/home",
       "accessed_at": "2026-09-30",
-      "license": "CC BY-NC-SA 3.0 IGO（FAO 官方；非商用，禁止作为付费资产转售）"
+      "license": "CC BY-NC-SA 3.0 IGO（FAO 官方；非商用，禁止作为付费资产转售）",
+      "data_quality": "modeled",
+      "trial_location": "FAO Ecocrop 官方在线资料库（ecocrop.apps.fao.org），非实测",
+      "source_license": "CC BY-NC-SA 3.0 IGO（FAO 官方；非商用，禁止作为付费资产转售）"
     },
     {
       "title": "USDA Plant Guides",
       "url": "https://plants.usda.gov/plantguides",
       "accessed_at": "2026-09-30",
-      "license": "公有领域（美国联邦政府作品）"
+      "license": "公有领域（美国联邦政府作品）",
+      "data_quality": "modeled",
+      "trial_location": "美国农业部 Plant Guides（官方汇编，非单一试验点）",
+      "source_license": "公有领域（美国联邦政府作品）"
     },
     {
       "title": "IPNI",
       "url": "https://www.ipni.net/",
       "accessed_at": "2026-09-30",
-      "license": "CC BY 3.0"
+      "license": "CC BY 3.0",
+      "data_quality": "measured",
+      "trial_location": "IPNI 国际植物名称索引（名录数据，非田间试验）",
+      "source_license": "CC BY 4.0"
     }
   ],
   "license": "CC-BY-4.0",

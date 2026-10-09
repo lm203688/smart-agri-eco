@@ -12,11 +12,25 @@
     {
       "url": "stdio://python mcp/server.py",
       "transport": "STDIO"
+    },
+    {
+      "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.lm203688/agri-eco",
+      "transport": "REGISTRY"
+    },
+    {
+      "url": "https://smithery.ai/search?q=agri-eco",
+      "transport": "REGISTRY"
+    },
+    {
+      "url": "https://glama.ai/mcp/servers?q=agri-eco",
+      "transport": "REGISTRY"
     }
   ],
   "provider": {
     "organization": "smart-agri-eco",
-    "url": "https://github.com/lm203688/smart-agri-eco"
+    "organizationType": "individual",
+    "url": "https://github.com/lm203688/smart-agri-eco",
+    "email": "lm203688@users.noreply.github.com"
   },
   "version": "1.1.0",
   "documentationUrl": "https://github.com/lm203688/smart-agri-eco/blob/main/docs/CORE_OBJECTIVE.md",
@@ -24,6 +38,7 @@
     "streaming": false,
     "pushNotifications": false,
     "stateTransitionHistory": false,
+    "stateless": true,
     "extensions": [
       {
         "uri": "https://github.com/lm203688/smart-agri-eco/blob/main/docs/env_recipe_protocol_v1.md",
@@ -183,6 +198,35 @@
     "provenance": "所有输出带 sources / confidence / resolution 标注；不可测即标不可测，不编造数值。",
     "zeroDependency": "核心计算与数据路径零第三方依赖，可离线运行、可私有化部署、可审计。",
     "sla": "本项目不承诺 SLA。见 docs/CORE_OBJECTIVE.md §三边界不做清单。",
-    "contact": "https://github.com/lm203688/smart-agri-eco/issues"
+    "contact": "https://github.com/lm203688/smart-agri-eco/issues",
+    "mcpProtocol": {
+      "version": "2026-07-28",
+      "backwardsCompatible": ["2025-06-18", "2024-11-05"],
+      "seps": {
+        "SEP-2575": "免 initialize 握手，未握手直接 tools/list 与 tools/call 可用",
+        "SEP-2567": "无会话状态，initialize 返回 stateless=true",
+        "SEP-2243": "HTTP 形态下强制校验 Mcp-Method/Mcp-Name 头",
+        "SEP-2549": "tools/list 缓存 ttlMs=2592000000（配方季度级），tools/call ttlMs=60000（含在线取数）",
+        "SEP-414": "接受 _meta.traceparent 并原样回写响应，支持跨 Agent 串链"
+      }
+    },
+    "distribution": {
+      "officialRegistry": {
+        "name": "io.github.lm203688/agri-eco",
+        "version": "1.1.0",
+        "registryType": "mcpb",
+        "publishedAt": "2026-10-08T05:33:32Z",
+        "searchUrl": "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.lm203688/agri-eco"
+      },
+      "smithery": {
+        "autoDiscover": "smithery.yaml 已就绪，Smithery 从仓库根目录抓取，无需填表单",
+        "searchUrl": "https://smithery.ai/search?q=agri-eco"
+      },
+      "mcpbPackage": {
+        "url": "https://github.com/lm203688/smart-agri-eco/releases/download/v1.1.0/agri-eco-mcp-1.1.0.mcpb",
+        "sha256": "390e977940676f856fc6c7fe9b7a4bb087f1abf6388a72ab01c917c10ef57b24",
+        "sizeBytes": 452400
+      }
+    }
   }
 }

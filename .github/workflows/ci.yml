@@ -141,8 +141,11 @@ jobs:
       - name: 数据质量门禁（防漂移 / 防假数据）
         run: python scripts/data_quality_gate.py
 
+      - name: MCP 命名空间守卫（防 pip mcp 包遮蔽项目 mcp/ 目录）
+        run: python scripts/check_mcp_namespace.py
+
       - name: 全量单测回归（发现 CI 未单独覆盖的模块）
-        run: python -m unittest discover scripts/
+        run: python -S -P -m unittest discover scripts/
 
       - name: AI 评测基线（P0-H：分区一致率 + 脚手架项）
         run: python scripts/run_eval.py

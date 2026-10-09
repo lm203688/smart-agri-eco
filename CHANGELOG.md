@@ -4,6 +4,51 @@
 
 ---
 
+## [Unreleased · v1.1.1 待发] - 2026-10-08 下午（分发就绪度补齐）
+
+> **性质**：v1.1.0 的**分发通道补齐**，非功能变更。MCP server 本体、Env Recipe、Agent 层均无改动，
+> 因此版本号暂未升（server.json / plugin.json 仍为 1.1.0），下一次真正需要重建 MCPB 时随 v1.1.1 一并发布。
+>
+> **判定依据**：P0-4 主线的**自主可推进部分**——凡是本机可做、直接提升 G1 出口指标的动作全部落地；剩余 2 项（公网 Demo + 3 家站内提交）需用户人工操作。
+
+### 新增
+
+- **Smithery 自动发现入口**：新增 `smithery.yaml`（仓库根目录）
+  - Smithery 从公开仓库抓取该文件即可生成服务器条目，**无需填提交表单**
+  - 覆盖字段：schemaVersion / name / startCommand / configSchema / mcpServers / tools 摘要 / limitations 边界声明
+- **分发就绪度一键自检**：新增 `scripts/check_distribution_readiness.py`
+  - 一次性验证 **10 类分发入口**：MCP server（14 工具 + SEP 合规）/ A2A Card / Agent Plugin / Smithery / 官方 Registry 元数据 / MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步
+  - 内嵌 Registry `fileSha256` 与 MCPB 产物**逐字节回读比对**，杜绝"声明与实际不符"
+  - 支持 `--full`（详细）与 `--ci`（非零退出即失败）
+- **市场材料细化**：`docs/market_listing_pack.md` §2/§3/§4 补齐 Glama 一键表单字段、LobeHub 官方入口 URL、Smithery 自动发现已就绪说明
+
+### 补强
+
+- **A2A Agent Card**（`.well-known/agent.json`）：
+  - `additionalInterfaces` 由 2 项扩至 **5 项**（追加官方 Registry / Smithery / Glama 搜索入口，供 A2A 客户端跳转）
+  - `provider` 补 `organizationType`、`email`
+  - `capabilities` 显式声明 `stateless: true`（对应 SEP-2567）
+  - `x-agri-integrity` 新增 `mcpProtocol`（版本号 + 5 个 SEP 逐条说明）、`distribution`（Registry 上架时间 + Smithery 自动发现状态 + MCPB sha256）
+- **README** 顶部新增 4 家市场入口横幅 + 分发就绪度自检命令
+
+### 验证结果（本机实跑 2026-10-08）
+
+| 门禁 | 结果 |
+|---|---|
+| `python scripts/check_distribution_readiness.py` | **20 通过 / 0 告警 / 0 失败 / 1 跳过**（跳过项：公网部署待用户执行） |
+| `python scripts/check_agent_card.py` | ✅ 通过（14 skills ↔ 14 MCP 工具，协议 1.0） |
+| `python scripts/test_mcp_server.py` | ✅ 41 项断言全通过 |
+| `python scripts/build_agent_plugin.py --check` | ✅ 与 skills/registry 一致（13 文件） |
+| Registry `fileSha256` ↔ MCPB 实际 sha | ✅ 一致（`390e9779…`） |
+| GitHub 本地 ↔ 远端 main | ✅ 完全一致 |
+
+### 已知剩余项（需用户操作，非代码问题）
+
+- 公网 Demo 部署：`ssh-copy-id root@150.158.119.19` 后 `bash deploy/deploy_local.sh`
+- Glama / LobeHub / Smithery 三家站内确认（Smithery 大概率自动抓取，其余两家需填表单）
+
+---
+
 ## [v1.1.0] - 2026-10-08（官方 MCP Registry 上架）
 
 **发行形态**：MCPB 分发包 · GitHub Release · 官方 MCP Registry
