@@ -386,6 +386,28 @@
             "type": "string",
             "description": "该来源的许可条款。混合许可下必须逐条标注：recipe 级 license 只覆盖编排层分发，不代表任何单一来源的授权。未核实的来源写 unknown（…），不得猜。含 CC BY-NC-SA（如 FAO/FAOSTAT）来源时整包非商用。",
             "default": "unknown"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "interpolated",
+              "modeled",
+              "estimated",
+              "unknown"
+            ],
+            "description": "该来源数据质量等级。measured=实测；interpolated=站点插值；modeled=模型模拟；estimated=估计；unknown=未核实。不编造。",
+            "default": "unknown"
+          },
+          "trial_location": {
+            "type": "string",
+            "description": "该来源的试验地/数据采集地。未核实写 unknown（…），不得猜。混合许可下的法务刚需：让每条来源可追溯。",
+            "default": "unknown"
+          },
+          "source_license": {
+            "type": "string",
+            "description": "该来源的许可条款（与 license 字段对齐的冗余字段，供机器读取）。混合许可下必须逐条标注。",
+            "default": "unknown"
           }
         }
       }

@@ -1,14 +1,14 @@
 {
   "meta": {
     "description": "全球农业分区元数据（基于 Köppen-Geiger 气候带 + FAO 农业分区）",
-    "version": "1.1",
+    "version": "1.2",
     "data_sources": [
       "WorldClim 2.1",
       "FAO GAEZ",
       "ISRIC SoilGrids"
     ],
-    "last_updated": "2026-09-30",
-    "note": "v1.1 (2026-09-30) 新增 hot_arid 与 highland 分区，配合偏差校正扩展高原/热漠区建模精度。"
+    "last_updated": "2026-10-08",
+    "note": "v1.2 (2026-10-08)：climate_baseline 补 DLI（NASA POWER 全谱短波辐射光子当量，非 PAR）；派生层不写回 116 份 recipe"
   },
   "zones": [
     {
@@ -100,7 +100,23 @@
           88.71,
           89.14,
           88.25
-        ]
+        ],
+        "dli_annual_mol_m2_day": 78.36,
+        "dli_source": {
+          "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+          "zone": "tropical_rainforest",
+          "coord": [
+            0.0,
+            100.0
+          ],
+          "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+          "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+          "license": "NASA POWER public domain",
+          "years_used": [
+            2015,
+            2024
+          ]
+        }
       }
     },
     {
@@ -194,7 +210,23 @@
           80.1,
           80.61,
           78.94
-        ]
+        ],
+        "dli_annual_mol_m2_day": 58.27,
+        "dli_source": {
+          "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+          "zone": "subtropical_wet",
+          "coord": [
+            30.27,
+            120.16
+          ],
+          "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+          "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+          "license": "NASA POWER public domain",
+          "years_used": [
+            2015,
+            2024
+          ]
+        }
       }
     },
     {
@@ -288,7 +320,23 @@
           60.16,
           60.61,
           55.59
-        ]
+        ],
+        "dli_annual_mol_m2_day": 66.49,
+        "dli_source": {
+          "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+          "zone": "temperate_continental",
+          "coord": [
+            39.9,
+            116.4
+          ],
+          "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+          "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+          "license": "NASA POWER public domain",
+          "years_used": [
+            2015,
+            2024
+          ]
+        }
       }
     },
     {
@@ -381,7 +429,23 @@
           69.84,
           75.86,
           79.53
-        ]
+        ],
+        "dli_annual_mol_m2_day": 75.76,
+        "dli_source": {
+          "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+          "zone": "mediterranean",
+          "coord": [
+            38.0,
+            23.7
+          ],
+          "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+          "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+          "license": "NASA POWER public domain",
+          "years_used": [
+            2015,
+            2024
+          ]
+        }
       }
     },
     {
@@ -474,7 +538,23 @@
           50.92,
           67.08,
           79.94
-        ]
+        ],
+        "dli_annual_mol_m2_day": 72.49,
+        "dli_source": {
+          "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+          "zone": "arid",
+          "coord": [
+            45.0,
+            75.0
+          ],
+          "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+          "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+          "license": "NASA POWER public domain",
+          "years_used": [
+            2015,
+            2024
+          ]
+        }
       }
     },
     {
@@ -566,7 +646,23 @@
           93.66,
           97.52,
           98.88
-        ]
+        ],
+        "dli_annual_mol_m2_day": 40.03,
+        "dli_source": {
+          "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+          "zone": "subarctic",
+          "coord": [
+            62.0,
+            25.0
+          ],
+          "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+          "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+          "license": "NASA POWER public domain",
+          "years_used": [
+            2015,
+            2024
+          ]
+        }
       }
     },
     {
@@ -643,7 +739,23 @@
           24.7136,
           46.6753
         ],
-        "note": "v1.1 回填（2026-10-06）：与既有 6 分区同源，月内日均口径一致"
+        "note": "v1.1 回填（2026-10-06）：与既有 6 分区同源，月内日均口径一致",
+        "dli_annual_mol_m2_day": 100.17,
+        "dli_source": {
+          "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+          "zone": "hot_arid",
+          "coord": [
+            24.7136,
+            46.6753
+          ],
+          "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+          "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+          "license": "NASA POWER public domain",
+          "years_used": [
+            2015,
+            2024
+          ]
+        }
       }
     },
     {
@@ -720,7 +832,23 @@
           -16.5,
           -68.15
         ],
-        "note": "v1.1 回填（2026-10-06）：与既有 6 分区同源，月内日均口径一致"
+        "note": "v1.1 回填（2026-10-06）：与既有 6 分区同源，月内日均口径一致",
+        "dli_annual_mol_m2_day": 98.9,
+        "dli_source": {
+          "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+          "zone": "highland",
+          "coord": [
+            -16.5,
+            -68.15
+          ],
+          "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+          "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+          "license": "NASA POWER public domain",
+          "years_used": [
+            2015,
+            2024
+          ]
+        }
       }
     }
   ]

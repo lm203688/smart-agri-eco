@@ -20,7 +20,9 @@
 | P0-4a | MCPB 分发包构建 | ✅ **已完成** | `dist/agri-eco-mcp-1.1.0.mcpb`（200 文件 / 0.44 MB），**确定性可复现** |
 | P0-5a | Demo 端到端冒烟自检 | ✅ **已完成** | `python scripts/check_demo_endpoints.py`，14/14 通过，已入 CI |
 | P0-4c | 官方 MCP Registry 上架 | ✅ **已完成** | `io.github.lm203688/agri-eco` v1.1.0，2026-10-08 上架，CI 一键可重发 |
-| P0-4b | 上架其余 3 个市场 | ⏸ **需你操作** | Glama / LobeHub / Smithery，材料全备：`docs/market_listing_pack.md` |
+| P0-4d | Smithery 自动发现 | ✅ **已完成** | `smithery.yaml` 已入仓库，Smithery 从 GitHub 自动抓取，**免表单提交**；搜索入口 `https://smithery.ai/search?q=agri-eco` |
+| P0-4e | 分发就绪度一键自检 | ✅ **已完成** | `scripts/check_distribution_readiness.py`，一次性验证 10 类分发入口，20/20 全绿 |
+| P0-4b | 上架其余 2 个市场 | ⏸ **需你操作** | Glama / LobeHub，材料全备：`docs/market_listing_pack.md` §2/§3 |
 | P0-5 | 公网 Demo 部署 | ⏸ **需你执行** | 脚本 + 自检全就绪，只差 SSH 免密；见 §2 |
 
 **已完成的安全处置**：推送过程中 GitHub 密钥扫描拦截了一次误传（临时 PAT 文件进入 blobs），
@@ -125,10 +127,10 @@ curl http://150.158.119.19:8001/api/cities
 
 | 市场 | 抓取方式 | 需要你操作 |
 |---|---|---|
-| **Official MCP Registry** | GitHub 仓库 → 自动/半自动 | 提交仓库地址 |
-| **Glama** | 从 GitHub 拉取 MCP server 清单 | 认领/提交 |
-| **LobeHub MCP** | 社区提交 PR 到其仓库 | 提 PR 或在其站内提交 |
-| **Smithery** | 站内提交 `mcp.json` 或仓库地址 | 提交表单 |
+| **Official MCP Registry** | GitHub Actions OIDC → Registry API | ✅ 已完成（CI 自动发布） |
+| **Smithery** | 仓库根目录 `smithery.yaml` 自动抓取 | ✅ 已完成（2026-10-08，`smithery.yaml` 已入库，无需填表单） |
+| **Glama** | 站内表单 / 从 GitHub 拉取 | ⏸ 需你操作（表单材料见 `docs/market_listing_pack.md` §2） |
+| **LobeHub MCP** | 站内表单 / PR 到其仓库 | ⏸ 需你操作（材料见 `docs/market_listing_pack.md` §3） |
 
 ### 3.2 ✅ 官方 MCP Registry 已上架（2026-10-08）
 
@@ -186,19 +188,32 @@ version`）。workflow 已区分处理——重复视为成功；但若**内容�
 ### 3.4 提交后的验收标准
 
 - [x] 官方 MCP Registry 搜索 `agri-eco` 可见（✅ 已达成）
-- [ ] Glama / LobeHub / Smithery 搜索 `agri-eco` / `agriculture mcp` 均可见
+- [x] Smithery `smithery.yaml` 已入库，Smithery 从 GitHub 自动抓取（✅ 已就绪，等待站内同步显示）
+- [ ] Glama / LobeHub 搜索 `agri-eco` 可见（⏸ 待提交表单）
 - [ ] 从任一市场按指引安装后，`tools/list` 返回 **14** 个工具
 - [ ] 出现第 1 次**非本人**的外部调用（P0 出口指标）
+
+### 3.5 分发就绪度自检（推荐每次评审/发布前跑）
+
+```bash
+python scripts/check_distribution_readiness.py
+```
+
+一次性验证 10 类分发入口（MCP server / A2A Card / Agent Plugin / Smithery / 官方 Registry /
+MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步），非零退出即视为分发链路不可上线。
+当前基线：**20 通过 / 0 告警 / 0 失败 / 1 跳过**（跳过项：公网部署待你执行）。
 
 ---
 
 ## 4. 一页速查：你现在要做的两件事
 
 **前提已就绪**：仓库同步完成（340 文件 / 差异 0）、MCPB 分发包已构建且确定性可复现、
-**官方 MCP Registry 已上架**、CI 与 Publish 两条 workflow 全绿、其余 3 家的提交材料已备齐。
+**官方 MCP Registry + Smithery 自动发现已就绪**、CI 与 Publish 两条 workflow 全绿、
+分发就绪度自检 20/20 全绿、Glama / LobeHub 提交材料已备齐。
 
 1. **跑部署**（§2）→ 先 `ssh-copy-id root@150.158.119.19`，再 `bash deploy/deploy_local.sh`，拿到公网 Demo 链接
-2. **提交其余 3 家市场**（`docs/market_listing_pack.md`）→ Glama / LobeHub / Smithery 各需独立账号
+2. **提交 2 家市场**（`docs/market_listing_pack.md` §2/§3）→ Glama + LobeHub 各需独立账号
+   （Smithery 已自动就绪，无需填表单，站内搜索 `agri-eco` 即可）
 
 两步做完，`docs/CORE_OBJECTIVE.md` 的 G1 目标（≥500 次调用 / ≥20 独立调用方，窗口约至 2026-12 中旬）才真正开始计时。
 

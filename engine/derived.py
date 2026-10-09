@@ -39,7 +39,9 @@ Home Assistant 生态的 Horticulture-Assistant 与已归档的 OpenFarm 都把 
     """
 from __future__ import annotations
 
+import json
 import math
+import os
 from typing import Any, Dict, List, Optional, Tuple
 
 # VPD 经验区间（叶菜类通用参考）
@@ -208,3 +210,68 @@ def audit_recipes(recipes: List[Dict[str, Any]]) -> Dict[str, Any]:
         "observation_kinds": dict(sorted(observations.items(), key=lambda kv: -kv[1])),
         "rows": rows,
     }
+
+
+# ---------------------------------------------------------------------------
+# 派生量扩展（P1-1）：DLI 与播种深度
+# 遵循同一铁律：派生量不写回配方 JSON，运行时从分区级输入数据即时推导。
+# ---------------------------------------------------------------------------
+
+_ZONE_META_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                               "data", "zone_meta", "global_zones.json")
+
+
+def derive_dli(zone_id: str) -> Dict[str, Any]:
+    """按分区推导 DLI（每日光积分）。
+
+    数据来源：global_zones.json 的 climate_baseline.dli_annual_mol_m2_day
+    （NASA POWER ALLSKY_SFC_SW_DWN，全谱短波辐射的光子当量，非 PAR）。
+
+    返回：
+        {
+          "available": bool,
+          "mol_m2_day": float | None,
+          "source": {...} | None,
+          "note": str
+        }
+    分区无坐标或数据未回填时 available=False，绝不编造数值。
+    """
+    out: Dict[str, Any] = {
+        "available": False, "mol_m2_day": None, "source": None,
+        "note": "",
+    }
+    try:
+        with open(_ZONE_META_PATH, encoding="utf-8") as f:
+            meta = json.load(f)
+    except Exception:
+        out["note"] = "读取 global_zones.json 失败"
+        return out
+    for zd in meta.get("zones", []):
+        if zd.get("zone_id") != zone_id:
+            continue
+        cb = zd.get("climate_baseline", {}) or {}
+        val = cb.get("dli_annual_mol_m2_day")
+        src = cb.get("dli_source")
+        if isinstance(val, (int, float)):
+            out["available"] = True
+            out["mol_m2_day"] = float(val)
+            out["source"] = src
+            out["note"] = (
+                "全谱短波辐射光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%"
+                "（项目内无实测），专业应用请自行乘 PAR 比例。"
+            )
+        else:
+            out["note"] = "该分区 climate_baseline 无 DLI 数据（未回填）"
+        return out
+    out["note"] = "未知分区 %r" % zone_id
+    return out
+
+
+def sowing_depth_cm(growth_days: Optional[int]) -> Optional[float]:
+    """播种深度估计（cm）。复用 agent/growth_agent.py 的公式 round(gd/200, 1)。
+
+    growth_days 缺失或非正时返回 None（不编造）。
+    """
+    if not growth_days or growth_days <= 0:
+        return None
+    return max(0.1, round(growth_days / 200.0, 1))

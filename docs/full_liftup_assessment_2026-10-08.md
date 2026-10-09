@@ -27,8 +27,8 @@
 | `bp_screen/` | 2,669 行 / 16 文件 | 同上 |
 | `core/` / `mcp/` | 1,454 / 921 行 | 同上 |
 | 前端 `app/index.html` | 1,890 行（12 个 tab） | `wc -l` |
-| 单元测试 | **513 项，实跑 `Ran 513 tests / OK / skipped=3`，耗时 58.6s** | `python -m unittest discover -s scripts` |
-| MCP 工具 | **14 个** | `harness/manifest.json` + MCP 自测 |
+| 单元测试 | **537 项，实跑 `Ran 537 tests / OK / skipped=3`，耗时 14.7s** | `python -S -P -m unittest discover -s scripts`（须隔离 site-packages，否则 pip mcp 包遮蔽项目 mcp/ 目录导致假失败 3 项） |
+| MCP 工具 | **14 个** | `harness/manifest.json` v2.3.0 + MCP 自测 |
 | Env Recipe | **116 份**，schema 校验 116/116，硬告警 0 | `outputs/daily_loop_2026-10-07.md` |
 | 分区 / 作物 / 已校准 | **8 / 116 / 113** | `data/crop_adapt_db.json` |
 | 知识图谱 | **207 节点 / 346 边**（`grows_in` 116） | manifest |
@@ -61,15 +61,22 @@
 
 ### 1.4 Env Recipe 字段覆盖（实测 `grep` 116 份配方）
 
+> ⚠️ **本节已按 2026-10-08 复核修正**：原表用 `if k in s`（子串匹配整份文件文本）统计字段覆盖，导致 `dli` 被误判为 116/116 —— 实际 `dli` 命中的是 `exception_handling` 里的单词 **"ha`ndli`ng"**（handling），不是 `dli` 字段。`vpd`/`dew_point` 等 0 命中为真，但 `dli` 的 116/116 是**假命中**。
+>
+> 已用**递归 JSON 键遍历**（`has_nonempty(obj, key)`）重测，字段级非空数如下：
+
 | 字段 | 覆盖 | 备注 |
 |---|---|---|
-| `dli` | **116 / 116** ✅ | 已补齐 |
+| `dli` | **0 / 116** ❌ | 子串误判已修正；字段未补齐 |
 | `vpd`（饱和差） | **0 / 116** ❌ | 2026-09-17 扫描列为杠杆 1，**90 天未落地** |
 | `dew_point`（露点） | **0 / 116** ❌ | 同上 |
 | `companion_plants`（伴生） | **0 / 116** ❌ | 阳台场景刚需 |
 | `sowing_depth`（播种深度） | **0 / 116** ❌ | 播种期核心参数 |
 | `revision_history` / diff | **0 / 116** ❌ | 配方版本化未做 |
-| `sources[].trial_location` / `data_quality` / `source_license` | **0 / 116** ❌ | 混合许可下的法务刚需 |
+| `sources[].trial_location` / `data_quality` / `source_license` | **0 / 458** ❌ | 混合许可下的法务刚需（按 sources 条目计） |
+| `outcome` 非空 | **0 / 116** ❌ | 字段存在但全空（`outcome` 键 116/116，值空 116/116） |
+| `execution_log` 非空 | **0 / 116** ❌ | 同上 |
+| `image_consent.captured=true` | **0 / 116** ❌ | 同上 |
 
 ---
 
@@ -133,8 +140,8 @@
 | 口径 | 分数 | 说明 |
 |---|---|---|
 | **对「战略指引七层愿景」** | **32%**（七层等权平均） | L0-L3 已有实物，L4-L6 近乎空白 |
-| **对「当前实际主线 = MCP Agent-native 数据服务」** | **59%** | 数据资产 90 / Agent 编排与可信输出 85 / MCP 协议 60 / 工程可复现 90 / **分发可见性 20** / **商业化闭环 10** |
-| **工程健康度**（独立维度） | **90%** | 513 单测全绿、CI 矩阵、每日只读巡检、数据卫生门禁、合成样本守卫——这是全项目最强项 |
+| **对「当前实际主线 = MCP Agent-native 数据服务」** | **59% → 63%（2026-10-08 重评）** | 数据资产 90 / Agent 编排与可信输出 85 / MCP 协议 60 / 工程可复现 **95**（TD-1/TD-2 已处置、537 单测、CI 命名空间守护）/ **分发可见性 40**（官方 Registry 已上架 `status=active`，MCPB sha 三方一致）/ **商业化闭环 10**；均值 (90+85+60+95+40+10)/6 = **63.3%** |
+| **工程健康度**（独立维度） | **90%** | 537 单测全绿（+新增 `test_mcp_namespace.py` 4 项，`-S -P` 隔离）、CI 矩阵 3.10-3.12、每日只读巡检、数据卫生门禁、合成样本守卫——这是全项目最强项 |
 
 ---
 
@@ -190,18 +197,19 @@
 
 ### 5.1 值得保持的（同类项目里罕见）
 
-- **513 单测全绿 / 58.6s**，14 个测试文件覆盖全链路；
+- **537 单测全绿 / 14.7s**（须 `-S -P` 隔离 site-packages），15 个测试文件覆盖全链路；
 - **每日只读巡检闭环**（连续 7 日绿），带数据源存活探测、快照 diff、合成样本守卫；
 - **数据卫生铁律**：单测/demo 隔离、假校准标记门禁、CI 矩阵 3.10-3.12；
 - **诚实性约定**：`monthly_precip_mm` 单位口径、preset_cities 单一数据源、未校准不谎报——这些是真正的差异化资产。
 
-### 5.2 必须处置的三处技术债
+### 5.2 必须处置的技术债（**TD-1 / TD-2 已于 2026-10-08 处置完毕**）
 
-| # | 问题 | 实测证据 | 建议 |
+| # | 问题 | 实测证据 | 处置状态（2026-10-08 更新） |
 |---|---|---|---|
-| **TD-1** | **约 4,200 行未接线代码**：`risk_agent`(1200) / `finance_agent`(1069) / `collaboration_manager`(1066) / `market_agent`(864) / `agent_factory`(763)。`finance/market/risk` 全库仅被 `agent_factory.py` 与 `config/agents/*.json` 引用；`agent_factory` 自身**无任何外部调用** | grep 实测 | **二选一**：接入 orchestrator 并暴露为 MCP 工具，或移入 `_archive/` 并在 CHANGELOG 记录。挂在那里会持续消耗巡检与评审注意力 |
-| **TD-2** | **源码内硬编码密钥占位**：`agent/finance_agent.py:443` `key = "finance_agent_secret_key"`、`agent/market_agent.py:343` 同类 | 实测 | 即使 TD-1 选择归档，也应先消除；至少改为 `os.environ` 读取 |
-| **TD-3** | **测试文件过大 / 统计口径不齐**：`test_engine_v4.py` 1403 行、`test_engine_v5.py` 1045 行；`test_mcp_server.py` 为脚本式自测（`def test_` 计数 0，未纳入 513 统计） | 实测 | 按子模块拆分；给 MCP 自测补 unittest 入口，让"14 工具"进同一份统计 |
+| **TD-1** | **约 4,200 行未接线代码**：`risk_agent`(1200) / `finance_agent`(1069) / `collaboration_manager`(1066) / `market_agent`(864) / `agent_factory`(763) | 原 `grep` 实测；**现已移入 `_archive/agent_legacy_20261008/`**，`agent/` 下 `ls` 已无这些文件 | ✅ **已处置（归档）**。原建议二选一，实际选了「归档」，并在 CHANGELOG 记录 |
+| **TD-2** | **源码内硬编码密钥占位**：`agent/finance_agent.py:443`、`agent/market_agent.py:343` | 原实测；**现 `agent/` 全目录 `grep` 硬编码 `secret_key` = 0 命中** | ✅ **已消除**（随 TD-1 归档一并解决） |
+| **TD-3** | **测试文件过大 / 统计口径不齐**：`test_engine_v4.py` 1403 行、`test_engine_v5.py` 1045 行；`test_mcp_server.py` 为脚本式自测（`def test_` 计数 0，未纳入统计） | 实测 | ⏸ **未处置**。已新增 `scripts/test_mcp_namespace.py`（4 项）补 MCP 命名空间回归，但 `test_mcp_server.py` 仍是脚本式自测 |
+| **TD-4** | **测试运行环境命名空间遮蔽**：若用预装 pip `mcp` SDK 的 Python 跑测试，`import mcp.server` 解析到第三方包，3 项假失败 | 2026-10-08 本机实测：普通 `python -m unittest` → ERROR 3 项；`python -S -P` → 537 全绿 | ✅ **已加守护**：`scripts/check_mcp_namespace.py` + CI 已改为 `python -S -P -m unittest discover scripts/` |
 
 ### 5.3 零依赖约束：建议细化而非放弃
 
@@ -314,7 +322,7 @@
 | # | 动作 | 判定标准 |
 |---|---|---|
 | P2-1 | **零依赖策略明文细化**（核心零依赖 + `AGRI_*` 插拔增强层） | 工程规范文档 |
-| P2-2 | **TD-1 死代码处置**（接入或归档，约 4,200 行） | 0 未接线模块 |
+| **P2-2** | ~~TD-1 死代码处置（接入或归档，约 4,200 行）~~ | ✅ **已完成**（2026-10-08 归档至 `_archive/agent_legacy_20261008/`，0 未接线模块） |
 | P2-3 | **前端升级**：成长日志/日历（情绪价值，非参数仪表板）+ Deck.gl/Cesium 全球配方分布图（CDN 引入） | 可分享链接 |
 | P2-4 | **L4 二选一**：最小可用实现 or 正式暂缓文档 | 有结论 |
 | P2-5 | **闭合 2 项 pending eval**（专家盲评 / 病虫害 top-k） | v1.0 工程门槛达标 |
@@ -332,7 +340,7 @@
 | D3 | **付费口径** | 服务型收费（推荐）/ 剥离 NC 来源做数据授权 | **先解 R1 法务冲突** |
 | D4 | **视觉后端** | 保持规则降级 / 接 ATEX 网关 / 对接 agstack | L1 能否从 15% 跃迁 |
 | D5 | **是否补 C 端触点（微信小程序）** | 做 / 不做 | 若不做，对外叙事须统一为海外 B 端 |
-| D6 | **~4,200 行未接线模块** | 归档（推荐）/ 接入 | 技术债处置 |
+| D6 | **~4,200 行未接线模块** | ~~归档（推荐）/ 接入~~ ✅ **已选归档**（2026-10-08 移入 `_archive/`） | 技术债处置**已完成** |
 | D7 | **GitHub PAT** | 提供 / 不提供 | 阻塞 P0-4 全部上架动作 |
 
 ---
@@ -343,29 +351,54 @@
 # 代码规模
 find . -name "*.py" -not -path "./.workbuddy/*" | xargs wc -l   # 32500
 
-# 单测（本机实跑 2026-10-08）
-python -m unittest discover -s scripts -p "test_*.py"
-# → Ran 513 tests in 58.588s / OK (skipped=3)
+# 单测（本机实跑 2026-10-08；**必须用 -S -P 隔离 site-packages**，否则 pip mcp 包会遮蔽项目 mcp/ 目录）
+python -S -P -m unittest discover -s scripts -p "test_*.py"
+# → Ran 537 tests in 14.685s / OK (skipped=3)
+#
+# ⚠️ 若用普通 python（site-packages 里有 pip mcp SDK）跑会假失败 3 项：
+#    python -m unittest discover -s scripts -p "test_*.py"   # 会 ERROR 3 项
+#    根因：`import mcp.server` 解析到第三方包；修复见 scripts/check_mcp_namespace.py
 
 # 测试函数分布（grep "def test_"）
 # v4=137 v5=94 agents=66 v2=59 v3=43 lineage=25 climate_data=19
 # audit=16 jev_gate=15 climate_reconcile=14 jev_decision=10 jev_attribution=8 geo_recipe=7
 
-# Env Recipe 字段覆盖
+# Env Recipe 字段覆盖 —— ⚠️ 原脚本用子串匹配会把 "ha ndli ng" 里的 dli 误判为字段命中
+# 正确做法：递归遍历 JSON 键（只统计"字段存在且非空"），不要 grep 整份文件文本
 python - <<'EOF'
-import glob
-tot=0; has={'dli':0,'vpd':0,'dew':0,'companion':0,'sowing':0,'outcome':0,'execution_log':0}
+import glob, json
+
+def has_nonempty(obj, key):
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k == key and v not in (None, '', [], {}):
+                return True
+            if has_nonempty(v, key):
+                return True
+    elif isinstance(obj, list):
+        for i in obj:
+            if has_nonempty(i, key):
+                return True
+    return False
+
+tot = 0
+has = {'dli': 0, 'vpd': 0, 'dew_point': 0, 'companion_plants': 0,
+       'sowing_depth': 0, 'revision_history': 0, 'outcome': 0, 'execution_log': 0}
 for f in glob.glob('data/env_recipes/*.json'):
-    s=open(f,encoding='utf-8').read().lower(); tot+=1
+    tot += 1
+    r = json.load(open(f, encoding='utf-8'))
     for k in has:
-        if k in s: has[k]+=1
+        if has_nonempty(r, k):
+            has[k] += 1
 print(tot, has)
-# → 116 {'dli':116,'vpd':0,'dew':0,'companion':0,'sowing':0,'outcome':116,'execution_log':116}
+# → 116 {'dli':0,'vpd':0,'dew_point':0,'companion_plants':0,'sowing_depth':0,
+#        'revision_history':0,'outcome':0,'execution_log':0}
+# 注：dli 命中原脚本的是 exception_handling 里的单词 "handling"
 EOF
 
 # 未接线模块（grep 实测）
-# finance_agent / market_agent / risk_agent：仅被 agent_factory.py 与 config/agents/*.json 引用
-# agent_factory：无任何外部调用
+# finance_agent / market_agent / risk_agent / agent_factory / collaboration_manager
+# 已于 2026-10-08 移入 _archive/agent_legacy_20261008/，TD-1/TD-2 已处置
 ```
 
 **数字来源优先级**：本机实跑 > `outputs/daily_loop_2026-10-07.md` > `harness/manifest.json` > 仓库文档。凡文档与实测冲突处，一律以实测为准并在 §3.1 列出。

@@ -102,10 +102,15 @@ https://github.com/lm203688/smart-agri-eco
 - [x] 创建 `server.json` 并回填真实 `fileSha256`
 - [x] 文件名含 `mcp`（MCPB 强制要求），因为仓库名 `smart-agri-eco` 不含 "mcp"
 
-**当前 sha256**：
+**当前 sha256**（2026-10-08 实测，已与 `server.json` / Registry 三方一致）：
 ```
-8beb9253206aed323c1ac4395a3b49be6b8eb539609ff40202ab0a35757cbeae
+390e977940676f856fc6c7fe9b7a4bb087f1abf6388a72ab01c917c10ef57b24
 ```
+
+> ⚠️ **该 sha 已发布到官方 Registry（2026-10-08 05:33:32Z，status=active）**。
+> 上传 Release asset 时**必须用这个 sha**，否则客户端安装校验会失败。
+> 若你必须重新构建 `.mcpb`，sha 会变 —— 需要同时更新 `server.json` 与 Registry 上的
+> 旧版本（Registry 不允许同版本重复发布，需升版本号）。
 
 ### 你需要做的（3 步）
 
@@ -161,7 +166,7 @@ curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=agri-eco"
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/lm203688/smart-agri-eco/releases/download/v1.1.0/agri-eco-mcp-1.1.0.mcpb",
-      "fileSha256": "8beb9253206aed323c1ac4395a3b49be6b8eb539609ff40202ab0a35757cbeae",
+      "fileSha256": "390e977940676f856fc6c7fe9b7a4bb087f1abf6388a72ab01c917c10ef57b24",
       "transport": { "type": "stdio" }
     }
   ]
@@ -179,9 +184,10 @@ curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=agri-eco"
 ## 2. Glama
 
 ### 提交方式
-站内提交表单（https://glama.ai/mcp/servers）或从其仓库提 PR。
+- **一键提交流程**：访问 Glama 的"Submit new server"表单（https://glama.ai/mcp/servers 页面右上角），按下方字段填入即可
+- **备选**：Glama 从公开仓库自动抓取，仅需注册后认领
 
-### 表单字段映射
+### 表单字段映射（可直接复制粘贴）
 
 | 表单字段 | 填写内容 |
 |---|---|
@@ -192,17 +198,22 @@ curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=agri-eco"
 | Transport | `stdio` |
 | Install Command | 见上方「安装配置」 |
 | License | MIT（代码） |
+| Author / Owner | `lm203688` |
+| Tags | `agriculture`, `agritech`, `environment`, `data`, `science`, `offline-first`, `zero-dependency` |
+| Additional Info | `14 MCP tools · A2A v1.0 Agent Card · Agent Plugins 1.0.0 · Env Recipe protocol · Official MCP Registry: io.github.lm203688/agri-eco v1.1.0` |
 
 ### 需要你做的
-- [ ] 访问 https://glama.ai/mcp/servers 提交
-- [ ] 提交后确认抓取到 14 个工具（Glama 会解析 `mcp/server.py`）
+- [ ] 访问 https://glama.ai/mcp/servers 提交表单
+- [ ] 提交后确认 Glama 抓取到 14 个工具（Glama 会解析 `mcp/server.py`）
+- [ ] 认领后 URL 通常为 `https://glama.ai/mcp/servers/agri-eco`（用于 README 顶部横幅）
 
 ---
 
 ## 3. LobeHub MCP
 
 ### 提交方式
-PR 到 `lobehub/lobe-chat` 的 MCP 清单，或通过 LobeHub MCP 市场提交页。
+- **站内提交**：访问 https://lobehub.com/mcp 页面，右上角"Submit MCP Server"入口
+- **PR 路径**：向 LobeHub 官方 MCP 市场仓库提 PR（字段名可能与其最新 schema 略有差异，提交时按表单提示为准）
 
 ### 需要新增的条目（按其仓库现有格式）
 ```json
@@ -210,8 +221,8 @@ PR 到 `lobehub/lobe-chat` 的 MCP 清单，或通过 LobeHub MCP 市场提交�
   "identifier": "agri-eco",
   "author": "lm203688",
   "homepage": "https://github.com/lm203688/smart-agri-eco",
-  "description": "面向分布式农业的 Agent-native 知识基座：可执行 Env Recipe 环境配方 + 物候播期 + 多源气候校准，零依赖可离线",
-  "tags": ["agriculture", "agritech", "environment", "data", "science"],
+  "description": "面向分布式农业的 Agent-native 知识基座：可执行 Env Recipe 环境配方 + 多源气候校准 + WOFOST 物候播期 + 数据血缘溯源。零依赖可离线，MCP 2026-07-28 无状态。",
+  "tags": ["agriculture", "agritech", "environment", "data", "science", "offline-first", "zero-dependency"],
   "install": {
     "type": "stdio",
     "command": "python",
@@ -221,36 +232,36 @@ PR 到 `lobehub/lobe-chat` 的 MCP 清单，或通过 LobeHub MCP 市场提交�
 ```
 
 ### 需要你做的
-- [ ] 按其仓库最新 schema 调整字段名（可能与我给的略有差异）
-- [ ] 提 PR，或用站内提交入口
+- [ ] 按其仓库最新 schema 调整字段名（可能与我给的略有差异，以其表单为准）
+- [ ] 提 PR 或用站内提交入口
+- [ ] 提交后 LobeHub 上可搜索 `agri-eco`
 
 ---
 
 ## 4. Smithery
 
-### 提交方式
-站内提交（https://smithery.ai）或 `smithery.yaml` 自动发现。
+### 提交方式（本项目走自动发现路径）
 
-### 建议新增 `smithery.yaml`（放仓库根目录）
+**`smithery.yaml` 已就绪**（仓库根目录，2026-10-08 新增）。Smithery 会直接从公开仓库抓取该文件生成服务器条目，无需填提交表单。
+
+- 抓取入口：https://smithery.ai/search?q=agri-eco 或 https://smithery.ai/search?q=smart-agri-eco
+- 首次抓取可能需要几分钟到几小时同步
+
+### 需要你做的
+- [ ] 访问 https://smithery.ai，站内搜索 `agri-eco`；若未出现，使用页面"Submit Server"填仓库地址 `https://github.com/lm203688/smart-agri-eco`
+- [ ] 确认 Smithery 页面显示 14 个工具（Smithery 会解析 `mcp/server.py` 的 TOOLS 声明）
+- [ ] 认领后 URL 通常为 `https://smithery.ai/server/agri-eco`
+
+### 若自动抓取失败
+用如下 `startCommand` 字段提交（等价于仓库根目录的 `smithery.yaml`）：
+
 ```yaml
 startCommand:
   type: stdio
-  configSchema:
-    type: object
-    properties: {}
-    required: []
-  commandFunction: |-
-    (config) => ({
-      command: "python",
-      args: ["mcp/server.py"]
-    })
+  command: python
+  args:
+    - mcp/server.py
 ```
-
-> ⚠️ 若采纳此项，请告诉我 —— 我需要在仓库里创建 `smithery.yaml` 并重新推送（本次推送已完成，此文件当时不存在）。
-
-### 需要你做的
-- [ ] 访问 https://smithery.ai 提交仓库地址
-- [ ] 若需要 `smithery.yaml`，反馈给我，我来创建并推送
 
 ---
 
@@ -258,17 +269,32 @@ startCommand:
 
 - [ ] 4 个市场搜索 `agri-eco` 或 `agriculture mcp` 均可见
 - [ ] 从任一市场按指引安装后，`tools/list` 返回 **14** 个工具
-- [ ] README 与 Agent Card 的链接可从市场页跳转
+- [ ] README 顶部横幅链接可从市场页跳转（回填到 `README.md` 顶部）
 - [ ] **出现第 1 次非本人外部调用**（P0 出口指标）
+
+## 分发就绪度自检（推荐每次评审前跑一次）
+
+```bash
+python scripts/check_distribution_readiness.py
+```
+
+一次性验证 10 类分发入口：MCP server / A2A Card / Agent Plugin / Smithery 自动发现 /
+官方 Registry 元数据 / MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步。
+非零退出即视为分发链路不可上线。
 
 ## 若某家市场要求补充材料，可直接引用
 
 | 材料 | 位置 |
 |---|---|
-| Agent Card（A2A） | `.well-known/agent.json` |
-| Plugin 清单（Agent Plugins） | `plugin/plugin.json` |
+| Agent Card（A2A v1.0） | `.well-known/agent.json` |
+| Plugin 清单（Agent Plugins 1.0.0） | `plugin/plugin.json` |
 | MCP 配置 | `plugin/mcp.json` |
-| Skill 说明（11 份） | `plugin/skills/*/SKILL.md` |
+| Skill 说明（11 份 SKILL.md） | `plugin/skills/*/SKILL.md` |
+| Smithery 自动发现清单 | `smithery.yaml` |
+| 官方 Registry 元数据 | `server.json` |
+| MCPB 分发包 | `dist/agri-eco-mcp-1.1.0.mcpb` |
 | 协议合规说明 | `mcp/README.md` §协议合规 |
+| 分发就绪度自检 | `scripts/check_distribution_readiness.py` |
 | 项目定位与边界 | `docs/CORE_OBJECTIVE.md` |
+| 定价策略（服务型收费） | `docs/pricing_strategy_2026-09-30.md` |
 | 数据血缘 | 调用 `agri_query_lineage` 工具 |
