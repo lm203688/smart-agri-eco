@@ -4,6 +4,56 @@
 
 ---
 
+## [Unreleased · v1.1.2 待发] - 2026-10-09（P1 能力落地 + 文档口径同步）
+
+> **性质**：承接 10-08 分发通道补齐后的**首批 P1 能力落地**，非 MCP 协议变更，MCP server 本体未动，因此版本号暂未升（server.json / plugin.json 仍为 1.1.0），下次真正需要重建 MCPB 时随 v1.1.2 一并发布。
+>
+> **判定依据**：P0 主线的**可自主推进部分**已全部落地；剩余 2 项（公网 Demo + 3 家站内提交）需用户人工操作。
+
+### 新增
+
+- **Env Recipe v1.2 派生量**（`engine/derived.py`）：
+  - `derive_dli(zone_id)`：按分区从 `global_zones.json` 的 `climate_baseline.dli_annual_mol_m2_day` 推导每日光积分（NASA POWER `ALLSKY_SFC_SW_DWN` 全谱短波辐射光子当量，**非标准 PAR DLI**），8/8 分区可用，`available=False` 时绝不编造
+  - `sowing_depth_cm(growth_days)`：复用 growth_agent 公式 `round(gd/200,1)`，缺失时返回 None
+  - `vpd()` / `dew_point()`：既有函数，补入 v1.2 派生量回归
+  - **铁律遵守**：派生量不写回配方 JSON，运行时推导（`test_env_derived_v12.py` 显式锁定「调用后配方不应出现 dli/sowing_depth 键」）
+- **sources 三字段补齐**：`scripts/backfill_source_provenance.py` 为 458 条 sources 逐条补齐 `trial_location` / `data_quality` / `source_license`，458/458 齐备（`data_quality` 分布 measured 116 / modeled 342），`CORE_OBJECTIVE.md` §五 法务刚需已满足
+- **MCP 自测纳入 unittest**：`scripts/test_mcp_server_unit.py` 适配层（3 项 unittest），不改动 `test_mcp_server.py` 原文件独立可跑性
+- **MCP 命名空间守护**：`scripts/check_mcp_namespace.py` + 4 项回归测试，防 pip `mcp` SDK 遮蔽项目 `mcp/` 目录（`python -S -P` 双保险）
+- **分发就绪度修复**：`scripts/check_distribution_readiness.py` 修正两处判定 bug（命名空间检查未加 `-S -P`、GitHub 同步误判 `"0 ==="` 子串）
+
+### 补强
+
+- **CI 已就绪**：`.github/workflows/ci.yml` 测试步骤已用 `python -S -P -m unittest`，并新增 `check_mcp_namespace.py` 守护步骤（10-08 完成，本轮确认）
+
+### 验证结果（本机实跑 2026-10-09）
+
+| 门禁 | 结果 |
+|---|---|
+| `python -S -P -m unittest discover -s scripts` | **Ran 556 tests / OK / skipped=3**（较 10-08 晚的 533 新增 23 项） |
+| `python scripts/check_distribution_readiness.py --full` | **21 通过 / 0 告警 / 0 失败 / 1 跳过**（跳过项：公网部署待用户执行） |
+| `python scripts/check_demo_endpoints.py` | ✅ 14 通过 / 0 失败 |
+| `python scripts/test_mcp_server.py` | ✅ MCP server 自测全部通过 |
+| Env Recipe v1.2 派生量（8 分区 DLI + 播种深度） | ✅ 8/8 分区可用，铁律（不写回配方）回归锁定 |
+| sources 三字段 | ✅ 458/458 齐备 |
+| GitHub 本地 ↔ 远端 main | ✅ 完全一致（353 文件，`sync_check` 差异 0） |
+
+### 文档口径同步（本轮修正）
+
+- `README.md`：单测 533 → **556**；回归项列表由「十三项 513」补至「十八项 556」（新增 dist_readiness / env_derived_v12 / source_provenance / mcp_server_unit / mcp_namespace 五项）
+- `docs/full_liftup_assessment_2026-10-08.md`：§1.1 单测基线 537 → 556；§1.4 P1-2 sources 三字段 0/458 → **458/458**；§8 P1-1 标「部分完成」（派生量已落地、companion_plants/revision_history 待补）；P1-9 标「部分完成」（MCP 自测已纳入、v4/v5 拆分待做）
+- `docs/liftup_post_distribution_2026-10-08.md`：P1-1 / P1-2 / P1-3 三行状态更新；引言与结论段同步 533→556 与 P1-2 已完成；§2.3 收尾清单 D3/D4/D5 标记已完成
+- `docs/distribution_checklist.md`：§0 状态表 P0-6 commit `6ef8b6c8cdeb` → `4349dfdacf5c`（139 文件 / 353 总），P0-4e 20→21 通过；§1 推送结果段落同步
+- **未改动**：`docs/CORE_OBJECTIVE.md`（其 §九 仅列 P0 进度，P1 尚未开工口径待 G1 达成后更新）
+
+### 已知剩余项（需用户操作，非代码问题）
+
+- 公网 Demo 部署：`ssh-copy-id root@150.158.119.19` 后 `bash deploy/deploy_local.sh`
+- Glama / LobeHub 三家站内确认（Smithery 大概率自动抓取，其余两家需填表单）
+- 建议撤销已使用过的 GitHub PAT（最小暴露原则）
+
+---
+
 ## [Unreleased · v1.1.1 待发] - 2026-10-08 下午（分发就绪度补齐）
 
 > **性质**：v1.1.0 的**分发通道补齐**，非功能变更。MCP server 本体、Env Recipe、Agent 层均无改动，

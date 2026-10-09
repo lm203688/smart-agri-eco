@@ -29,7 +29,7 @@ python scripts/check_distribution_readiness.py
 一次性验证 10 类分发入口：MCP server / A2A Card / Agent Plugin / Smithery / 官方 Registry /
 MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步。
 
-CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 533 OK · Demo 端点 14/14 · MCPB 构建确定性可复现。
+CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 556 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（353 文件差异 0）。
 
 ---
 
@@ -331,7 +331,7 @@ python scripts/submit_feedback.py --zone subtropical_wet --crop 生菜 \
 
 执行内容（全部只读，禁改代码 / 禁 git / 禁推送）：
 
-1. **回归十三项（513 项单测 + MCP 自测）**：`test_engine_v4.py`（137 项）、`test_engine_v3.py`（43 项）、`test_engine_v2.py`（59 项）、`test_agents.py`（66 项）、`test_engine_v5.py`（94 项，BP 初筛引擎）、`test_climate_data.py`（19 项）、`test_climate_reconcile.py`（14 项）、`test_data_lineage.py`（25 项）、`test_geo_recipe.py`（7 项）、`test_audit_analyzer.py`（16 项）、`test_jev_gate.py`（15 项）、`test_jev_decision.py`（10 项）、`test_jev_attribution.py`（8 项）、`test_mcp_server.py`（14 工具）、`verify_all.py`（5 城 PLACEHOLDER=0）、`diff_daily_loop.py --selftest`
+1. **回归十八项（556 项单测 + MCP 自测）**：`test_engine_v4.py`（137 项）、`test_engine_v3.py`（43 项）、`test_engine_v2.py`（59 项）、`test_agents.py`（66 项）、`test_engine_v5.py`（94 项，BP 初筛引擎）、`test_climate_data.py`（19 项）、`test_climate_reconcile.py`（14 项）、`test_data_lineage.py`（25 项）、`test_geo_recipe.py`（7 项）、`test_audit_analyzer.py`（16 项）、`test_jev_gate.py`（15 项）、`test_jev_decision.py`（10 项）、`test_jev_attribution.py`（8 项）、`test_mcp_server.py`（14 工具）、`test_dist_readiness.py`（5 项）、`test_env_derived_v12.py`（8 项）、`test_source_provenance.py`（5 项）、`test_mcp_server_unit.py`（3 项）、`test_mcp_namespace.py`（4 项）、`verify_all.py`（5 城 PLACEHOLDER=0）、`diff_daily_loop.py --selftest`
 2. **数据源存活探测**：GAEZ / WorldClim / SoilGrids(`rest.isric.org`) / PlantVillage / EPPO / GitHub 等 7 个外部源 —— 防止引用死数据源（Ecocrop / OpenFarm / @pondlog 三次教训）
 3. **回流通路健康检查**：跑 `check_feedback_loop.py`，**区分「通路故障（≠0 报警）」与「数据量缺口（=0 条、不报警）」**（JSON 字段 `snapshot.feedback_path` = ok/broken）
 4. **状态快照 + 跨日 diff**：feedback 条数 / recipes 数 / wofost 作物数；与昨日报告对比，零漂移即静默，漂移即暴露

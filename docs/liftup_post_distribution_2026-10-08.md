@@ -10,10 +10,10 @@
 
 ## 0. 一句话结论
 
-> **P0 主线已从「8/9 完成」推进到「9/9 完成」，但其中 4 项 P0 声明在本机实测中发现「文档已过时」或「数字与实测不符」，需要立即同步修正——否则对外评审时会被追问，而这正是本项目最珍视的可信度资产。**
+> **P0 主线已从「8/9 完成」推进到「9/9 完成」，其中 4 项 P0 声明在本机实测中发现「文档已过时」或「数字与实测不符」，需要立即同步修正——否则对外评审时会被追问，而这正是本项目最珍视的可信度资产。** 另新增一处事实修正：P1-2（sources 三字段）与 P1-3（MCP 自测纳入 unittest）**已在本机完成 458/458 与 556 基线落地**，此前报告标记为「0/458 / 0/533」属扫描时间差。
 >
 > 三个**新的、此前未记录的**关键发现：
-> 1. **测试基线已从 513 跃升至 533（实测 533 OK / 3 skipped）**，但 `CORE_OBJECTIVE.md` 与 `distribution_checklist.md` 均未提及；且 `README.md` 顶部**已自行写「单测 533 OK」**——口径已开始分叉。
+> 1. **测试基线已从 513 跃升至 556（实测 556 OK / 3 skipped）**，但 `CORE_OBJECTIVE.md` 与 `distribution_checklist.md` 均未提及；且 `README.md` 顶部**已自行写「单测 533 OK」**——口径已开始分叉。
 > 2. **`full_liftup_assessment.md` §1.4 声称「dli 116/116 已补齐」与实测不符**：116 份配方中 `dli` 字段 **0 命中**（vpd / dew_point / companion_plants / sowing_depth / revision_history 同样 0/116）。该报告用 `grep` 子串匹配整个文件文本，把 URL/英文词里的 "dli" 误判为字段存在——**这是方法论错误，会误导 P1-1 排期**。
 > 3. **测试运行存在环境命名空间遮蔽陷阱**：若用已预装 pip `mcp` SDK 的 Python 跑测试，`import mcp.server` 会解析到第三方包而非项目 `mcp/server.py`，导致 3 项测试失败（`EXIT=1`）。用 `python -S -P` 完全隔离 site-packages 后复跑，**533 全部通过**。这是环境陷阱，不是项目缺陷，但任何换机器跑测试的人都会踩坑。
 
@@ -35,6 +35,10 @@
 | 8 | GitHub 推送完成，`sync_check` 差异 0 | distribution_checklist §1 | ✅ `scripts/sync_check.py` 存在；`deploy/deploy_config.sh` 已在 `.gitignore` 第 58 行排除 |
 | 9 | `deploy/deploy_config.sh` 已创建（端口 8001） | distribution_checklist §2 | ✅ 存在，`ECS_IP="150.158.119.19"`、`PORT="8001"` |
 | 10 | 法务红线：116 份配方含 FAO CC BY-NC-SA 来源 | CORE_OBJECTIVE §五 | ✅ 实测 `sources[].license` 中 **116/116** 含 "CC BY-NC-SA 3.0 IGO（FAO 官方；非商用）"；`license_scope` 含 NC 声明的配方 **116/116** |
+| 11 | **P1-2 sources 三字段已补齐**（新增实测确认） | full_liftup_assessment §8 P1-2 | ✅ **458/458** 齐备（`trial_location` / `data_quality` / `source_license`），`data_quality` 分布 measured 116 / modeled 342；`CORE_OBJECTIVE.md` §五 法务刚需已满足 |
+| 12 | **P1-3 MCP 自测已纳入 unittest**（新增实测确认） | full_liftup_assessment §8 P1-9 | ✅ `test_mcp_server_unit.py`（3 项）已收集，单测基线 533 → **556**（实测 `Ran 556 tests / OK / skipped=3`） |
+| 13 | **P1-1 Env Recipe v1.2 派生量已落地**（新增实测确认） | full_liftup_assessment §8 P1-1 | ✅ `engine/derived.py`：`derive_dli` 8/8 分区可用（tropical_rainforest 78.36 / subtropical_wet 58.27 / temperate_continental 66.49 / mediterranean 75.76 / arid 72.49 / subarctic 40.03 / hot_arid 100.17 / highland 98.9 mol·m⁻²·day⁻¹，NASA POWER `ALLSKY_SFC_SW_DWN`），`sowing_depth_cm` 就位，派生量**不写回配方**（铁律回归锁定） |
+| 14 | **CI 命名空间守护已就绪**（新增实测确认） | full_liftup_assessment §8 P0+-2 | ✅ CI 用 `python -S -P -m unittest` + `check_mcp_namespace.py`（4 项回归），`mcp.server.TOOLS==14` 断言就位 |
 
 ### 1.2 已过时、需立即同步的声明（⚠️）
 
@@ -42,14 +46,16 @@
 |---|---|---|---|---|
 | 1 | `market_listing_pack.md` 声明 sha256 = `8beb9253...` | 该文件 §1 | 实测 sha256 = `390e9779...` | **任何按该文档操作的人都会在 Release 上架时遇到「sha256 不一致」错误**。该文档的 sha 段已失效，必须更新 |
 | 2 | `distribution_checklist` §3.4 未列 Glama/LobeHub/Smithery 完成 | 该文件 | `smithery.yaml` **已存在于仓库根目录**（说明此项已被部分执行） | 状态表需更新，避免重复做 |
-| 3 | `full_liftup_assessment` §1.1 记录单测 **513 项** | 该文件 | 实测 **533 项**（`python -S -P -m unittest discover -s scripts -p "test_*.py"` → `Ran 533 tests / OK / skipped=3`） | `harness/manifest.json` 版本已升至 **v2.3.0**，评估基线需重算 |
+| 3 | `full_liftup_assessment` §1.1 记录单测 **513/537 项** | 该文件 | 实测 **556 项**（`python -S -P -m unittest discover -s scripts -p "test_*.py"` → `Ran 556 tests / OK / skipped=3`） | `harness/manifest.json` 版本需从 v2.3.0 复核，评估基线需重算 |
 | 4 | `full_liftup_assessment` §1.1 记录 `harness/manifest.json` v2.2.0 | 该文件 | 实测 **v2.3.0**（`generated_at=2026-10-08T10:01:33`） | 同上 |
 | 5 | `full_liftup_assessment` §5.2 TD-1 记录「约 4,200 行未接线代码待处置」 | 该文件 | `agent/finance_agent.py` / `market_agent.py` / `risk_agent.py` / `agent_factory.py` / `collaboration_manager.py` **已全部移入** `_archive/agent_legacy_20261008/` | **TD-1 已处置**（归档），评估报告与 P2-2 项应更新状态 |
 | 6 | `full_liftup_assessment` §5.2 TD-2 记录「硬编码密钥占位」 | 该文件 | 全 `agent/` 目录 `grep` 硬编码 `secret_key` = **0 命中** | **TD-2 已消除**（随归档一并解决） |
 | 7 | `full_liftup_assessment` §3.1 记录「README L4 标'已落地'」 | 该文件 | `README.md` 已修正为：**「L4 ⏸ 正式暂缓（仅 `data/linkage_protocol.schema.json` 一个 Schema，0 行实现；此前标注'已落地'有误）」** | **README 口径已修订**，但 L5/L6 段仍需核对 |
-| 8 | `full_liftup_assessment` §3.2 记录「对实际主线完成度 59%」 | 该文件 | 因 TD-1/2 处置 + 测试 533 + demo 14/14，该数字**已不反映当前状态** | 建议重评 |
+| 8 | `full_liftup_assessment` §3.2 记录「对实际主线完成度 59%」 | 该文件 | 因 TD-1/2 处置 + 测试 556 + demo 14/14，该数字**已不反映当前状态** | 建议重评 |
 | 9 | `CORE_OBJECTIVE.md` §九 P0 出口指标「出现第 1 次非本人外部调用」 | 该文件 | 本机无外部调用可观测；Registry status=active 但**仍无首次外部调用信号** | 目标窗口（约至 2026-12 中旬）仍在倒计时，**P1 及以下仍未开工** |
-| 10 | `distribution_checklist` §5 列「创建 `smithery.yaml` 并推送」 | 该文件 | `smithery.yaml` 已在仓库根（说明已创建，需确认是否已推送） | 若未推送，需在下次提交时一并带上 |
+| 10 | `distribution_checklist` §5 列「创建 `smithery.yaml` 并推送」 | 该文件 | `smithery.yaml` 已在仓库根（**已创建且已推送**，2026-10-09 推送 commit `4349dfda` 内含 139 文件） | 已闭环 |
+| 11 | `full_liftup_assessment` §1.4 记录 P1-2 sources 三字段 **0/458** | 该文件 | 实测 **458/458** 齐备 | **法务刚需已满足**，报告 §1.4 表已同步修正 |
+| 12 | `full_liftup_assessment` §8 P1-1 记录 vpd/dew_point/sowing_depth/dli **0/116** | 该文件 | 派生函数已落地（`engine/derived.py`，8/8 分区 DLI 可用），**但按铁律不写回配方 JSON** | P1-1 判定应为「**部分完成**」——静态字段（companion_plants / revision_history）仍 0/116，派生量已就绪 |
 
 ### 1.3 与实测**直接冲突**的声明（🔴 最重要）
 
@@ -108,13 +114,13 @@
 
 ### 2.3 部署成功后的收尾（我可代劳，仅需一次授权）
 
-| # | 动作 | 说明 |
-|---|---|---|
-| D1 | 把公网 Demo 链接写进 `README.md` 顶部 | MCP 市场与 A2A 发现都会抓该字段 |
-| D2 | 把 `.well-known/agent.json` 的 `url` 从 `https://github.com/...` 改为 Demo 地址 | 当前仍指向 GitHub |
-| D3 | 更新 `docs/market_listing_pack.md` 的 sha256（`8beb9253` → `390e9779`） | 消除文档失效风险 |
-| D4 | 更新 `docs/distribution_checklist.md` §3.4 验收清单状态 | 标记已完成的项 |
-| D5 | 在 CI 加 `-S -P` 命名空间守护（见 §1.4） | 半天，可完全自动化 |
+| # | 动作 | 说明 | 状态 |
+|---|---|---|---|
+| D1 | 把公网 Demo 链接写进 `README.md` 顶部 | MCP 市场与 A2A 发现都会抓该字段 | ⏸ 待公网部署完成 |
+| D2 | 把 `.well-known/agent.json` 的 `url` 从 `https://github.com/...` 改为 Demo 地址 | 当前仍指向 GitHub | ⏸ 待公网部署完成 |
+| D3 | 更新 `docs/market_listing_pack.md` 的 sha256（`8beb9253` → `390e9779`） | 消除文档失效风险 | ✅ 已完成（已与 server.json / Registry 三方一致） |
+| D4 | 更新 `docs/distribution_checklist.md` §3.4 验收清单状态 | 标记已完成的项 | ✅ 已完成（本轮 P0-6 / P0-4e 状态与 commit 已同步） |
+| D5 | 在 CI 加 `-S -P` 命名空间守护（见 §1.4） | 半天，可完全自动化 | ✅ 已完成（CI 用 `python -S -P -m unittest` + `check_mcp_namespace.py` + 4 项回归） |
 
 ---
 
@@ -135,9 +141,9 @@
 
 | # | 动作 | 判定标准 | 备注 |
 |---|---|---|---|
-| P1-1 | **Env Recipe v1.2 字段补齐**：`vpd_kpa` / `dew_point_c` / `companion_plants` / `sowing_depth_cm` / `revision_history` | 116 配方新字段覆盖 >90%（**当前 0/116**） | **必须先做 §C1 冲突修正**，否则无法量出真实进度 |
-| P1-2 | **sources 三字段补齐**：`trial_location` / `data_quality` / `source_license` | 458 条 sources 逐条带许可与质量等级（**当前 0/458**） | `CORE_OBJECTIVE.md` §五 已判为**法务刚需** |
-| P1-3 | **把 `test_mcp_server.py` 改造为 unittest 收集**（解决 TD-3 后半） | `test_mcp_server.py` 出现 `def test_`，533 统计纳入 MCP 断言 | 让「14 工具」进同一份统计 |
+| P1-1 | **Env Recipe v1.2 字段补齐**：`vpd_kpa` / `dew_point_c` / `companion_plants` / `sowing_depth_cm` / `revision_history` | 116 配方新字段覆盖 >90% | 🔶 **部分完成**：`vpd`/`dew_point`/`sowing_depth`/`dli` 已按**运行时派生**落地（`engine/derived.py`，8/8 分区 DLI 可用，8 项回归测试）；`companion_plants` 与 `revision_history` 待补（companion_plants 无权威数据源，需先取证） |
+| P1-2 | **sources 三字段补齐**：`trial_location` / `data_quality` / `source_license` | 458 条 sources 逐条带许可与质量等级 | ✅ **已完成 458/458**（`scripts/backfill_source_provenance.py` + `test_source_provenance.py` 5 项回归；`data_quality` 分布 measured 116 / modeled 342）；`CORE_OBJECTIVE.md` §五 法务刚需已满足 |
+| P1-3 | **把 `test_mcp_server.py` 改造为 unittest 收集**（解决 TD-3 后半） | `test_mcp_server.py` 出现 `def test_`，单测统计纳入 MCP 断言 | ✅ **已完成**（`scripts/test_mcp_server_unit.py` 适配层，3 项 unittest 收集，单测基线 533→**556**，MCP 命名空间另有 `check_mcp_namespace.py` + 4 项回归守护） |
 | P1-4 | **移植 `agroclim` 函数集 + vegperiod 三法交叉校验** | 物候双轨输出 + 分歧告警，测试 +30 | MIT 可自由实现；vegperiod 从论文重实现 |
 | P1-5 | **CMIP7 接入 `agri_season_advisory` 情景模式** | 7 情景可查 | 当前无竞品提供，差异化机会 |
 | P1-6 | **MCP server 分层重构**（`tools/` + `handlers/` + `formatters/`） | `mcp/server.py` < 200 行（当前 40274 字节，约 1000+ 行） | 提升可维护性 |
@@ -218,7 +224,7 @@ python mcp/server.py  # 输入 {"jsonrpc":"2.0","id":1,"method":"tools/list"}
 
 **核心结论**：
 > P0 主线的**工程侧**已闭环且经过本机实测核验（Registry 上架、14 工具、MCPB 确定性、Demo 14/14、测试 533 全绿），但**分发侧仍停在「已上架未触达」**——Registry `status=active` 不代表有任何 agent 调用过，P0 出口指标仍未达成。
-> 同时，`full_liftup_assessment.md` 与两份最新文档之间存在**一处事实冲突**（`dli` 0/116 vs 116/116）和**多处已过时声明**（sha256、测试基线、TD-1/TD-2 已处置、README L4 已修正），这些若不及时同步，会在对外评审中直接挑战项目最珍视的「可信度资产」。
+> 同时，`full_liftup_assessment.md` 与两份最新文档之间存在**一处事实冲突**（`dli` 0/116 vs 116/116）和**多处已过时声明**（sha256、测试基线、TD-1/TD-2 已处置、README L4 已修正、P1-2 sources 三字段 0/458→458/458、P1-3 单测 533→556），这些若不及时同步，会在对外评审中直接挑战项目最珍视的「可信度资产」。
 
 **风险清单**：
 | # | 风险 | 等级 | 说明与对策 |

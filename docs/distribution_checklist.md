@@ -16,12 +16,12 @@
 | P0-2 | A2A Agent Card | ✅ **已完成** | `.well-known/agent.json`，14 skill |
 | P0-3 | Agent Plugins 打包 | ✅ **已完成** | `plugin/`，13 文件 |
 | P0-7 | 消除硬编码密钥 | ✅ **已完成** | `grep secret_key` = 0 命中 |
-| P0-6 | GitHub 推送 | ✅ **已完成** | commit `6ef8b6c8cdeb`，332 文件，`sync_check` 差异 **0** |
+| P0-6 | GitHub 推送 | ✅ **已完成** | commit `4349dfdacf5c`（三轮共推 139 文件，远端 HEAD 由 `a9f331b7dc` 推进）；`sync_check` 差异 **0**（353 文件） |
 | P0-4a | MCPB 分发包构建 | ✅ **已完成** | `dist/agri-eco-mcp-1.1.0.mcpb`（200 文件 / 0.44 MB），**确定性可复现** |
 | P0-5a | Demo 端到端冒烟自检 | ✅ **已完成** | `python scripts/check_demo_endpoints.py`，14/14 通过，已入 CI |
 | P0-4c | 官方 MCP Registry 上架 | ✅ **已完成** | `io.github.lm203688/agri-eco` v1.1.0，2026-10-08 上架，CI 一键可重发 |
 | P0-4d | Smithery 自动发现 | ✅ **已完成** | `smithery.yaml` 已入仓库，Smithery 从 GitHub 自动抓取，**免表单提交**；搜索入口 `https://smithery.ai/search?q=agri-eco` |
-| P0-4e | 分发就绪度一键自检 | ✅ **已完成** | `scripts/check_distribution_readiness.py`，一次性验证 10 类分发入口，20/20 全绿 |
+| P0-4e | 分发就绪度一键自检 | ✅ **已完成** | `scripts/check_distribution_readiness.py`，一次性验证 10 类分发入口，**21 通过 / 0 失败 / 1 跳过** |
 | P0-4b | 上架其余 2 个市场 | ⏸ **需你操作** | Glama / LobeHub，材料全备：`docs/market_listing_pack.md` §2/§3 |
 | P0-5 | 公网 Demo 部署 | ⏸ **需你执行** | 脚本 + 自检全就绪，只差 SSH 免密；见 §2 |
 
@@ -33,7 +33,7 @@
 
 ## 1. P0-6 · GitHub 推送 ✅ 已完成
 
-**结果**：commit `6ef8b6c8cdeb`，写入 73 文件 / 删除 29 文件，`sync_check` 差异归零。
+**结果**：三轮共推送 **139 个文件**（`22397c1b` → `8afbeafb` → `4349dfda`），远端 HEAD 推进到 `4349dfdacf5c`，`sync_check` 差异归零（353 文件，本地=远端）。
 
 推送前 HEAD 为 `a9f331b7dc`（如需回滚，用此 sha reset）。
 
@@ -201,7 +201,7 @@ python scripts/check_distribution_readiness.py
 
 一次性验证 10 类分发入口（MCP server / A2A Card / Agent Plugin / Smithery / 官方 Registry /
 MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步），非零退出即视为分发链路不可上线。
-当前基线：**20 通过 / 0 告警 / 0 失败 / 1 跳过**（跳过项：公网部署待你执行）。
+当前基线：**21 通过 / 0 告警 / 0 失败 / 1 跳过**（跳过项：公网部署待你执行）。
 
 ---
 

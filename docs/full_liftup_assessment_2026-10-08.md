@@ -27,7 +27,7 @@
 | `bp_screen/` | 2,669 行 / 16 文件 | 同上 |
 | `core/` / `mcp/` | 1,454 / 921 行 | 同上 |
 | 前端 `app/index.html` | 1,890 行（12 个 tab） | `wc -l` |
-| 单元测试 | **537 项，实跑 `Ran 537 tests / OK / skipped=3`，耗时 14.7s** | `python -S -P -m unittest discover -s scripts`（须隔离 site-packages，否则 pip mcp 包遮蔽项目 mcp/ 目录导致假失败 3 项） |
+| 单元测试 | **556 项，实跑 `Ran 556 tests / OK / skipped=3`，耗时 15.7s** | `python -S -P -m unittest discover -s scripts`（须隔离 site-packages，否则 pip mcp 包遮蔽项目 mcp/ 目录导致假失败 3 项；2026-10-08 晚复核由 537 → 556，新增 19 项覆盖派生量与 sources 溯源） |
 | MCP 工具 | **14 个** | `harness/manifest.json` v2.3.0 + MCP 自测 |
 | Env Recipe | **116 份**，schema 校验 116/116，硬告警 0 | `outputs/daily_loop_2026-10-07.md` |
 | 分区 / 作物 / 已校准 | **8 / 116 / 113** | `data/crop_adapt_db.json` |
@@ -73,7 +73,7 @@
 | `companion_plants`（伴生） | **0 / 116** ❌ | 阳台场景刚需 |
 | `sowing_depth`（播种深度） | **0 / 116** ❌ | 播种期核心参数 |
 | `revision_history` / diff | **0 / 116** ❌ | 配方版本化未做 |
-| `sources[].trial_location` / `data_quality` / `source_license` | **0 / 458** ❌ | 混合许可下的法务刚需（按 sources 条目计） |
+| `sources[].trial_location` / `data_quality` / `source_license` | **458 / 458** ✅ | 混合许可下的法务刚需（按 sources 条目计）；`data_quality` 分布：measured 116 / modeled 342 |
 | `outcome` 非空 | **0 / 116** ❌ | 字段存在但全空（`outcome` 键 116/116，值空 116/116） |
 | `execution_log` 非空 | **0 / 116** ❌ | 同上 |
 | `image_consent.captured=true` | **0 / 116** ❌ | 同上 |
@@ -307,15 +307,15 @@
 
 | # | 动作 | 判定标准 |
 |---|---|---|
-| P1-1 | **Env Recipe v1.2**：补 `vpd_kpa` / `dew_point_c` / `companion_plants` / `sowing_depth_cm` / `revision_history`，并实现 `export/import/diff/clone` 4 个 Skill（`difflib`，零依赖可行） | 116 配方新字段覆盖 >90% |
-| P1-2 | **移植 agroclim 函数集 + vegperiod 三法交叉校验**（严禁抄 GPL 代码） | 物候双轨输出 + 分歧告警，测试 +30 |
+| P1-1 | **Env Recipe v1.2**：补 `vpd_kpa` / `dew_point_c` / `companion_plants` / `sowing_depth_cm` / `revision_history`，并实现 `export/import/diff/clone` 4 个 Skill（`difflib`，零依赖可行） | 116 配方新字段覆盖 >90% | 🔶 **部分完成**：`vpd`/`dew_point`/`sowing_depth`/`dli` 已按**运行时派生**落地（`engine/derived.py` + `test_env_derived_v12.py` 8 项回归），不写回配方 JSON；`companion_plants`（0/116 无权威数据）与 `revision_history` 待补 |
+| P1-2 | **移植 agroclim 函数集 + vegperiod 三法交叉校验**（严禁抄 GPL 代码） | 物候双轨输出 + 分歧告警，测试 +30 | ✅ 待开工 |
 | P1-3 | **CMIP7 接入** `agri_season_advisory` 情景模式 | 7 情景可查，**当前无竞品** |
 | P1-4 | **PlantDoc 接入 + agstack pestmodels 对接评估** | `eval_pest_diagnosis_topk` 有真值集 |
 | P1-5 | **微气候选址 MVP**（朝向/遮挡/楼层风） | 同城市不同朝向输出不同适配分 |
 | P1-6 | **MCP server 分层重构**（`tools/` + `handlers/` + `formatters/`） | `server.py` < 200 行 |
 | P1-7 | **商业化架构预留**：`call_id` / `billing_hint` / 预算上限 | 每次调用可追溯唯一 id |
 | P1-8 | **数据源健康分**（`sources[].health` 联动 confidence） | SoilGrids 中国区置信度自动下调 |
-| P1-9 | **测试拆分**：v4/v5 拆子模块；MCP 自测纳入 unittest 统计 | 无 >800 行测试文件 |
+| P1-9 | **测试拆分**：v4/v5 拆子模块；MCP 自测纳入 unittest 统计 | 无 >800 行测试文件 | 🔶 **部分完成**：`test_mcp_server_unit.py` 已纳入 unittest（3 项，单测基线 533→556）；但 `test_engine_v4.py`（1417 行）仍超 800 行，v4/v5 拆分子模块待做 |
 
 ### P2 · 3-6 月 · 战略层与体验层
 
