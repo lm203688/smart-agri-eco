@@ -4,6 +4,53 @@
 
 ---
 
+## [Unreleased · v1.1.3 待发] - 2026-10-09（E2E 实测发现并修复 3 处参数校验缺陷）
+
+> **性质**：不是文档口径问题、也不是分发通道问题——是**功能正确性问题**。用户反馈"很多功能还是错误，你每个板块功能都测试了吗"，随即对本项目**四个板块做端到端实测**（MCP server 14 工具 / Agent Card 14 skills / Demo 28 端点 / 技能注册表），发现 3 处真实的参数校验缺陷并全部修复。
+>
+> **判定依据**：所有自动化门禁（21 项分发就绪度 + 41 项 MCP 自测 + 556 项 unittest + verify_all）**全部通过**，但真实调用（含负向参数）时暴露了 3 处 P0 级缺陷——这就是「门禁全绿但功能错误」的典型盲区。
+
+### 修复（3 处真实 bug，均在 `mcp/server.py`）
+
+| # | 严重度 | 工具 | 缺陷 | 修复 |
+|---|---|---|---|---|
+| 1 | **P0** | `agri_reconcile_climate` | `years=[-5]` 触发 `int() argument ... not 'list'` 崩溃——完全无参数校验 | 加 lat/lon 范围校验 + years 类型（拒绝 list/bool）+ 范围（1-30）三重校验 |
+| 2 | **P1** | `agri_match_zone` | `lat=999, lon=999` 静默通过并返回 `subarctic`——无范围校验 | 加 lat ∈ [-90, 90]、lon ∈ [-180, 180] 范围校验 |
+| 3 | **P2** | `agri_list_ecosystem` | `status=invalid_status_xyz` 返回全表——非法值未过滤 | 加 status 枚举白名单校验，非法值明确报错 |
+
+### 回归测试（新增 3 组断言到 `scripts/test_mcp_server.py`）
+
+- `match_zone` 拒绝非法 lat 范围（999）
+- `reconcile_climate` 拒绝非整数/非法 years（`[-5]`）
+- `list_ecosystem` 拒绝非法 status 值
+
+`test_mcp_server.py` 断言数从 41 → **44**（+3）。
+
+### E2E 实测清单（4 板块 / 68 次真实调用 / 全部通过或合理拒绝）
+
+| 板块 | 覆盖 | 结果 |
+|---|---|---|
+| **MCP server** | 14 工具 × 真实参数 24 组 + 负向 8 组 | 24/24 ✅ + 3 处拒绝生效 + 4 处合理软拒绝 |
+| **Agent Card** | 14 skills ↔ 14 MCP 工具一一对应 | ✅ 通过 |
+| **Demo 端点** | 28 端点（GET 10 + POST 17 + 404 1） | 24 ✅ + 4 合理软拒绝（`未找到配方` / 缺参） |
+| **技能注册表** | plugin 11 ↔ registry 11 + CONTRIBUTING + schema | ✅ 13 文件一致 |
+
+### 验证结果（本机实跑 2026-10-09）
+
+| 门禁 | 结果 |
+|---|---|
+| `python scripts/test_mcp_server.py` | ✅ **44 项断言全通过**（新增 3 项参数校验回归） |
+| `python scripts/check_distribution_readiness.py` | ✅ **20 通过 / 0 告警 / 0 失败 / 1 跳过**（跳过项：公网部署待用户执行） |
+| `python scripts/check_agent_card.py` | ✅ 14 skills ↔ 14 MCP 工具 |
+| `python scripts/build_agent_plugin.py --check` | ✅ 13 文件与 registry 一致 |
+| `python -m unittest discover -s scripts` | ✅ Ran 556 tests / OK / skipped=3 |
+
+### 教训
+
+门禁脚本（`test_mcp_server.py` / `check_distribution_readiness.py` / `verify_all.py`）全部通过 ≠ 功能正确。门禁只覆盖**契约层**（协议版本、字段名、类型），不覆盖**语义层**（参数范围、枚举合法性、边界行为）。**E2E 负向测试是契约层测试的必要补充**——本次 3 处 P0/P1/P2 缺陷全部由负向参数触发，契约层测试从未触及。
+
+---
+
 ## [Unreleased · v1.1.2 待发] - 2026-10-09（P1 能力落地 + 文档口径同步）
 
 > **性质**：承接 10-08 分发通道补齐后的**首批 P1 能力落地**，非 MCP 协议变更，MCP server 本体未动，因此版本号暂未升（server.json / plugin.json 仍为 1.1.0），下次真正需要重建 MCPB 时随 v1.1.2 一并发布。

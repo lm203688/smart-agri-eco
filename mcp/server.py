@@ -96,8 +96,15 @@ def _tool_list_cities(args: dict) -> dict:
 
 
 def _tool_match_zone(args: dict) -> dict:
-    lat = float(args.get("lat", 0))
-    lon = float(args.get("lon", 0))
+    try:
+        lat = float(args["lat"])
+        lon = float(args["lon"])
+    except (KeyError, TypeError, ValueError):
+        return {"error": "需要数值 lat/lon"}
+    if not (-90.0 <= lat <= 90.0):
+        return {"error": f"lat 超出合法范围 [-90, 90]，收到 {lat}"}
+    if not (-180.0 <= lon <= 180.0):
+        return {"error": f"lon 超出合法范围 [-180, 180]，收到 {lon}"}
     return _orch().climate.match_zone(lat, lon)
 
 
@@ -363,7 +370,17 @@ def _tool_reconcile_climate(args: dict) -> dict:
         lon = float(args["lon"])
     except (KeyError, TypeError, ValueError):
         return {"error": "需要数值 lat/lon"}
-    years = int(args.get("years", 5))
+    if not (-90.0 <= lat <= 90.0):
+        return {"error": f"lat 超出合法范围 [-90, 90]，收到 {lat}"}
+    if not (-180.0 <= lon <= 180.0):
+        return {"error": f"lon 超出合法范围 [-180, 180]，收到 {lon}"}
+    # years 校验：必须是正整数（bool 是 int 子类，需显式排除）
+    years_raw = args.get("years", 5)
+    if isinstance(years_raw, bool) or not isinstance(years_raw, int):
+        return {"error": f"years 必须是整数（1-30），收到 {type(years_raw).__name__}={years_raw!r}"}
+    if not (1 <= years_raw <= 30):
+        return {"error": f"years 超出合法范围 [1, 30]，收到 {years_raw}"}
+    years = years_raw
     sources = tuple(args["sources"]) if args.get("sources") else None
     from core.climate_reconcile import reconcile_climate
     return reconcile_climate(lat, lon, years=years, sources=sources)
@@ -403,6 +420,14 @@ def _tool_list_ecosystem(args: dict) -> dict:
     status_filter = args.get("status")
     ecosystems = cfg.get("ecosystems", [])
     if status_filter:
+        valid = {"integrated", "partial", "planned_mapping",
+                 "evaluating", "competitor_reference", "not_evaluated"}
+        if status_filter not in valid:
+            return {
+                "error": f"非法 status='{status_filter}'，合法值: {sorted(valid)}",
+                "count": 0,
+                "ecosystems": [],
+            }
         ecosystems = [e for e in ecosystems if e.get("status") == status_filter]
     return {
         "meta": cfg.get("meta", {}),

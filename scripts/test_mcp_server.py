@@ -302,6 +302,40 @@ def main() -> int:
                      "params": {"name": "no_such_tool", "arguments": {}}})
         check(resp and "error" in resp, "未知工具返回 error")
 
+        # 6b) 参数校验：非法经纬度范围必须被拒绝（P0 回归：999/-999 曾静默通过）
+        resp = _rpc({"jsonrpc": "2.0", "id": 20, "method": "tools/call",
+                     "params": {"name": "agri_match_zone",
+                                "arguments": {"lat": 999, "lon": 999}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _z = json.loads(_txt)
+            check("error" in _z and "lat" in _z.get("error", ""),
+                  "match_zone 拒绝非法 lat 范围（999）")
+        except Exception:
+            check(False, "match_zone 非法 lat 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 21, "method": "tools/call",
+                     "params": {"name": "agri_reconcile_climate",
+                                "arguments": {"lat": 0, "lon": 0, "years": [-5]}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _z = json.loads(_txt)
+            check("error" in _z and "years" in _z.get("error", ""),
+                  "reconcile_climate 拒绝非整数/非法 years（[-5]）")
+        except Exception:
+            check(False, "reconcile_climate 非法 years 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 22, "method": "tools/call",
+                     "params": {"name": "agri_list_ecosystem",
+                                "arguments": {"status": "invalid_status_xyz"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _z = json.loads(_txt)
+            check("error" in _z and "status" in _z.get("error", ""),
+                  "list_ecosystem 拒绝非法 status 值")
+        except Exception:
+            check(False, "list_ecosystem 非法 status 返回可解析 JSON")
+
         # 7) 安全护栏：超长请求必须被拒绝（防内存耗尽型 DoS）
         big = "X" * 2000000  # ~2 MiB，超过 MAX_LINE_BYTES(1 MiB)
         resp = _rpc({"jsonrpc": "2.0", "id": 99, "method": "tools/call",
