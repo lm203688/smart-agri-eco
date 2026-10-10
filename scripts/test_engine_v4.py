@@ -963,7 +963,7 @@ class TestIntegration(_Isolated):
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         obs = mod._recipe_scheduler_obs()
-        self.assertEqual(obs["recipes_scanned"], 116)
+        self.assertEqual(obs["recipes_scanned"], 152)
         self.assertGreater(obs["anchors_total"], 0)
         self.assertEqual(sum(obs["anchors_by_kind"].values()),
                          obs["anchors_total"])
@@ -1039,10 +1039,10 @@ class TestDerivedVpd(unittest.TestCase):
     def test_all_110_recipes_computable_without_exception(self):
         import glob
         paths = sorted(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
-        self.assertEqual(len(paths), 116)
+        self.assertEqual(len(paths), 152)
         recipes = [json.load(open(p, encoding="utf-8")) for p in paths]
         report = engine_derived.audit_recipes(recipes)
-        self.assertEqual(report["available"], 116,
+        self.assertEqual(report["available"], 152,
                          "所有配方都应能从温湿设定算出派生量")
         self.assertIn("flag_kinds", report)
         self.assertIn("observation_kinds", report)
@@ -1135,7 +1135,7 @@ class TestEnvRecipeSourceLicense(unittest.TestCase):
     def _recipes(self):
         import glob
         paths = sorted(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
-        self.assertEqual(len(paths), 116)
+        self.assertEqual(len(paths), 152)
         return [(os.path.relpath(p, ROOT),
                  json.load(open(p, encoding="utf-8"))) for p in paths]
 
@@ -1165,8 +1165,8 @@ class TestEnvRecipeSourceLicense(unittest.TestCase):
         self.assertNotIn("zone_note", schema.get("required", []))
         self.assertEqual(schema["properties"]["zone_note"]["type"], "string")
 
-    def test_all_116_recipes_pass_full_schema_validation(self):
-        """全量 116 份配方必须通过完整 schema 校验（含 zone_note）。
+    def test_all_152_recipes_pass_full_schema_validation(self):
+        """全量 152 份配方必须通过完整 schema 校验（含 zone_note）。
 
         daily 巡检 2026-10-01 遗留 6 份 zone_note 未通过 schema 校验（schema 110/116）；
         本测试锁死 schema 与配方的对齐，防止分区扩展时忘记同步 schema。
@@ -1175,7 +1175,7 @@ class TestEnvRecipeSourceLicense(unittest.TestCase):
         schema = json.load(open(os.path.join(ROOT, "schemas", "env_recipe.schema.json"),
                                 encoding="utf-8"))
         paths = sorted(glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json")))
-        self.assertEqual(len(paths), 116, "预期 116 份 Env Recipe")
+        self.assertEqual(len(paths), 152, "预期 152 份 Env Recipe")
         for p in paths:
             with open(p, encoding="utf-8") as f:
                 r = json.load(f)

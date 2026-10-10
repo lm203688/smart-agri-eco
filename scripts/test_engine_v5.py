@@ -1000,16 +1000,23 @@ class TestDocCapabilityNumbersInSync(unittest.TestCase):
         import glob
         recipes = [p for p in glob.glob(os.path.join(_ROOT, "data", "env_recipes", "*.json"))
                    if not os.path.basename(p).startswith("_")]
-        self.assertEqual(len(recipes), 116, "配方数变了，前端数字需同步")
+        self.assertEqual(len(recipes), 152, "配方数变了，前端数字需同步")
 
         with open(os.path.join(_ROOT, "data", "zone_meta", "global_zones.json"),
                   encoding="utf-8") as f:
             zones = json.load(f)
         self.assertEqual(len(zones["zones"]), 8, "分区数变了，前端数字需同步")
 
+        # 从 crop_adapt_db.json 统计作物总数，而非硬编码 110
+        with open(os.path.join(_ROOT, "data", "crop_adapt_db.json"),
+                  encoding="utf-8") as f:
+            crop_db = json.load(f)
+        total_crops = sum(len(z.get("crops", []))
+                          for z in crop_db.get("zones", {}).values())
+
         html = self._read("app/index.html")
-        self.assertIn("%d 作物 · %d 分区" % (110, len(zones["zones"])), html,
-                      "app/index.html 的分区数与 global_zones.json 不符")
+        self.assertIn("%d 作物 · %d 分区" % (total_crops, len(zones["zones"])), html,
+                      "app/index.html 的作物数/分区数与数据实算不符")
         self.assertIn("%d 配方" % len(recipes), html,
                       "app/index.html 的配方数与 data/env_recipes/ 实际份数不符")
 

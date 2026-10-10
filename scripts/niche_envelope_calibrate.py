@@ -210,4 +210,28 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    import argparse as _ap
+    _p = _ap.ArgumentParser(
+        description="P3 · 生态位包络反推校准适配分（GBIF + 气候反推）"
+    )
+    _p.add_argument("--dry-run", action="store_true",
+                    help="只报告将处理的作物，不写回 crop_adapt_db.json")
+    _p.add_argument("--limit", type=int, default=0,
+                    help="仅处理前 N 个作物（0 = 全量；调试用）")
+    _args = _p.parse_args()
+    if _args.dry_run:
+        # dry-run 不做网络调用，仅打印待处理作物清单
+        import json as _json
+        _d = _json.loads(open(CROP_DB, encoding="utf-8").read())
+        _todo = []
+        for zid, zdata in (_d.get("zones") or {}).items():
+            for c in zdata.get("crops", []):
+                if not c.get("calibrated"):
+                    _todo.append((zid, c.get("crop"), c.get("latin")))
+        print(f"[dry-run] 待校准作物 {len(_todo)} 个（--dry-run 不做网络调用）")
+        for zid, crop, latin in _todo[:20]:
+            print(f"  {zid:22s} {crop} ({latin})")
+        if len(_todo) > 20:
+            print(f"  ... 还有 {len(_todo) - 20} 个")
+        raise SystemExit(0)
     main()

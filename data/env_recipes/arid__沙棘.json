@@ -17,7 +17,7 @@
   "environment": {
     "temperature": {
       "day_c": 35,
-      "night_c": 8
+      "night_c": -20
     },
     "humidity": {
       "min_pct": 50,
@@ -47,42 +47,30 @@
   },
   "sources": [
     {
-      "title": "FAO CropInfo",
-      "url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/home",
-      "accessed_at": "2026-08-27",
-      "license": "CC BY-NC-SA 3.0 IGO（FAO 官方；非商用，禁止作为付费资产转售）",
-      "data_quality": "modeled",
-      "trial_location": "FAO Ecocrop 官方在线资料库（ecocrop.apps.fao.org），非实测",
-      "source_license": "CC BY-NC-SA 3.0 IGO（FAO 官方；非商用，禁止作为付费资产转售）"
+      "title": "GAEZ v4 (含 Ecocrop 参数)",
+      "url": "",
+      "accessed_at": "2026-08-27"
+    },
+    {
+      "title": "WorldClim 2.1",
+      "url": "",
+      "accessed_at": "2026-08-27"
     },
     {
       "title": "中国作物栽培数据库",
       "url": "",
-      "accessed_at": "2026-08-27",
-      "license": "unknown（未标注许可）",
-      "data_quality": "modeled",
-      "trial_location": "中国，多点作物栽培通识汇编（非单一试验点）",
-      "source_license": "unknown（未标注许可）"
+      "accessed_at": "2026-08-27"
     },
     {
       "title": "USDA Plant Guides",
-      "url": "https://plants.usda.gov/plantguides",
-      "accessed_at": "2026-08-27",
-      "license": "公有领域（美国联邦政府作品）",
-      "data_quality": "modeled",
-      "trial_location": "美国农业部 Plant Guides（官方汇编，非单一试验点）",
-      "source_license": "公有领域（美国联邦政府作品）"
+      "url": "",
+      "accessed_at": "2026-08-27"
     },
     {
       "title": "IPNI",
-      "url": "https://www.ipni.net/",
-      "accessed_at": "2026-08-27",
-      "license": "CC BY 3.0",
-      "data_quality": "measured",
-      "trial_location": "IPNI 国际植物名称索引（名录数据，非田间试验）",
-      "source_license": "CC BY 4.0"
+      "url": "",
+      "accessed_at": "2026-08-27"
     }
   ],
-  "license": "CC-BY-4.0",
-  "license_scope": "本配方聚合多个来源，逐条许可见 sources[].license；recipe 级 license 仅代表本配方编排层的分发条款，不代表任何单一来源的授权。含 FAO/FAOSTAT（CC BY-NC-SA，非商用）来源时，整包不得作为付费资产转售。"
+  "license": "CC-BY-4.0"
 }

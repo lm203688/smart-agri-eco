@@ -93,7 +93,7 @@ CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 556 OK · Demo 端点 14/1
 | L3 | 执行控制 | 水肥一体化/环境调控/执行补偿 | ✅ 已落地（NutritionAgent 水肥 + **ControlAgent** L3：生长计划→硬件无关 actuator 指令 + 车载/开放环境/设备故障执行补偿）。**缺口**：`execution_log` 0 条，闭环未真实验证；`needs_gateway` 网关未实现 |
 | L2 | 模型 AI | 生长模型/病虫害/决策引擎/世界模型 | 🟡 部分落地（**ForecastAgent** L2：采收期/产量/风险预测，诚实标注 `model=heuristic` + WOFOST 物候 + 病虫害规则诊断）。**缺口**：世界模型未做；`eval_pest_diagnosis_topk` / `eval_recipe_expert_adoption` 两项核心 eval pending |
 | L1 | 感知层 | 传感器/摄像头/边缘AI | 🟡 最弱环节（`agent/vision.py` **63 行**可插拔后端，未配置即规则降级）。**注意**：PlantVillage **无 license**（原仓库无 LICENSE 文件），不可商用；合规替代为 PlantDoc (CC BY 4.0)。传感接入协议 0 行代码 |
-| L0 | 数据底座 | 气候/土壤/水文/光照 | ★ 当前重点（8 分区已闭环 / 116 配方 / 113 双源校准 / 8 源血缘）。**缺口**：微气候选址未做；CMIP7 未接入；第三源未融合 |
+| L0 | 数据底座 | 气候/土壤/水文/光照 | ★ 当前重点（8 分区已闭环 / 152 配方 / 113 双源校准 / 8 源血缘）。**缺口**：微气候选址未做；CMIP7 未接入；第三源未融合 |
 
 ---
 

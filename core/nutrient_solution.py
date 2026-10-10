@@ -131,7 +131,7 @@ class SolveResult:
                     "salt": s["name"],
                     "grams_total": round(s["grams"], 3),
                     "grams_per_l": round(s["grams"] / self.volume_l, 4) if self.volume_l else 0.0,
-                    "mmol_per_l": round(s["mmol_per_l"], 4),
+                    "mmol_per_l": round(s["mmol"], 4),
                     "ions_mg_per_l": {k: round(v, 3) for k, v in s["ions_mg_per_l"].items()},
                 }
                 for s in self.salts if s["grams"] > 1e-9
@@ -236,7 +236,7 @@ def solve(
         grams_ca = x_ca * MOLAR_MASS["Ca(NO3)2"] / 1000.0 * volume_l
         chosen.append({
             "name": "Ca(NO3)2",
-            "mmol_per_l": x_ca,
+            "mmol": x_ca,
             "grams": grams_ca,
             "ions_mg_per_l": {"Ca": x_ca * m_ca, "N": n_from_ca},
         })
@@ -252,7 +252,7 @@ def solve(
         grams_mg = x_mg * MOLAR_MASS["Mg(NO3)2"] / 1000.0 * volume_l
         chosen.append({
             "name": "Mg(NO3)2",
-            "mmol": x_"mg,
+            "mmol": x_mg,
             "grams": grams_mg,
             "ions_mg_per_l": {"Mg": x_mg * m_mg, "N": n_from_mg},
         })
@@ -270,7 +270,7 @@ def solve(
         grams_kh2p = x_kh2p * MOLAR_MASS["KH2PO4"] / 1000.0 * volume_l
         chosen.append({
             "name": "KH2PO4",
-            "mmol": x_"kh2p,
+            "mmol": x_kh2p,
             "grams": grams_kh2p,
             "ions_mg_per_l": {"K": k_from_kh2p, "P": x_kh2p * m_p},
         })
@@ -289,7 +289,7 @@ def solve(
             grams_kno = x_kno * MOLAR_MASS["KNO3"] / 1000.0 * volume_l
             chosen.append({
                 "name": "KNO3",
-                "mmol": x_"kno,
+                "mmol": x_kno,
                 "grams": grams_kno,
                 "ions_mg_per_l": {"K": x_kno * m_k, "N": n_from_kno},
             })
@@ -309,7 +309,7 @@ def solve(
         grams_nh4 = x_nh4no3 * MOLAR_MASS["NH4NO3"] / 1000.0 * volume_l
         chosen.append({
             "name": "NH4NO3",
-            "mmol": x_"nh4no3,
+            "mmol": x_nh4no3,
             "grams": grams_nh4,
             "ions_mg_per_l": {"N": n_from_nh4},
         })
@@ -325,8 +325,11 @@ def solve(
     # ------------------------------------------------------------------
     # 预测 EC（摩尔电导率法）
     # ------------------------------------------------------------------
+    # 注意：chosen[i]["mmol"] 单位是 mmol/L（浓度），
+    # MOLAR_CONDUCTIVITY_DSM_PER_MMOLL 单位是 dS/m per (mmol/L)，
+    # 两者直接相乘即得 dS/m（不需要再除以 volume_l，避免单位错误）。
     ec_predicted = sum(
-        c["mmol"] / volume_l * MOLAR_CONDUCTIVITY_DSM_PER_MMOLL.get(c["name"], 0.0)
+        c["mmol"] * MOLAR_CONDUCTIVITY_DSM_PER_MMOLL.get(c["name"], 0.0)
         for c in chosen
     )
 

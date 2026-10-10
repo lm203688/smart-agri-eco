@@ -7,7 +7,7 @@
 - **零第三方运行时依赖**：全部代码仅用 Python 标准库（`agent/`、`engine/`、`core/`、`scripts/`、`mcp/`、`bp_screen/`、`skills/`）。不要引入 pip 包作为运行时依赖；纯算法请用标准库实现。
 - **stdout 是协议通道**：MCP server 走 stdio，任何 `print` 到 stdout 都会破坏 JSON-RPC。日志一律走 `stderr` / `logging`。
 - **数据真实性红线**：`calibrated=true` 必须带 `measured_calibration` 实证；`feedback_log` 不得含 demo/单测/冒烟合成样本（见 `engine/rsi.py::_is_synthetic`）。
-- **能力数字防漂移**：README / `mcp/README` / `app/index.html` 的 MCP 工具数(14)/分区数(8)/配方数(116)/闸数(12) 由 `scripts/test_engine_v5.py::TestDocCapabilityNumbersInSync` 锁死，扩张后必须同步这三处。
+- **能力数字防漂移**：README / `mcp/README` / `app/index.html` 的 MCP 工具数(14)/分区数(8)/配方数(152)/闸数(12) 由 `scripts/test_engine_v5.py::TestDocCapabilityNumbersInSync` 锁死，扩张后必须同步这三处。
 
 ## 2. 目录布局
 

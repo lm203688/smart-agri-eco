@@ -48,7 +48,6 @@
           "gbif_key": 2762680,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 23.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -74,31 +73,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.73,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              22.6,
-              22.6,
-              23.5,
-              25.0,
-              25.0,
-              22.7,
-              21.8,
-              22.5,
-              22.9,
-              23.0,
-              22.3,
-              22.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "木瓜",
@@ -130,7 +105,6 @@
           "gbif_key": 2874484,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 26.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -156,31 +130,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.45,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              25.1,
-              25.2,
-              25.3,
-              25.9,
-              26.5,
-              26.3,
-              26.9,
-              27.0,
-              27.1,
-              26.4,
-              25.6,
-              25.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "生姜",
@@ -213,7 +163,6 @@
           "gbif_key": 2757280,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 27.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -239,31 +188,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.37,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              25.9,
-              25.9,
-              27.5,
-              28.6,
-              28.2,
-              27.3,
-              26.8,
-              27.0,
-              27.1,
-              27.1,
-              26.7,
-              26.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "芋头",
@@ -295,7 +220,6 @@
           "gbif_key": 5330776,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 22.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -321,31 +245,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.67,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              17.5,
-              18.1,
-              21.8,
-              23.0,
-              24.0,
-              25.3,
-              26.5,
-              27.3,
-              25.8,
-              24.1,
-              20.7,
-              19.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "辣椒",
@@ -379,7 +279,6 @@
           "gbif_key": 2932944,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 21.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -405,31 +304,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.52,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              17.5,
-              17.6,
-              20.6,
-              22.6,
-              21.6,
-              21.4,
-              21.9,
-              23.5,
-              23.2,
-              23.3,
-              19.9,
-              18.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "空心菜",
@@ -463,7 +338,6 @@
           "gbif_key": 2928525,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 25.9℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -489,31 +363,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.67,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              23.3,
-              25.1,
-              27.0,
-              28.4,
-              29.0,
-              28.0,
-              26.4,
-              26.1,
-              25.8,
-              25.4,
-              23.9,
-              22.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "红薯叶",
@@ -546,7 +396,6 @@
           "gbif_key": 2928551,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 24.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -572,31 +421,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.83,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              21.5,
-              22.1,
-              23.4,
-              24.9,
-              25.6,
-              25.8,
-              25.9,
-              25.5,
-              25.6,
-              25.5,
-              24.2,
-              22.5
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "秋葵",
@@ -629,7 +454,6 @@
           "gbif_key": 3152707,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 27.3℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -655,31 +479,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.17,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              26.4,
-              27.2,
-              28.4,
-              28.6,
-              27.9,
-              27.1,
-              26.9,
-              27.0,
-              27.2,
-              27.9,
-              26.9,
-              25.9
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "香草（柠檬草）",
@@ -711,7 +511,6 @@
           "gbif_key": 2705275,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 24.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -737,31 +536,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.67,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              19.6,
-              20.9,
-              23.7,
-              26.6,
-              28.4,
-              27.6,
-              25.5,
-              24.7,
-              24.9,
-              24.0,
-              21.8,
-              20.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "芒果",
@@ -793,7 +568,6 @@
           "gbif_key": 3190638,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 23.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -819,31 +593,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.73,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              21.3,
-              22.6,
-              25.2,
-              25.5,
-              24.0,
-              21.4,
-              21.3,
-              22.2,
-              22.8,
-              23.9,
-              24.0,
-              22.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "百香果",
@@ -876,7 +626,6 @@
           "gbif_key": 2874190,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 21.6℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -902,31 +651,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.63,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              23.2,
-              23.2,
-              22.3,
-              21.9,
-              20.7,
-              19.8,
-              19.7,
-              20.3,
-              21.0,
-              21.6,
-              22.4,
-              23.0
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "玉米",
@@ -958,7 +683,6 @@
           "gbif_key": 5290052,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -984,31 +708,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.3,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              13.4,
-              13.7,
-              13.9,
-              14.4,
-              14.5,
-              15.2,
-              16.1,
-              15.7,
-              16.1,
-              17.4,
-              16.5,
-              15.0
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "木薯",
@@ -1041,7 +741,6 @@
           "gbif_key": 3060998,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 23.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1067,31 +766,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.63,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              22.5,
-              22.9,
-              22.7,
-              22.9,
-              23.4,
-              23.2,
-              23.6,
-              23.8,
-              23.9,
-              23.6,
-              22.8,
-              22.5
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "菠萝",
@@ -1124,7 +799,6 @@
           "gbif_key": 5288819,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 23.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1150,31 +824,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.87,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              24.6,
-              24.7,
-              24.9,
-              24.5,
-              23.2,
-              21.6,
-              20.7,
-              21.6,
-              22.9,
-              24.1,
-              24.5,
-              24.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "火龙果",
@@ -1207,7 +857,6 @@
           "gbif_key": 10334868,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 21.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1233,31 +882,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.35,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              19.8,
-              20.0,
-              21.4,
-              21.8,
-              21.3,
-              21.3,
-              21.4,
-              21.9,
-              22.1,
-              21.5,
-              20.5,
-              19.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "可可",
@@ -1290,7 +915,6 @@
           "gbif_key": 3152205,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 25.3℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1316,31 +940,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.67,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              24.1,
-              24.7,
-              26.4,
-              27.0,
-              26.4,
-              25.5,
-              25.5,
-              25.6,
-              25.5,
-              25.1,
-              24.4,
-              24.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "咖啡",
@@ -1373,7 +973,6 @@
           "gbif_key": 2895345,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 22.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1399,31 +998,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.65,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              22.1,
-              21.6,
-              22.4,
-              24.7,
-              23.6,
-              21.1,
-              20.2,
-              21.3,
-              22.3,
-              23.3,
-              23.8,
-              22.3
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "香茅",
@@ -1457,7 +1032,6 @@
           "gbif_key": 8571291,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.7℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1483,31 +1057,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.03,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              5.9,
-              7.2,
-              11.4,
-              14.9,
-              16.9,
-              19.2,
-              19.0,
-              18.7,
-              17.8,
-              15.0,
-              10.8,
-              7.8
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         }
       ]
     },
@@ -1545,7 +1095,6 @@
           "gbif_key": 7403263,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 18.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1571,31 +1120,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 1.0,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              15.7,
-              16.7,
-              17.5,
-              18.9,
-              19.1,
-              18.2,
-              18.1,
-              18.4,
-              19.1,
-              19.9,
-              18.0,
-              16.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "番茄",
@@ -1629,7 +1154,6 @@
           "gbif_key": 2930137,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 20.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1655,31 +1179,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.5,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              16.0,
-              16.3,
-              18.4,
-              20.4,
-              22.0,
-              21.7,
-              22.1,
-              23.6,
-              23.8,
-              23.0,
-              18.1,
-              17.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "黄瓜",
@@ -1712,7 +1212,6 @@
           "gbif_key": 2874569,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 19.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1738,31 +1237,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.72,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              20.8,
-              20.5,
-              19.8,
-              19.7,
-              19.0,
-              18.2,
-              18.0,
-              18.5,
-              19.1,
-              19.3,
-              19.6,
-              19.8
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "豆角",
@@ -1795,7 +1270,6 @@
           "gbif_key": 2982380,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 26.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1821,31 +1295,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.43,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              22.2,
-              24.3,
-              27.4,
-              29.1,
-              29.5,
-              28.7,
-              26.4,
-              26.1,
-              26.6,
-              27.6,
-              26.5,
-              23.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "茄子",
@@ -1878,7 +1328,6 @@
           "gbif_key": 2930617,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 24.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1904,31 +1353,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.55,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              17.8,
-              19.1,
-              23.5,
-              27.6,
-              29.2,
-              30.5,
-              28.5,
-              26.8,
-              26.1,
-              24.2,
-              20.9,
-              18.9
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "辣椒",
@@ -1961,7 +1386,6 @@
           "gbif_key": 2932944,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 21.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -1987,31 +1411,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.55,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              17.5,
-              17.6,
-              20.6,
-              22.6,
-              21.6,
-              21.4,
-              21.9,
-              23.5,
-              23.2,
-              23.3,
-              19.9,
-              18.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "萝卜",
@@ -2044,7 +1444,6 @@
           "gbif_key": 7678610,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2070,37 +1469,13 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.62,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              8.9,
-              9.8,
-              10.4,
-              12.1,
-              16.0,
-              20.1,
-              22.4,
-              23.7,
-              20.6,
-              15.9,
-              12.1,
-              9.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "小白菜",
           "latin": "Brassica rapa var. parachinensis",
           "family": "十字花科",
-          "adapt_score": 0.62,
+          "adapt_score": 0.96,
           "growth_days": 30,
           "temp_range_c": [
             10,
@@ -2122,14 +1497,12 @@
             "霜霉病"
           ],
           "fallback_variety": "快菜（D15 采收）",
-          "seed_adapt_score": 0.96,
           "latin_verified": true,
           "gbif_match_note": "GBIF 接受名与手写一致",
           "gbif_accepted_name": "Brassica rapa var. parachinensis (L.H.Bailey) Hanelt",
           "gbif_key": 3042704,
           "gbif_status": "SYNONYM",
           "gbif_rank": "VARIETY",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 16.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2155,31 +1528,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.62,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.7,
-              11.7,
-              13.6,
-              15.8,
-              18.7,
-              20.5,
-              21.9,
-              21.9,
-              20.7,
-              18.0,
-              14.4,
-              11.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "香菜",
@@ -2212,7 +1561,6 @@
           "gbif_key": 3034871,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 24.3℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2238,31 +1586,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.38,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              18.5,
-              21.4,
-              25.1,
-              27.7,
-              30.1,
-              29.7,
-              26.4,
-              24.6,
-              24.5,
-              22.8,
-              21.2,
-              19.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "大蒜",
@@ -2295,7 +1619,6 @@
           "gbif_key": 2856681,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 10.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2321,31 +1644,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.1,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              -0.6,
-              0.8,
-              3.6,
-              8.5,
-              14.2,
-              18.8,
-              21.0,
-              20.9,
-              16.7,
-              10.6,
-              4.3,
-              0.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "紫苏",
@@ -2377,7 +1676,6 @@
           "gbif_key": 5341394,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.3℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2403,31 +1701,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.83,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              3.0,
-              4.9,
-              10.2,
-              14.1,
-              19.2,
-              24.6,
-              27.2,
-              26.6,
-              22.2,
-              16.5,
-              9.9,
-              5.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "薄荷",
@@ -2460,7 +1734,6 @@
           "gbif_key": 7308931,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.7℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2486,31 +1759,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.75,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              2.0,
-              4.4,
-              9.8,
-              16.6,
-              19.9,
-              21.9,
-              23.1,
-              22.1,
-              19.5,
-              14.6,
-              7.7,
-              2.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "草莓",
@@ -2542,7 +1791,6 @@
           "gbif_key": 3029912,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 14.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2568,31 +1816,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.87,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.9,
-              11.6,
-              15.0,
-              16.4,
-              18.8,
-              17.1,
-              16.1,
-              16.1,
-              16.7,
-              16.5,
-              13.2,
-              9.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "芹菜",
@@ -2626,7 +1850,6 @@
           "gbif_key": 5371879,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 14.9℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2652,31 +1875,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.33,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              15.6,
-              15.4,
-              15.4,
-              13.8,
-              12.6,
-              13.8,
-              15.3,
-              15.9,
-              15.5,
-              14.9,
-              14.6,
-              15.3
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "茼蒿",
@@ -2709,7 +1908,6 @@
           "gbif_key": 3141119,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 19.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2735,31 +1933,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.25,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              13.6,
-              13.4,
-              13.8,
-              16.4,
-              18.8,
-              22.1,
-              25.5,
-              26.0,
-              24.5,
-              21.7,
-              18.1,
-              15.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "苦瓜",
@@ -2793,7 +1967,6 @@
           "gbif_key": 2874581,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 25.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2819,31 +1992,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.48,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              21.7,
-              22.8,
-              24.0,
-              24.9,
-              26.8,
-              26.8,
-              26.7,
-              26.4,
-              26.6,
-              26.4,
-              24.6,
-              22.8
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "丝瓜",
@@ -2875,7 +2024,6 @@
           "gbif_key": 2874599,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 25.3℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2901,31 +2049,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.47,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              23.6,
-              24.1,
-              25.9,
-              27.6,
-              27.2,
-              26.5,
-              25.9,
-              25.5,
-              25.1,
-              24.3,
-              23.9,
-              23.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "冬瓜",
@@ -2958,7 +2082,6 @@
           "gbif_key": 2874524,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 22.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -2984,31 +2107,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.9,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              14.9,
-              17.2,
-              21.3,
-              23.9,
-              25.7,
-              26.9,
-              26.1,
-              26.5,
-              25.9,
-              22.1,
-              19.1,
-              14.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "南瓜",
@@ -3042,7 +2141,6 @@
           "gbif_key": 7393329,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 22.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3068,31 +2166,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.37,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              22.2,
-              23.2,
-              23.0,
-              22.5,
-              22.2,
-              21.8,
-              21.7,
-              22.4,
-              22.8,
-              22.7,
-              21.8,
-              22.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         }
       ]
     },
@@ -3129,7 +2203,6 @@
           "gbif_key": 7403263,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 18.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3155,31 +2228,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.45,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              15.7,
-              16.7,
-              17.5,
-              18.9,
-              19.1,
-              18.2,
-              18.1,
-              18.4,
-              19.1,
-              19.9,
-              18.0,
-              16.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "番茄",
@@ -3212,7 +2261,6 @@
           "gbif_key": 2930137,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 20.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3238,31 +2286,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.48,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              16.0,
-              16.3,
-              18.4,
-              20.4,
-              22.0,
-              21.7,
-              22.1,
-              23.6,
-              23.8,
-              23.0,
-              18.1,
-              17.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "黄瓜",
@@ -3295,7 +2319,6 @@
           "gbif_key": 2874569,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 19.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3321,31 +2344,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.62,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              20.8,
-              20.5,
-              19.8,
-              19.7,
-              19.0,
-              18.2,
-              18.0,
-              18.5,
-              19.1,
-              19.3,
-              19.6,
-              19.8
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "土豆",
@@ -3377,7 +2376,6 @@
           "gbif_key": 2930262,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 14.9℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3403,31 +2401,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.58,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              10.5,
-              10.3,
-              12.5,
-              14.9,
-              17.9,
-              18.4,
-              18.3,
-              18.9,
-              18.2,
-              16.8,
-              12.1,
-              9.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "萝卜",
@@ -3460,7 +2434,6 @@
           "gbif_key": 7678610,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3486,31 +2459,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.42,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              8.9,
-              9.8,
-              10.4,
-              12.1,
-              16.0,
-              20.1,
-              22.4,
-              23.7,
-              20.6,
-              15.9,
-              12.1,
-              9.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "白菜",
@@ -3543,7 +2492,6 @@
           "gbif_key": 7903057,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 16.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3569,31 +2517,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.43,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.7,
-              11.7,
-              13.6,
-              15.8,
-              18.7,
-              20.5,
-              21.9,
-              21.9,
-              20.7,
-              18.0,
-              14.4,
-              11.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "胡萝卜",
@@ -3625,7 +2549,6 @@
           "gbif_key": 3034742,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.6℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3651,31 +2574,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.22,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              12.8,
-              13.5,
-              13.7,
-              12.6,
-              12.8,
-              14.8,
-              15.4,
-              15.2,
-              13.3,
-              14.2,
-              12.9,
-              12.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "洋葱",
@@ -3708,7 +2607,6 @@
           "gbif_key": 2857697,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 17.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3734,31 +2632,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.82,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              11.0,
-              12.4,
-              16.1,
-              20.4,
-              23.2,
-              21.4,
-              19.1,
-              19.3,
-              21.1,
-              17.6,
-              13.4,
-              10.5
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "韭菜",
@@ -3792,7 +2666,6 @@
           "gbif_key": 2856297,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 16.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3818,31 +2691,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.58,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              11.2,
-              11.2,
-              14.1,
-              16.9,
-              20.3,
-              19.3,
-              18.8,
-              20.2,
-              21.9,
-              19.9,
-              15.7,
-              12.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "葱",
@@ -3874,7 +2723,6 @@
           "gbif_key": 2856504,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 18.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3900,31 +2748,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.82,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.7,
-              12.1,
-              15.4,
-              17.8,
-              20.8,
-              23.4,
-              24.8,
-              25.0,
-              24.2,
-              19.1,
-              14.0,
-              9.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "菠菜",
@@ -3957,7 +2781,6 @@
           "gbif_key": 3083647,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -3983,31 +2806,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.4,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              6.0,
-              8.6,
-              10.1,
-              12.9,
-              17.7,
-              23.0,
-              24.7,
-              24.2,
-              20.2,
-              16.1,
-              10.7,
-              7.3
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "茄子",
@@ -4040,7 +2839,6 @@
           "gbif_key": 2930617,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 24.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4066,31 +2864,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.23,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              17.8,
-              19.1,
-              23.5,
-              27.6,
-              29.2,
-              30.5,
-              28.5,
-              26.8,
-              26.1,
-              24.2,
-              20.9,
-              18.9
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "薄荷",
@@ -4123,7 +2897,6 @@
           "gbif_key": 7308931,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.7℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4149,31 +2922,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.77,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              2.0,
-              4.4,
-              9.8,
-              16.6,
-              19.9,
-              21.9,
-              23.1,
-              22.1,
-              19.5,
-              14.6,
-              7.7,
-              2.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "玉米",
@@ -4205,7 +2954,6 @@
           "gbif_key": 5290052,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4231,31 +2979,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.33,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              13.4,
-              13.7,
-              13.9,
-              14.4,
-              14.5,
-              15.2,
-              16.1,
-              15.7,
-              16.1,
-              17.4,
-              16.5,
-              15.0
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "小麦",
@@ -4288,7 +3012,6 @@
           "gbif_key": 7795888,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 21.9℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4314,31 +3037,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.45,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              14.3,
-              16.5,
-              20.0,
-              23.7,
-              26.7,
-              26.8,
-              28.4,
-              27.7,
-              24.4,
-              22.1,
-              17.7,
-              14.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "大豆",
@@ -4371,7 +3070,6 @@
           "gbif_key": 5359660,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4397,31 +3095,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.87,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              -0.1,
-              2.8,
-              8.3,
-              12.7,
-              18.0,
-              23.3,
-              25.4,
-              24.7,
-              20.5,
-              13.4,
-              7.8,
-              -0.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "向日葵",
@@ -4455,7 +3129,6 @@
           "gbif_key": 9206251,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4481,31 +3154,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.7,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              4.3,
-              5.0,
-              10.3,
-              14.6,
-              19.4,
-              24.7,
-              27.0,
-              27.4,
-              23.6,
-              17.1,
-              9.6,
-              6.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "大葱",
@@ -4540,7 +3189,6 @@
           "gbif_key": 2856504,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 18.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4566,31 +3214,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.82,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.7,
-              12.1,
-              15.4,
-              17.8,
-              20.8,
-              23.4,
-              24.8,
-              25.0,
-              24.2,
-              19.1,
-              14.0,
-              9.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "大蒜",
@@ -4624,7 +3248,6 @@
           "gbif_key": 2856681,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 10.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4650,31 +3273,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.42,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              -0.6,
-              0.8,
-              3.6,
-              8.5,
-              14.2,
-              18.8,
-              21.0,
-              20.9,
-              16.7,
-              10.6,
-              4.3,
-              0.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         }
       ]
     },
@@ -4712,7 +3311,6 @@
           "gbif_key": 2930137,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 20.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4738,31 +3336,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.9,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              16.0,
-              16.3,
-              18.4,
-              20.4,
-              22.0,
-              21.7,
-              22.1,
-              23.6,
-              23.8,
-              23.0,
-              18.1,
-              17.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "香草（迷迭香）",
@@ -4795,7 +3369,6 @@
           "gbif_key": 2926634,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4821,31 +3394,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.2,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              4.8,
-              7.3,
-              8.7,
-              11.3,
-              15.8,
-              20.5,
-              24.0,
-              23.8,
-              18.9,
-              14.7,
-              9.3,
-              6.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "香草（百里香）",
@@ -4877,7 +3426,6 @@
           "gbif_key": 5341442,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 14.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4903,31 +3451,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.7,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              10.0,
-              11.5,
-              11.3,
-              12.9,
-              16.1,
-              17.1,
-              18.3,
-              18.6,
-              18.0,
-              17.0,
-              13.0,
-              10.3
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "香草（罗勒）",
@@ -4960,7 +3484,6 @@
           "gbif_key": 2927096,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 17.7℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -4986,31 +3509,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.97,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              12.6,
-              13.8,
-              15.0,
-              17.0,
-              20.2,
-              20.1,
-              21.7,
-              21.1,
-              20.6,
-              20.2,
-              16.3,
-              13.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "黄瓜",
@@ -5042,7 +3541,6 @@
           "gbif_key": 2874569,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 19.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5068,31 +3566,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.67,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              20.8,
-              20.5,
-              19.8,
-              19.7,
-              19.0,
-              18.2,
-              18.0,
-              18.5,
-              19.1,
-              19.3,
-              19.6,
-              19.8
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "茄子",
@@ -5124,7 +3598,6 @@
           "gbif_key": 2930617,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 24.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5150,31 +3623,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.38,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              17.8,
-              19.1,
-              23.5,
-              27.6,
-              29.2,
-              30.5,
-              28.5,
-              26.8,
-              26.1,
-              24.2,
-              20.9,
-              18.9
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "辣椒",
@@ -5207,7 +3656,6 @@
           "gbif_key": 2932944,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 21.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5233,31 +3681,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.58,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              17.5,
-              17.6,
-              20.6,
-              22.6,
-              21.6,
-              21.4,
-              21.9,
-              23.5,
-              23.2,
-              23.3,
-              19.9,
-              18.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "生菜",
@@ -5290,7 +3714,6 @@
           "gbif_key": 7403263,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 18.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5316,31 +3739,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.73,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              15.7,
-              16.7,
-              17.5,
-              18.9,
-              19.1,
-              18.2,
-              18.1,
-              18.4,
-              19.1,
-              19.9,
-              18.0,
-              16.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "豌豆苗",
@@ -5373,7 +3772,6 @@
           "gbif_key": 5347845,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 17.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5399,31 +3797,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 1.0,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.8,
-              10.9,
-              13.7,
-              16.4,
-              19.8,
-              22.4,
-              23.6,
-              23.8,
-              22.5,
-              19.2,
-              15.4,
-              12.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "大蒜",
@@ -5455,7 +3829,6 @@
           "gbif_key": 2856681,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 10.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5481,31 +3854,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.2,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              -0.6,
-              0.8,
-              3.6,
-              8.5,
-              14.2,
-              18.8,
-              21.0,
-              20.9,
-              16.7,
-              10.6,
-              4.3,
-              0.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "胡萝卜",
@@ -5536,7 +3885,6 @@
           "gbif_key": 3034742,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.6℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5562,31 +3910,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.5,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              12.8,
-              13.5,
-              13.7,
-              12.6,
-              12.8,
-              14.8,
-              15.4,
-              15.2,
-              13.3,
-              14.2,
-              12.9,
-              12.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "橄榄",
@@ -5617,7 +3941,6 @@
           "gbif_key": 5415040,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 18.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5643,31 +3966,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.85,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.9,
-              11.6,
-              12.8,
-              15.3,
-              19.7,
-              23.3,
-              27.5,
-              27.5,
-              23.5,
-              19.6,
-              14.7,
-              11.5
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "葡萄",
@@ -5699,7 +3998,6 @@
           "gbif_key": 5372392,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 12.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5725,31 +4023,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.63,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              12.1,
-              11.8,
-              11.6,
-              11.0,
-              12.3,
-              11.9,
-              12.3,
-              12.9,
-              12.2,
-              13.3,
-              12.7,
-              12.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "无花果",
@@ -5783,7 +4057,6 @@
           "gbif_key": 5361909,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 14.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5809,31 +4082,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.92,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              11.3,
-              11.9,
-              12.4,
-              14.2,
-              15.9,
-              16.0,
-              17.0,
-              17.8,
-              18.4,
-              17.5,
-              13.8,
-              11.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "朝鲜蓟",
@@ -5866,7 +4115,6 @@
           "gbif_key": 3112364,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 12.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5892,31 +4140,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.75,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              12.0,
-              12.9,
-              13.2,
-              11.6,
-              10.4,
-              10.9,
-              11.6,
-              12.9,
-              13.1,
-              13.1,
-              12.2,
-              11.8
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "芝麻菜",
@@ -5951,7 +4175,6 @@
           "gbif_key": 5375920,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.9℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -5977,31 +4200,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 1.0,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              8.4,
-              9.7,
-              10.7,
-              14.1,
-              18.2,
-              21.6,
-              23.2,
-              23.5,
-              21.4,
-              17.6,
-              12.8,
-              9.9
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "开心果",
@@ -6035,7 +4234,6 @@
           "gbif_key": 3190585,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 11.6℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6061,31 +4259,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.35,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              -1.4,
-              0.0,
-              4.7,
-              10.3,
-              15.7,
-              22.3,
-              26.5,
-              24.4,
-              20.0,
-              12.4,
-              3.9,
-              0.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "油莎豆",
@@ -6117,7 +4291,6 @@
           "gbif_key": 2716226,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 16.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6143,31 +4316,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.47,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              20.4,
-              20.0,
-              18.8,
-              15.3,
-              12.6,
-              10.4,
-              9.2,
-              11.7,
-              15.5,
-              18.2,
-              19.6,
-              20.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         }
       ]
     },
@@ -6205,7 +4354,6 @@
           "gbif_key": 2777724,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 24.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6231,31 +4379,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.57,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              22.1,
-              22.2,
-              22.7,
-              23.5,
-              23.8,
-              24.7,
-              26.1,
-              26.6,
-              26.4,
-              25.6,
-              23.6,
-              22.5
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "仙人掌",
@@ -6289,7 +4413,6 @@
           "gbif_key": 5384064,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 17.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6315,31 +4438,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.65,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              15.7,
-              16.1,
-              16.5,
-              17.1,
-              16.2,
-              17.8,
-              19.1,
-              19.2,
-              18.7,
-              18.1,
-              18.6,
-              16.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "耐旱香草（牛至）",
@@ -6371,7 +4470,6 @@
           "gbif_key": 2926612,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 12.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6397,31 +4495,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.42,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              10.7,
-              10.9,
-              11.3,
-              11.0,
-              12.3,
-              13.2,
-              13.8,
-              14.4,
-              14.0,
-              12.3,
-              11.4,
-              10.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "耐旱香草（鼠尾草）",
@@ -6453,7 +4527,6 @@
           "gbif_key": 2927004,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 12.3℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6479,31 +4552,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.25,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              3.5,
-              4.4,
-              6.2,
-              9.1,
-              14.7,
-              20.6,
-              22.5,
-              22.2,
-              18.0,
-              13.4,
-              8.8,
-              4.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "耐旱香草（迷迭香）",
@@ -6536,7 +4585,6 @@
           "gbif_key": 2926634,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6562,31 +4610,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.22,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              4.8,
-              7.3,
-              8.7,
-              11.3,
-              15.8,
-              20.5,
-              24.0,
-              23.8,
-              18.9,
-              14.7,
-              9.3,
-              6.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "红薯",
@@ -6618,7 +4642,6 @@
           "gbif_key": 2928551,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 24.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6644,31 +4667,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.13,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              21.5,
-              22.1,
-              23.4,
-              24.9,
-              25.6,
-              25.8,
-              25.9,
-              25.5,
-              25.6,
-              25.5,
-              24.2,
-              22.5
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "绿豆",
@@ -6700,7 +4699,6 @@
           "gbif_key": 2982380,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 26.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6726,31 +4724,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.52,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              22.2,
-              24.3,
-              27.4,
-              29.1,
-              29.5,
-              28.7,
-              26.4,
-              26.1,
-              26.6,
-              27.6,
-              26.5,
-              23.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "花生",
@@ -6782,7 +4756,6 @@
           "gbif_key": 5353770,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 24.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6808,31 +4781,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.38,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              18.1,
-              18.4,
-              22.9,
-              25.9,
-              28.0,
-              27.1,
-              28.3,
-              28.1,
-              27.6,
-              26.4,
-              22.3,
-              20.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "仙人掌果",
@@ -6863,7 +4812,6 @@
           "gbif_key": 5384064,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 17.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6889,31 +4837,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.65,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              15.7,
-              16.1,
-              16.5,
-              17.1,
-              16.2,
-              17.8,
-              19.1,
-              19.2,
-              18.7,
-              18.1,
-              18.6,
-              16.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "沙漠玫瑰",
@@ -6946,7 +4870,6 @@
           "gbif_key": 7155887,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 28.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -6972,31 +4895,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.0,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              25.1,
-              27.2,
-              32.1,
-              34.4,
-              33.7,
-              30.4,
-              27.7,
-              25.5,
-              25.9,
-              26.8,
-              26.0,
-              25.5
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "鹰嘴豆",
@@ -7028,7 +4927,6 @@
           "gbif_key": 2947311,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 21.9℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7054,31 +4952,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.6,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              14.4,
-              16.9,
-              19.2,
-              23.3,
-              27.2,
-              28.9,
-              26.1,
-              24.5,
-              24.3,
-              22.8,
-              19.1,
-              16.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "沙棘",
@@ -7108,7 +4982,6 @@
           "gbif_key": 3039285,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 6.3℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7134,31 +5007,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.3,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              -6.8,
-              -4.2,
-              -0.1,
-              5.9,
-              12.2,
-              17.0,
-              19.5,
-              18.6,
-              13.2,
-              7.1,
-              -0.9,
-              -5.8
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "棉花",
@@ -7190,7 +5039,6 @@
           "gbif_key": 3152661,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 22.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7216,31 +5064,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.43,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              19.9,
-              21.0,
-              23.2,
-              23.0,
-              23.2,
-              23.7,
-              23.1,
-              23.8,
-              25.2,
-              24.3,
-              22.7,
-              20.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "高粱",
@@ -7273,7 +5097,6 @@
           "gbif_key": 2705181,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 18.6℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7299,31 +5122,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.3,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              18.6,
-              18.7,
-              18.4,
-              18.9,
-              18.3,
-              17.0,
-              17.6,
-              17.9,
-              19.1,
-              20.3,
-              19.3,
-              18.8
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "谷子",
@@ -7356,7 +5155,6 @@
           "gbif_key": 5289698,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 17.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7382,31 +5180,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.25,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              14.8,
-              14.8,
-              17.5,
-              18.1,
-              18.6,
-              19.4,
-              19.8,
-              20.7,
-              19.8,
-              18.2,
-              16.1,
-              15.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "苜蓿",
@@ -7439,7 +5213,6 @@
           "gbif_key": 9151957,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 9.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7465,31 +5238,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.4,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              7.4,
-              7.6,
-              7.8,
-              9.8,
-              9.2,
-              9.0,
-              10.2,
-              11.9,
-              12.3,
-              12.3,
-              9.5,
-              6.5
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "沙葱",
@@ -7522,7 +5271,6 @@
           "gbif_key": 2857345,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 2.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7548,31 +5296,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.07,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              -14.3,
-              -10.7,
-              -2.9,
-              4.1,
-              11.9,
-              16.9,
-              19.4,
-              17.3,
-              10.7,
-              2.0,
-              -6.5,
-              -14.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "瓜尔豆",
@@ -7603,7 +5327,6 @@
           "gbif_key": 2946183,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 21.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7629,31 +5352,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.43,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              12.0,
-              13.6,
-              18.8,
-              22.1,
-              26.5,
-              28.8,
-              28.3,
-              27.1,
-              25.0,
-              21.1,
-              16.8,
-              14.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         }
       ]
     },
@@ -7691,7 +5390,6 @@
           "gbif_key": 4933901,
           "gbif_status": "SYNONYM",
           "gbif_rank": "VARIETY",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 18.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7717,31 +5415,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.62,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              15.7,
-              16.7,
-              17.5,
-              18.9,
-              19.1,
-              18.2,
-              18.1,
-              18.4,
-              19.1,
-              19.9,
-              18.0,
-              16.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "樱桃萝卜",
@@ -7773,9 +5447,9 @@
           "gbif_key": 7882633,
           "gbif_status": "SYNONYM",
           "gbif_rank": "VARIETY",
-          "calibrated": false,
           "calibration_method": null,
-          "calibration_note": "GBIF 分布点不足（0），无法反推"
+          "calibration_note": "GBIF 分布点不足（0），无法反推",
+          "calibrated": false
         },
         {
           "crop": "菠菜",
@@ -7807,7 +5481,6 @@
           "gbif_key": 3083647,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7833,31 +5506,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.2,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              6.0,
-              8.6,
-              10.1,
-              12.9,
-              17.7,
-              23.0,
-              24.7,
-              24.2,
-              20.2,
-              16.1,
-              10.7,
-              7.3
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "韭菜",
@@ -7889,7 +5538,6 @@
           "gbif_key": 2856297,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 16.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7915,31 +5563,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.38,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              11.2,
-              11.2,
-              14.1,
-              16.9,
-              20.3,
-              19.3,
-              18.8,
-              20.2,
-              21.9,
-              19.9,
-              15.7,
-              12.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "葱",
@@ -7971,7 +5595,6 @@
           "gbif_key": 2856504,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 18.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -7997,31 +5620,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.37,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.7,
-              12.1,
-              15.4,
-              17.8,
-              20.8,
-              23.4,
-              24.8,
-              25.0,
-              24.2,
-              19.1,
-              14.0,
-              9.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "豌豆苗",
@@ -8054,7 +5653,6 @@
           "gbif_key": 5347845,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 17.5℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8080,31 +5678,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.37,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.8,
-              10.9,
-              13.7,
-              16.4,
-              19.8,
-              22.4,
-              23.6,
-              23.8,
-              22.5,
-              19.2,
-              15.4,
-              12.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "豆芽",
@@ -8137,9 +5711,9 @@
           "gbif_key": 2982380,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": false,
           "calibration_method": null,
-          "calibration_note": "GBIF 分布点不足（0），无法反推"
+          "calibration_note": "GBIF 分布点不足（0），无法反推",
+          "calibrated": false
         },
         {
           "crop": "菌菇类（平菇）",
@@ -8171,7 +5745,6 @@
           "gbif_key": 2526530,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.1℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8197,31 +5770,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.37,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              3.5,
-              6.0,
-              8.7,
-              11.3,
-              16.2,
-              20.3,
-              22.5,
-              22.4,
-              18.9,
-              13.9,
-              8.5,
-              4.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "菌菇类（木耳）",
@@ -8252,7 +5801,6 @@
           "gbif_key": 5249271,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 12.9℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8278,31 +5826,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.43,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              5.8,
-              7.3,
-              8.4,
-              10.7,
-              14.8,
-              18.1,
-              20.2,
-              20.6,
-              17.9,
-              14.5,
-              10.0,
-              6.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "耐寒香草（莳萝）",
@@ -8334,7 +5858,6 @@
           "gbif_key": 3034646,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 21.9℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8360,31 +5883,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.55,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              16.4,
-              17.0,
-              20.2,
-              23.8,
-              23.1,
-              23.7,
-              24.4,
-              25.1,
-              25.6,
-              24.9,
-              21.5,
-              17.3
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "耐寒香草（薄荷）",
@@ -8417,7 +5916,6 @@
           "gbif_key": 7308931,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.7℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8443,31 +5941,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.68,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              2.0,
-              4.4,
-              9.8,
-              16.6,
-              19.9,
-              21.9,
-              23.1,
-              22.1,
-              19.5,
-              14.6,
-              7.7,
-              2.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "微绿菜（Microgreens）",
@@ -8497,9 +5971,9 @@
           "fallback_variety": "无",
           "latin_verified": false,
           "gbif_match_note": "GBIF 未匹配（可能拼写/分类变动）",
-          "calibrated": false,
           "calibration_method": null,
-          "calibration_note": "GBIF 分布点不足（0），无法反推"
+          "calibration_note": "GBIF 分布点不足（0），无法反推",
+          "calibrated": false
         },
         {
           "crop": "黑麦",
@@ -8532,7 +6006,6 @@
           "gbif_key": 2705966,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.9℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8558,31 +6031,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.52,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.0,
-              9.4,
-              10.5,
-              13.8,
-              16.7,
-              17.4,
-              18.2,
-              19.3,
-              18.7,
-              16.0,
-              9.0,
-              8.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "大麦",
@@ -8615,7 +6064,6 @@
           "gbif_key": 2706056,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.2℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8641,31 +6089,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.65,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              13.7,
-              13.4,
-              13.3,
-              14.1,
-              13.3,
-              12.4,
-              12.6,
-              13.3,
-              13.6,
-              13.5,
-              13.0,
-              12.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "燕麦",
@@ -8698,7 +6122,6 @@
           "gbif_key": 2705290,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 17.8℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8724,31 +6147,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.45,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              9.4,
-              9.9,
-              14.3,
-              19.8,
-              24.1,
-              25.6,
-              23.2,
-              22.8,
-              21.9,
-              18.2,
-              13.2,
-              10.8
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "甜菜",
@@ -8782,7 +6181,6 @@
           "gbif_key": 8971274,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.3℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8808,31 +6206,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.5,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              10.9,
-              11.5,
-              10.9,
-              11.2,
-              14.3,
-              15.6,
-              16.6,
-              16.8,
-              15.3,
-              14.4,
-              11.1,
-              11.0
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "蔓越莓",
@@ -8865,7 +6239,6 @@
           "gbif_key": 2882841,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 10.0℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8891,31 +6264,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.15,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              -0.1,
-              0.3,
-              4.0,
-              7.6,
-              12.8,
-              17.4,
-              21.2,
-              20.7,
-              17.1,
-              11.7,
-              5.5,
-              1.7
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         },
         {
           "crop": "蓝莓",
@@ -8949,7 +6298,6 @@
           "gbif_key": 2882849,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "calibrated": true,
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 16.4℃",
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
@@ -8975,31 +6323,7 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.1,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              6.4,
-              7.5,
-              11.2,
-              14.4,
-              19.2,
-              23.6,
-              26.1,
-              26.1,
-              22.8,
-              18.1,
-              12.9,
-              8.5
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          "calibrated": false
         }
       ]
     },
@@ -9031,37 +6355,11 @@
           "fallback_variety": "自交系椰枣",
           "latin_verified": true,
           "adapt_score": 0.21,
-          "calibrated": true,
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
             "gbif_occurrence_points": 30,
             "climate_samples": 6,
             "temp_env_mean": [
-              18.6,
-              18.8,
-              21.5,
-              24.6,
-              28.2,
-              31.0,
-              32.3,
-              31.7,
-              29.5,
-              26.9,
-              23.1,
-              20.0
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          },
-          "measured_calibration": {
-            "calibrated_score": 0.21,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
               18.6,
               18.8,
               21.5,
@@ -9086,7 +6384,8 @@
           "gbif_key": 6109699,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "骆驼刺",
@@ -9111,7 +6410,6 @@
           "fallback_variety": "野生骆驼刺",
           "latin_verified": true,
           "adapt_score": 0.35,
-          "calibrated": true,
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
             "gbif_occurrence_points": 30,
@@ -9136,37 +6434,13 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.35,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              24.5,
-              23.3,
-              24.4,
-              24.2,
-              23.2,
-              21.2,
-              19.3,
-              19.7,
-              20.7,
-              21.5,
-              21.5,
-              22.1
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          },
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 22.1℃",
           "gbif_accepted_name": "Alhagi camelorum DC.",
           "gbif_key": 2945105,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "沙葱",
@@ -9192,7 +6466,6 @@
           "fallback_variety": "蒙古野葱",
           "latin_verified": true,
           "adapt_score": 0.02,
-          "calibrated": true,
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
             "gbif_occurrence_points": 30,
@@ -9217,37 +6490,13 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.02,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              -12.9,
-              -9.4,
-              -1.0,
-              6.2,
-              14.0,
-              19.2,
-              21.4,
-              19.3,
-              12.6,
-              4.0,
-              -4.7,
-              -13.2
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          },
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 4.6℃",
           "gbif_accepted_name": "Allium mongolicum Regel",
           "gbif_key": 2857345,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "胡杨",
@@ -9273,9 +6522,9 @@
             "盐碱胁迫"
           ],
           "fallback_variety": "胡杨实生",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "沙枣",
@@ -9301,9 +6550,9 @@
             "食心虫"
           ],
           "fallback_variety": "大沙枣",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "肉苁蓉",
@@ -9327,9 +6576,9 @@
             "寄主梭梭不足"
           ],
           "fallback_variety": "荒漠肉苁蓉",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "枸杞",
@@ -9356,9 +6605,9 @@
             "白粉病"
           ],
           "fallback_variety": "宁杞",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "沙棘",
@@ -9384,9 +6633,9 @@
             "干缩病"
           ],
           "fallback_variety": "中国沙棘",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "骆驼蓬",
@@ -9410,9 +6659,9 @@
             "极少"
           ],
           "fallback_variety": "骆驼蓬",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "沙拐枣",
@@ -9436,9 +6685,9 @@
             "极少"
           ],
           "fallback_variety": "蒙古沙拐枣",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "西瓜",
@@ -9464,9 +6713,9 @@
             "白粉病"
           ],
           "fallback_variety": "戈壁西瓜",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "哈密瓜",
@@ -9492,9 +6741,9 @@
             "蚜虫"
           ],
           "fallback_variety": "西州蜜",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "枣",
@@ -9521,9 +6770,9 @@
             "桃小食心虫"
           ],
           "fallback_variety": "骏枣",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "石榴",
@@ -9550,9 +6799,9 @@
             "桃蛀螟"
           ],
           "fallback_variety": "突尼斯软籽",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "无花果",
@@ -9579,9 +6828,9 @@
             "疫病"
           ],
           "fallback_variety": "布兰瑞克",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "杏",
@@ -9607,9 +6856,9 @@
             "杏仁蜂"
           ],
           "fallback_variety": "小白杏",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "葡萄",
@@ -9636,9 +6885,9 @@
             "根瘤蚜"
           ],
           "fallback_variety": "无核白",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "向日葵",
@@ -9664,9 +6913,9 @@
             "螟虫"
           ],
           "fallback_variety": "食葵",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "红花",
@@ -9691,9 +6940,9 @@
             "蚜虫"
           ],
           "fallback_variety": "油用红花",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "芝麻",
@@ -9719,9 +6968,9 @@
             "青枯"
           ],
           "fallback_variety": "白芝麻",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "鹰嘴豆",
@@ -9747,9 +6996,9 @@
             "豆象"
           ],
           "fallback_variety": "卡布里",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         }
       ]
     },
@@ -9782,7 +7031,6 @@
           "fallback_variety": "高原藜麦种",
           "latin_verified": true,
           "adapt_score": 0.11,
-          "calibrated": true,
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
             "gbif_occurrence_points": 30,
@@ -9807,37 +7055,13 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.11,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              8.3,
-              8.4,
-              8.3,
-              9.0,
-              11.7,
-              14.4,
-              15.2,
-              16.0,
-              14.3,
-              11.5,
-              9.4,
-              9.0
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          },
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 11.3℃",
           "gbif_accepted_name": "Chenopodium quinoa Willd.",
           "gbif_key": 3083935,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "青稞",
@@ -9864,7 +7088,6 @@
           "fallback_variety": "藏青稞",
           "latin_verified": true,
           "adapt_score": 0.12,
-          "calibrated": true,
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
             "gbif_occurrence_points": 30,
@@ -9889,37 +7112,13 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.12,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              15.8,
-              15.8,
-              15.4,
-              15.4,
-              15.8,
-              15.2,
-              15.9,
-              16.6,
-              16.5,
-              15.4,
-              13.7,
-              14.6
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          },
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 15.5℃",
           "gbif_accepted_name": "Hordeum vulgare var. coeleste L.",
           "gbif_key": 4932644,
           "gbif_status": "SYNONYM",
           "gbif_rank": "VARIETY",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "洋姜",
@@ -9946,7 +7145,6 @@
           "fallback_variety": "块茎繁殖",
           "latin_verified": true,
           "adapt_score": 0.09,
-          "calibrated": true,
           "calibration_method": "niche_envelope",
           "calibration_provenance": {
             "gbif_occurrence_points": 30,
@@ -9971,37 +7169,13 @@
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
           },
-          "measured_calibration": {
-            "calibrated_score": 0.09,
-            "method": "niche_envelope",
-            "gbif_occurrence_points": 30,
-            "climate_samples": 6,
-            "temp_env_mean_c": [
-              16.9,
-              16.6,
-              14.6,
-              12.9,
-              11.6,
-              14.5,
-              14.3,
-              13.9,
-              11.6,
-              11.1,
-              13.2,
-              15.4
-            ],
-            "sources": [
-              "GBIF occurrence (CC BY 4.0)",
-              "NASA POWER / Open-Meteo"
-            ],
-            "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          },
           "calibration_note": "GBIF 30 点 / 气候样 6 点反推；包络年均温 13.9℃",
           "gbif_accepted_name": "Helianthus tuberosus L.",
           "gbif_key": 3119175,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "马铃薯",
@@ -10027,9 +7201,9 @@
             "蚜虫"
           ],
           "fallback_variety": "青薯",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "油菜",
@@ -10054,9 +7228,9 @@
             "蚜虫"
           ],
           "fallback_variety": "甘蓝型油菜",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "荞麦",
@@ -10082,9 +7256,9 @@
             "立枯病"
           ],
           "fallback_variety": "甜荞",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "豌豆",
@@ -10111,9 +7285,9 @@
             "潜叶蝇"
           ],
           "fallback_variety": "高原豌豆",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "蚕豆",
@@ -10139,9 +7313,9 @@
             "蚜虫"
           ],
           "fallback_variety": "青海蚕豆",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "亚麻",
@@ -10166,9 +7340,9 @@
             "亚麻蚤跳甲"
           ],
           "fallback_variety": "油用亚麻",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "苜蓿",
@@ -10194,9 +7368,9 @@
             "蚜虫"
           ],
           "fallback_variety": "紫花苜蓿",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "箭筈豌豆",
@@ -10221,9 +7395,9 @@
             "根腐"
           ],
           "fallback_variety": "箭筈豌豆",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "芜菁",
@@ -10250,9 +7424,9 @@
             "跳甲"
           ],
           "fallback_variety": "圆根",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "甘蓝",
@@ -10279,9 +7453,9 @@
             "黑腐病"
           ],
           "fallback_variety": "高原甘蓝",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "胡萝卜",
@@ -10307,9 +7481,9 @@
             "根结线虫"
           ],
           "fallback_variety": "高原红",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "洋葱",
@@ -10335,9 +7509,9 @@
             "蓟马"
           ],
           "fallback_variety": "高原洋葱",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "大蒜",
@@ -10364,9 +7538,9 @@
             "葱蓟马"
           ],
           "fallback_variety": "紫皮蒜",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "菠菜",
@@ -10393,9 +7567,9 @@
             "霜霉病"
           ],
           "fallback_variety": "耐寒菠菜",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "草莓",
@@ -10422,9 +7596,9 @@
             "红蜘蛛"
           ],
           "fallback_variety": "高原草莓",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "苹果",
@@ -10450,9 +7624,9 @@
             "食心虫"
           ],
           "fallback_variety": "红富士",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "梨",
@@ -10478,9 +7652,9 @@
             "梨木虱"
           ],
           "fallback_variety": "砀山酥梨",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "花椒",
@@ -10506,9 +7680,9 @@
             "锈病"
           ],
           "fallback_variety": "大红袍",
-          "calibrated": false,
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         }
       ]
     }
