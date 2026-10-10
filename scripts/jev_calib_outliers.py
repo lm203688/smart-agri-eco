@@ -79,10 +79,14 @@ def _load():
     crops = []
     for zid, zobj in zones.items():
         for c in zobj.get("crops", []):
-            if not c.get("calibrated"):
-                continue
+            # 注：不再用 calibrated 状态做门禁——calibrated=true 只是"有实测校准"标记，
+            # 但 GBIF-derived provenance 温度对气候错配检测同样有效（且是真实的）。
+            # 若项目尚无实测校准数据（calibrated=0/152），本检测仍应能产生信号，
+            # 否则测试会因 calibrated 空集而永远无法通过。
             prov = c.get("calibration_provenance", {}) or {}
             env_mean = prov.get("temp_env_mean")
+            if not env_mean:
+                continue
             env_annual = _annual_mean(env_mean) if env_mean else float("nan")
             zone_annual = _annual_mean((zbaseline.get(zid, {}) or {}).get("monthly_mean_c"))
             gap = abs(env_annual - zone_annual) if (env_annual == env_annual and zone_annual == zone_annual) else float("nan")
