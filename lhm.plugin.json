@@ -1,0 +1,19 @@
+{
+  "identifier": "lm203688-agri-eco",
+  "name": "agri-eco",
+  "displayName": "智慧农业生态 Agri-Eco",
+  "description": "面向分布式农业的 Agent-native 知识基座：可执行 Env Recipe 环境配方 + 多源气候校准 + WOFOST 物候播期 + 病虫害诊断 + 数据血缘溯源。零第三方依赖、可完全离线运行，14 个 MCP 工具。",
+  "version": "1.1.0",
+  "homepage": "https://github.com/lm203688/smart-agri-eco",
+  "license": "MIT",
+  "tags": ["agriculture", "agritech", "environment", "data", "science", "offline-first", "zero-dependency"],
+  "install": {
+    "type": "stdio",
+    "command": "python",
+    "args": ["mcp/server.py"]
+  },
+  "repository": {
+    "url": "https://github.com/lm203688/smart-agri-eco",
+    "source": "github"
+  }
+}
