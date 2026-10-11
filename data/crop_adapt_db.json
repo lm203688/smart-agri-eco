@@ -72,7 +72,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "木瓜",
@@ -128,7 +129,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "生姜",
@@ -185,7 +187,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "芋头",
@@ -241,7 +244,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "辣椒",
@@ -299,7 +303,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "空心菜",
@@ -357,7 +362,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "红薯叶",
@@ -414,7 +420,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "秋葵",
@@ -471,7 +478,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "香草（柠檬草）",
@@ -527,7 +535,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "芒果",
@@ -583,7 +592,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "百香果",
@@ -640,7 +650,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "玉米",
@@ -696,7 +707,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "木薯",
@@ -753,7 +765,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "菠萝",
@@ -810,7 +823,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "火龙果",
@@ -867,7 +881,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "可可",
@@ -924,7 +939,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "咖啡",
@@ -981,7 +997,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "香茅",
@@ -1039,7 +1056,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         }
       ]
     },
@@ -1101,7 +1119,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "番茄",
@@ -1159,7 +1178,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "黄瓜",
@@ -1216,7 +1236,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "豆角",
@@ -1273,7 +1294,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "茄子",
@@ -1330,7 +1352,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "辣椒",
@@ -1387,7 +1410,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "萝卜",
@@ -1444,7 +1468,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "小白菜",
@@ -1502,7 +1527,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "香菜",
@@ -1559,7 +1585,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "大蒜",
@@ -1616,7 +1643,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "紫苏",
@@ -1672,7 +1700,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "薄荷",
@@ -1729,7 +1758,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "草莓",
@@ -1785,7 +1815,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "芹菜",
@@ -1843,7 +1874,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "茼蒿",
@@ -1900,7 +1932,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "苦瓜",
@@ -1958,7 +1991,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "丝瓜",
@@ -2014,7 +2048,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "冬瓜",
@@ -2071,7 +2106,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "南瓜",
@@ -2129,7 +2165,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         }
       ]
     },
@@ -2190,7 +2227,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "番茄",
@@ -2247,7 +2285,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "黄瓜",
@@ -2304,7 +2343,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "土豆",
@@ -2360,7 +2400,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "萝卜",
@@ -2417,7 +2458,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "白菜",
@@ -2474,7 +2516,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "胡萝卜",
@@ -2530,7 +2573,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "洋葱",
@@ -2587,7 +2631,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "韭菜",
@@ -2645,7 +2690,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "葱",
@@ -2701,7 +2747,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "菠菜",
@@ -2758,7 +2805,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "茄子",
@@ -2815,7 +2863,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "薄荷",
@@ -2872,7 +2921,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "玉米",
@@ -2928,7 +2978,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "小麦",
@@ -2985,7 +3036,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "大豆",
@@ -3042,7 +3094,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "向日葵",
@@ -3100,7 +3153,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "大葱",
@@ -3159,7 +3213,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "大蒜",
@@ -3217,7 +3272,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         }
       ]
     },
@@ -3279,7 +3335,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "香草（迷迭香）",
@@ -3336,7 +3393,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "香草（百里香）",
@@ -3392,7 +3450,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "香草（罗勒）",
@@ -3449,7 +3508,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "黄瓜",
@@ -3505,7 +3565,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "茄子",
@@ -3561,7 +3622,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "辣椒",
@@ -3618,7 +3680,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "生菜",
@@ -3675,7 +3738,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "豌豆苗",
@@ -3732,7 +3796,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "大蒜",
@@ -3788,7 +3853,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "胡萝卜",
@@ -3843,7 +3909,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "橄榄",
@@ -3898,7 +3965,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "葡萄",
@@ -3954,7 +4022,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "无花果",
@@ -4012,7 +4081,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "朝鲜蓟",
@@ -4069,7 +4139,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "芝麻菜",
@@ -4128,7 +4199,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "开心果",
@@ -4186,7 +4258,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "油莎豆",
@@ -4242,7 +4315,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         }
       ]
     },
@@ -4304,7 +4378,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "仙人掌",
@@ -4362,7 +4437,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "耐旱香草（牛至）",
@@ -4418,7 +4494,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "耐旱香草（鼠尾草）",
@@ -4474,7 +4551,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "耐旱香草（迷迭香）",
@@ -4531,7 +4609,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "红薯",
@@ -4587,7 +4666,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "绿豆",
@@ -4643,7 +4723,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "花生",
@@ -4699,7 +4780,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "仙人掌果",
@@ -4754,7 +4836,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "沙漠玫瑰",
@@ -4811,7 +4894,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "鹰嘴豆",
@@ -4867,7 +4951,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "沙棘",
@@ -4921,7 +5006,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "棉花",
@@ -4977,7 +5063,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "高粱",
@@ -5034,7 +5121,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "谷子",
@@ -5091,7 +5179,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "苜蓿",
@@ -5148,7 +5237,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "沙葱",
@@ -5205,7 +5295,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "瓜尔豆",
@@ -5260,7 +5351,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         }
       ]
     },
@@ -5322,7 +5414,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "樱桃萝卜",
@@ -5355,7 +5448,8 @@
           "gbif_status": "SYNONYM",
           "gbif_rank": "VARIETY",
           "calibration_method": null,
-          "calibration_note": "GBIF 分布点不足（0），无法反推"
+          "calibration_note": "GBIF 分布点不足（0），无法反推",
+          "calibrated": false
         },
         {
           "crop": "菠菜",
@@ -5411,7 +5505,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "韭菜",
@@ -5467,7 +5562,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "葱",
@@ -5523,7 +5619,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "豌豆苗",
@@ -5580,7 +5677,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "豆芽",
@@ -5614,7 +5712,8 @@
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
           "calibration_method": null,
-          "calibration_note": "GBIF 分布点不足（0），无法反推"
+          "calibration_note": "GBIF 分布点不足（0），无法反推",
+          "calibrated": false
         },
         {
           "crop": "菌菇类（平菇）",
@@ -5670,7 +5769,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "菌菇类（木耳）",
@@ -5725,7 +5825,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "耐寒香草（莳萝）",
@@ -5781,7 +5882,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "耐寒香草（薄荷）",
@@ -5838,7 +5940,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "微绿菜（Microgreens）",
@@ -5869,7 +5972,8 @@
           "latin_verified": false,
           "gbif_match_note": "GBIF 未匹配（可能拼写/分类变动）",
           "calibration_method": null,
-          "calibration_note": "GBIF 分布点不足（0），无法反推"
+          "calibration_note": "GBIF 分布点不足（0），无法反推",
+          "calibrated": false
         },
         {
           "crop": "黑麦",
@@ -5926,7 +6030,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "大麦",
@@ -5983,7 +6088,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "燕麦",
@@ -6040,7 +6146,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "甜菜",
@@ -6098,7 +6205,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "蔓越莓",
@@ -6155,7 +6263,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         },
         {
           "crop": "蓝莓",
@@ -6213,7 +6322,8 @@
               "NASA POWER / Open-Meteo"
             ],
             "note": "由真实分布点气候包络反推，非手编近似；0 用户下唯一实证校准路径。"
-          }
+          },
+          "calibrated": false
         }
       ]
     },
@@ -6274,7 +6384,8 @@
           "gbif_key": 6109699,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "骆驼刺",
@@ -6328,7 +6439,8 @@
           "gbif_key": 2945105,
           "gbif_status": "SYNONYM",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "沙葱",
@@ -6383,7 +6495,8 @@
           "gbif_key": 2857345,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "胡杨",
@@ -6410,7 +6523,8 @@
           ],
           "fallback_variety": "胡杨实生",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "沙枣",
@@ -6437,7 +6551,8 @@
           ],
           "fallback_variety": "大沙枣",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "肉苁蓉",
@@ -6462,7 +6577,8 @@
           ],
           "fallback_variety": "荒漠肉苁蓉",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "枸杞",
@@ -6490,7 +6606,8 @@
           ],
           "fallback_variety": "宁杞",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "沙棘",
@@ -6517,7 +6634,8 @@
           ],
           "fallback_variety": "中国沙棘",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "骆驼蓬",
@@ -6542,7 +6660,8 @@
           ],
           "fallback_variety": "骆驼蓬",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "沙拐枣",
@@ -6567,7 +6686,8 @@
           ],
           "fallback_variety": "蒙古沙拐枣",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "西瓜",
@@ -6594,7 +6714,8 @@
           ],
           "fallback_variety": "戈壁西瓜",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "哈密瓜",
@@ -6621,7 +6742,8 @@
           ],
           "fallback_variety": "西州蜜",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "枣",
@@ -6649,7 +6771,8 @@
           ],
           "fallback_variety": "骏枣",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "石榴",
@@ -6677,7 +6800,8 @@
           ],
           "fallback_variety": "突尼斯软籽",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "无花果",
@@ -6705,7 +6829,8 @@
           ],
           "fallback_variety": "布兰瑞克",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "杏",
@@ -6732,7 +6857,8 @@
           ],
           "fallback_variety": "小白杏",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "葡萄",
@@ -6760,7 +6886,8 @@
           ],
           "fallback_variety": "无核白",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "向日葵",
@@ -6787,7 +6914,8 @@
           ],
           "fallback_variety": "食葵",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "红花",
@@ -6813,7 +6941,8 @@
           ],
           "fallback_variety": "油用红花",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "芝麻",
@@ -6840,7 +6969,8 @@
           ],
           "fallback_variety": "白芝麻",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "鹰嘴豆",
@@ -6867,7 +6997,8 @@
           ],
           "fallback_variety": "卡布里",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         }
       ]
     },
@@ -6929,7 +7060,8 @@
           "gbif_key": 3083935,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "青稞",
@@ -6985,7 +7117,8 @@
           "gbif_key": 4932644,
           "gbif_status": "SYNONYM",
           "gbif_rank": "VARIETY",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "洋姜",
@@ -7041,7 +7174,8 @@
           "gbif_key": 3119175,
           "gbif_status": "ACCEPTED",
           "gbif_rank": "SPECIES",
-          "gbif_match_note": "GBIF 接受名与手写一致"
+          "gbif_match_note": "GBIF 接受名与手写一致",
+          "calibrated": false
         },
         {
           "crop": "马铃薯",
@@ -7068,7 +7202,8 @@
           ],
           "fallback_variety": "青薯",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "油菜",
@@ -7094,7 +7229,8 @@
           ],
           "fallback_variety": "甘蓝型油菜",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "荞麦",
@@ -7121,7 +7257,8 @@
           ],
           "fallback_variety": "甜荞",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "豌豆",
@@ -7149,7 +7286,8 @@
           ],
           "fallback_variety": "高原豌豆",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "蚕豆",
@@ -7176,7 +7314,8 @@
           ],
           "fallback_variety": "青海蚕豆",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "亚麻",
@@ -7202,7 +7341,8 @@
           ],
           "fallback_variety": "油用亚麻",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "苜蓿",
@@ -7229,7 +7369,8 @@
           ],
           "fallback_variety": "紫花苜蓿",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "箭筈豌豆",
@@ -7255,7 +7396,8 @@
           ],
           "fallback_variety": "箭筈豌豆",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "芜菁",
@@ -7283,7 +7425,8 @@
           ],
           "fallback_variety": "圆根",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "甘蓝",
@@ -7311,7 +7454,8 @@
           ],
           "fallback_variety": "高原甘蓝",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "胡萝卜",
@@ -7338,7 +7482,8 @@
           ],
           "fallback_variety": "高原红",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "洋葱",
@@ -7365,7 +7510,8 @@
           ],
           "fallback_variety": "高原洋葱",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "大蒜",
@@ -7393,7 +7539,8 @@
           ],
           "fallback_variety": "紫皮蒜",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "菠菜",
@@ -7421,7 +7568,8 @@
           ],
           "fallback_variety": "耐寒菠菜",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "草莓",
@@ -7449,7 +7597,8 @@
           ],
           "fallback_variety": "高原草莓",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "苹果",
@@ -7476,7 +7625,8 @@
           ],
           "fallback_variety": "红富士",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "梨",
@@ -7503,7 +7653,8 @@
           ],
           "fallback_variety": "砀山酥梨",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         },
         {
           "crop": "花椒",
@@ -7530,7 +7681,8 @@
           ],
           "fallback_variety": "大红袍",
           "source": "seed-supplement",
-          "latin_verified": false
+          "latin_verified": false,
+          "calibrated": false
         }
       ]
     }
