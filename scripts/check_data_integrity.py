@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-数据完整性门禁（防假数据冒充真实数据）
+数据完整性门禁（防假数据冒充真实数据 + 防机读基线口径漂移）
 
 用途：
-    在 CI 与本地把守仓库内三类"被合成样本污染"的风险。之所以从 ci.yml 的
-    内联 heredoc 提成独立脚本，是因为原内联版有一个**真实且隐蔽的 bug**：
+    在 CI 与本地把守仓库内**四类**风险。之所以从 ci.yml 的内联 heredoc
+    提成独立脚本，是因为原内联版有一个**真实且隐蔽的 bug**：
 
         内联写法把多个 ``any(... for k in synth)`` 用 ``or`` 串在多行里，
         而 Python 的推导式作用域规则会使其中一处 ``k`` 被解析为全局名，
@@ -20,12 +20,18 @@
        ``measured_calibration`` 可复算证据（不许"自称已校准"）
     2. feedback_log.json —— 不得含 demo / unittest / smoke 合成样本
     3. long_term_memory.json —— source_ref / skill / tags 不得带合成标记
+    4. harness/manifest.json —— 观测区数字必须与实际一致（口径漂移检测）
+       * local_search.rows.recipes == len(data/env_recipes/*.json)
+       * local_search.rows.crops   == crop_adapt_db.json 内作物条目总数
+       * knowledge_graph.edges_by_rel.grows_in == 同上作物总数
+         （KG 的 grows_in 边按"每 zone × crop"重复计，故与 crops 总数一致）
 
-退出码：0 = 全部通过；1 = 命中污染或读文件失败。
+退出码：0 = 全部通过；1 = 命中污染、读文件失败或口径漂移。
 """
 
 from __future__ import annotations
 
+import glob
 import json
 import os
 import re
@@ -106,12 +112,83 @@ def check_long_term_memory() -> int:
     return 0
 
 
+def check_manifest_drift() -> int:
+    """检查 4：harness/manifest.json 观测区数字与实际一致（防口径漂移）。
+
+    背景：harness/manifest.json 是「唯一机读基线」，被 CI、审计、外部工具
+    读取引用。若观测区（knowledge_graph / local_search）的数字与真实
+    env_recipes 数量不符，比 README 漂移更危险——因为它会被程序直接消费。
+    2026-10-11 实测发现 manifest.local_search.rows.recipes = 116 而
+    实际 env_recipes 已增长到 152 份，属此类真实漂移。
+
+    检查三条硬约束：
+        - local_search.rows.recipes == len(data/env_recipes/*.json)
+        - local_search.rows.crops   == crop_adapt_db.json 内作物条目总数
+        - knowledge_graph.edges_by_rel.grows_in == crop_adapt_db.json 内作物条目总数
+          （KG 的 grows_in 按 zone×crop 展开，与 crops 总数一致）
+
+    口径说明：grows_in 与 crops 相等是本项目的既定性质（每作物每分区一条
+    grows_in 边）。若未来改成"每作物一条边"，此处需同步调整。
+    """
+    mpath = os.path.join(ROOT, "harness", "manifest.json")
+    if not os.path.exists(mpath):
+        print("  ⏭  harness/manifest.json 不存在，跳过")
+        return 0
+    try:
+        m = json.load(open(mpath, encoding="utf-8"))
+    except Exception as e:
+        print(f"  ❌ manifest 读取失败: {e}")
+        return 1
+
+    # 实际值：env_recipes 目录文件数
+    recipe_files = glob.glob(os.path.join(ROOT, "data", "env_recipes", "*.json"))
+    actual_recipes = len(recipe_files)
+
+    # 实际值：crop_adapt_db 内作物条目总数
+    db_path = os.path.join(ROOT, "data", "crop_adapt_db.json")
+    if not os.path.exists(db_path):
+        print("  ⏭  crop_adapt_db.json 不存在，跳过 crops 比对")
+        actual_crops = None
+    else:
+        db = json.load(open(db_path, encoding="utf-8"))
+        actual_crops = sum(len(z.get("crops", [])) for z in db.get("zones", {}).values())
+
+    bad = 0
+    checks = []
+    manifest_recipes = (m.get("local_search") or {}).get("rows", {}).get("recipes")
+    manifest_crops = (m.get("local_search") or {}).get("rows", {}).get("crops")
+    manifest_grows = ((m.get("knowledge_graph") or {}).get("edges_by_rel") or {}).get("grows_in")
+
+    if actual_recipes is not None and manifest_recipes != actual_recipes:
+        checks.append(
+            f"manifest.local_search.rows.recipes={manifest_recipes} != 实际 {actual_recipes}")
+        bad += 1
+    if actual_crops is not None:
+        if manifest_crops != actual_crops:
+            checks.append(
+                f"manifest.local_search.rows.crops={manifest_crops} != 实际 {actual_crops}")
+            bad += 1
+        if manifest_grows != actual_crops:
+            checks.append(
+                f"manifest.knowledge_graph.edges_by_rel.grows_in={manifest_grows} != 实际 {actual_crops}")
+            bad += 1
+
+    if bad:
+        print(f"  ❌ manifest 口径漂移 {bad} 项：")
+        for c in checks:
+            print(f"       - {c}")
+        return 1
+    print(f"  ✅ manifest 数字对齐 (recipes={actual_recipes}, crops={actual_crops}, grows_in={manifest_grows})")
+    return 0
+
+
 def main() -> int:
     print("=== 数据完整性门禁 ===")
     rc = 0
     rc |= check_calibrated_evidence()
     rc |= check_feedback_log()
     rc |= check_long_term_memory()
+    rc |= check_manifest_drift()
     if rc:
         print("\n❌ 数据完整性门禁未通过")
         return 1

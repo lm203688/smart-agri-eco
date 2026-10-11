@@ -1,0 +1,20 @@
+{
+  "id": "case_minimal_no_recipe_state_rolling",
+  "axis": "state_rolling",
+  "description": "空输入降级：无 env_recipe、无 growth_plan，ForecastAgent 走默认 90 天，仍应保证 M2 数学性质",
+  "input": {
+    "crop": "小麦",
+    "zone_id": "temperate_subhumid",
+    "start_date": "2026-05-01"
+  },
+  "expected": {
+    "state_rolling": {
+      "min_duration_days": 1,
+      "yield_must_be_positive": true,
+      "harvest_must_be_after_start": true
+    }
+  },
+  "provenance": {
+    "note": "验证 ForecastAgent 的降级路径不会产生负数或倒挂日期"
+  }
+}

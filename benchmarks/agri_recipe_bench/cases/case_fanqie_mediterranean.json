@@ -1,0 +1,40 @@
+{
+  "id": "case_fanqie_mediterranean",
+  "axis": "target_prediction",
+  "description": "地中海气候·番茄：完整 Env Recipe（day_c=32 高温）→ 气候因子放大产量与周期",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "start_date": "2026-02-15",
+    "adapt_score": 0.9,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {"name": "育苗", "day_range": [1, 30]},
+          {"name": "定植·开花前", "day_range": [31, 60]},
+          {"name": "开花·坐果", "day_range": [61, 95]},
+          {"name": "成熟采收", "day_range": [96, 130]}
+        ]
+      }
+    },
+    "env_recipe_path": "data/env_recipes/mediterranean__番茄.json"
+  },
+  "expected": {
+    "target_prediction": {
+      "yield_estimate_g": {
+        "value": 1600,
+        "tolerance_abs": 500,
+        "note": "番茄单株 800-2000g（大棚/温室）；引擎 _BASE_YIELD_G 番茄=1500，气候因子约 1.15（day_c=32 vs zone_mean≈17）"
+      },
+      "adjusted_duration_days": {
+        "value": 150,
+        "tolerance_abs": 40,
+        "note": "番茄 80-180 天；phases 到 D130 × climate_factor≈1.15 → 约 150"
+      }
+    }
+  },
+  "provenance": {
+    "yield_basis": "番茄单株 800-2000g；地中海暖气候 + 32℃ 白天 → 累积 GDD 快",
+    "duration_basis": "番茄 80-180 天，本用例 phases 到 D130，气候因子放大"
+  }
+}

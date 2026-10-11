@@ -1,0 +1,31 @@
+{
+  "id": "case_huanbao_huanggua_state_rolling",
+  "axis": "state_rolling",
+  "description": "保护地·黄瓜：M2 只检查数学性质（周期≥1、harvest≥start、yield>0），不要求精度",
+  "input": {
+    "crop": "黄瓜",
+    "zone_id": "temperate_subhumid",
+    "start_date": "2026-04-01",
+    "adapt_score": 0.85,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {"name": "育苗", "day_range": [1, 25]},
+          {"name": "开花", "day_range": [26, 60]},
+          {"name": "盛果采收", "day_range": [61, 100]}
+        ]
+      }
+    },
+    "env_recipe_path": "data/env_recipes/temperate_subhumid__黄瓜.json"
+  },
+  "expected": {
+    "state_rolling": {
+      "min_duration_days": 1,
+      "yield_must_be_positive": true,
+      "harvest_must_be_after_start": true
+    }
+  },
+  "provenance": {
+    "note": "M2 轴只验证数学边界（不是精度），真值来自守恒性质而非农艺基准"
+  }
+}

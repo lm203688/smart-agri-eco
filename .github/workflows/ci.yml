@@ -21,6 +21,7 @@ on:
       - "schemas/**"
       - "scripts/**"
       - "tests/**"
+      - "benchmarks/**"
       - "plugin/**"
       - ".well-known/**"
       - "Dockerfile"
@@ -146,6 +147,11 @@ jobs:
 
       - name: 全量单测回归（发现 CI 未单独覆盖的模块）
         run: python -S -P -m unittest discover scripts/
+
+      - name: AgriRecipeBench（P1 壁垒：Env Recipe 可复现评测基准）
+        run: |
+          python benchmarks/agri_recipe_bench/run_bench.py --strict
+          python -m unittest scripts.test_agri_recipe_bench -v
 
       - name: AI 评测基线（P0-H：分区一致率 + 脚手架项）
         run: python scripts/run_eval.py

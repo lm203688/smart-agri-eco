@@ -1,6 +1,6 @@
 {
   "schema": "agri-knowledge-graph/v1",
-  "generated_at": "2026-10-06T23:01:43",
+  "generated_at": "2026-10-11T12:22:25",
   "sources": [
     "data\\crop_adapt_db.json",
     "data\\zone_meta\\global_zones.json"
@@ -353,7 +353,7 @@
       "type": "Crop",
       "latin": "Brassica rapa var. parachinensis",
       "family": "十字花科",
-      "adapt_score": 0.62,
+      "adapt_score": 0.96,
       "growth_days": 30
     },
     {
@@ -1190,6 +1190,186 @@
       "growth_days": 120
     },
     {
+      "id": "Crop:胡杨",
+      "type": "Crop",
+      "latin": "Populus euphratica",
+      "family": "Salicaceae",
+      "adapt_score": 0.76,
+      "growth_days": 1200
+    },
+    {
+      "id": "PestDisease:蛀干害虫",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:盐碱胁迫",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:沙枣",
+      "type": "Crop",
+      "latin": "Elaeagnus angustifolia",
+      "family": "Elaeagnaceae",
+      "adapt_score": 0.8,
+      "growth_days": 900
+    },
+    {
+      "id": "PestDisease:食心虫",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:肉苁蓉",
+      "type": "Crop",
+      "latin": "Cistanche deserticola",
+      "family": "Orobanchaceae",
+      "adapt_score": 0.72,
+      "growth_days": 700
+    },
+    {
+      "id": "PestDisease:寄主梭梭不足",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:枸杞",
+      "type": "Crop",
+      "latin": "Lycium barbarum",
+      "family": "Solanaceae",
+      "adapt_score": 0.86,
+      "growth_days": 300
+    },
+    {
+      "id": "PestDisease:木虱",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:实蝇",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:干缩病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:骆驼蓬",
+      "type": "Crop",
+      "latin": "Peganum harmala",
+      "family": "Nitrariaceae",
+      "adapt_score": 0.74,
+      "growth_days": 180
+    },
+    {
+      "id": "Crop:沙拐枣",
+      "type": "Crop",
+      "latin": "Calligonum mongolicum",
+      "family": "Polygonaceae",
+      "adapt_score": 0.75,
+      "growth_days": 500
+    },
+    {
+      "id": "Crop:西瓜",
+      "type": "Crop",
+      "latin": "Citrullus lanatus",
+      "family": "Cucurbitaceae",
+      "adapt_score": 0.87,
+      "growth_days": 100
+    },
+    {
+      "id": "Crop:哈密瓜",
+      "type": "Crop",
+      "latin": "Cucumis melo",
+      "family": "Cucurbitaceae",
+      "adapt_score": 0.85,
+      "growth_days": 105
+    },
+    {
+      "id": "PestDisease:蔓枯病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:枣",
+      "type": "Crop",
+      "latin": "Ziziphus jujuba",
+      "family": "Rhamnaceae",
+      "adapt_score": 0.84,
+      "growth_days": 600
+    },
+    {
+      "id": "PestDisease:枣疯病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:桃小食心虫",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:石榴",
+      "type": "Crop",
+      "latin": "Punica granatum",
+      "family": "Lythraceae",
+      "adapt_score": 0.82,
+      "growth_days": 500
+    },
+    {
+      "id": "PestDisease:干腐病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:桃蛀螟",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:疫病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:杏",
+      "type": "Crop",
+      "latin": "Prunus armeniaca",
+      "family": "Rosaceae",
+      "adapt_score": 0.79,
+      "growth_days": 550
+    },
+    {
+      "id": "PestDisease:流胶病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:杏仁蜂",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:根瘤蚜",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:螟虫",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:红花",
+      "type": "Crop",
+      "latin": "Carthamus tinctorius",
+      "family": "Asteraceae",
+      "adapt_score": 0.82,
+      "growth_days": 120
+    },
+    {
+      "id": "Crop:芝麻",
+      "type": "Crop",
+      "latin": "Sesamum indicum",
+      "family": "Pedaliaceae",
+      "adapt_score": 0.8,
+      "growth_days": 95
+    },
+    {
+      "id": "PestDisease:青枯",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:豆象",
+      "type": "PestDisease"
+    },
+    {
       "id": "Zone:highland",
       "type": "Zone",
       "zone_name": "高原带"
@@ -1221,6 +1401,142 @@
       "family": "菊科",
       "adapt_score": 0.09,
       "growth_days": 120
+    },
+    {
+      "id": "Crop:马铃薯",
+      "type": "Crop",
+      "latin": "Solanum tuberosum",
+      "family": "Solanaceae",
+      "adapt_score": 0.88,
+      "growth_days": 110
+    },
+    {
+      "id": "Crop:油菜",
+      "type": "Crop",
+      "latin": "Brassica napus",
+      "family": "Brassicaceae",
+      "adapt_score": 0.84,
+      "growth_days": 150
+    },
+    {
+      "id": "Crop:荞麦",
+      "type": "Crop",
+      "latin": "Fagopyrum esculentum",
+      "family": "Polygonaceae",
+      "adapt_score": 0.85,
+      "growth_days": 80
+    },
+    {
+      "id": "PestDisease:立枯病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:豌豆",
+      "type": "Crop",
+      "latin": "Pisum sativum",
+      "family": "Fabaceae",
+      "adapt_score": 0.83,
+      "growth_days": 90
+    },
+    {
+      "id": "PestDisease:潜叶蝇",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:蚕豆",
+      "type": "Crop",
+      "latin": "Vicia faba",
+      "family": "Fabaceae",
+      "adapt_score": 0.82,
+      "growth_days": 130
+    },
+    {
+      "id": "PestDisease:赤斑病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:亚麻",
+      "type": "Crop",
+      "latin": "Linum usitatissimum",
+      "family": "Linaceae",
+      "adapt_score": 0.8,
+      "growth_days": 100
+    },
+    {
+      "id": "PestDisease:亚麻蚤跳甲",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:箭筈豌豆",
+      "type": "Crop",
+      "latin": "Vicia sativa",
+      "family": "Fabaceae",
+      "adapt_score": 0.81,
+      "growth_days": 110
+    },
+    {
+      "id": "Crop:芜菁",
+      "type": "Crop",
+      "latin": "Brassica rapa",
+      "family": "Brassicaceae",
+      "adapt_score": 0.82,
+      "growth_days": 75
+    },
+    {
+      "id": "Crop:甘蓝",
+      "type": "Crop",
+      "latin": "Brassica oleracea",
+      "family": "Brassicaceae",
+      "adapt_score": 0.83,
+      "growth_days": 100
+    },
+    {
+      "id": "PestDisease:黑腐病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:灰霉病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:红蜘蛛",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:苹果",
+      "type": "Crop",
+      "latin": "Malus domestica",
+      "family": "Rosaceae",
+      "adapt_score": 0.8,
+      "growth_days": 900
+    },
+    {
+      "id": "PestDisease:腐烂病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:梨",
+      "type": "Crop",
+      "latin": "Pyrus spp.",
+      "family": "Rosaceae",
+      "adapt_score": 0.78,
+      "growth_days": 850
+    },
+    {
+      "id": "PestDisease:黑星病",
+      "type": "PestDisease"
+    },
+    {
+      "id": "PestDisease:梨木虱",
+      "type": "PestDisease"
+    },
+    {
+      "id": "Crop:花椒",
+      "type": "Crop",
+      "latin": "Zanthoxylum bungeanum",
+      "family": "Rutaceae",
+      "adapt_score": 0.76,
+      "growth_days": 700
     }
   ],
   "edges": [
@@ -1928,7 +2244,7 @@
       "src": "Crop:小白菜",
       "rel": "grows_in",
       "dst": "Zone:subtropical_wet",
-      "weight": 0.62,
+      "weight": 0.96,
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "subtropical_wet"
@@ -4074,6 +4390,474 @@
       }
     },
     {
+      "src": "Crop:胡杨",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.76,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:胡杨",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蛀干害虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:胡杨",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:盐碱胁迫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:沙枣",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.8,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:沙枣",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:食心虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:肉苁蓉",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.72,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:肉苁蓉",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:寄主梭梭不足",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:枸杞",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.86,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:枸杞",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:木虱",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:枸杞",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:白粉病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:沙棘",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.83,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:沙棘",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:实蝇",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:沙棘",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:干缩病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:骆驼蓬",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.74,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:骆驼蓬",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:极少",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:沙拐枣",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.75,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:沙拐枣",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:极少",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:西瓜",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.87,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:西瓜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:枯萎病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:西瓜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:白粉病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:哈密瓜",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.85,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:哈密瓜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蔓枯病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:哈密瓜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蚜虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:枣",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.84,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:枣",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:枣疯病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:枣",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:桃小食心虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:石榴",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.82,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:石榴",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:干腐病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:石榴",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:桃蛀螟",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:无花果",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.81,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:无花果",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:天牛",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:无花果",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:疫病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:杏",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.79,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:杏",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:流胶病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:杏",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:杏仁蜂",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:葡萄",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.83,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:葡萄",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:霜霉病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:葡萄",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:根瘤蚜",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:向日葵",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.85,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:向日葵",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:菌核病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:向日葵",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:螟虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:红花",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.82,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:红花",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:锈病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:红花",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蚜虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:芝麻",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.8,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:芝麻",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:枯萎病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:芝麻",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:青枯",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:鹰嘴豆",
+      "rel": "grows_in",
+      "dst": "Zone:hot_arid",
+      "weight": 0.78,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:鹰嘴豆",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:枯萎病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
+      "src": "Crop:鹰嘴豆",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:豆象",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "hot_arid"
+      }
+    },
+    {
       "src": "Crop:藜麦",
       "rel": "grows_in",
       "dst": "Zone:highland",
@@ -4152,6 +4936,474 @@
       "src": "Crop:洋姜",
       "rel": "sensitive_to",
       "dst": "PestDisease:白粉病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:马铃薯",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.88,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:马铃薯",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:晚疫病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:马铃薯",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蚜虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:油菜",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.84,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:油菜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:菌核病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:油菜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蚜虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:荞麦",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.85,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:荞麦",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:立枯病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:豌豆",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.83,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:豌豆",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:白粉病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:豌豆",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:潜叶蝇",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:蚕豆",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.82,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:蚕豆",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:赤斑病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:蚕豆",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蚜虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:亚麻",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.8,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:亚麻",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:立枯病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:亚麻",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:亚麻蚤跳甲",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:苜蓿",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.84,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:苜蓿",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蓟马",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:苜蓿",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蚜虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:箭筈豌豆",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.81,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:箭筈豌豆",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:根腐",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:芜菁",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.82,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:芜菁",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:根肿病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:芜菁",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:跳甲",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:甘蓝",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.83,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:甘蓝",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:菜青虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:甘蓝",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:黑腐病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:胡萝卜",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.81,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:胡萝卜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:根结线虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:洋葱",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.8,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:洋葱",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:霜霉病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:洋葱",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蓟马",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:大蒜",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.83,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:大蒜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:叶枯病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:大蒜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:葱蓟马",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:菠菜",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.84,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:菠菜",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:霜霉病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:草莓",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.79,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:草莓",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:灰霉病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:草莓",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:红蜘蛛",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:苹果",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.8,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:苹果",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:腐烂病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:苹果",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:食心虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:梨",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.78,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:梨",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:黑星病",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:梨",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:梨木虱",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:花椒",
+      "rel": "grows_in",
+      "dst": "Zone:highland",
+      "weight": 0.76,
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:花椒",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:蚜虫",
+      "evidence": {
+        "source": "crop_adapt_db.json",
+        "zone": "highland"
+      }
+    },
+    {
+      "src": "Crop:花椒",
+      "rel": "sensitive_to",
+      "dst": "PestDisease:锈病",
       "evidence": {
         "source": "crop_adapt_db.json",
         "zone": "highland"
@@ -4423,21 +5675,21 @@
     }
   ],
   "stats": {
-    "nodes": 207,
-    "edges": 346,
+    "nodes": 261,
+    "edges": 446,
     "nodes_by_type": {
       "Zone": 8,
-      "Crop": 95,
-      "PestDisease": 104
+      "Crop": 120,
+      "PestDisease": 133
     },
     "edges_by_rel": {
-      "grows_in": 116,
-      "sensitive_to": 197,
+      "grows_in": 152,
+      "sensitive_to": 261,
       "koppen_of": 8,
       "constrains": 25
     },
     "zones": 8,
-    "crops": 95,
-    "risks": 104
+    "crops": 120,
+    "risks": 133
   }
 }

@@ -1,0 +1,40 @@
+{
+  "id": "case_shengcai_tropical",
+  "axis": "target_prediction",
+  "description": "亚热带湿润·生菜：短生育期蔬菜，phases 到 D45，产量低但周期极短",
+  "input": {
+    "crop": "生菜",
+    "zone_id": "subtropical_wet",
+    "start_date": "2026-03-20",
+    "adapt_score": 0.8,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {"name": "育苗", "day_range": [1, 15]},
+          {"name": "莲座叶", "day_range": [16, 30]},
+          {"name": "结球", "day_range": [31, 40]},
+          {"name": "采收", "day_range": [41, 45]}
+        ]
+      }
+    },
+    "env_recipe_path": "data/env_recipes/subtropical_wet__生菜.json"
+  },
+  "expected": {
+    "target_prediction": {
+      "yield_estimate_g": {
+        "value": 280,
+        "tolerance_abs": 150,
+        "note": "生菜单株 100-400g；引擎 _BASE_YIELD_G 生菜=300，亚热带因子≈1.03"
+      },
+      "adjusted_duration_days": {
+        "value": 45,
+        "tolerance_abs": 15,
+        "note": "生菜从播种到采收 30-60 天；phases 到 D45，气候因子≈1.03 → 约 46"
+      }
+    }
+  },
+  "provenance": {
+    "yield_basis": "生菜单株 100-400g，结球品种 300-500g",
+    "duration_basis": "生菜 30-60 天，本用例 phases 到 D45"
+  }
+}

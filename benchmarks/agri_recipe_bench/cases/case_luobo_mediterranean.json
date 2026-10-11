@@ -1,0 +1,40 @@
+{
+  "id": "case_luobo_mediterranean",
+  "axis": "target_prediction",
+  "description": "地中海气候·胡萝卜：完整 Env Recipe + 生长阶段 → 采收期与单株产量应落在农艺常识区间",
+  "input": {
+    "crop": "胡萝卜",
+    "zone_id": "mediterranean",
+    "start_date": "2026-03-10",
+    "adapt_score": 0.85,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {"name": "育苗", "day_range": [1, 25]},
+          {"name": "抽芽", "day_range": [26, 55]},
+          {"name": "膨大", "day_range": [56, 75]},
+          {"name": "采收", "day_range": [76, 90]}
+        ]
+      }
+    },
+    "env_recipe_path": "data/env_recipes/mediterranean__胡萝卜.json"
+  },
+  "expected": {
+    "target_prediction": {
+      "yield_estimate_g": {
+        "value": 500,
+        "tolerance_abs": 250,
+        "note": "胡萝卜单株产量 200-800g（含大根品种如 Nantes 400g+，普通 150-400g）；引擎基准 500g/箱 × 气候因子 × 适应度"
+      },
+      "adjusted_duration_days": {
+        "value": 90,
+        "tolerance_abs": 25,
+        "note": "胡萝卜典型生长期 60-110 天；本 case 输入 phases 到 D90，气候因子 ±0.1 以内"
+      }
+    }
+  },
+  "provenance": {
+    "yield_basis": "胡萝卜单株产量公开基准 200-800g；引擎 _BASE_YIELD_G 胡萝卜走 fallback=500",
+    "duration_basis": "胡萝卜典型 60-110 天，本用例按 D1-D90 分段"
+  }
+}

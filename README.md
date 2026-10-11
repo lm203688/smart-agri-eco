@@ -29,7 +29,19 @@ python scripts/check_distribution_readiness.py
 一次性验证 10 类分发入口：MCP server / A2A Card / Agent Plugin / Smithery / 官方 Registry /
 MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步。
 
-CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 556 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（393 文件差异 0）· Skill 注册表 11/11 一致。
+CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 561 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（393 文件差异 0）· Skill 注册表 11/11 一致 · **AgriRecipeBench 5/5 通过**（M1 目标预测 3/3 + M2 状态滚动 2/2）。
+
+**🏆 AgriRecipeBench**（[`benchmarks/agri_recipe_bench/`](benchmarks/agri_recipe_bench/)）——Env Recipe 环境配方的**可复现评测基准**，独立于功能回归测试：
+
+```bash
+python benchmarks/agri_recipe_bench/run_bench.py                # 跑全部
+python benchmarks/agri_recipe_bench/run_bench.py --axis target_prediction --strict
+python benchmarks/agri_recipe_bench/run_bench.py --case case_luobo_mediterranean --json
+```
+
+- **M1 target_prediction**：预测值 vs 公开农艺基准（单株产量 / 采收期），3 个种子用例
+- **M2 state_rolling**：数学边界（周期≥1 / harvest≥start / yield>0），2 个种子用例
+- 挂钩：SNWM 神农世界模型四轴协议裁剪，详见 [`benchmarks/agri_recipe_bench/docs/PROTOCOL.md`](benchmarks/agri_recipe_bench/docs/PROTOCOL.md)
 
 ---
 
