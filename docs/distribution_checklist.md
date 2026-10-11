@@ -22,7 +22,7 @@
 | P0-4c | 官方 MCP Registry 上架 | ✅ **已完成** | `io.github.lm203688/agri-eco` v1.1.0，2026-10-08 上架，CI 一键可重发 |
 | P0-4d | Smithery 自动发现 | ✅ **已完成** | `smithery.yaml` 已入仓库，Smithery 从 GitHub 自动抓取，**免表单提交**；搜索入口 `https://smithery.ai/search?q=agri-eco` |
 | P0-4e | 分发就绪度一键自检 | ✅ **已完成** | `scripts/check_distribution_readiness.py`，一次性验证 10 类分发入口，**21 通过 / 0 失败 / 1 跳过** |
-| P0-4b | 上架其余 2 个市场 | ⏸ **需你操作** | Glama / LobeHub，材料全备：`docs/market_listing_pack.md` §2/§3 |
+| P0-4b | 上架其余 2 个市场 | ✅ **已完成** | Glama（2026-10-11 CDP 自动提交，`POST /api/mcp/servers/submit.data` 200，等审批邮件）+ LobeHub（2026-10-08 自动发现，`lm203688-smart-agri-eco`）|
 | P0-5 | 公网 Demo 部署 | ⏸ **需你执行** | 脚本 + 自检全就绪，只差 SSH 免密；见 §2 |
 
 **已完成的安全处置**：推送过程中 GitHub 密钥扫描拦截了一次误传（临时 PAT 文件进入 blobs），
@@ -129,8 +129,8 @@ curl http://150.158.119.19:8001/api/cities
 |---|---|---|
 | **Official MCP Registry** | GitHub Actions OIDC → Registry API | ✅ 已完成（CI 自动发布） |
 | **Smithery** | 仓库根目录 `smithery.yaml` 自动抓取 | ✅ 已完成（2026-10-08，`smithery.yaml` 已入库，无需填表单） |
-| **Glama** | 站内表单 / 从 GitHub 拉取 | ⏸ 需你操作（表单材料见 `docs/market_listing_pack.md` §2） |
-| **LobeHub MCP** | 站内表单 / PR 到其仓库 | ⏸ 需你操作（材料见 `docs/market_listing_pack.md` §3） |
+| **Glama** | 站内表单 / 从 GitHub 拉取 | ✅ 已完成（2026-10-11 通过 CDP 复用主 Edge 登录态自动提交，`POST /api/mcp/servers/submit.data` 200；等审批邮件补 Dockerfile 后索引） |
+| **LobeHub MCP** | 站内表单 / PR 到其仓库 | ✅ 已完成（2026-10-08 自动发现，identifier `lm203688-smart-agri-eco`） |
 
 ### 3.2 ✅ 官方 MCP Registry 已上架（2026-10-08）
 
@@ -189,7 +189,8 @@ version`）。workflow 已区分处理——重复视为成功；但若**内容�
 
 - [x] 官方 MCP Registry 搜索 `agri-eco` 可见（✅ 已达成）
 - [x] Smithery `smithery.yaml` 已入库，Smithery 从 GitHub 自动抓取（✅ 已就绪，等待站内同步显示）
-- [ ] Glama / LobeHub 搜索 `agri-eco` 可见（⏸ 待提交表单）
+- [x] Glama 搜索 `agri-eco` 可见（2026-10-11 已提交，等审批邮件补 Dockerfile 后索引）
+- [x] LobeHub 搜索 `agri-eco` 可见（`lm203688-smart-agri-eco`，2026-10-08 上架）
 - [ ] 从任一市场按指引安装后，`tools/list` 返回 **14** 个工具
 - [ ] 出现第 1 次**非本人**的外部调用（P0 出口指标）
 
