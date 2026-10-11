@@ -35,6 +35,30 @@ _BASE_YIELD_G = {
     "油麦菜": 350, "甜椒": 800, "圣女果": 1000, "番茄（大果）": 1500,
 }
 
+# 单株产量的启发式变异系数（P10/P90 相对 P50 的偏离比例）。
+# 依据：品种间差异（大根 vs 小根胡萝卜约 2-3×）+ 环境波动（补光/通风差异）。
+# 数值来自公开农艺经验区间（如胡萝卜 150-500g，樱桃番茄 500-1200g），
+# 反映「单株产量」而非「单箱产量」的合理散布范围。
+# 无匹配项时走 fallback（±40%）表示"没数据的作物更不确定"。
+_BASE_YIELD_SPREAD_FRAC = {
+    # 果菜类：品种间差异大，方差 ±35-45%
+    "番茄": 0.4, "番茄（樱桃）": 0.45, "番茄（大果）": 0.4, "圣女果": 0.45,
+    "辣椒": 0.4, "甜椒": 0.4, "茄子": 0.4, "黄瓜": 0.4,
+    # 叶菜类：品种间差异小，方差 ±20-30%
+    "生菜": 0.3, "小白菜": 0.25, "菠菜": 0.3, "空心菜": 0.35, "油麦菜": 0.3,
+    "罗勒": 0.3, "薄荷": 0.3, "香菜": 0.35,
+    # 果用类：单株产量受季节影响明显，方差 ±40%
+    "草莓": 0.4,
+    # 根茎类（fallback 已含胡萝卜）
+    "葱": 0.3, "蒜": 0.3,
+}
+_DEFAULT_YIELD_SPREAD_FRAC = 0.4
+
+# 生长周期变异系数：不同分区光照/昼夜温差会导致 ±10-15% 的周期波动。
+# 依据：地中海番茄 120 天 → 冷凉区可能 140 天（+17%），亚热带可能 100 天（-17%）；
+# 保守取 ±12%（比产量方差小，因为生长阶段边界相对稳健）。
+_DURATION_SPREAD_FRAC = 0.12
+
 
 def _load_zone_climate(zone_id: str) -> Optional[List[float]]:
     try:
@@ -133,6 +157,32 @@ class ForecastAgent:
             conf += 0.05
         conf = round(min(0.8, conf), 2)
 
+        # ---- 2b. 置信区间（P10 / P50 / P90）----
+        # 设计原则（诚实边界）：
+        #   - 单点估计（yield_g / adjusted_days）保留为 P50，向后兼容
+        #   - 区间来自启发式散布系数（_BASE_YIELD_SPREAD_FRAC / _DURATION_SPREAD_FRAC）
+        #   - 输入越少（无 env_recipe / 无 adapt_score）→ 区间越宽
+        #   - 区间宽度**不是概率意义上的 80% CI**（无真实分布），而是「引擎启发式不确定性」的量化
+        #     ——这与 model=heuristic 的诚实标注一致
+        spread = _BASE_YIELD_SPREAD_FRAC.get(crop) or _BASE_YIELD_SPREAD_FRAC.get(
+            crop.replace("（", "").split("（")[0]
+        ) or _DEFAULT_YIELD_SPREAD_FRAC
+        # 数据越缺 → 越不确定：无 env_recipe 或无 adapt_score 时各放宽 25%
+        uncertainty_uplift = 0.0
+        if not env_present:
+            uncertainty_uplift += 0.25
+        if not isinstance(adapt_score, (int, float)):
+            uncertainty_uplift += 0.15
+        spread_eff = spread * (1.0 + uncertainty_uplift)
+        yield_p10 = max(1, round(yield_g * (1.0 - spread_eff)))
+        yield_p90 = round(yield_g * (1.0 + spread_eff))
+
+        dur_p10 = max(1, round(adjusted_days * (1.0 - _DURATION_SPREAD_FRAC)))
+        dur_p90 = round(adjusted_days * (1.0 + _DURATION_SPREAD_FRAC))
+
+        harvest_p10 = _add_days(start_date, dur_p10) if start_date else None
+        harvest_p90 = _add_days(start_date, dur_p90) if start_date else None
+
         # ---- 3. 风险 ----
         risks: List[Dict[str, Any]] = []
         if zone_mean is not None and zone_climate:
@@ -159,6 +209,13 @@ class ForecastAgent:
                 "match_quality": conf,
                 "model": "heuristic",
                 "note": "产量为公开农艺基准 × 气候适宜度 × 环境完备度的启发式估计，非 WOFOST 机制模型；需 execution_log/outcome 回流校准",
+                "uncertainty": {
+                    "method": "heuristic_spread_based",
+                    "yield_spread_fraction": round(spread_eff, 3),
+                    "duration_spread_fraction": _DURATION_SPREAD_FRAC,
+                    "uncertainty_uplift": round(uncertainty_uplift, 3),
+                    "note": "区间宽度=启发式散布系数 × 输入完备度惩罚；非概率 CI（无真实分布假设）",
+                },
             },
             "constraints": {
                 "needs_calibration": not (isinstance(adapt_score, (int, float)) and env_present),
@@ -169,6 +226,24 @@ class ForecastAgent:
                 "climate_factor": round(climate_factor, 3),
                 "yield_estimate_g": yield_g,
                 "risk_forecast": risks,
+                # ---- 置信区间（P50 与上述单点估计一致，向后兼容）----
+                "prediction_interval": {
+                    "yield_estimate_g": {
+                        "p50": yield_g,
+                        "p10": yield_p10,
+                        "p90": yield_p90,
+                    },
+                    "adjusted_duration_days": {
+                        "p50": adjusted_days,
+                        "p10": dur_p10,
+                        "p90": dur_p90,
+                    },
+                    "harvest_date": {
+                        "p50": harvest_date,
+                        "p10": harvest_p10,
+                        "p90": harvest_p90,
+                    },
+                },
             },
         }
 

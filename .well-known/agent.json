@@ -39,10 +39,33 @@
     "pushNotifications": false,
     "stateTransitionHistory": false,
     "stateless": true,
+    "trustMarking": {
+      "supported": true,
+      "algorithm": "sha256",
+      "responseField": "_trust_mark",
+      "certificateModule": "core.trust_layer",
+      "verificationCommand": "python -m core.trust_layer",
+      "description": "所有 MCP 工具输出内嵌 _trust_mark（cert_id + signature + verification_cmd），外部消费者可独立复算 signature 校验数据一致性。"
+    },
+    "confidenceIntervals": {
+      "supported": true,
+      "method": "heuristic_spread_based",
+      "responseField": "prediction_interval",
+      "description": "预测类输出（产量 / 采收期 / 周期）返回 P50 + P10-P90 区间；输入越少区间越宽，非概率 CI。"
+    },
+    "cardSigning": {
+      "supported": true,
+      "algorithm": "HS256",
+      "signatureFile": ".well-known/agent.json.jws",
+      "signingScript": "scripts/sign_agent_card.py",
+      "verificationScript": "scripts/verify_agent_card.py",
+      "keyEnvVar": "AGRI_A2A_SIGNING_KEY",
+      "description": "本 Agent Card 可用 JWS (HS256) 签名，签名密钥通过 AGRI_A2A_SIGNING_KEY 环境变量提供。调用方运行 verificationScript 可独立复算 signature 检测篡改。"
+    },
     "extensions": [
       {
         "uri": "https://github.com/lm203688/smart-agri-eco/blob/main/docs/env_recipe_protocol_v1.md",
-        "description": "Env Recipe v1 环境配方协议：作物 × 阶段 × 设备类 → 可执行环境参数（温度/湿度/光照 DLI/水肥 pH/气流/异常处置），116 份已发布配方。",
+        "description": "Env Recipe v1 环境配方协议：作物 × 阶段 × 设备类 → 可执行环境参数（温度/湿度/光照 DLI/水肥 pH/气流/异常处置），152 份已发布配方。",
         "required": false
       }
     ]

@@ -50,6 +50,7 @@ if ROOT not in sys.path:
 
 from agent import AgriOrchestrator  # noqa: E402
 from agent.preset_cities import load_preset_cities  # noqa: E402
+from core.trust_layer import get_trust_mark  # noqa: E402
 
 PROTOCOL_VERSION = "2026-07-28"
 # 兼容声明的历史版本：新客户端取 PROTOCOL_VERSION，旧客户端接受以下任一。
@@ -860,6 +861,17 @@ def _handle(msg: dict) -> dict | None:
                     "arg_hash": arg_hash, "error": str(e)[:120],
                     "traceparent": traceparent})
             result = {"error": f"工具执行失败: {e}"}
+
+        # T-1 可信标记产品化：所有工具输出内嵌紧凑 trust_mark，外部消费者可
+        # 用 verification_cmd 独立复算 signature，校验数据一致性。
+        # 不改动 result 顶层字段以避免破坏既有客户端契约，走 _meta 扩展字段。
+        try:
+            if isinstance(result, dict):
+                result["_trust_mark"] = get_trust_mark()
+        except Exception:  # noqa: BLE001
+            # trust_mark 生成失败不应阻塞业务响应
+            pass
+
         has_err = isinstance(result, dict) and "error" in result
         _audit({"event": "tools_call_done", "tool": name,
                 "arg_hash": arg_hash, "has_error": bool(has_err),

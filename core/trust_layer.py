@@ -264,5 +264,61 @@ def main():
     print(json.dumps(cert, ensure_ascii=False, indent=2))
 
 
+# ---- T-1 可信标记产品化 ----
+# 设计原则（诚实边界）：
+#   - `get_trust_mark()` 返回**紧凑的质量标记**，供 MCP 工具输出与 A2A Card 内嵌
+#   - 完整证书仍通过 `python -m core.trust_layer` 生成（重量级，含 rubric / 覆盖度）
+#   - trust_mark 只暴露「可被外部复算验证」的最小字段：cert_id / signature / 复算方式
+#   - 若 trust_layer 依赖的数据文件缺失，标记显式降级（不静默伪装"已可信"）
+def get_trust_mark() -> Dict[str, Any]:
+    """返回一份紧凑的可信质量标记，供外部消费者引用与复算验证。
+
+    返回字段：
+        cert_id           稳定证书标识（不含时间戳，跨版本可对齐）
+        signature         证书规范化内容的 sha256（外部可独立复算）
+        signature_prefix  前 12 字符，便于日志与人类阅读
+        issued_at         本次生成的时间戳
+        verification_cmd  外部消费者复算该签名所需的最小命令
+        status            "trusted" | "degraded"（数据文件缺失时降级）
+        degraded_reasons  降级原因列表（正常情况下为空）
+    """
+    degraded: List[str] = []
+    for p, label in ((ZONE_META_PATH, "zone_meta"), (CROP_DB_PATH, "crop_adapt_db")):
+        if not os.path.exists(p):
+            degraded.append(f"{label} 缺失: {p}")
+
+    inputs = {"scope": "agri_ecosystem", "scene": "distribution"}
+    if degraded:
+        # 数据文件缺失时不硬跑 issue_certificate（会抛错），改用显式降级
+        mark: Dict[str, Any] = {
+            "cert_id": "UNAVAILABLE",
+            "signature": None,
+            "signature_prefix": None,
+            "issued_at": datetime.now().isoformat(timespec="seconds"),
+            "verification_cmd": "python -m core.trust_layer",
+            "status": "degraded",
+            "degraded_reasons": degraded,
+            "note": "数据文件缺失，无法生成有效证书；外部消费者应视为未验证",
+        }
+        return mark
+
+    cert = issue_certificate(run_id="trust-mark", inputs=inputs)
+    sig = cert["signature"]
+    return {
+        "cert_id": cert["certificate_id"],
+        "signature": sig,
+        "signature_prefix": sig[:12],
+        "issued_at": cert["issued_at"],
+        "verification_cmd": "python -m core.trust_layer",
+        "status": "trusted" if cert["rubric"]["full_pass"] else "partial",
+        "degraded_reasons": [],
+        "rubric_passed": f"{cert['rubric']['passed']}/{cert['rubric']['total']}",
+        "note": (
+            "本标记基于 core/trust_layer.py 的可复现证书；"
+            "外部消费者可用 verification_cmd 独立复算 signature 校验数据一致性"
+        ),
+    }
+
+
 if __name__ == "__main__":
     main()

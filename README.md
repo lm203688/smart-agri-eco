@@ -29,7 +29,7 @@ python scripts/check_distribution_readiness.py
 一次性验证 10 类分发入口：MCP server / A2A Card / Agent Plugin / Smithery / 官方 Registry /
 MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步。
 
-CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 561 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（393 文件差异 0）· Skill 注册表 11/11 一致 · **AgriRecipeBench 5/5 通过**（M1 目标预测 3/3 + M2 状态滚动 2/2）。
+CI：25 步 × Python 3.10/3.11/3.12 全绿 · 单测 584 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（393 文件差异 0）· Skill 注册表 11/11 一致 · **AgriRecipeBench 5/5 通过**（M1 目标预测 3/3 + M2 状态滚动 2/2）。
 
 **🏆 AgriRecipeBench**（[`benchmarks/agri_recipe_bench/`](benchmarks/agri_recipe_bench/)）——Env Recipe 环境配方的**可复现评测基准**，独立于功能回归测试：
 
@@ -42,6 +42,23 @@ python benchmarks/agri_recipe_bench/run_bench.py --case case_luobo_mediterranean
 - **M1 target_prediction**：预测值 vs 公开农艺基准（单株产量 / 采收期），3 个种子用例
 - **M2 state_rolling**：数学边界（周期≥1 / harvest≥start / yield>0），2 个种子用例
 - 挂钩：SNWM 神农世界模型四轴协议裁剪，详见 [`benchmarks/agri_recipe_bench/docs/PROTOCOL.md`](benchmarks/agri_recipe_bench/docs/PROTOCOL.md)
+
+---
+
+**🔐 可验证 AI 三件套**（2026-10-11 新增，对标 SNWM 可验证协议与 MCP 2026-08 路线图）：
+
+| 能力 | 响应字段 | 用途 |
+|---|---|---|
+| **T-3 置信区间** | `recommendation.prediction_interval.{p10,p50,p90}` | 产量 / 采收期 / 周期从单点估计变区间；输入越少区间越宽；`confidence.uncertainty` 显式声明散布系数与惩罚项 |
+| **T-1 可信标记** | `_trust_mark.{cert_id, signature, verification_cmd}` | 所有 MCP 工具输出内嵌 SHA256 证书指纹；外部消费者可 `python -m core.trust_layer` 独立复算 |
+| **D-4 A2A Card 签名** | `.well-known/agent.json.jws` | JWS (HS256) compact serialization，零依赖；`AGRI_A2A_SIGNING_KEY` 环境变量提供密钥；调用方可用 `scripts/verify_agent_card.py` 检测篡改 |
+
+```bash
+# 生成 A2A Card JWS 签名
+AGRI_A2A_SIGNING_KEY="your-secret" python scripts/sign_agent_card.py
+# 校验（调用方 / CI 都用这条）
+AGRI_A2A_SIGNING_KEY="your-secret" python scripts/verify_agent_card.py
+```
 
 ---
 

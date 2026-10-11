@@ -153,6 +153,15 @@ jobs:
           python benchmarks/agri_recipe_bench/run_bench.py --strict
           python -m unittest scripts.test_agri_recipe_bench -v
 
+      - name: T-3 置信区间（prediction_interval P50+P10-P90）
+        run: python -m unittest scripts.test_confidence_intervals -v
+
+      - name: T-1 可信标记（trust_mark + A2A Card 声明）
+        run: python -m unittest scripts.test_trust_mark -v
+
+      - name: D-4 A2A Card JWS 签名（HS256，零依赖）
+        run: python -m unittest scripts.test_sign_agent_card -v
+
       - name: AI 评测基线（P0-H：分区一致率 + 脚手架项）
         run: python scripts/run_eval.py
 
