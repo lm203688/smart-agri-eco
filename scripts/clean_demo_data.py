@@ -82,6 +82,9 @@ def strip_calibration(dry_run: bool) -> dict:
                 counts["B"] += 1
             for k in CALIB_FIELDS:
                 crop.pop(k, None)
+            # 数据质量门禁要求 calibrated 字段显式存在（bool）；剥离后统一回填 false，
+            # 表示「未实测校准」而非「字段缺失」。
+            crop["calibrated"] = False
 
     if (counts["A"] + counts["B"] + counts["C"]) and not dry_run:
         with open(CROP_DB, "w", encoding="utf-8") as f:
