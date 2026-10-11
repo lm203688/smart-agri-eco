@@ -13,12 +13,12 @@
 curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.lm203688/agri-eco"
 ```
 
-**🔎 市场入口（4 家，其中官方 Registry + Smithery 已就绪）**：
+**🔎 市场入口（4 家全覆盖）**：
 
 - 官方 MCP Registry：`io.github.lm203688/agri-eco` v1.1.0 ✅
 - Smithery：`smithery.yaml` 已就绪，仓库自动发现（[搜索入口](https://smithery.ai/search?q=agri-eco)）✅
-- Glama：[提交表单](https://glama.ai/mcp/servers)（待你提交，材料见 `docs/market_listing_pack.md` §2）
-- LobeHub：[站内提交](https://lobehub.com/mcp)（待你提交，材料见 `docs/market_listing_pack.md` §3）
+- Glama：已提交（2026-10-11，`POST /api/mcp/servers/submit.data` 200），等 Glama 审批邮件补 Dockerfile 后索引（[目录入口](https://glama.ai/mcp/servers)）🟡
+- LobeHub：`lm203688-smart-agri-eco`（2026-10-08 自动发现）✅
 
 **📋 分发就绪度自检**（每次评审/发布前跑一次）：
 
@@ -29,7 +29,7 @@ python scripts/check_distribution_readiness.py
 一次性验证 10 类分发入口：MCP server / A2A Card / Agent Plugin / Smithery / 官方 Registry /
 MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步。
 
-CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 556 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（353 文件差异 0）。
+CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 556 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（393 文件差异 0）· Skill 注册表 11/11 一致。
 
 ---
 
@@ -116,7 +116,7 @@ CI：22 步 × Python 3.10/3.11/3.12 全绿 · 单测 556 OK · Demo 端点 14/1
 | 数据扩展脚本 | `scripts/enrich_crop_data.py` | 每气候带补充适生作物至 ≥18 种 |
 | 端到端验证 | `scripts/verify_all.py` | 多城市 pipeline + Trust 证书 PASS/FAIL |
 | Skill 自动生成 | `engine/skill_factory.py` | 新作物/能力点 → 自动生成符合 Schema 的 Skill |
-| 单元测试 | `scripts/test_agents.py` | **66 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + ForecastAgent(L2) + ControlAgent(L3) + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + **作物库数据完整性守卫** |
+| 单元测试 | `scripts/test_*.py` 系列 | **556 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + ForecastAgent(L2) + ControlAgent(L3) + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + Env Recipe 契约 + 数据完整性守卫 + MCP 14 工具 + A2A Card + Skills Registry 11 项一致 |
 | MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **14 个** agri 工具（分区匹配/作物推荐/种植计划/病虫害诊断/养分管理/Env Recipe 配方/物候播期/土壤剖面/BP 投资初筛/多源气候调和/地理编码→配方/数据血缘查询/预设城市/生态对接清单）；协议版本 **2026-07-28（无状态）**，兼容 2025-06-18 / 2024-11-05；已适配 SEP-2575（免握手）/ SEP-2567（无 session）/ SEP-2243（`Mcp-Method`）/ SEP-2549（`ttlMs` 缓存）/ SEP-414（W3C traceparent）；注册与投递见 `mcp/README.md` |
 | A2A Agent Card | `.well-known/agent.json` | A2A v1.0 标准发现入口：声明 14 个 skill（与 MCP 工具一一对应）、`securitySchemes={}`、输入输出模式与许可红线（NC 来源不得转售）；校验 `scripts/check_agent_card.py` |
 | Agent Plugins 打包 | `plugin/` | Agent Plugins 1.0.0 标准：`plugin.json` + `mcp.json` + `skills/<id>/SKILL.md` × 11（含 Anthropic Agent Skills YAML frontmatter）；**由注册表生成，禁止手改**，`scripts/build_agent_plugin.py` 为唯一入口，CI 用 `--check` 防漂移 |
@@ -292,7 +292,7 @@ python scripts/gh_push.py <token临时文件> "<提交信息>" file1 file2 ...
 
 ### 4. 单元测试（零依赖）
 ```bash
-python -m unittest scripts.test_agents -v     # 66 项用例全过
+python -m unittest discover -s scripts -p "test_*.py" -v     # 556 项用例全过
 ```
 
 ### 4b. MCP / 协议 / 评测（v2.1 提升项）
