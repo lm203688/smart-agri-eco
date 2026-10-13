@@ -56,14 +56,28 @@
 - ✅ T-1 可信标记产品化（MCP 所有 tools/call 内嵌 `_trust_mark`）
 - ✅ D-4 A2A Card JWS 签名（HMAC-SHA256 零依赖，密钥走 `AGRI_A2A_SIGNING_KEY` 环境变量，不入库）
 
-**P1 D3 特例续（2026-10-13 落地）**——报告 `framework_evolution_liftup_2026-10-13.md` §6.4 S1/S2 + §6.3 E1/E4/E3 + §6.2 W5，全部零依赖外部调用：
-- ✅ S1 受控自进化声明（`.well-known/evolution_zones.json` v1：8 项不可进化区 + 7 项可进化区 + `gate_version` 版本化）+ CORE_OBJECTIVE §十
+**P1 D3 特例续（2026-10-13 落地）**——报告 `framework_evolution_liftup_2026-10-13.md` §6.4 S1/S2 + §6.3 E1/E4/E3 + §6.2 W5 + §6.1 F5，全部零依赖外部调用：
+- ✅ S1 受控自进化声明（`.well-known/evolution_zones.json` **v3**：8 项不可进化区 + 8 项可进化区 + `gate_version` 版本化 + history）+ CORE_OBJECTIVE §十
 - ✅ S2/E1 多模块不变式棘轮（`benchmarks/ratchet_modules.py`，4 模块 27 用例：climate_stability/forecast_interval_bounds/phenology_gdd_monotonicity/nutrition_npk_balance；CI 硬门禁 `--strict`）
 - ✅ E4 Golden Vectors（`benchmarks/golden_vectors/{forecast,phenology,nutrition}.json` 16 用例，tolerance 0.0/0.1；`scripts/run_golden_vectors.py` + CI `--strict`）
 - ✅ E3 溯源字段门禁（`data_quality_gate.py::_check_env_recipe_sources`，152 配方 × 760 sources 三字段完整性 + 白名单）
-- ✅ W5 治理 badge（`scripts/generate_status_badge.py` 纯标准库 SVG，4 指标：data_sources 4/4 · bench 5/5 · ratchet 27/27 · golden 16/16；`artifacts/status_badge.svg` + README 嵌入）
+- ✅ W5 治理 badge（`scripts/generate_status_badge.py` 纯标准库 SVG，4 指标：data_sources 4/4 · bench 11/11 · ratchet 27/27 · golden 16/16；`artifacts/status_badge.svg` + README 嵌入）
+- ✅ **A1 Köppen 栅格抽象层（F5）**（`core/climate_grid.py`，标准库栅格点查询引擎：O(1) 空间索引 + 最近邻 + 3×3 邻居 + 1/d² 权重归一化 → 概率分布；Koppe-Geiger → 项目 8 分区映射表；`NoGridData` 显式异常；合成测试栅格 800 cells/9 类；climate_agent 双后端接入，无栅格显式降级标注）+ `scripts/test_climate_grid.py`（18 项单测）
+- ✅ **S2/E1 棘轮 CI 硬门禁**（`scripts/run_evolution_ratchet.py`，读 evolution_zones.json 白名单 → 跑 benchmark 判分数 → 退出码 0/1/2/3；`--min-score`/`--check-files`/`--json` 三模式）+ `scripts/test_evolution_ratchet.py`（6 项单测）
 
-**不做**（超出 D3 特例范围或需外部数据）：A1 Köppen 分类（需栅格数据）、A2 机制作物模型（PCSE/WOFOST 论文重实现 7-10 天）、L1 视觉、L0-2 CMIP7 情景、M-1 激励机制、L2-5 两项 eval pending（需真实数据 / 专家盲评）、M3 反事实 / M4 跨情境泛化（需 outcome 回流）。
+**P1 D3 特例续（2026-10-13/14 主线一批次）**——报告 `per_module_deep_assessment_2026-10-13.md`，主线一「接通」大部分前几轮已落地，本轮补齐 M10 编排层：
+- ✅ **M9-X1 影子执行日志**（`data/execution_log.json` 3 条 + `agent/execution_log.py` + `scripts/generate_shadow_execution_log.py` + `schemas/execution_log.schema.json` + tests）——RSI L1 门闭合证据
+- ✅ **M8-R2 配方 profile 四件套**（`scripts/recipe_profile.py` export/import/diff/clone + tests）
+- ✅ **M5-F1 Split Conformal 保形预测**（`agent/conformal.py` 204 行，零依赖 Split Conformal 校准器，90% 覆盖率下界；`agent/forecast_agent.py` 已接入 + `scripts/test_conformal.py`）
+- ✅ **M10-O2 跨 Agent 一致性检查 + M10-O4 编排 trace 导出**（`agent/orchestration_audit.py` ~400 行，5 条规则：climate_constraints_coverage / growth_crop_match / eco_devices_budget_fit / top_crop_device_match / growth_start_date_frost，含 error/warning/info 三级严重度；`TraceRecord` + `summary_hash` SHA256 稳定可复算；`orchestrator.run_pipeline` 挂 audit hook 写 `result["consistency_audit"]` + `result["orchestration_trace"]`；`scripts/test_orchestration_audit.py` 29 项单测 + CI 硬门禁）
+- ✅ **M11-T1 可信标记产品化徽章**（`scripts/generate_trust_badge.py`）
+- ✅ **M12-K1 检索/图谱 MCP 接入**（`mcp/server.py` 新增 `agri_search` + `agri_knowledge_query`，工具数 14 → 18）
+- ✅ **gate_version v2 → v3**（`.well-known/evolution_zones.json`，M10 编排层可审计性资产纳入棘轮管控 + history 记录变更理由）
+- ✅ **14→18 工具漂移同步**（`scripts/check_mcp_namespace.py` `EXPECTED_TOOL_COUNT=18` / `scripts/test_engine_v5.py` / `README.md` / `mcp/README.md`）
+
+**不做**（超出 D3 特例范围或需外部数据）：A2 机制作物模型（PCSE/WOFOST 论文重实现 7-10 天）、L1 视觉、L0-2 CMIP7 情景、M-1 激励机制、L2-5 两项 eval pending（需真实数据 / 专家盲评）。
+
+**A1 后续（等数据接入）**：Koppe-Geiger 栅格真实数据（Beck et al. 2018/2023，CC BY 4.0）需用户手动下载放入 `data/zone_meta/koppen_grid.json`，抽象层已就绪，数据到位即自动启用栅格后端。
 
 ## 六、门禁与自检（每次评审/发布前跑一遍）
 
@@ -79,11 +93,12 @@ python benchmarks/agri_recipe_bench/run_bench.py     # AgriRecipeBench 5/5
 python -m benchmarks.ratchet_modules --strict        # S2/E1 棘轮 27/27
 python scripts/run_golden_vectors.py --strict        # E4 Golden 16/16
 python scripts/generate_status_badge.py --ci         # W5 治理 badge
-python -m unittest discover -s scripts -p "test_*.py"  # 607 单测（skipped=4）
+python scripts/run_evolution_ratchet.py --json       # S2/E1 棘轮 CI 硬门禁（score≥0.5）
+python -m unittest discover -s scripts -p "test_*.py"  # 631 单测（skipped=4）
 python scripts/sync_check.py                         # 与远端 GitHub 差异
 ```
 
-当前基线：全绿（本地 = 远端，423 文件，CI 33 步，`verify_all` PASS）。任何一条变红即视为不可上线。
+当前基线：全绿（本地 = 远端，438 文件，CI 28 步，`verify_all` PASS）。任何一条变红即视为不可上线。
 
 **已知工具冲突（2026-10-11 修）**：`scripts/clean_demo_data.py` 剥离校准标记后曾把 `calibrated` 字段整个 pop 掉，但 `scripts/data_quality_gate.py` 强制要求该字段显式存在且为 bool → 每次跑 clean 后 verify_all 都会变红。现已修复：`strip_calibration` 剥完 CALIB_FIELDS 后回填 `crop["calibrated"] = False`，语义从「字段缺失」改为「未实测校准」，两脚本对齐，clean 变幂等。
 
@@ -102,8 +117,9 @@ python scripts/sync_check.py                         # 与远端 GitHub 差异
 - **Smithery 入口**：`smithery.yaml`
 - **Registry 元数据**：`server.json`（含 fileSha256）
 - **MCPB 产物**：`dist/agri-eco-mcp-1.1.0.mcpb`（452KB / sha 390e9779…）
-- **AgriRecipeBench**：`benchmarks/agri_recipe_bench/`（M1+M2 骨架，5/5 通过）
-- **受控自进化**：`.well-known/evolution_zones.json`（S1 二元划分）+ `benchmarks/ratchet_modules.py`（S2/E1 棘轮 27 用例）+ `benchmarks/golden_vectors/`（E4 16 用例）+ `scripts/generate_status_badge.py`（W5 治理 badge）+ `artifacts/status_badge.svg`
+- **AgriRecipeBench**：`benchmarks/agri_recipe_bench/`（M1+M2+M3+M4 四轴，11 用例，5/5 通过）
+- **受控自进化**：`.well-known/evolution_zones.json`（S1 二元划分，gate_version v2）+ `benchmarks/ratchet_modules.py`（S2/E1 棘轮 27 用例）+ `benchmarks/golden_vectors/`（E4 16 用例）+ `scripts/generate_status_badge.py`（W5 治理 badge）+ `artifacts/status_badge.svg` + `scripts/run_evolution_ratchet.py`（S2/E1 CI 硬门禁，score≥0.5）
+- **A1 Köppen 栅格抽象**：`core/climate_grid.py`（标准库栅格点查询引擎 + 概率分布 + 双后端接入）+ `scripts/test_climate_grid.py`（18 项单测）
 - **可验证 AI 三件套**：
   - 置信区间：`agent/forecast_agent.py`（`prediction_interval.{p10,p50,p90}` + `confidence.uncertainty`）
   - 可信标记：`core/trust_layer.get_trust_mark()` + MCP `tools/call` 内嵌 `_trust_mark`
