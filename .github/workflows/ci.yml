@@ -162,6 +162,21 @@ jobs:
       - name: D-4 A2A Card JWS 签名（HS256，零依赖）
         run: python -m unittest scripts.test_sign_agent_card -v
 
+      - name: S1 不可进化区/可进化区声明守卫
+        run: python -m unittest scripts.test_evolution_zones -v
+
+      - name: S2/E1 多模块不变式棘轮门禁（CI 硬门禁）
+        run: python -m benchmarks.ratchet_modules --strict
+
+      - name: E4 科学模块 Golden Vectors 回归门禁
+        run: python scripts/run_golden_vectors.py --strict
+
+      - name: W5 治理状态 badge（CI 硬门禁 + SVG 导出）
+        run: |
+          mkdir -p artifacts
+          python scripts/generate_status_badge.py --ci --svg artifacts/status_badge.svg --quiet
+          ls -la artifacts/
+
       - name: AI 评测基线（P0-H：分区一致率 + 脚手架项）
         run: python scripts/run_eval.py
 

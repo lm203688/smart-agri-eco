@@ -1,0 +1,81 @@
+{
+  "schema": "agri-golden-vectors/phenology/v1",
+  "target_module": "agent/phenology.py",
+  "target_function": "estimate_stage_days",
+  "generated_at": "2026-10-13",
+  "tolerance": {
+    "days": 0.1,
+    "reasoning": "WOFOST GDD 公式 tsum/eff 是精确除法；0.1 天容差仅吸收浮点舍入，任何非零偏差都是参数漂移"
+  },
+  "cases": [
+    {
+      "id": "potato_18c",
+      "rationale": "马铃薯 @ 18°C（TBASE=2，效温 16）：出苗 170/16=10.6d，开花 (170+150)/16=20.0d，成熟 (170+150+1550)/16=116.9d",
+      "payload": {"crop": "马铃薯", "mean_temp_c": 18.0},
+      "expected": {
+        "emergence_days": 10.6,
+        "anthesis_days_from_sow": 20.0,
+        "maturity_days_from_sow": 116.9
+      }
+    },
+    {
+      "id": "wheat_18c",
+      "rationale": "小麦 @ 18°C（TBASE=0，效温 18）：出苗 120/18=6.7d，开花 (120+543)/18=36.8d，成熟 (120+543+1194)/18=103.2d",
+      "payload": {"crop": "小麦", "mean_temp_c": 18.0},
+      "expected": {
+        "emergence_days": 6.7,
+        "anthesis_days_from_sow": 36.8,
+        "maturity_days_from_sow": 103.2
+      }
+    },
+    {
+      "id": "soybean_20c",
+      "rationale": "大豆 @ 20°C（TBASE=7，效温 13）：出苗 70/13=5.4d",
+      "payload": {"crop": "大豆", "mean_temp_c": 20.0},
+      "expected": {
+        "emergence_days": 5.4,
+        "anthesis_days_from_sow": 32.3,
+        "maturity_days_from_sow": 97.7
+      }
+    },
+    {
+      "id": "rice_25c",
+      "rationale": "水稻 @ 25°C（TBASE=10，效温 15）：出苗 100/15=6.7d，开花 (100+875)/15=65.0d",
+      "payload": {"crop": "水稻", "mean_temp_c": 25.0},
+      "expected": {
+        "emergence_days": 6.7,
+        "anthesis_days_from_sow": 65.0,
+        "maturity_days_from_sow": 106.7
+      }
+    },
+    {
+      "id": "sweetpotato_22c",
+      "rationale": "红薯 @ 22°C（TBASE=10，效温 12）：出苗 200/12=16.7d",
+      "payload": {"crop": "红薯", "mean_temp_c": 22.0},
+      "expected": {
+        "emergence_days": 16.7,
+        "anthesis_days_from_sow": 51.3,
+        "maturity_days_from_sow": 171.0
+      }
+    },
+    {
+      "id": "wheat_below_tbase_stalled",
+      "rationale": "小麦 @ -2°C（TBASE=0，效温 -2 ≤ 0）：发育停滞，所有天数=None",
+      "payload": {"crop": "小麦", "mean_temp_c": -2.0},
+      "expected": {
+        "emergence_days": null,
+        "anthesis_days_from_sow": null,
+        "maturity_days_from_sow": null
+      }
+    },
+    {
+      "id": "uncovered_crop",
+      "rationale": "未移植作物（番茄）：available=False，covered_crops 应包含 7 种",
+      "payload": {"crop": "番茄", "mean_temp_c": 20.0},
+      "expected": {
+        "available": false,
+        "covered_count": 7
+      }
+    }
+  ]
+}

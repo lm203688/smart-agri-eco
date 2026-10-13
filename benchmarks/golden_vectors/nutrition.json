@@ -1,0 +1,62 @@
+{
+  "schema": "agri-golden-vectors/nutrition/v1",
+  "target_module": "agent/nutrition_agent.py",
+  "target_function": "plan",
+  "generated_at": "2026-10-13",
+  "tolerance": {
+    "structure_only": true,
+    "reasoning": "nutrition_agent 输出随作物变化且没有稳定的数值锁定；本模块锁定**结构完备性**（NPK 三元素 + 阶段化 + confidence），而非具体配比数值。结构失败即失格。"
+  },
+  "cases": [
+    {
+      "id": "tomato_vegetative_90d",
+      "rationale": "番茄 @ 90 天（茄科，4 阶段化）：完整 NPK 结构 + 4 阶段",
+      "payload": {"crop": "番茄", "growth_days": 90},
+      "expected": {
+        "min_phases": 4,
+        "has_np3": true,
+        "has_confidence": true
+      }
+    },
+    {
+      "id": "lettuce_short_cycle_45d",
+      "rationale": "生菜 @ 45 天（菊科，短周期）：结构完整",
+      "payload": {"crop": "生菜", "growth_days": 45},
+      "expected": {
+        "min_phases": 4,
+        "has_np3": true,
+        "has_confidence": true
+      }
+    },
+    {
+      "id": "chili_long_cycle_100d",
+      "rationale": "辣椒 @ 100 天（茄科，长周期）：结构完整",
+      "payload": {"crop": "辣椒", "growth_days": 100},
+      "expected": {
+        "min_phases": 4,
+        "has_np3": true,
+        "has_confidence": true
+      }
+    },
+    {
+      "id": "bok_choy_40d",
+      "rationale": "小白菜 @ 40 天（十字花科）：结构完整",
+      "payload": {"crop": "小白菜", "growth_days": 40},
+      "expected": {
+        "min_phases": 4,
+        "has_np3": true,
+        "has_confidence": true
+      }
+    },
+    {
+      "id": "carrot_root_70d",
+      "rationale": "胡萝卜 @ 70 天（伞形科根菜）：结构完整",
+      "payload": {"crop": "胡萝卜", "growth_days": 70},
+      "expected": {
+        "min_phases": 4,
+        "has_np3": true,
+        "has_confidence": true
+      }
+    }
+  ]
+}

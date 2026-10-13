@@ -1,0 +1,94 @@
+{
+  "schema": "agri-golden-vectors/forecast/v1",
+  "target_module": "agent/forecast_agent.py",
+  "target_class": "ForecastAgent",
+  "target_method": "estimate",
+  "generated_at": "2026-10-13",
+  "tolerance": {
+    "yield_estimate_g": 0.0,
+    "adjusted_duration_days": 0,
+    "harvest_date": "exact",
+    "reasoning": "零依赖启发式应严格可复现；任何非零偏差都是静默回归（不同于机器学习模型）"
+  },
+  "cases": [
+    {
+      "id": "tomato_mediterranean_full_input",
+      "rationale": "完整输入：地中海番茄，适配度 0.9 + 4 阶段生长计划 + Env Recipe 完整",
+      "payload": {
+        "crop": "番茄",
+        "zone_id": "mediterranean",
+        "start_date": "2026-02-15",
+        "adapt_score": 0.9,
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {"day_range": [1, 30]},
+              {"day_range": [31, 60]},
+              {"day_range": [61, 95]},
+              {"day_range": [96, 130]}
+            ]
+          }
+        },
+        "env_recipe": {"environment": {"temperature": {"day_c": 32}}}
+      },
+      "expected": {
+        "yield_estimate_g": {"p50": 1432, "p10": 859, "p90": 2005},
+        "adjusted_duration_days": {"p50": 130, "p10": 114, "p90": 146},
+        "harvest_date": {"p50": "2026-06-25", "p10": "2026-06-09", "p90": "2026-07-11"}
+      }
+    },
+    {
+      "id": "lettuce_subtropical_empty_input",
+      "rationale": "空输入降级：无 env_recipe / 无 adapt_score → 区间应更宽（uncertainty_uplift 生效）",
+      "payload": {
+        "crop": "生菜",
+        "zone_id": "subtropical_wet",
+        "start_date": "2026-03-20"
+      },
+      "expected": {
+        "yield_estimate_g": {"p50": 260, "p10": 151, "p90": 369},
+        "adjusted_duration_days": {"p50": 90, "p10": 79, "p90": 101},
+        "harvest_date": {"p50": "2026-06-18", "p10": "2026-06-07", "p90": "2026-06-29"}
+      }
+    },
+    {
+      "id": "unknown_crop_fallback",
+      "rationale": "未知作物走 fallback（500g 基准 + 默认 0.4 spread + 数据缺失惩罚）",
+      "payload": {
+        "crop": "不存在作物xyz",
+        "zone_id": "temperate_subhumid",
+        "start_date": "2026-04-01",
+        "adapt_score": 0.7
+      },
+      "expected": {
+        "yield_estimate_g": {"p50": 432, "p10": 216, "p90": 648},
+        "adjusted_duration_days": {"p50": 90, "p10": 79, "p90": 101},
+        "harvest_date": {"p50": "2026-06-30", "p10": "2026-06-19", "p90": "2026-07-11"}
+      }
+    },
+    {
+      "id": "carrot_subtropical_mid_input",
+      "rationale": "中等输入：亚热带胡萝卜（AgriRecipeBench 已验证基准），有 adapt_score 无 env_recipe",
+      "payload": {
+        "crop": "胡萝卜",
+        "zone_id": "subtropical_wet",
+        "start_date": "2026-03-01",
+        "adapt_score": 0.85,
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {"day_range": [1, 25]},
+              {"day_range": [26, 50]},
+              {"day_range": [51, 75]}
+            ]
+          }
+        }
+      },
+      "expected": {
+        "yield_estimate_g": {"p50": 466, "p10": 233, "p90": 699},
+        "adjusted_duration_days": {"p50": 75, "p10": 66, "p90": 84},
+        "harvest_date": {"p50": "2026-05-15", "p10": "2026-05-06", "p90": "2026-05-24"}
+      }
+    }
+  ]
+}

@@ -2,6 +2,13 @@
 
 > 以数据平台分析为基座，孵化多层级农业 AI 关键节点生态
 
+<p align="center">
+  <a href="artifacts/status_badge.svg"><img src="artifacts/status_badge.svg" alt="governance status" width="240" /></a>
+</p>
+
+<!-- 治理状态 badge 由 scripts/generate_status_badge.py 生成，CI 硬门禁产物；
+     4 指标：data_sources 4/4 · agri_recipe_bench 5/5 · ratchet_gates 27/27 · golden_vectors 16/16 -->
+
 > 🎯 **项目目标口径（单一权威）**：见 [`docs/CORE_OBJECTIVE.md`](docs/CORE_OBJECTIVE.md) —— 分布式农业的 **Agent-native 知识基座**。
 > 一句话：把「在哪里种什么、怎么种得好」做成**可被任何 AI Agent 直接调用**的可执行配置（Env Recipe），以**可审计的数据血缘**作为可信度资产。
 > **一级目标**：让 MCP server 被外部 agent 真实调用（≥500 次 / ≥20 独立调用方）。

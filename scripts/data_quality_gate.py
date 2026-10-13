@@ -43,6 +43,72 @@ _DATA_EXT = (".json",)
 # 这些文件允许为空（日志/回流类，真实数据到位前本就为空结构，属已知数据量缺口而非质量缺陷）
 _ALLOW_EMPTY = {"data/feedback_log.json"}
 
+# E3 溯源字段（R3 法务红线）：Env Recipe sources[] 每条目必须声明
+# source_license / data_quality / trial_location。这是 NC 许可与付费冲突
+# 前置动作，混合许可下无法追溯来源即等于违法使用。
+ENV_RECIPE_DIR = os.path.join(ROOT, "data", "env_recipes")
+SOURCE_REQUIRED_FIELDS = ("source_license", "data_quality", "trial_location")
+SOURCE_LICENSE_ALLOWLIST = {
+    "CC BY 4.0", "CC BY-SA 4.0", "CC BY-NC 4.0", "CC BY-NC-SA 4.0",
+    "CC BY-NC-SA 3.0 IGO", "CC BY 3.0", "CC BY-NC 3.0",
+    "Public Domain", "公有领域（美国联邦政府作品）",
+    "unknown（未标注许可）", "unknown",
+}
+SOURCE_QUALITY_ALLOWLIST = {"measured", "interpolated", "modeled", "estimated", "unknown"}
+
+
+def _check_env_recipe_sources() -> list:
+    """扫描 data/env_recipes/*.json，验证 sources[] 溯源字段完整性。
+
+    返回问题列表（空列表=通过）。任何 sources[] 条目缺 source_license /
+    data_quality / trial_location 之一即视为失败——这是 NC 许可法务红线
+    的数据侧护栏。
+    """
+    import glob
+    files = sorted(glob.glob(os.path.join(ENV_RECIPE_DIR, "*.json")))
+    if not files:
+        return ["data/env_recipes/ 目录无配方文件"]
+    issues = []
+    total_sources = 0
+    for f in files:
+        rel = os.path.relpath(f, ROOT)
+        try:
+            with open(f, "r", encoding="utf-8") as fh:
+                d = json.load(fh)
+        except Exception as e:  # noqa: BLE001
+            issues.append(f"{rel}: JSON 解析失败: {e}")
+            continue
+        sources = d.get("sources", [])
+        if not sources:
+            issues.append(f"{rel}: sources[] 为空（每条配方至少 1 条来源）")
+            continue
+        for i, s in enumerate(sources):
+            total_sources += 1
+            for field in SOURCE_REQUIRED_FIELDS:
+                val = s.get(field)
+                if not val:
+                    issues.append(
+                        f"{rel}: sources[{i}] 缺 {field}"
+                        f"（title={s.get('title','?')}）"
+                    )
+            # 值合理性校验
+            lic = s.get("source_license")
+            if lic and lic not in SOURCE_LICENSE_ALLOWLIST:
+                issues.append(
+                    f"{rel}: sources[{i}].source_license={lic!r} "
+                    f"不在许可白名单"
+                )
+            qual = s.get("data_quality")
+            if qual and qual not in SOURCE_QUALITY_ALLOWLIST:
+                issues.append(
+                    f"{rel}: sources[{i}].data_quality={qual!r} "
+                    f"不在质量等级白名单"
+                )
+    if not issues:
+        return [f"E3 溯源字段完整：{len(files)} 份配方 × "
+                f"平均 {total_sources // len(files)} 条 sources/配方，全部含三字段"]
+    return issues
+
 
 def _load(path):
     full = os.path.join(ROOT, path)
@@ -258,6 +324,18 @@ def run():
         for i in issues:
             print(f"       - {i}")
             all_pass = False
+
+    # E3 溯源字段门禁：152 份 Env Recipe 的 sources[] 必须声明三字段
+    e3_issues = _check_env_recipe_sources()
+    e3_pass = all(i.startswith("E3 溯源字段完整") for i in e3_issues)
+    results.append(("data/env_recipes/*.json", "PASS" if e3_pass else "FAIL", e3_issues))
+    if not e3_pass:
+        all_pass = False
+    print(f"[{'PASS' if e3_pass else 'FAIL'}] "
+          f"data/env_recipes/*.json".ljust(width))
+    for i in e3_issues:
+        print(f"       - {i}")
+
     print("=" * (width + 12))
     print("结论: " + ("全部通过 ✅" if all_pass else "存在失败项 ❌"))
     return 0 if all_pass else 1

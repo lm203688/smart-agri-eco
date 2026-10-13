@@ -1,0 +1,108 @@
+{
+  "schema": "agri-evolution-zones/v1",
+  "generated_at": "2026-10-13T13:46:00",
+  "source_document": "docs/framework_evolution_liftup_2026-10-13.md §6.4 S1",
+  "principle": "自进化必须先有『不可进化区』（immutable core），再有『可进化区』（evolvable shell）——否则『自我改进』会侵蚀项目唯一真实的资产（诚实性与可复现性）。",
+  "immutable_core": {
+    "description": "禁止被自进化棘轮/自动编辑修改。任何触碰都需人工评审 + 版本 bump + 门禁口径变更记录。",
+    "assets": [
+      {
+        "path": "core/trust_layer.py",
+        "reason": "SHA256 证书与可信标记是对外可复算的证明；改动会破坏外部消费者的信任链。",
+        "protection": "requires_manual_review_and_version_bump"
+      },
+      {
+        "path": "core/data_lineage.py",
+        "reason": "数据血缘溯源；改动会让既有签名失效。",
+        "protection": "requires_manual_review_and_version_bump"
+      },
+      {
+        "path": "scripts/data_quality_gate.py",
+        "reason": "数据卫生门禁，防假数据/字段缺失。改动等于削弱唯一真实的工程资产。",
+        "protection": "requires_manual_review_and_version_bump"
+      },
+      {
+        "path": "schemas/env_recipe.schema.json",
+        "reason": "Env Recipe 协议 v1 兼容性；改动影响所有历史配方与下游消费者。",
+        "protection": "requires_manual_review_and_version_bump"
+      },
+      {
+        "path": "mcp/server.py",
+        "reason": "MCP 2026-07-28 协议契约（JSON-RPC over stdio + SEP-2575/2567/2243/2549/414）；改动会破坏所有已连接的 MCP 客户端。",
+        "protection": "requires_manual_review_and_version_bump"
+      },
+      {
+        "path": ".well-known/agent.json",
+        "reason": "A2A Card 对外身份声明 + JWS 签名基线；改动会使既有签名失效。",
+        "protection": "requires_manual_review_and_version_bump"
+      },
+      {
+        "path": "harness/manifest.json",
+        "reason": "机读基线（数字口径唯一权威源）；改动需同步刷新文档，否则漂移。",
+        "protection": "requires_manual_review_and_version_bump"
+      },
+      {
+        "path": "data/env_recipes/",
+        "reason": "152 份已发布配方是对外交付物；自动改动会破坏外部消费者已依赖的语义。",
+        "protection": "requires_manual_review_and_version_bump"
+      }
+    ]
+  },
+  "evolvable_shell": {
+    "description": "允许在棘轮门禁（benchmark 分数严格提升）约束下自动改进；改动被拒绝时自动回滚。",
+    "policy": "棘轮门禁 + 快照回滚 + 不可进化区不受影响",
+    "assets": [
+      {
+        "path": "agent/climate_agent.py",
+        "ratchet_benchmark": "climate_stability",
+        "rationale": "分区匹配是启发式；改进空间在坐标→分区的稳健性"
+      },
+      {
+        "path": "agent/forecast_agent.py",
+        "ratchet_benchmark": "forecast_interval_bounds",
+        "rationale": "产量/周期启发式 + T-3 区间；改进空间在散布系数与惩罚项"
+      },
+      {
+        "path": "agent/phenology.py",
+        "ratchet_benchmark": "phenology_gdd_monotonicity",
+        "rationale": "WOFOST GDD 积温；改进空间在作物基准阈值"
+      },
+      {
+        "path": "agent/nutrition_agent.py",
+        "ratchet_benchmark": "nutrition_npk_balance",
+        "rationale": "科属 NPK 侧重；改进空间在阶段化配比"
+      },
+      {
+        "path": "skills/registry/",
+        "ratchet_benchmark": "skill_coverage",
+        "rationale": "Skill 自动工厂生成物；改进空间在注册覆盖率"
+      },
+      {
+        "path": "agent/orchestrator.py",
+        "ratchet_benchmark": "orchestration_coverage",
+        "rationale": "编排策略；改进空间在跨 Agent 一致性检查"
+      },
+      {
+        "path": "data/eval/evolution_benchmark.json",
+        "ratchet_benchmark": "seed_benchmark",
+        "rationale": "评测集本身；改进空间在覆盖分区与作物"
+      }
+    ]
+  },
+  "meta_policy": {
+    "gate_version": "v1",
+    "gate_version_history": [
+      {
+        "version": "v1",
+        "introduced_at": "2026-10-13",
+        "change": "首次声明不可进化区/可进化区划分（S1 落地）",
+        "reason": "防止自进化侵蚀可验证性——可信层/数据卫生/协议契约必须保持人工评审"
+      }
+    ],
+    "revision_rule": "任何门禁口径变更必须 bump gate_version 并记录 change_reason；不可静默修改。",
+    "enforcement": {
+      "ratchet_required_for": ["agent/", "skills/registry/"],
+      "manual_review_required_for": ["core/", "mcp/server.py", ".well-known/agent.json", "schemas/", "data/env_recipes/", "harness/manifest.json"]
+    }
+  }
+}

@@ -198,5 +198,52 @@
 
 ---
 
+## 十、受控自进化原则：不可进化区 / 可进化区（S1 声明，2026-10-13 落地）
+
+> **核心主张**：项目已建成同类罕见的自进化骨架（`engine/rsi.py` + `engine/evolution.py` 棘轮 + `harness_tree` 六层 + `skill_factory` 自动工厂 + `flywheel` 校准），但**自进化必须先有"不可进化区"（immutable core），再有"可进化区"（evolvable shell）**——否则"自我改进"会侵蚀项目唯一真实的资产（诚实性与可复现性）。
+
+### 10.1 二元划分
+
+**不可进化区（Immutable Core）** —— 禁止被自动编辑/棘轮改动，任何触碰需人工评审 + 版本 bump + 门禁口径变更归档：
+
+| 资产 | 保护理由 |
+|---|---|
+| `core/trust_layer.py` | SHA256 证书是对外可复算证明，改动破坏信任链 |
+| `core/data_lineage.py` | 血缘溯源，改动令既有签名失效 |
+| `scripts/data_quality_gate.py` | 数据卫生门禁，改动等于削弱唯一真实工程资产 |
+| `schemas/env_recipe_schema.json` | Env Recipe v1 兼容性契约 |
+| `mcp/server.py` | MCP 2026-07-28 协议契约（五 SEP 适配） |
+| `.well-known/agent.json` | A2A Card 身份 + JWS 签名基线 |
+| `harness/manifest.json` | 机读基线，数字唯一权威源 |
+| `data/env_recipes/` | 152 份已发布配方，对外交付物 |
+
+**可进化区（Evolvable Shell）** —— 允许在棘轮门禁（benchmark 分数严格提升）约束下自动改进，改动被拒自动回滚：
+
+| 资产 | 棘轮用例 |
+|---|---|
+| `agent/climate_agent.py` | climate_stability（坐标→分区稳健性） |
+| `agent/forecast_agent.py` | forecast_interval_bounds（T-3 区间包含关系） |
+| `agent/phenology.py` | phenology_gdd_monotonicity（GDD 积温单调） |
+| `agent/nutrition.py` | nutrition_npk_balance（NPK 平衡） |
+| `skills/registry/` | skill_coverage（自动工厂覆盖率） |
+| `agent/orchestrator.py` | orchestration_coverage（编排策略） |
+
+### 10.2 机读化与运行时约束
+
+- 完整机读定义：`.well-known/evolution_zones.json`（v1）
+- `engine/evolution.py` 在棘轮启动前读取该文件，若候选变更触碰不可进化区，**立即拒绝**并给出原因
+- 门禁口径变更必须 bump `meta_policy.gate_version` 并在 `gate_version_history` 记录理由（当前 `v1`，2026-10-13 首次声明）
+
+### 10.3 元改进原则
+
+**"不允许退步"不是理念，是门禁**：
+- 棘轮基准：`benchmarks/agri_recipe_bench/`（SNWM 四轴裁剪）+ `benchmarks/golden_vectors/`（科学模块金标准）
+- 任何触碰可进化区的 PR，CI 必须跑棘轮；分数不严格提升即拒绝合并（E1 落地）
+
+**依据**：`docs/framework_evolution_liftup_2026-10-13.md` §6.4 S1 与 §8.2 D2。
+
+---
+
 *本文件生成于 2026-10-08，依据全面扫描报告 `docs/full_liftup_assessment_2026-10-08.md`。*
+*§十（受控自进化）追加于 2026-10-13，依据 `docs/framework_evolution_liftup_2026-10-13.md` §6.4。*
 *复核周期：每季度或每次阶段门禁变更时。*
