@@ -86,6 +86,51 @@ def _add_days(start_date: str, days: int) -> Optional[str]:
         return None
 
 
+def _conformal_interval_of(point_est_yield: float,
+                           point_est_days: int,
+                           alpha: float = 0.10) -> Dict[str, Any]:
+    """M5-F1：为点估计生成 split conformal 严格覆盖率区间。
+
+    校准集：AgriRecipeBench target_prediction 3 用例（引擎点估计 vs 期望值）。
+    方法：split conformal（无分布假设，有限样本 1-α 覆盖率下界）。
+    G2 阶段接入真实 execution_log/outcome 后校准集可增到数十上百条，
+    q 值会更紧。
+
+    诚实标注：
+      - interval_method=split_conformal（区别于启发式散布区间）
+      - coverage_guarantee=1-alpha（90% 覆盖率下界）
+      - calibration_n=3（当前样本量；样本少时区间偏宽）
+      - 若校准集为空，退化为点估计三度重复
+    """
+    try:
+        from agent.conformal import get_default_calibrator, split_conformal_interval
+        calib = get_default_calibrator(alpha=alpha)
+        out: Dict[str, Any] = {
+            "yield_estimate_g": split_conformal_interval(calib, point_est_yield),
+            "adjusted_duration_days": split_conformal_interval(calib, float(point_est_days)),
+            "calibration_source": "benchmarks/agri_recipe_bench/cases/case_{fanqie,luobo,shengcai}_*.json",
+            "reference": "docs/per_module_deep_assessment_2026-10-13.md §M5-F1",
+        }
+        return out
+    except Exception as e:  # noqa: BLE001
+        # 保形预测失败不应阻塞主预测流程；返回降级标注
+        return {
+            "yield_estimate_g": {
+                "p50": point_est_yield, "p10": point_est_yield, "p90": point_est_yield,
+                "interval_method": "split_conformal_unavailable",
+                "coverage_guarantee": 0.0,
+                "calibration_n": 0,
+                "error": f"conformal 降级: {e}",
+            },
+            "adjusted_duration_days": {
+                "p50": point_est_days, "p10": point_est_days, "p90": point_est_days,
+                "interval_method": "split_conformal_unavailable",
+                "coverage_guarantee": 0.0,
+                "calibration_n": 0,
+            },
+        }
+
+
 class ForecastAgent:
     """L2 预测 Agent —— 采收期 / 产量 / 风险"""
 
@@ -243,7 +288,17 @@ class ForecastAgent:
                         "p10": harvest_p10,
                         "p90": harvest_p90,
                     },
+                    "interval_method": "heuristic_spread_based",
+                    "note": "默认启发式散布区间；split_conformal 见 recommendation.conformal_interval（M5-F1）",
                 },
+                # ---- M5-F1：Split Conformal 严格覆盖率区间（无分布假设，1-α 保证）----
+                # 与上面启发式区间并存；不替换以避免破坏既有客户端与 golden vectors。
+                # 校准集来源：AgriRecipeBench target_prediction 3 用例（benchmarks/agri_recipe_bench/cases/）。
+                # 引擎改动后需重新校准；见 scripts/data/golden_vectors/forecast_conformal.json。
+                "conformal_interval": _conformal_interval_of(
+                    point_est_yield=yield_g,
+                    point_est_days=adjusted_days,
+                ),
             },
         }
 

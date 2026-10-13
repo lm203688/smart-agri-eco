@@ -31,8 +31,13 @@
     },
     "source": {
       "type": "string",
-      "enum": ["native", "imported_kasvanta", "imported_other"],
-      "description": "数据来源：native=本平台设备直报；imported_kasvanta=从 mcp-kasvanta 活动日志导入；imported_other=其他外部源。"
+      "enum": ["native", "imported_kasvanta", "imported_other", "shadow"],
+      "description": "数据来源：native=本平台设备直报；imported_kasvanta=从 mcp-kasvanta 活动日志导入；imported_other=其他外部源；shadow=影子运行（ControlAgent 建议记录未下发执行，仅记录预期效果，供未来对比验证）。"
+    },
+    "shadow_context": {
+      "type": "object",
+      "description": "shadow 模式专用扩展字段（仅 source=shadow 时存在）：记录影子运行的模式、预期效果、预期指标、场景/作物/分区、生成器版本、时间戳等。用于 L3 执行闭环的最小可验证证据（见 docs/per_module_deep_assessment_2026-10-13.md §M9-X1）。",
+      "additionalProperties": true
     },
     "actual_params": {
       "type": "object",

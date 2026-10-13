@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-_VALID_SOURCES = {"native", "imported_kasvanta", "imported_other"}
+_VALID_SOURCES = {"native", "imported_kasvanta", "imported_other", "shadow"}
 
 
 def _derive_run_id(source: str, device_id: str, started_at: str) -> str:

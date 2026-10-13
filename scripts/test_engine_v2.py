@@ -75,17 +75,25 @@ class TestRsiGates(unittest.TestCase):
     """A1：自主权分级必须锚定真实产物，不能靠重测自我满足。"""
 
     def setUp(self):
-        # 隔离：临时数据目录 + 临时 harness 清单，绝不污染仓库
+        # 隔离：临时数据目录 + 临时 harness 清单，绝不污染仓库。
+        # 从 2026-10-13 M9-X1 起，真实 data/execution_log.json 已含 3 条 shadow 记录，
+        # 若不隔离执行日志路径，测试的"空证据/B0"预期会被污染。
         self.tmp = tempfile.mkdtemp(prefix="agri_rsi_")
         self.old_crop = os.environ.get("AGRI_CROP_DB")
         self.old_fb = os.environ.get("AGRI_FEEDBACK_LOG")
         self.old_manifest = rsi_mod._HARNESS_MANIFEST
+        self.old_exec = rsi_mod._EXECUTION_LOG
         self.crop_db = os.path.join(self.tmp, "crop_adapt_db.json")
         self.feedback = os.path.join(self.tmp, "feedback_log.json")
         self.manifest = os.path.join(self.tmp, "manifest.json")
+        # 空的执行日志：让"空证据"测试的语义成立
+        self.execution_log = os.path.join(self.tmp, "execution_log.json")
+        with open(self.execution_log, "w", encoding="utf-8") as f:
+            json.dump([], f)
         os.environ["AGRI_CROP_DB"] = self.crop_db
         os.environ["AGRI_FEEDBACK_LOG"] = self.feedback
         rsi_mod._HARNESS_MANIFEST = self.manifest
+        rsi_mod._EXECUTION_LOG = self.execution_log
 
     def tearDown(self):
         for k, v in (("AGRI_CROP_DB", self.old_crop),
@@ -95,6 +103,7 @@ class TestRsiGates(unittest.TestCase):
             else:
                 os.environ[k] = v
         rsi_mod._HARNESS_MANIFEST = self.old_manifest
+        rsi_mod._EXECUTION_LOG = self.old_exec
         shutil.rmtree(self.tmp, ignore_errors=True)
 
     def _write_crop_db(self, zones):

@@ -407,6 +407,254 @@ def _tool_query_lineage(args: dict) -> dict:
     return query_lineage(crop=crop or None, zone_id=zone or None)
 
 
+def _tool_search(args: dict) -> dict:
+    """知识检索：跨作物/分区/病虫害/配方 4 语料做词法+向量混合检索（M12-K1）。
+
+    底层走 engine/local_search.py（char n-gram + cosine + SQLite FTS5），
+    纯 stdlib 零依赖。这是把 565 行检索引擎从"无调用"变为主链路可查的入口。
+
+    参数：
+      query: 查询串（必填）
+      corpus: 语料过滤 crops/zones/pests/recipes/all（默认 all）
+      k: 返回条数（默认 10，最大 50）
+      mode: exact/keyword/vector/hybrid（默认 hybrid）
+    返回：evidence（索引统计）+ results（含 corpus/entity/snippet/score 分解）。
+    """
+    from engine import local_search
+    query = (args.get("query") or "").strip()
+    if not query:
+        return {"error": "query 必填"}
+    corpus = args.get("corpus") or "all"
+    if corpus not in ("all", "crops", "zones", "pests", "recipes"):
+        return {"error": f"非法 corpus='{corpus}'，合法值: all/crops/zones/pests/recipes"}
+    try:
+        k = int(args.get("k") or 10)
+    except (TypeError, ValueError):
+        return {"error": "k 必须是整数"}
+    k = max(1, min(k, 50))
+    mode = args.get("mode") or "hybrid"
+    if mode not in ("exact", "keyword", "vector", "hybrid"):
+        return {"error": f"非法 mode='{mode}'，合法值: exact/keyword/vector/hybrid"}
+    try:
+        results = local_search.search(query=query, corpus=corpus, k=k, mode=mode)
+        st = local_search.stats()
+        return {
+            "query": query,
+            "corpus": corpus,
+            "mode": mode,
+            "evidence": {
+                "index_built": bool(st.get("built")),
+                "index_path": st.get("path"),
+                "total_docs": st.get("total", 0),
+                "corpus_rows": st.get("rows", {}),
+                "fts_available": st.get("fts", False),
+                "schema_ver": st.get("schema_ver"),
+                "engine": "char n-gram + cosine + SQLite FTS5 (stdlib-only)",
+            },
+            "count": len(results),
+            "results": results,
+        }
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"检索失败: {e}"}
+
+
+def _tool_knowledge_query(args: dict) -> dict:
+    """知识图谱查询：分区→作物 / 风险→作物 / 邻居 / 遍历（M12-K1）。
+
+    底层走 engine/knowledge_graph.py（261 实体 / 446 边，纯 stdlib）。
+    把图谱从"无调用"变为可查——是 M12-K1 的主链路接通点。
+
+    参数（按 kind 分派）：
+      kind=crops_by_zone: zone_id 必填，返回该分区 crop + adapt_score 排序
+      kind=crops_by_risk: risk 必填，返回该病虫害关联作物
+      kind=neighbors: node 必填，返回该节点邻居（正/反向）
+      kind=traverse: node 必填，depth 可选，返回 BFS 遍历路径
+      kind=summary: 返回图谱整体统计（实体数/边数/类型分布）
+    """
+    from engine import knowledge_graph as kg
+    kind = args.get("kind") or "summary"
+    if kind == "summary":
+        g = kg.load_graph()
+        entities = g.get("entities", [])
+        edges = g.get("edges", [])
+        by_type: dict = {}
+        for e in entities:
+            t = e.get("type", "?")
+            by_type[t] = by_type.get(t, 0) + 1
+        return {
+            "kind": "summary",
+            "total_entities": len(entities),
+            "total_edges": len(edges),
+            "entities_by_type": by_type,
+            "sources": g.get("sources", []),
+            "built_at": g.get("built_at"),
+        }
+    if kind == "crops_by_zone":
+        zone = (args.get("zone_id") or "").strip()
+        if not zone:
+            return {"error": "kind=crops_by_zone 时 zone_id 必填"}
+        top_k = int(args.get("top_k") or 5)
+        return {"kind": "crops_by_zone", "zone_id": zone,
+                "crops": kg.find_crops(zone_id=zone, top_k=top_k)}
+    if kind == "crops_by_risk":
+        risk = (args.get("risk") or "").strip()
+        if not risk:
+            return {"error": "kind=crops_by_risk 时 risk 必填"}
+        top_k = int(args.get("top_k") or 5)
+        try:
+            return {"kind": "crops_by_risk", "risk": risk,
+                    "crops": kg.find_crops_for_risk(risk=risk, top_k=top_k)}
+        except TypeError:
+            # 老版本 find_crops_for_risk 签名可能不同，尝试兜底
+            try:
+                r = kg.find_crops_for_risk(risk)
+                return {"kind": "crops_by_risk", "risk": risk, "crops": r}
+            except Exception as e:  # noqa: BLE001
+                return {"error": f"风险反查失败: {e}"}
+    if kind == "neighbors":
+        node = (args.get("node") or "").strip()
+        if not node:
+            return {"error": "kind=neighbors 时 node 必填"}
+        reverse = bool(args.get("reverse", False))
+        relation = args.get("relation") or None
+        return {"kind": "neighbors",
+                "neighbors": kg.neighbors(node=node, reverse=reverse, relation=relation)}
+    if kind == "traverse":
+        node = (args.get("node") or "").strip()
+        if not node:
+            return {"error": "kind=traverse 时 node 必填"}
+        depth = int(args.get("depth") or 2)
+        depth = max(1, min(depth, 5))
+        return {"kind": "traverse",
+                "traversal": kg.traverse(start=node, depth=depth)}
+    return {"error": f"非法 kind='{kind}'，合法值: summary/crops_by_zone/crops_by_risk/neighbors/traverse"}
+
+
+def _tool_forecast(args: dict) -> dict:
+    """独立产量/采收预测：含 T-3 置信区间（M13-P1，把 M5 从"无入口"变可查）。
+
+    底层走 agent/forecast_agent.py，与 agri_growth_plan 里的 recommend 部分同源，
+    但作为独立工具暴露，让 MCP 客户端不必先跑 growth_plan 再解 recommendation。
+
+    参数：
+      crop: 必填，作物中文名
+      zone_id: 可选，分区 ID（决定气候因子）
+      start_date: 可选，YYYY-MM-DD（决定采收期）
+      adapt_score: 可选，0-1 分区适配度（影响产量基准）
+      env_recipe: 可选，Env Recipe dict（含 light/temperature → 影响产量）
+      growth_plan: 可选，growth_plan 输出（提供 phases → 决定基础周期）
+    返回：完整 forecast 输出（含 evidence/confidence/constraints/recommendation
+          + prediction_interval P10/P50/P90）。
+    """
+    from agent.forecast_agent import ForecastAgent
+    crop = (args.get("crop") or "").strip()
+    if not crop:
+        return {"error": "crop 必填"}
+    zone_id = (args.get("zone_id") or "").strip()
+    start_date = (args.get("start_date") or "").strip()
+    adapt_score = args.get("adapt_score")
+    if adapt_score is not None:
+        try:
+            adapt_score = float(adapt_score)
+        except (TypeError, ValueError):
+            return {"error": "adapt_score 必须是数值 0-1"}
+    if adapt_score is not None and not (0.0 <= adapt_score <= 1.0):
+        return {"error": f"adapt_score 超出 [0,1] 范围: {adapt_score}"}
+    env_recipe = args.get("env_recipe")
+    if env_recipe is not None and not isinstance(env_recipe, dict):
+        return {"error": "env_recipe 必须是对象"}
+    growth_plan = args.get("growth_plan")
+    if growth_plan is not None and not isinstance(growth_plan, dict):
+        return {"error": "growth_plan 必须是对象"}
+    zone_climate = args.get("zone_climate")
+    if zone_climate is not None and not isinstance(zone_climate, list):
+        return {"error": "zone_climate 必须是数组"}
+    try:
+        agent = ForecastAgent()
+        return agent.estimate(
+            crop=crop,
+            zone_id=zone_id,
+            start_date=start_date,
+            growth_plan=growth_plan,
+            zone_climate=zone_climate,
+            env_recipe=env_recipe,
+            adapt_score=adapt_score,
+        )
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"预测失败: {e}"}
+
+
+def _tool_recipe_profile(args: dict) -> dict:
+    """Env Recipe profile 四件套（M8-R2）：让 152 份配方从"资产厚但流转弱"变活。
+
+    底层走 scripts/recipe_profile.py（stdlib + difflib，零依赖）。
+    支持 5 种 kind：
+      kind=list:   列出所有配方元信息（152 份 × filename/recipe_ref/size/sha256）
+      kind=stats:  资产统计（总数/字节/stage 分布/device_class 分布）
+      kind=diff:   结构化 diff 两份配方（a, b 必填；difflib 统一 diff）
+      kind=export: 导出到临时文件并返回内容（供分享/备份；隐私字段默认剥离）
+      kind=lookup: 按文件名加载完整配方内容
+
+    import/clone 涉及写盘，不进 MCP（保持分发通道只读）——
+    需写盘请直接用 CLI: python scripts/recipe_profile.py import|clone ...
+    """
+    kind = (args.get("kind") or "list").strip()
+    try:
+        # 懒加载：避免 MCP 主进程启动时加载 recipe 库
+        sys.path.insert(0, os.path.join(ROOT, "scripts"))
+        from recipe_profile import (export_recipe, diff_recipes,
+                                    list_recipes, recipe_stats)
+        import tempfile
+    except ImportError as e:
+        return {"error": f"recipe_profile 模块加载失败: {e}"}
+
+    if kind == "list":
+        return {"kind": "list", "recipes": list_recipes()}
+    if kind == "stats":
+        return {"kind": "stats", **recipe_stats()}
+    if kind == "lookup":
+        name = (args.get("filename") or "").strip()
+        if not name:
+            return {"error": "kind=lookup 时 filename 必填"}
+        from scripts.recipe_profile import _recipe_path, _load
+        path = _recipe_path(name)
+        if not os.path.exists(path):
+            return {"error": f"配方不存在: {name}"}
+        return {"kind": "lookup", "filename": name, "recipe": _load(path)}
+    if kind == "diff":
+        a = (args.get("a") or "").strip()
+        b = (args.get("b") or "").strip()
+        if not a or not b:
+            return {"error": "kind=diff 时 a 与 b 均必填"}
+        try:
+            return {"kind": "diff", **diff_recipes(a, b)}
+        except FileNotFoundError as e:
+            return {"error": f"配方文件不存在: {e}"}
+    if kind == "export":
+        name = (args.get("filename") or "").strip()
+        if not name:
+            return {"error": "kind=export 时 filename 必填"}
+        try:
+            # 导出到临时文件，再读回内容作为 JSON 返回
+            with tempfile.NamedTemporaryFile(
+                    mode="w", suffix=".json", delete=False,
+                    encoding="utf-8") as tmp:
+                tmp_path = tmp.name
+            r = export_recipe(name, tmp_path,
+                              include_sources=not args.get("no_sources", False),
+                              include_execution_log=args.get("include_execution_log", False),
+                              include_outcome=args.get("include_outcome", False))
+            with open(tmp_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            os.unlink(tmp_path)
+            r["content"] = content
+            r.pop("exported_path", None)  # 不暴露本机临时路径
+            return {"kind": "export", "meta": r}
+        except FileNotFoundError as e:
+            return {"error": f"配方不存在: {e}"}
+    return {"error": f"非法 kind='{kind}'，合法值: list/stats/lookup/diff/export"}
+
+
 def _tool_list_ecosystem(args: dict) -> dict:
     """生态对接清单：返回 config/ecosystem.json 声明的开源/商业生态清单。
     声明对接状态（integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated），
@@ -674,6 +922,95 @@ TOOLS = [
             },
         },
     },
+    {
+        "name": "agri_search",
+        "description": (
+            "（知识检索 M12-K1）跨 4 语料（crops/zones/pests/recipes，共 335 条）做词法+向量混合检索，"
+            "底层是 stdlib-only 的 char n-gram + cosine + SQLite FTS5（engine/local_search.py，565 行零依赖引擎）。"
+            "把 M12 板块从『有引擎无调用』变为主链路可查。默认 hybrid 模式，"
+            "可切 exact/keyword/vector。返回含 corpus/entity/snippet/score 分解与索引统计。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "查询串（必填）"},
+                "corpus": {"type": "string", "description": "语料过滤",
+                           "enum": ["all", "crops", "zones", "pests", "recipes"]},
+                "k": {"type": "integer", "description": "返回条数，默认 10，最大 50", "default": 10},
+                "mode": {"type": "string", "description": "检索模式",
+                         "enum": ["exact", "keyword", "vector", "hybrid"]},
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "agri_knowledge_query",
+        "description": (
+            "（知识图谱查询 M12-K1）查 261 实体 / 446 边的农业知识图谱（engine/knowledge_graph.py）。"
+            "支持 5 种 kind：summary=整体统计；crops_by_zone=分区→作物排序；crops_by_risk=病虫害→受影响作物；"
+            "neighbors=节点邻居；traverse=BFS 遍历。把图谱从『无调用』变为可查入口。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "kind": {"type": "string", "description": "查询类型",
+                         "enum": ["summary", "crops_by_zone", "crops_by_risk",
+                                  "neighbors", "traverse"],
+                         "default": "summary"},
+                "zone_id": {"type": "string", "description": "crops_by_zone 时必填"},
+                "risk": {"type": "string", "description": "crops_by_risk 时必填"},
+                "node": {"type": "string", "description": "neighbors/traverse 时必填"},
+                "relation": {"type": "string", "description": "neighbors 时可选，只查指定关系"},
+                "reverse": {"type": "boolean", "description": "neighbors 时反向（沿入边），默认 false"},
+                "depth": {"type": "integer", "description": "traverse 深度，1-5，默认 2"},
+                "top_k": {"type": "integer", "description": "返回前 K，默认 5"},
+            },
+        },
+    },
+    {
+        "name": "agri_forecast",
+        "description": (
+            "（独立预测 M13-P1）产量/采收期预测，含 T-3 置信区间（P10/P50/P90）。"
+            "底层与 agri_growth_plan 内的推荐部分同源（ForecastAgent），但独立暴露，"
+            "让 MCP 客户端不必先跑 growth_plan 再解 recommendation。"
+            "含 heuristic_spread_based 区间与诚实的 model=heuristic 标注。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "crop": {"type": "string", "description": "作物中文名（必填）"},
+                "zone_id": {"type": "string", "description": "分区 ID（可选，决定气候因子）"},
+                "start_date": {"type": "string", "description": "YYYY-MM-DD（可选，决定采收期）"},
+                "adapt_score": {"type": "number", "description": "分区适配度 0-1（可选）",
+                                "minimum": 0, "maximum": 1},
+                "env_recipe": {"type": "object", "description": "Env Recipe 对象（可选，含 light/temperature）"},
+                "growth_plan": {"type": "object", "description": "growth_plan 输出（可选，含 phases 决定周期）"},
+                "zone_climate": {"type": "array", "description": "分区月度均温列表（可选，覆盖默认）",
+                                 "items": {"type": "number"}},
+            },
+            "required": ["crop"],
+        },
+    },
+    {
+        "name": "agri_recipe_profile",
+        "description": (
+            "（配方 profile 四件套 M8-R2）152 份 Env Recipe 资产的浏览、比对、导出、加载。"
+            "支持 5 种 kind：list=列出所有配方元信息；stats=资产统计（总数/字节/分布）；"
+            "lookup=按文件名加载完整配方；diff=结构化 diff（difflib 统一 diff）；"
+            "export=导出到 JSON 字符串（隐私字段默认剥离）。"
+            "import/clone 涉及写盘，不进 MCP——请用 CLI scripts/recipe_profile.py。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "kind": {"type": "string", "description": "操作类型",
+                         "enum": ["list", "stats", "lookup", "diff", "export"],
+                         "default": "list"},
+                "filename": {"type": "string", "description": "lookup/export 时必填"},
+                "a": {"type": "string", "description": "diff 时必填，配方 A 路径或文件名"},
+                "b": {"type": "string", "description": "diff 时必填，配方 B 路径或文件名"},
+                "no_sources": {"type": "boolean", "description": "export 时是否剥离 sources"},
+                "include_execution_log": {"type": "boolean", "description": "export 时是否含私有 execution_log"},
+                "include_outcome": {"type": "boolean", "description": "export 时是否含私有 outcome"},
+            },
+        },
+    },
 ]
 
 _DISPATCH = {
@@ -691,6 +1028,10 @@ _DISPATCH = {
     "agri_resolve_recipe": _tool_resolve_recipe,
     "agri_query_lineage": _tool_query_lineage,
     "agri_list_ecosystem": _tool_list_ecosystem,
+    "agri_search": _tool_search,
+    "agri_knowledge_query": _tool_knowledge_query,
+    "agri_forecast": _tool_forecast,
+    "agri_recipe_profile": _tool_recipe_profile,
 }
 
 

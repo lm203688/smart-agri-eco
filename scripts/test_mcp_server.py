@@ -83,7 +83,7 @@ def main() -> int:
         # 3) tools/list
         resp = _rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
         tools = (resp or {}).get("result", {}).get("tools", [])
-        check(len(tools) == 14, f"tools/list 返回 14 个工具（实际 {len(tools)}）")
+        check(len(tools) == 18, f"tools/list 返回 18 个工具（实际 {len(tools)}）")
         names = {t["name"] for t in tools}
         check("agri_env_recipe" in names, "包含 agri_env_recipe 工具")
         check("agri_season_advisory" in names, "包含 agri_season_advisory 工具")
@@ -335,6 +335,188 @@ def main() -> int:
                   "list_ecosystem 拒绝非法 status 值")
         except Exception:
             check(False, "list_ecosystem 非法 status 返回可解析 JSON")
+
+        # 6c) 新增工具：agri_search / agri_knowledge_query / agri_forecast（M12-K1 / M13-P1）
+        resp = _rpc({"jsonrpc": "2.0", "id": 30, "method": "tools/call",
+                     "params": {"name": "agri_search",
+                                "arguments": {"query": "番茄 地中海"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _s = json.loads(_txt)
+            check("error" not in _s and _s.get("count", 0) >= 1
+                  and "evidence" in _s and "results" in _s,
+                  "agri_search 番茄地中海返回结果含 evidence+results")
+        except Exception:
+            check(False, "agri_search 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 31, "method": "tools/call",
+                     "params": {"name": "agri_search",
+                                "arguments": {"query": "番茄", "corpus": "pests"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _s = json.loads(_txt)
+            check("error" not in _s and _s.get("corpus") == "pests",
+                  "agri_search corpus=pests 过滤生效")
+        except Exception:
+            check(False, "agri_search corpus 过滤返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 32, "method": "tools/call",
+                     "params": {"name": "agri_search",
+                                "arguments": {"query": ""}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _s = json.loads(_txt)
+            check("error" in _s and "query" in _s["error"],
+                  "agri_search 拒绝空 query")
+        except Exception:
+            check(False, "agri_search 空 query 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 33, "method": "tools/call",
+                     "params": {"name": "agri_knowledge_query",
+                                "arguments": {"kind": "summary"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _k = json.loads(_txt)
+            check("error" not in _k and _k.get("total_entities", 0) >= 200,
+                  f"agri_knowledge_query summary 返回图谱统计（entities={_k.get('total_entities')}）")
+        except Exception:
+            check(False, "agri_knowledge_query summary 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 34, "method": "tools/call",
+                     "params": {"name": "agri_knowledge_query",
+                                "arguments": {"kind": "crops_by_zone",
+                                              "zone_id": "subtropical_wet"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _k = json.loads(_txt)
+            check("error" not in _k and isinstance(_k.get("crops"), list)
+                  and len(_k["crops"]) >= 1,
+                  "agri_knowledge_query crops_by_zone subtropical_wet 返回非空列表")
+        except Exception:
+            check(False, "agri_knowledge_query crops_by_zone 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 35, "method": "tools/call",
+                     "params": {"name": "agri_knowledge_query",
+                                "arguments": {"kind": "traverse", "node": "Crop:番茄"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _k = json.loads(_txt)
+            check("error" not in _k and "traversal" in _k,
+                  "agri_knowledge_query traverse Crop:番茄 返回遍历结果")
+        except Exception:
+            check(False, "agri_knowledge_query traverse 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 36, "method": "tools/call",
+                     "params": {"name": "agri_knowledge_query",
+                                "arguments": {"kind": "crops_by_zone"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _k = json.loads(_txt)
+            check("error" in _k,
+                  "agri_knowledge_query crops_by_zone 缺 zone_id 时拒绝")
+        except Exception:
+            check(False, "agri_knowledge_query 缺参返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 37, "method": "tools/call",
+                     "params": {"name": "agri_forecast",
+                                "arguments": {"crop": "番茄",
+                                              "zone_id": "mediterranean",
+                                              "start_date": "2026-02-15",
+                                              "adapt_score": 0.85}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _f = json.loads(_txt)
+            check("error" not in _f and "recommendation" in _f
+                  and "prediction_interval" in _f["recommendation"],
+                  "agri_forecast 番茄地中海返回完整推荐含区间")
+            check(_f["recommendation"]["prediction_interval"]["yield_estimate_g"]["p50"] > 0,
+                  "agri_forecast 产量 P50 > 0")
+        except Exception:
+            check(False, "agri_forecast 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 38, "method": "tools/call",
+                     "params": {"name": "agri_forecast",
+                                "arguments": {"crop": "番茄", "adapt_score": 1.5}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _f = json.loads(_txt)
+            check("error" in _f and "0.0" in _f["error"] or "adapt_score" in _f["error"],
+                  "agri_forecast 拒绝 adapt_score > 1")
+        except Exception:
+            check(False, "agri_forecast adapt_score 越界返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 39, "method": "tools/call",
+                     "params": {"name": "agri_forecast",
+                                "arguments": {"crop": ""}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _f = json.loads(_txt)
+            check("error" in _f and "crop" in _f["error"],
+                  "agri_forecast 拒绝空 crop")
+        except Exception:
+            check(False, "agri_forecast 空 crop 返回可解析 JSON")
+
+        # 6d) 新增工具：agri_recipe_profile（M8-R2 配方四件套）
+        resp = _rpc({"jsonrpc": "2.0", "id": 40, "method": "tools/call",
+                     "params": {"name": "agri_recipe_profile",
+                                "arguments": {"kind": "stats"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _rp = json.loads(_txt)
+            check("error" not in _rp and _rp.get("kind") == "stats"
+                  and _rp.get("total_recipes", 0) >= 150,
+                  f"agri_recipe_profile stats 返回资产统计（recipes={_rp.get('total_recipes')}）")
+        except Exception:
+            check(False, "agri_recipe_profile stats 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 41, "method": "tools/call",
+                     "params": {"name": "agri_recipe_profile",
+                                "arguments": {"kind": "list"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _rp = json.loads(_txt)
+            check("error" not in _rp and isinstance(_rp.get("recipes"), list)
+                  and len(_rp["recipes"]) >= 150,
+                  "agri_recipe_profile list 返回全部配方清单")
+        except Exception:
+            check(False, "agri_recipe_profile list 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 42, "method": "tools/call",
+                     "params": {"name": "agri_recipe_profile",
+                                "arguments": {"kind": "diff",
+                                              "a": "data/env_recipes/mediterranean__番茄.json",
+                                              "b": "data/env_recipes/subtropical_wet__生菜.json"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _rp = json.loads(_txt)
+            check("error" not in _rp and _rp.get("status") == "different",
+                  "agri_recipe_profile diff 识别两份不同配方的差异")
+        except Exception:
+            check(False, "agri_recipe_profile diff 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 43, "method": "tools/call",
+                     "params": {"name": "agri_recipe_profile",
+                                "arguments": {"kind": "export",
+                                              "filename": "mediterranean__番茄.json"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _rp = json.loads(_txt)
+            check("error" not in _rp and "content" in _rp.get("meta", {})
+                  and "番茄" in _rp["meta"]["content"],
+                  "agri_recipe_profile export 返回配方 JSON 字符串")
+        except Exception:
+            check(False, "agri_recipe_profile export 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 44, "method": "tools/call",
+                     "params": {"name": "agri_recipe_profile",
+                                "arguments": {"kind": "diff"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _rp = json.loads(_txt)
+            check("error" in _rp,
+                  "agri_recipe_profile diff 缺参时拒绝")
+        except Exception:
+            check(False, "agri_recipe_profile diff 缺参返回可解析 JSON")
 
         # 7) 安全护栏：超长请求必须被拒绝（防内存耗尽型 DoS）
         big = "X" * 2000000  # ~2 MiB，超过 MAX_LINE_BYTES(1 MiB)

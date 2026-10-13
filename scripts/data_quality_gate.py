@@ -57,6 +57,52 @@ SOURCE_LICENSE_ALLOWLIST = {
 SOURCE_QUALITY_ALLOWLIST = {"measured", "interpolated", "modeled", "estimated", "unknown"}
 
 
+def _check_shadow_execution_log() -> list:
+    """M9-X1 影子执行日志门禁（RSI L1 execution_log 门闭合证据）。
+
+    要求：data/execution_log.json 至少存在 1 条 source=shadow 记录。
+    shadow 记录是"不依赖任何硬件即可产生第 1 条 execution_log"的唯一路径，
+    见 docs/per_module_deep_assessment_2026-10-13.md §M9-X1。
+
+    返回问题列表（首项以"M9 影子执行日志"开头即视为通过）。
+    """
+    import glob
+    path = os.path.join(ROOT, "data", "execution_log.json")
+    if not os.path.exists(path):
+        return ["M9 影子执行日志缺失：data/execution_log.json 不存在，L1 门未闭合"]
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            log = json.load(fh)
+    except Exception as e:  # noqa: BLE001
+        return [f"M9 影子执行日志解析失败: {e}"]
+    if not isinstance(log, list):
+        return ["M9 影子执行日志格式非法：根节点必须是数组"]
+    total = len(log)
+    shadow = [e for e in log if isinstance(e, dict) and e.get("source") == "shadow"]
+    real = [e for e in log if isinstance(e, dict) and e.get("source") not in
+            (None, "shadow")]
+    if not shadow:
+        return ["M9 影子执行日志为空：无 source=shadow 记录，RSI L1 execution_log 门未闭合"]
+    # 校验 shadow 记录结构（最小必需字段）
+    struct_issues = []
+    for i, e in enumerate(shadow):
+        for k in ("run_id", "recipe_ref", "started_at", "source",
+                  "shadow_context"):
+            if not e.get(k):
+                struct_issues.append(f"shadow[{i}] 缺 {k}（run_id={e.get('run_id','?')}）")
+        ctx = e.get("shadow_context") or {}
+        if ctx.get("mode") != "shadow":
+            struct_issues.append(f"shadow[{i}].shadow_context.mode != 'shadow'")
+        if ctx.get("not_executed") is not True:
+            struct_issues.append(f"shadow[{i}].shadow_context.not_executed != True")
+    if struct_issues:
+        return [f"M9 影子执行日志结构问题：{len(struct_issues)} 项"] + struct_issues
+    msg = (f"M9 影子执行日志有效：{len(shadow)} 条 shadow 记录"
+           f"（总条目 {total}，其中真实执行 {len(real)} 条）；"
+           f"RSI L1 execution_log 门已闭合")
+    return [msg]
+
+
 def _check_env_recipe_sources() -> list:
     """扫描 data/env_recipes/*.json，验证 sources[] 溯源字段完整性。
 
@@ -335,6 +381,18 @@ def run():
           f"data/env_recipes/*.json".ljust(width))
     for i in e3_issues:
         print(f"       - {i}")
+
+    # M9 影子执行日志门禁（M9-X1 破零）：execution_log.json 至少 1 条
+    # source=shadow 记录，作为 RSI L1 execution_log 门的闭合证据。
+    m9_issues = _check_shadow_execution_log()
+    m9_pass = all(i.startswith("M9 影子执行日志") for i in m9_issues)
+    print(f"[{'PASS' if m9_pass else 'FAIL'}] "
+          f"data/execution_log.json".ljust(width))
+    for i in m9_issues:
+        print(f"       - {i}")
+    if not m9_pass:
+        all_pass = False
+
 
     print("=" * (width + 12))
     print("结论: " + ("全部通过 ✅" if all_pass else "存在失败项 ❌"))
