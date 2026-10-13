@@ -4,6 +4,64 @@
 
 ---
 
+## [Unreleased · v1.1.4 待发] - 2026-10-13（受控自进化系统落地：A1 气候引擎抽象 + S2/E1 棘轮 CI 硬门禁）
+
+> **性质**：承接 `docs/framework_evolution_liftup_2026-10-13.md` 报告 §6.1 F5 与 §6.2 S2 / §6.3 E1 的**首批落地**。核心主张：**内回路（离线棘轮）是这台机器里唯一"不依赖任何外部条件、现在就能转起来"的飞轮**——它同时服务三个目的：①保证科学改进不退步；②产出对外可引用的评测资产；③喂养 RSI 度量。本次落地让这套飞轮从"内部演示工具"升级为"CI 硬门禁"。
+>
+> **判定依据**：所有门禁（21 项分发就绪 + 631 项 unittest + verify_all 8 阶段 + AgriRecipeBench 5/5 + Ratchet modules 27/27 + Golden vectors 16/16 + Ratchet gate）全部通过；不触碰任何不可进化区资产（可信层/协议契约/schema）。
+
+### 新增（3 项，全部零依赖 stdlib）
+
+| # | 能力 | 实现 | 对应报告项 |
+|---|---|---|---|
+| 1 | **A1 Köppen 栅格抽象（F5）** | `core/climate_grid.py`（~400 行）：标准库栅格点查询引擎——O(1) 空间索引 + 最近邻 + 3×3 邻居 + 1/d² 权重归一化 → **概率分布**（不是单点分类）；Köppen-Geiger 子分类 → 项目 8 分区映射表；`NoGridData` 显式异常；`KoppenGrid.unavailable()` 降级实例；`build_synthetic_grid_dict()` 教学合成栅格（800 cells，覆盖 Af/Aw/BWh/Cfa/Csa/Cwa/Dfb/Dfc/Efa 9 类） | §6.1 F5 |
+| 2 | **climate_agent 双后端接入** | `agent/climate_agent.py` 的 `match_zone()` 改造为**栅格优先、启发式降级**：栅格可用时 `evidence.classification_backend="koppen_grid"` + `evidence.koppen_distribution` 携带概率分布；无栅格时显式标注 `classification_backend="heuristic"` + `classification_note`（"同城不同坐标会返回相同分区，同城内空间异质性不可知"）；**不静默回退**，与 trust_layer 的诚实降级一致 | §6.1 F5 + §6.4 |
+| 3 | **S2/E1 棘轮 CI 硬门禁** | `scripts/run_evolution_ratchet.py`（~180 行）：读 `.well-known/evolution_zones.json` 的 `enforcement.ratchet_required_for` 白名单 → 跑 `engine.evolution.score_benchmark()` 判分数 → 退出码规范 `0=passed / 1=failed / 2=config_error / 3=exec_error`；`--min-score`（默认 0.5）、`--check-files`、`--json` 三模式 | §6.2 S2 + §6.3 E1 |
+
+### 测试（新增 24 项单测，全部零依赖 stdlib）
+
+| 测试文件 | 用例数 | 覆盖点 |
+|---|---|---|
+| `scripts/test_climate_grid.py` | **18** | 合成栅格结构 / 加载（缺失/schema错/合法）/ 点查询（有效/越界/降级）/ 概率分布归一化 / 权重单调性 / Köppen→项目分区映射完整性 / climate_agent 双后端集成（栅格优先 + 无栅格降级） |
+| `scripts/test_evolution_ratchet.py` | **6** | 白名单文件校验 / 阈值通过 / 阈值拒绝 / JSON 输出 / 退出码语义 / 配置错误 |
+| **合计** | **+24** | 从 607 → **631 项单测** |
+
+### CI 门禁（`.github/workflows/ci.yml` 从 25 → 28 步）
+
+| 新增步骤 | 命令 | 判定标准 |
+|---|---|---|
+| A1 Köppen 栅格抽象层 | `python -m unittest scripts.test_climate_grid -v` | 18/18 通过 |
+| S2/E1 棘轮文件校验 | `python scripts/run_evolution_ratchet.py --check-files` | 白名单文件全部存在 |
+| S2/E1 棘轮评分门禁 | `python scripts/run_evolution_ratchet.py --json` | 分数 ≥ 0.5（当前 0.875） |
+
+### 顺手修复（2 处测试隔离 bug）
+
+| # | 位置 | 缺陷 | 修复 |
+|---|---|---|---|
+| 1 | `scripts/test_evolution_ratchet.py::_run()` | 子进程继承父进程 `AGRI_CROP_DB` 等环境变量，全量跑时早先 `test_engine_v3` 设置的临时路径已清理 → WinError 2 | 显式清理 `AGRI_` 前缀环境变量后再起子进程 |
+| 2 | `scripts/test_agri_recipe_bench.py::test_case_schema_wellformed` | `valid_axes` 写死 `{"target_prediction", "state_rolling"}` 但已有 counterfactual / generalization 4 轴用例（§7.2 第二梯队已落地） | 扩到 4 轴全集 `{target_prediction, state_rolling, counterfactual, generalization}`，对齐 SNWM 四轴协议完整版 |
+
+### 验证结果（本机实跑 2026-10-13）
+
+| 门禁 | 结果 |
+|---|---|
+| `python -m unittest discover -s scripts -p "test_*.py"` | ✅ **Ran 631 tests / OK / skipped=4** |
+| `python scripts/verify_all.py` | ✅ **PASS 全部验证通过**（8 阶段） |
+| `python scripts/check_distribution_readiness.py` | ✅ **20 通过 / 1 告警 / 0 失败 / 1 跳过** |
+| `python benchmarks/agri_recipe_bench/run_bench.py` | ✅ **5/5 通过**（target_prediction 3/3 + state_rolling 2/2） |
+| `python -m benchmarks.ratchet_modules --strict` | ✅ **27/27 score=1.0** |
+| `python scripts/run_evolution_ratchet.py --json` | ✅ **status=passed, score=0.875, cases=8** |
+
+### 设计原则（写入 `docs/framework_evolution_liftup_2026-10-13.md` §6.4）
+
+**自进化必须先有"不可进化区"，再有"可进化区"**——否则"自我改进"会侵蚀项目唯一真实的资产（诚实性与可复现性）。本次落地严格遵循此原则：
+
+- **未触碰**任何不可进化区资产（`core/trust_layer.py` / `core/data_lineage.py` / `scripts/data_quality_gate.py` / `schemas/env_recipe.schema.json` / `mcp/server.py` / `.well-known/agent.json` / `harness/manifest.json` / `data/env_recipes/`）
+- **仅新增**可进化区外围资产（`core/climate_grid.py` 抽象层 + `scripts/run_evolution_ratchet.py` 门禁脚本）
+- **双后端设计**：气候分类保留启发式默认行为，栅格作为可选增强；无栅格时**显式标注降级**而非静默伪装
+
+---
+
 ## [Unreleased · v1.1.3 待发] - 2026-10-09（E2E 实测发现并修复 3 处参数校验缺陷）
 
 > **性质**：不是文档口径问题、也不是分发通道问题——是**功能正确性问题**。用户反馈"很多功能还是错误，你每个板块功能都测试了吗"，随即对本项目**四个板块做端到端实测**（MCP server 14 工具 / Agent Card 14 skills / Demo 28 端点 / 技能注册表），发现 3 处真实的参数校验缺陷并全部修复。

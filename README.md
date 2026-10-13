@@ -36,7 +36,7 @@ python scripts/check_distribution_readiness.py
 一次性验证 10 类分发入口：MCP server / A2A Card / Agent Plugin / Smithery / 官方 Registry /
 MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步。
 
-CI：25 步 × Python 3.10/3.11/3.12 全绿 · 单测 584 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（393 文件差异 0）· Skill 注册表 11/11 一致 · **AgriRecipeBench 5/5 通过**（M1 目标预测 3/3 + M2 状态滚动 2/2）。
+CI：28 步 × Python 3.10/3.11/3.12 全绿 · 单测 614 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（393 文件差异 0）· Skill 注册表 11/11 一致 · **AgriRecipeBench 5/5 通过**（M1 目标预测 3/3 + M2 状态滚动 2/2）。
 
 **🏆 AgriRecipeBench**（[`benchmarks/agri_recipe_bench/`](benchmarks/agri_recipe_bench/)）——Env Recipe 环境配方的**可复现评测基准**，独立于功能回归测试：
 
@@ -66,6 +66,31 @@ AGRI_A2A_SIGNING_KEY="your-secret" python scripts/sign_agent_card.py
 # 校验（调用方 / CI 都用这条）
 AGRI_A2A_SIGNING_KEY="your-secret" python scripts/verify_agent_card.py
 ```
+
+---
+
+**🌱 受控自进化系统（Bounded Self-Evolution）**（2026-10-13 新增，对标 SNWM 可验证协议 + Theseus Labs RSI 五级框架 + PenguinHarness 棘轮门禁）：
+
+| 能力 | 实现 | 用途 |
+|---|---|---|
+| **S1 不可进化区/可进化区** | `.well-known/evolution_zones.json` | 8 项不可进化（可信层/协议契约/schema）+ 7 项可进化（气候/预测/物候/营养/技能）；防止自进化侵蚀诚实性 |
+| **A1 Köppen 栅格抽象（F5）** | `core/climate_grid.py` | 标准库栅格点查询：最近邻 + 3×3 邻居 + 1/d² 权重归一化 → **概率分布**（不是单点分类）；climate_agent 双后端接入（栅格优先，无栅格显式降级为启发式，`evidence.classification_backend` 显式标注） |
+| **S2/E1 棘轮 CI 硬门禁** | `scripts/run_evolution_ratchet.py` | 内回路飞轮：读 `.well-known/evolution_zones.json` 的棘轮白名单，跑 evolution benchmark 判分数；不依赖任何外部调用，现在就能转 |
+
+```bash
+# 棘轮门禁（CI 硬门禁 / 本地手动跑）
+python scripts/run_evolution_ratchet.py                  # 阈值 0.5，默认通过
+python scripts/run_evolution_ratchet.py --min-score 0.9  # 提高阈值
+python scripts/run_evolution_ratchet.py --check-files    # 只检查白名单文件存在
+python scripts/run_evolution_ratchet.py --json           # 供 CI 消费
+
+# Köppen 栅格点查询（抽象层，不依赖真实数据）
+python -c "from core.climate_grid import build_synthetic_grid_dict, KoppenGrid; \
+g = KoppenGrid(cells=build_synthetic_grid_dict()['cells'], ...); \
+print(g.query(40.0, 116.0))"   # → 概率分布 + 项目分区映射
+```
+
+**关键设计原则**：自进化必须先有"不可进化区"，再有"可进化区"——否则"自我改进"会侵蚀项目唯一真实的资产（诚实性与可复现性）。内回路（离线棘轮）是**唯一不依赖任何外部条件、现在就能转起来的飞轮**，同时服务三个目的：①保证科学改进不退步；②产出对外可引用的评测资产；③喂养 RSI 度量。
 
 ---
 

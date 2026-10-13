@@ -159,8 +159,45 @@ class ClimateAgent:
     # 主入口
     # ------------------------------------------------------------------
     def match_zone(self, lat: float, lon: float) -> Dict[str, Any]:
-        """根据经纬度匹配农业分区。"""
-        zone_id = _match_zone_by_coords(lat, lon)
+        """根据经纬度匹配农业分区。
+
+        分类后端优先级（诚实标注，不静默降级）：
+          1. Köppen-Geiger 栅格（`data/zone_meta/koppen_grid.json`）—— 精确分类
+          2. 盒式启发式（`_match_zone_by_coords`）—— 栅格缺失时的降级后端
+
+        输出证据里 `classification_backend` 字段显式声明当前走的是哪个后端；
+        栅格可用时 `koppen_distribution` 携带概率分布（SNWM"高精度≠可决策"落地）。
+        """
+        # 尝试栅格后端（不改变现有启发式默认值）
+        backend = "heuristic"
+        koppen_distribution: List[Any] = []
+        grid_query_result: Dict[str, Any] = {}
+        try:
+            from core.climate_grid import KoppenGrid, NoGridData
+            try:
+                grid = KoppenGrid.load()
+                gq = grid.query(lat, lon)
+                if gq.get("status") == "ok" and gq.get("project_zone"):
+                    grid_query_result = gq
+                    # 若栅格分类成功，则用它替换启发式结果
+                    grid_zone = gq["project_zone"]
+                    if grid_zone in self._zone_index:
+                        zone_id = grid_zone
+                        backend = "koppen_grid"
+                        koppen_distribution = gq.get("top_klassen", [])
+                    # 若栅格给出但项目分区库未建模（如 highland 特例），保留启发式
+                elif gq.get("status") == "no_grid":
+                    grid_query_result = gq  # 显式记录降级
+            except NoGridData:
+                grid_query_result = {"status": "no_grid", "reason": "grid_file_missing"}
+        except Exception:  # noqa: BLE001
+            # 栅格后端任何异常都不应阻塞启发式后端
+            backend = "heuristic"
+            grid_query_result = {"status": "grid_error", "reason": "fallback_to_heuristic"}
+
+        if backend == "heuristic":
+            zone_id = _match_zone_by_coords(lat, lon)
+
         z = self._zone_index.get(zone_id, {})
 
         if not z:
@@ -219,6 +256,24 @@ class ClimateAgent:
         # 典型作物示例（前 3 个）
         crop_hint = "、".join(typical[:3]) if typical else "通用作物"
 
+        # 分类后端标注：Köppen 栅格可用时暴露概率分布，启发式降级时显式标注
+        backend_evidence: Dict[str, Any] = {
+            "classification_backend": backend,
+            "data_source_tier": "grid" if backend == "koppen_grid" else "heuristic",
+        }
+        if backend == "koppen_grid" and koppen_distribution:
+            backend_evidence["koppen_distribution"] = [
+                {"klass": k, "weight": w} for k, w in koppen_distribution[:3]
+            ]
+            backend_evidence["nearest_distance_km"] = (
+                grid_query_result.get("nearest", {}).get("distance_km")
+            )
+        else:
+            backend_evidence["classification_note"] = (
+                "盒式启发式匹配（Köppen 栅格数据缺失或未覆盖该坐标）；"
+                "同城不同坐标会返回相同分区，同城内空间异质性不可知"
+            )
+
         return {
             "evidence": {
                 "zone_id": z.get("zone_id"),
@@ -227,6 +282,7 @@ class ClimateAgent:
                 "data_sources": DATA_SOURCES,
                 "data_recency_years": 2,
                 "crop_count_in_db": len(typical),
+                **backend_evidence,
             },
             "confidence": {
                 "rubric_score": rubric_score,

@@ -162,11 +162,19 @@ jobs:
       - name: D-4 A2A Card JWS 签名（HS256，零依赖）
         run: python -m unittest scripts.test_sign_agent_card -v
 
-      - name: S1 不可进化区/可进化区声明守卫
+      - name: S1 不可进化区/可进化区声明守卫（Bounded Self-Evolution）
         run: python -m unittest scripts.test_evolution_zones -v
+
+      - name: A1 Köppen 栅格抽象层（F5：概率分布 + 双后端 + 诚实降级）
+        run: python -m unittest scripts.test_climate_grid -v
 
       - name: S2/E1 多模块不变式棘轮门禁（CI 硬门禁）
         run: python -m benchmarks.ratchet_modules --strict
+
+      - name: S2/E1 evolution benchmark 棘轮（离线内回路飞轮）
+        run: |
+          python scripts/run_evolution_ratchet.py --check-files
+          python scripts/run_evolution_ratchet.py --json
 
       - name: E4 科学模块 Golden Vectors 回归门禁
         run: python scripts/run_golden_vectors.py --strict

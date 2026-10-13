@@ -60,7 +60,15 @@ class AgriRecipeBenchTests(unittest.TestCase):
 
     def test_case_schema_wellformed(self):
         """每个 case 必须含 id/axis/input/expected 且 axis 是已知值。"""
-        valid_axes = {"target_prediction", "state_rolling"}
+        # 2026-10-13 扩展：AgriRecipeBench 从 2 轴（M1/M2）扩到 4 轴，
+        # 新增 M3 counterfactual（反事实响应）与 M4 generalization（跨情境泛化），
+        # 对齐 SNWM 神农世界模型四轴协议完整版。
+        valid_axes = {
+            "target_prediction",   # M1：目标预测
+            "state_rolling",       # M2：状态滚动
+            "counterfactual",      # M3：反事实响应（换动作会怎样）
+            "generalization",      # M4：跨情境泛化（换带还成立吗）
+        }
         for name in sorted(os.listdir(CASES)):
             if not name.endswith(".json"):
                 continue
