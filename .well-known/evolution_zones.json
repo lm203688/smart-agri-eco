@@ -86,23 +86,76 @@
         "path": "data/eval/evolution_benchmark.json",
         "ratchet_benchmark": "seed_benchmark",
         "rationale": "评测集本身；改进空间在覆盖分区与作物"
+      },
+      {
+        "path": "agent/conformal.py",
+        "ratchet_benchmark": "conformal_calibration_coverage",
+        "rationale": "保形预测校准器；改进空间在校准集扩展（G2 后从 3 条增到数十条真实回流），q 值更紧。修改前必须保证 90% 覆盖率下界定理仍成立"
+      },
+      {
+        "path": "scripts/recipe_profile.py",
+        "ratchet_benchmark": "recipe_profile_roundtrip",
+        "rationale": "配方 profile 四件套（export/import/diff/clone）；改进空间在更多 kind 支持（如 recipe search / merge）。修改前必须保证 export→import 往返无损"
+      },
+      {
+        "path": "scripts/generate_shadow_execution_log.py",
+        "ratchet_benchmark": "shadow_log_validity",
+        "rationale": "影子运行日志生成器（M9-X1）；改进空间在更多场景模板（当前 3 条覆盖 3 分区）。修改前必须保证 shadow 记录符合 execution_log.schema 且 not_executed=true"
+      },
+      {
+        "path": "agent/orchestration_audit.py",
+        "ratchet_benchmark": "orchestration_audit",
+        "rationale": "M10-O2+O4 编排层可审计性：跨 Agent 一致性检查 + trace 导出；advisory only，不得写回任何 Agent 输出（与 JEV 同构）"
       }
     ]
   },
   "meta_policy": {
-    "gate_version": "v1",
+    "gate_version": "v3",
     "gate_version_history": [
       {
         "version": "v1",
         "introduced_at": "2026-10-13",
         "change": "首次声明不可进化区/可进化区划分（S1 落地）",
         "reason": "防止自进化侵蚀可验证性——可信层/数据卫生/协议契约必须保持人工评审"
+      },
+      {
+        "version": "v2",
+        "introduced_at": "2026-10-13",
+        "change": "M14-E5 gate_version 首次版本化 bump：将 3 个新增可进化资产纳入棘轮管控",
+        "reason": "本次批处理完成 reports 报告 §M9-X1 / §M5-F1 / §M8-R2 三大板块接线：agent/conformal.py（保形预测校准器，M5-F1）· scripts/recipe_profile.py（配方四件套，M8-R2）· scripts/generate_shadow_execution_log.py（影子执行日志，M9-X1）。三者均需棘轮门禁保护，任何修改不得破坏：(a) conformal 90% 覆盖率下界定理；(b) recipe export→import 往返无损；(c) shadow 记录 schema 合规。gate_version 从 v1 单调递增至 v2，闭合 RSI L5 meta_improvement 门（此前 gate_version 从未修订）。",
+        "newly_managed_assets": [
+          "agent/conformal.py",
+          "scripts/recipe_profile.py",
+          "scripts/generate_shadow_execution_log.py"
+        ],
+        "triggered_by_tasks": [
+          "M5-F1 保形预测",
+          "M8-R2 配方 profile 四件套",
+          "M9-X1 影子运行破零"
+        ]
+      },
+      {
+        "version": "v3",
+        "introduced_at": "2026-10-14",
+        "change": "M10-O2+O4 编排层可审计性资产纳入棘轮管控：agent/orchestration_audit.py（TraceRecord + check_cross_agent_consistency + export_trace_dict + _input/_output_summary）；orchestrator.run_pipeline 挂上 audit hook（写 consistency_audit + orchestration_trace）；scripts/test_orchestration_audit.py 29 项守卫",
+        "reason": "报告 per_module_deep_assessment_2026-10-13.md §M10-O2「跨 Agent 一致性检查」+ §M10-O4「编排 trace 可导出」——「诚实暴露不确定性」品牌从单点输出扩展到编排协作层。任一改动不得破坏：(a) advisory-only 纪律（不阻断流水线、不写回 Agent 输出）；(b) trace summary_hash 同输入稳定性（可独立复算）；(c) 5 条一致性规则的严重度分级（error/warning/info 语义）；(d) zero-dependency stdlib 承诺。"
       }
     ],
     "revision_rule": "任何门禁口径变更必须 bump gate_version 并记录 change_reason；不可静默修改。",
     "enforcement": {
-      "ratchet_required_for": ["agent/", "skills/registry/"],
-      "manual_review_required_for": ["core/", "mcp/server.py", ".well-known/agent.json", "schemas/", "data/env_recipes/", "harness/manifest.json"]
+      "ratchet_required_for": [
+        "agent/",
+        "skills/registry/",
+        "agent/orchestration_audit.py"
+      ],
+      "manual_review_required_for": [
+        "core/",
+        "mcp/server.py",
+        ".well-known/agent.json",
+        "schemas/",
+        "data/env_recipes/",
+        "harness/manifest.json"
+      ]
     }
   }
 }

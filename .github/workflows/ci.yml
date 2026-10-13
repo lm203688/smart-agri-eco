@@ -179,6 +179,22 @@ jobs:
       - name: E4 科学模块 Golden Vectors 回归门禁
         run: python scripts/run_golden_vectors.py --strict
 
+      - name: M9-X1 影子执行日志（RSI L1 execution_log 门闭合证据）
+        run: |
+          python scripts/generate_shadow_execution_log.py --check
+          python -m unittest scripts.test_shadow_execution_log -v
+
+      - name: M8-R2 配方 profile 四件套（export/import/diff/clone）
+        run: python -m unittest scripts.test_recipe_profile -v
+
+      - name: M5-F1 Split Conformal 保形预测（90% 覆盖率下界）
+        run: |
+          python agent/conformal.py
+          python -m unittest scripts.test_conformal -v
+
+      - name: M10-O2+O4 编排层可审计性（跨 Agent 一致性 + trace 导出）
+        run: python -m unittest scripts.test_orchestration_audit -v
+
       - name: W5 治理状态 badge（CI 硬门禁 + SVG 导出）
         run: |
           mkdir -p artifacts

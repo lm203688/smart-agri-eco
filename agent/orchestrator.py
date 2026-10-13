@@ -23,11 +23,19 @@ from .nutrition_agent import NutritionAgent
 from .season_agent import SeasonAgent
 from .control_agent import ControlAgent
 from .forecast_agent import ForecastAgent
+from .orchestration_audit import (
+    TraceRecord,
+    _input_summary,
+    _output_summary,
+    check_cross_agent_consistency,
+    export_trace_dict,
+)
 
 import os
 import json
 import glob
 import hashlib
+import time
 
 # 引擎侧能力（可选依赖：引擎缺失时编排器仍能独立运行，不硬绑定）
 try:
@@ -374,10 +382,17 @@ class AgriOrchestrator:
             wi.transition("execute", actor="AgriOrchestrator", payload=user_request)
 
         # Step 1: 分区匹配
+        trace = TraceRecord(user_request)
+        t0 = time.time()
         lat, lon = user_request.get("lat", 0), user_request.get("lon", 0)
         zone_data = self.climate.match_zone(lat, lon)
+        t1 = time.time()
+        trace.add_step("ClimateAgent", t0, t1,
+                       _input_summary("ClimateAgent", {"lat": lat, "lon": lon}),
+                       _output_summary("ClimateAgent", zone_data))
 
         # Step 2: 微气候修正
+        t0 = time.time()
         micro = self.climate.microclimate_adjustment(
             {
                 "scene": user_request.get("scene", "balcony"),
@@ -386,38 +401,64 @@ class AgriOrchestrator:
                 "city": user_request.get("city", ""),
             }
         )
+        t1 = time.time()
+        trace.extra["microclimate_ms"] = round((t1 - t0) * 1000, 3)
+        trace.extra["microclimate"] = {k: micro.get(k) for k in list((micro or {}).keys())[:6]}
 
         # Step 3: 作物推荐
-        crop_reco = self.crop.recommend(
-            zone_data=zone_data,
-            preferences={
+        t0 = time.time()
+        crop_input = {
+            "zone_data": zone_data,
+            "preferences": {
                 "purpose": user_request.get("purpose", "食用"),
                 "space_sqm": user_request.get("space_sqm", 1.0),
                 "difficulty": user_request.get("difficulty", "beginner"),
                 "container": user_request.get("scene") in ["balcony", "office"],
             },
-        )
+        }
+        crop_reco = self.crop.recommend(**crop_input)
+        t1 = time.time()
+        trace.add_step("CropAgent", t0, t1,
+                       _input_summary("CropAgent", crop_input),
+                       _output_summary("CropAgent", crop_reco))
 
         # Step 4: 种植计划（选第一个推荐作物，传入微气候与分区约束）
         growth_plan = {}
         top_crop = ""
+        t0 = time.time()
         if crop_reco.get("recommendation"):
             top_crop = crop_reco["recommendation"][0].get("crop", "")
-            growth_plan = self.growth.generate_growth_plan(
-                crop=top_crop,
-                zone_data=zone_data,
-                start_date=user_request.get("start_date", ""),
-                scene=user_request.get("scene", "balcony"),
-                microclimate=micro,
-            )
+            growth_input = {
+                "crop": top_crop,
+                "zone_data": zone_data,
+                "start_date": user_request.get("start_date", ""),
+                "scene": user_request.get("scene", "balcony"),
+                "microclimate": micro,
+            }
+            growth_plan = self.growth.generate_growth_plan(**growth_input)
+            t1 = time.time()
+            trace.add_step("GrowthAgent", t0, t1,
+                           _input_summary("GrowthAgent", growth_input),
+                           _output_summary("GrowthAgent", growth_plan))
+        else:
+            t1 = time.time()
+            trace.add_step("GrowthAgent", t0, t1,
+                           {"skipped": True, "reason": "CropAgent 无推荐作物"},
+                           {"skipped": True}, status="skipped")
 
         # Step 5: 生态撮合
-        devices = self.eco.recommend_device(
-            scene=user_request.get("scene", "balcony"),
-            crop=top_crop if crop_reco.get("recommendation") else "",
-            zone_data=zone_data,
-            budget=user_request.get("budget_cny", 0),
-        )
+        t0 = time.time()
+        eco_input = {
+            "scene": user_request.get("scene", "balcony"),
+            "crop": top_crop if crop_reco.get("recommendation") else "",
+            "zone_data": zone_data,
+            "budget": user_request.get("budget_cny", 0),
+        }
+        devices = self.eco.recommend_device(**eco_input)
+        t1 = time.time()
+        trace.add_step("EcoAgent", t0, t1,
+                       _input_summary("EcoAgent", eco_input),
+                       _output_summary("EcoAgent", devices))
 
         result = {
             "pipeline_steps": [
@@ -529,4 +570,17 @@ class AgriOrchestrator:
             }
             self._sessions[session_id] = {"payload_key": payload_key,
                                           "result": result}
+
+        # M10-O2 + M10-O4 编排层可审计性：
+        # - consistency_audit：跨 Agent 一致性检查（advisory only，不阻断）
+        # - orchestration_trace：完整调用图 + 耗时 + 摘要哈希（可导出 JSON）
+        # 失败不阻断主流水线，只把错误信息写入 result（诚实暴露而非静默吞掉）
+        try:
+            trace.finish()
+            result["consistency_audit"] = check_cross_agent_consistency(
+                result, user_request)
+            result["orchestration_trace"] = export_trace_dict(trace, result)
+        except Exception as exc:  # pragma: no cover - 审计故障不阻断主流水线
+            result["audit_error"] = str(exc)[:200]
+
         return result

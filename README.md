@@ -94,6 +94,35 @@ print(g.query(40.0, 116.0))"   # → 概率分布 + 项目分区映射
 
 ---
 
+**🔍 编排层可审计性（Orchestration Audit）**（2026-10-14 新增，`agent/orchestration_audit.py`，29 项单测守卫）：
+
+把「诚实暴露不确定性」的元层能力从**单点输出**（M11 可信层）扩展到**多 Agent 协作层**（M10 编排层）。落地 `per_module_deep_assessment_2026-10-13.md` §M10-O2「跨 Agent 一致性检查」+ §M10-O4「编排 trace 可导出」：
+
+| 能力 | 实现 | 用途 |
+|---|---|---|
+| **M10-O2 跨 Agent 一致性检查** | `check_cross_agent_consistency()`，5 条规则 | 检查 Climate/Crop/Growth/Eco 四个 Agent 之间的结论是否自洽（预算超支、季节冲突、设备无匹配等），冲突**显式标注严重度**（error/warning/info）而非静默消解 |
+| **M10-O4 编排 trace 可导出** | `TraceRecord` + `export_trace_dict/json()` | 每次 pipeline 生成完整调用图（agent/耗时/输入摘要/输出摘要/verify_report）+ SHA256 `summary_hash`（同输入稳定，可独立复算） |
+
+```bash
+# 完整 pipeline 会自动带 consistency_audit + orchestration_trace
+python -c "
+from agent.orchestrator import AgriOrchestrator
+r = AgriOrchestrator().run_pipeline(
+    {'lat':30.0,'lon':120.0,'scene':'balcony','budget_cny':300},
+    verify=True, record_memory=False)
+print(r['consistency_audit'])
+print(r['orchestration_trace']['trace_id'], r['orchestration_trace']['summary_hash'])"
+
+# 单独跑一致性检查
+python -c "
+from agent.orchestration_audit import check_cross_agent_consistency
+# 传入 pipeline result 会得到冲突列表与严重度分级"
+```
+
+**关键设计原则**：**advisory only**——审计不阻断流水线、不写回任何 Agent 输出（与 JEV 门控纪律同构）；冲突显式暴露给用户，让用户判断严重程度，而不是让系统自作主张「消解」矛盾。这是本项目对**多 Agent 编排层**的诚实性承诺，与单点输出的 T-1/T-3 证书形成同构。
+
+---
+
 ## 项目定位
 
 **一句话**：做分布式农业的 AI 操作系统与数据网络——回答「在哪里种什么、怎么种得好、怎么送到消费者」。
@@ -177,8 +206,8 @@ print(g.query(40.0, 116.0))"   # → 概率分布 + 项目分区映射
 | 数据扩展脚本 | `scripts/enrich_crop_data.py` | 每气候带补充适生作物至 ≥18 种 |
 | 端到端验证 | `scripts/verify_all.py` | 多城市 pipeline + Trust 证书 PASS/FAIL |
 | Skill 自动生成 | `engine/skill_factory.py` | 新作物/能力点 → 自动生成符合 Schema 的 Skill |
-| 单元测试 | `scripts/test_*.py` 系列 | **556 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + ForecastAgent(L2) + ControlAgent(L3) + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + Env Recipe 契约 + 数据完整性守卫 + MCP 14 工具 + A2A Card + Skills Registry 11 项一致 |
-| MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **14 个** agri 工具（分区匹配/作物推荐/种植计划/病虫害诊断/养分管理/Env Recipe 配方/物候播期/土壤剖面/BP 投资初筛/多源气候调和/地理编码→配方/数据血缘查询/预设城市/生态对接清单）；协议版本 **2026-07-28（无状态）**，兼容 2025-06-18 / 2024-11-05；已适配 SEP-2575（免握手）/ SEP-2567（无 session）/ SEP-2243（`Mcp-Method`）/ SEP-2549（`ttlMs` 缓存）/ SEP-414（W3C traceparent）；注册与投递见 `mcp/README.md` |
+| 单元测试 | `scripts/test_*.py` 系列 | **660 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + ForecastAgent(L2) + ControlAgent(L3) + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + Env Recipe 契约 + 数据完整性守卫 + MCP 18 工具 + A2A Card + Skills Registry 11 项一致 + 编排层可审计性 29 项 |
+| MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **18 个** agri 工具（分区匹配/作物推荐/种植计划/病虫害诊断/养分管理/Env Recipe 配方/物候播期/土壤剖面/BP 投资初筛/多源气候调和/地理编码→配方/数据血缘查询/预设城市/生态对接清单 + **知识检索 agri_search + 知识图谱 agri_knowledge_query**（M12-K1 接入））；协议版本 **2026-07-28（无状态）**，兼容 2025-06-18 / 2024-11-05；已适配 SEP-2575（免握手）/ SEP-2567（无 session）/ SEP-2243（`Mcp-Method`）/ SEP-2549（`ttlMs` 缓存）/ SEP-414（W3C traceparent）；注册与投递见 `mcp/README.md` |
 | A2A Agent Card | `.well-known/agent.json` | A2A v1.0 标准发现入口：声明 14 个 skill（与 MCP 工具一一对应）、`securitySchemes={}`、输入输出模式与许可红线（NC 来源不得转售）；校验 `scripts/check_agent_card.py` |
 | Agent Plugins 打包 | `plugin/` | Agent Plugins 1.0.0 标准：`plugin.json` + `mcp.json` + `skills/<id>/SKILL.md` × 11（含 Anthropic Agent Skills YAML frontmatter）；**由注册表生成，禁止手改**，`scripts/build_agent_plugin.py` 为唯一入口，CI 用 `--check` 防漂移 |
 | Env Recipe 协议 | `schemas/env_recipe.schema.json` + `docs/env_recipe_protocol_v1.md` | 配置协议 v1：作物×阶段×箱体 → 可执行环境参数；day-1 留位 `execution_log`/`outcome`/`image_consent` 独占数据字段；校验 `scripts/validate_env_recipe.py` |
@@ -235,7 +264,7 @@ for f in skills/registry/*.json; do python -c "import json; s=json.load(open('$f
 | 提升项 | 交付物 | 验证 |
 |---|---|---|
 | P0-G Env Recipe v1 协议 | `schemas/env_recipe.schema.json`（schema v1.1.0）+ `docs/env_recipe_protocol_v1.md` + `data/examples/sample_env_recipe.json` | `python scripts/validate_env_recipe.py data/env_recipes` |
-| P0-E/F 零依赖 MCP server | `mcp/server.py`（14 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
+| P0-E/F 零依赖 MCP server | `mcp/server.py`（18 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
 | P0-H 评测基线 | `engine/eval.py` + `scripts/run_eval.py` + `data/eval/zone_checks.json` | `python scripts/run_eval.py` |
 
 **决策门**（评审 §3.5）：P0-F/G 若 3 个月内零外部调用 / 零社区响应 → 降级为个人知识库项目，停止对外投入。

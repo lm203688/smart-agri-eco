@@ -4,6 +4,57 @@
 
 ---
 
+## [Unreleased · v1.1.5 待发] - 2026-10-14（编排层可审计性：M10-O2 跨 Agent 一致性 + M10-O4 trace 导出）
+
+> **性质**：落地 `docs/per_module_deep_assessment_2026-10-13.md` 板块评估报告 §M10-O2 与 §M10-O4，把「诚实暴露不确定性」的元层能力从**单点输出**（M11 可信层 T-1/T-3 证书）扩展到**多 Agent 协作层**（M10 编排层）。零新建数据依赖，纯逻辑增强。
+>
+> **判定依据**：`scripts/test_orchestration_audit.py` 29 项单测全过；orchestrator 集成测试通过（4 Agent 全部出现在 trace 中）；CI 新增 1 步硬门禁；未触碰任何不可进化区资产。
+
+### 新增（1 项，零依赖 stdlib）
+
+| # | 能力 | 实现 | 对应报告项 |
+|---|---|---|---|
+| 1 | **M10-O2 跨 Agent 一致性检查 + M10-O4 编排 trace 导出** | `agent/orchestration_audit.py`（~400 行）：`TraceRecord`（trace_id + `summary_hash` SHA256 前 16 位 + steps + total_ms）+ `check_cross_agent_consistency()`（5 条规则：climate_constraints_coverage / growth_crop_match / eco_devices_budget_fit / top_crop_device_match / growth_start_date_frost）+ `export_trace_dict/json()`（可独立复算）；`orchestrator.run_pipeline()` 挂 audit hook，写入 `result["consistency_audit"]` + `result["orchestration_trace"]`；advisory only 不阻断主流水线 | §M10-O2 + §M10-O4 |
+
+### 一致性检查 5 条规则
+
+| 规则 | 严重度 | 触发条件 |
+|---|---|---|
+| `climate_constraints_coverage` | warning | CropAgent 首推作物经验温度窗口未被 ClimateAgent 分区温度窗口完整覆盖 |
+| `growth_crop_match` | info | GrowthAgent 计划作物 ≠ CropAgent 首推 |
+| `eco_devices_budget_fit` | warning | EcoAgent 推荐设备总价 > 用户预算 |
+| `top_crop_device_match` | info | EcoAgent 推荐设备无针对 top_crop 的专用项 |
+| `growth_start_date_frost` | info | 寒冷分区（min_temp<−5°C）在冬季月份（12/1/2 月）播种 |
+
+**核心纪律**：`error` 级冲突（当前无定义）阻断通过；`warning/info` 仅记录不改写。**advisory only**——审计不写回任何 Agent 输出，与 `jev_gate` 门控纪律同构。
+
+### 测试（新增 29 项单测）
+
+| 测试文件 | 用例数 | 覆盖点 |
+|---|---|---|
+| `scripts/test_orchestration_audit.py` | **29** | TraceRecord 基本/一致性 hash/不同输入 / 一致性检查 5 规则各触发分支 / advisory only 语义 / 摘要辅助 / trace JSON 导出往返 / orchestrator 集成 5 项（含 summary_hash 稳定性） |
+| **合计** | **+29** | 从 631 → **660 项单测** |
+
+### CI 门禁（`.github/workflows/ci.yml` 从 28 → 29 步）
+
+| 新增步骤 | 命令 | 判定标准 |
+|---|---|---|
+| M10-O2+O4 编排层可审计性 | `python -m unittest scripts.test_orchestration_audit -v` | 29/29 通过 |
+
+### 设计原则
+
+**advisory only** —— 审计不阻断流水线、不写回 Agent 输出、不静默消解矛盾。冲突**显式暴露给用户**（含 severity 与 involved agents），让用户判断严重程度。这是本项目对多 Agent 编排层的诚实性承诺，与单点输出的 T-1/T-3 证书形成同构。
+
+**summary_hash 稳定可复算** —— 同输入 + 同 steps 序列 → 同 hash（`trace_id` 与耗时不进入 hash），使审计方可对任意一次 trace 独立复算校验。
+
+### 顺手修复（1 处逻辑 bug）
+
+| 位置 | 缺陷 | 修复 |
+|---|---|---|
+| `orchestration_audit.py::check_cross_agent_consistency` | `if 12 <= month <= 2` 永远 False（`12>2`），冬季月份判断失效 | 改为 `if month >= 12 or month <= 2` |
+
+---
+
 ## [Unreleased · v1.1.4 待发] - 2026-10-13（受控自进化系统落地：A1 气候引擎抽象 + S2/E1 棘轮 CI 硬门禁）
 
 > **性质**：承接 `docs/framework_evolution_liftup_2026-10-13.md` 报告 §6.1 F5 与 §6.2 S2 / §6.3 E1 的**首批落地**。核心主张：**内回路（离线棘轮）是这台机器里唯一"不依赖任何外部条件、现在就能转起来"的飞轮**——它同时服务三个目的：①保证科学改进不退步；②产出对外可引用的评测资产；③喂养 RSI 度量。本次落地让这套飞轮从"内部演示工具"升级为"CI 硬门禁"。

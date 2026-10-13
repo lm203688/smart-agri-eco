@@ -36,7 +36,7 @@ import os
 import sys
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EXPECTED_TOOL_COUNT = 14  # 与 mcp/server.py::TOOLS 保持一致（由 manifest.json 声明）
+EXPECTED_TOOL_COUNT = 18  # 与 mcp/server.py::TOOLS 保持一致（由 manifest.json 声明）；2026-10 起 +agri_search +agri_knowledge_query（M12-K1 检索/图谱接入）
 
 
 def main() -> int:
