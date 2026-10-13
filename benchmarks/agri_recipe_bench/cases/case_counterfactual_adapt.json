@@ -1,0 +1,38 @@
+{
+  "id": "case_counterfactual_adapt_score",
+  "axis": "counterfactual",
+  "description": "反事实·适应度扰动：生菜 adapt_score 从 0.9 降到 0.3，产量应显著下降",
+  "input": {
+    "crop": "生菜",
+    "zone_id": "subtropical_wet",
+    "start_date": "2026-03-20",
+    "adapt_score": 0.9,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {"name": "播种", "day_range": [1, 7]},
+          {"name": "生长", "day_range": [8, 30]},
+          {"name": "采收", "day_range": [31, 45]}
+        ]
+      }
+    }
+  },
+  "perturbation": {
+    "adapt_score": {
+      "before": 0.9,
+      "after": 0.3
+    }
+  },
+  "expected": {
+    "counterfactual": {
+      "yield_estimate_g": {
+        "direction": "decrease",
+        "min_delta_pct": 0.2,
+        "note": "adapt_score 从 0.9 降到 0.3 是大幅劣化（0.6 落差），产量应显著下降（实测 delta=-28%，阈值 20% 留安全余量）"
+      }
+    }
+  },
+  "provenance": {
+    "note": "adapt_score 是环境适应度加权，直接影响产量乘数；本项目 forecast_agent 的 adapt_score_factor 是单调函数，反事实响应方向必须正确——这是机制内核最基本的响应合理性"
+  }
+}

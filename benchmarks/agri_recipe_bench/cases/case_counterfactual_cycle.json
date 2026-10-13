@@ -1,0 +1,50 @@
+{
+  "id": "case_counterfactual_growth_cycle",
+  "axis": "counterfactual",
+  "description": "反事实·周期扰动：黄瓜 phases 从 100 天延长到 150 天，调整周期应增加",
+  "input": {
+    "crop": "黄瓜",
+    "zone_id": "temperate_subhumid",
+    "start_date": "2026-04-01",
+    "adapt_score": 0.85,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {"name": "育苗", "day_range": [1, 25]},
+          {"name": "开花", "day_range": [26, 60]},
+          {"name": "盛果采收", "day_range": [61, 100]}
+        ]
+      }
+    },
+    "env_recipe": {
+      "environment": {
+        "temperature": {"day_c": 26, "night_c": 16}
+      }
+    }
+  },
+  "perturbation": {
+    "growth_plan": {
+      "after": {
+        "recommendation": {
+          "phases": [
+            {"name": "育苗", "day_range": [1, 25]},
+            {"name": "开花", "day_range": [26, 60]},
+            {"name": "盛果采收", "day_range": [61, 150]}
+          ]
+        }
+      }
+    }
+  },
+  "expected": {
+    "counterfactual": {
+      "adjusted_duration_days": {
+        "direction": "increase",
+        "min_delta_pct": 0.4,
+        "note": "phases 总天数从 100 延长到 150（+50%），调整周期应显著增加（阈值 40% 以上）"
+      }
+    }
+  },
+  "provenance": {
+    "note": "adjusted_duration_days 直接受 phases 总天数影响，延长 phases 必然延长周期——这是最简单但最关键的响应方向验证"
+  }
+}

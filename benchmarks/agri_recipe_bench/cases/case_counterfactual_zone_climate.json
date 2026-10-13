@@ -1,0 +1,39 @@
+{
+  "id": "case_counterfactual_zone_climate",
+  "axis": "counterfactual",
+  "description": "反事实·分区局限：扰动 zone_id 从地中海换到寒带，气候因子不变（Köppen 未接入，zone_id 当前不影响产出）",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "start_date": "2026-02-15",
+    "adapt_score": 0.9,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {"name": "育苗", "day_range": [1, 30]},
+          {"name": "开花前", "day_range": [31, 60]},
+          {"name": "开花坐果", "day_range": [61, 95]},
+          {"name": "采收", "day_range": [96, 130]}
+        ]
+      }
+    }
+  },
+  "perturbation": {
+    "zone_id": {
+      "before": "mediterranean",
+      "after": "subarctic"
+    }
+  },
+  "expected": {
+    "counterfactual": {
+      "climate_factor": {
+        "direction": "change",
+        "min_delta_pct": 0.0,
+        "note": "当前引擎 climate_factor 恒=1.0，zone_id 不影响产出——这是 Köppen 气候引擎（A1）未接入的直接证据。用例诚实记录当前行为；当 A1 落地后，此用例应更新为 direction='decrease'"
+      }
+    }
+  },
+  "provenance": {
+    "note": "这是 M3 反事实评估的'发现型用例'——它揭示的不是 bug 而是设计选择：当前引擎的分区影响通过 adapt_score 间接体现，而非通过 zone_id 直接计算气候因子。这是评估体系的正确用法：用例不只是验证已实现的功能，也标记未实现的预期功能"
+  }
+}

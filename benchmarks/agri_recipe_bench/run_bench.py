@@ -210,9 +210,201 @@ def run_state_rolling(case: Dict[str, Any]) -> Dict[str, Any]:
             "confidence": result.get("confidence"), "evidence": result.get("evidence")}
 
 
+def _run_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """统一调用 ForecastAgent，返回 result 字典。"""
+    payload = _normalize_input(dict(payload))
+    agent = ForecastAgent()
+    return agent.estimate(
+        crop=payload.get("crop", ""),
+        zone_id=payload.get("zone_id", ""),
+        start_date=payload.get("start_date", ""),
+        growth_plan=payload.get("growth_plan"),
+        zone_climate=payload.get("zone_climate"),
+        env_recipe=payload.get("env_recipe"),
+        adapt_score=payload.get("adapt_score"),
+    )
+
+
+def run_counterfactual(case: Dict[str, Any]) -> Dict[str, Any]:
+    """M3 · 反事实响应（Counterfactual）：扰动输入，检查产出变化方向。
+
+    用例结构：
+        input: 基准场景
+        perturbation: {field: {before, after}}  -- 要扰动的字段与前后值
+        expected:
+            counterfactual:
+              metric: {direction: "increase"|"decrease"|"change", min_delta_pct: 0.1}
+
+    判据：产出指标必须按 expected.direction 变化，且相对变化 >= min_delta_pct。
+    这是「机制内核响应合理性」的直接证据——若温度升高产量反而下降，就是缺陷。
+    """
+    base_payload = dict(case["input"])
+    try:
+        base_result = _run_agent(base_payload)
+    except Exception as e:
+        return {"ok": False, "error": f"基准场景失败: {e}"}
+
+    perturbed_payload = dict(base_payload)
+    perturb = case.get("perturbation", {})
+    for field, vals in perturb.items():
+        perturbed_payload[field] = vals.get("after", vals)
+
+    try:
+        perturbed_result = _run_agent(perturbed_payload)
+    except Exception as e:
+        return {"ok": False, "error": f"扰动场景失败: {e}"}
+
+    base_rec = base_result.get("recommendation", {})
+    perturbed_rec = perturbed_result.get("recommendation", {})
+    checks = case.get("expected", {}).get("counterfactual", {})
+
+    per_metric = {}
+    all_ok = True
+    for metric, spec in checks.items():
+        v_before = base_rec.get(metric)
+        v_after = perturbed_rec.get(metric)
+        if v_before is None or v_after is None:
+            per_metric[metric] = {"ok": False, "detail": f"指标 {metric} 缺失"}
+            all_ok = False
+            continue
+        try:
+            vb, va = float(v_before), float(v_after)
+        except (TypeError, ValueError):
+            per_metric[metric] = {"ok": False, "detail": f"非数值: {metric}"}
+            all_ok = False
+            continue
+
+        direction = spec.get("direction", "change")
+        min_delta_pct = float(spec.get("min_delta_pct", 0.0))
+        if vb == 0:
+            delta_pct = 0.0 if va == 0 else 1.0
+        else:
+            delta_pct = (va - vb) / abs(vb)
+
+        if direction == "increase":
+            ok = delta_pct >= min_delta_pct
+        elif direction == "decrease":
+            ok = delta_pct <= -min_delta_pct
+        else:  # "change"
+            ok = abs(delta_pct) >= min_delta_pct
+
+        per_metric[metric] = {
+            "ok": ok, "before": vb, "after": va,
+            "delta_pct": round(delta_pct, 4),
+            "expected_direction": direction,
+            "min_delta_pct": min_delta_pct,
+        }
+        if not ok:
+            all_ok = False
+
+    return {"ok": all_ok, "checks": per_metric,
+            "base_output": base_rec, "perturbed_output": perturbed_rec,
+            "perturbation": perturb,
+            "confidence_base": base_result.get("confidence"),
+            "confidence_perturbed": perturbed_result.get("confidence")}
+
+
+def run_generalization(case: Dict[str, Any]) -> Dict[str, Any]:
+    """M4 · 跨情境泛化（Cross-context Generalization）：同作物跨多分区，检查输出合理性。
+
+    用例结构：
+        input:
+            crop: 固定作物
+            zones: [{zone_id, start_date, adapt_score, growth_plan?}, ...]
+        expected:
+            generalization:
+                all_valid: true  -- 所有分区都产出合法结果
+                outputs_vary: true  -- 不同分区输出不完全相同（非退化解）
+                metric_bounds: {yield_estimate_g: {min: 50, max: 5000}, ...}
+
+    判据：
+        1. 每个分区都能产出合法结果（yield>0, duration>=1）
+        2. 输出不完全相同（避免"无视分区永远给同答案"的退化实现）
+        3. 所有输出都落在合理范围内（min/max 由农艺常识锚定）
+    """
+    inp = case.get("input", {})
+    crop = inp.get("crop")
+    zones = inp.get("zones", [])
+    if not crop or not zones:
+        return {"ok": False, "error": "M4 用例缺 crop 或 zones"}
+
+    checks_spec = case.get("expected", {}).get("generalization", {})
+    bounds = checks_spec.get("metric_bounds", {})
+    expect_valid = checks_spec.get("all_valid", True)
+    expect_vary = checks_spec.get("outputs_vary", True)
+
+    runs = []
+    all_ok = True
+    for zi, zone_cfg in enumerate(zones):
+        payload = {
+            "crop": crop,
+            "zone_id": zone_cfg.get("zone_id"),
+            "start_date": zone_cfg.get("start_date", "2026-03-01"),
+            "adapt_score": zone_cfg.get("adapt_score"),
+            "growth_plan": zone_cfg.get("growth_plan"),
+            "env_recipe_path": zone_cfg.get("env_recipe_path"),
+        }
+        try:
+            result = _run_agent(payload)
+            rec = result.get("recommendation", {})
+        except Exception as e:
+            runs.append({"zone_id": zone_cfg.get("zone_id"), "error": str(e)})
+            all_ok = False
+            continue
+
+        run_out = {
+            "zone_id": zone_cfg.get("zone_id"),
+            "yield": rec.get("yield_estimate_g"),
+            "duration": rec.get("adjusted_duration_days"),
+            "harvest": rec.get("harvest_date"),
+        }
+        runs.append(run_out)
+
+        # 合法性检查
+        if expect_valid:
+            y, d = run_out["yield"], run_out["duration"]
+            if not (isinstance(y, (int, float)) and y > 0
+                    and isinstance(d, (int, float)) and d >= 1):
+                all_ok = False
+                run_out["valid"] = False
+            else:
+                run_out["valid"] = True
+
+        # 范围检查
+        for metric_key, bound in bounds.items():
+            val = rec.get(metric_key)
+            if val is None:
+                continue
+            try:
+                v = float(val)
+            except (TypeError, ValueError):
+                continue
+            lo = float(bound.get("min", float("-inf")))
+            hi = float(bound.get("max", float("inf")))
+            if not (lo <= v <= hi):
+                all_ok = False
+                run_out.setdefault("bounds_violation", []).append(
+                    f"{metric_key}={v} not in [{lo},{hi}]"
+                )
+
+    # 泛化性检查：不同分区输出必须不完全相同
+    if expect_vary and len(runs) >= 2:
+        yield_vals = [r.get("yield") for r in runs if isinstance(r.get("yield"), (int, float))]
+        if len(yield_vals) < 2 or max(yield_vals) == min(yield_vals):
+            all_ok = False
+            return {"ok": False, "error": "跨分区产量完全相同——退化实现",
+                    "runs": runs, "yield_values": yield_vals}
+
+    return {"ok": all_ok, "runs": runs,
+            "yield_values": [r.get("yield") for r in runs],
+            "crop": crop, "n_zones": len(zones)}
+
+
 AXIS_RUNNERS = {
     "target_prediction": run_target_prediction,
     "state_rolling": run_state_rolling,
+    "counterfactual": run_counterfactual,
+    "generalization": run_generalization,
 }
 
 

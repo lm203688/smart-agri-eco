@@ -1,0 +1,71 @@
+{
+  "id": "case_generalization_lettuce_across_zones",
+  "axis": "generalization",
+  "description": "跨情境泛化·生菜：同一作物在 4 个气候分区（亚热带/温带大陆/地中海/寒带）应都产出合法结果",
+  "input": {
+    "crop": "生菜",
+    "zones": [
+      {
+        "zone_id": "subtropical_wet",
+        "start_date": "2026-03-20",
+        "adapt_score": 0.85,
+        "growth_plan": {"recommendation": {"phases": [
+          {"name": "播种", "day_range": [1, 7]},
+          {"name": "生长", "day_range": [8, 30]},
+          {"name": "采收", "day_range": [31, 45]}
+        ]}}
+      },
+      {
+        "zone_id": "temperate_continental",
+        "start_date": "2026-04-15",
+        "adapt_score": 0.75,
+        "growth_plan": {"recommendation": {"phases": [
+          {"name": "播种", "day_range": [1, 7]},
+          {"name": "生长", "day_range": [8, 35]},
+          {"name": "采收", "day_range": [36, 55]}
+        ]}}
+      },
+      {
+        "zone_id": "mediterranean",
+        "start_date": "2026-03-01",
+        "adapt_score": 0.8,
+        "growth_plan": {"recommendation": {"phases": [
+          {"name": "播种", "day_range": [1, 7]},
+          {"name": "生长", "day_range": [8, 28]},
+          {"name": "采收", "day_range": [29, 42]}
+        ]}}
+      },
+      {
+        "zone_id": "subarctic",
+        "start_date": "2026-05-01",
+        "adapt_score": 0.5,
+        "growth_plan": {"recommendation": {"phases": [
+          {"name": "播种", "day_range": [1, 10]},
+          {"name": "生长", "day_range": [11, 45]},
+          {"name": "采收", "day_range": [46, 65]}
+        ]}}
+      }
+    ]
+  },
+  "expected": {
+    "generalization": {
+      "all_valid": true,
+      "outputs_vary": true,
+      "metric_bounds": {
+        "yield_estimate_g": {
+          "min": 50,
+          "max": 800,
+          "note": "生菜单株产量在 50-800g 范围属合理（叶菜类产量较低）"
+        },
+        "adjusted_duration_days": {
+          "min": 30,
+          "max": 90,
+          "note": "生菜短周期作物，30-90 天属合理"
+        }
+      }
+    }
+  },
+  "provenance": {
+    "note": "生菜是最短的叶菜类作物之一，跨气候带部署时周期和产量会有差异但都应在合理范围内"
+  }
+}

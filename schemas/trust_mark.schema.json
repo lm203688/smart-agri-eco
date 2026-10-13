@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgriTrust Mark",
+  "description": "AgriTrust 可信标记——外部消费者按此 schema 验证 Env Recipe 输出的可信性。对齐报告 §6.3 E2「公开 JSON schema + 独立复算徽章」。",
+  "type": "object",
+  "required": ["cert_id", "signature", "status", "verification_cmd"],
+  "properties": {
+    "cert_id": {
+      "type": "string",
+      "description": "证书标识符，固定为 'trust-mark'",
+      "enum": ["trust-mark"]
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 数据一致性签名（64 hex 字符）"
+    },
+    "signature_prefix": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{12}$",
+      "description": "签名前 12 字符（可嵌入徽章供人眼验证）"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "信任标记签发时间（ISO 8601）"
+    },
+    "verification_cmd": {
+      "type": "string",
+      "description": "独立复算命令（外部消费者可用此命令验证 signature）"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["trusted", "degraded", "unknown"],
+      "description": "信任等级：trusted=数据一致 / degraded=部分不可验证 / unknown=未初始化"
+    },
+    "degraded_reasons": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "降级原因列表（status=degraded 时非空）"
+    },
+    "rubric_passed": {
+      "type": "string",
+      "pattern": "^\\d+/\\d+$",
+      "description": "信任评估评分（如 '5/5' 表示全部通过）"
+    },
+    "note": {
+      "type": "string",
+      "description": "人类可读的说明"
+    }
+  },
+  "additionalProperties": false
+}
