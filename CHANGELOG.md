@@ -4,6 +4,69 @@
 
 ---
 
+## [Unreleased · v1.1.6 待发] - 2026-10-14（可信标记产品化：M11-T1 公共复算 API + AgriTrust Verified 徽章）
+
+> **性质**：落地 `docs/per_module_deep_assessment_2026-10-13.md` §M11-T1，把 T-1 可信标记从**内部纪律**（`core/trust_layer.get_trust_mark()`）升级为**对外公共复算资产**——外部消费者可独立验证任何输出，无需依赖私有代码。零依赖 stdlib。
+>
+> **判定依据**：`scripts/test_verify_trust_mark.py` 34 项单测全过；`scripts/test_mcp_server.py` 全部通过（含 agri_verify_trust 6 项断言）；CI 新增 1 步硬门禁；MCP 工具 18 → 19。
+
+### 新增（3 项，零依赖 stdlib）
+
+| # | 能力 | 实现 | 对应报告项 |
+|---|---|---|---|
+| 1 | **公共复算 CLI**（4 种验证模式） | `scripts/verify_trust_mark.py`：`current`（导出当前 mark/cert）+ `check-prefix`（结构完整性）+ `from-mark`（用 issued_at 端到端复算）+ `from-certificate`（内容一致性 + 可选 --verify-artifacts 磁盘哈希）；退出码 0=通过/1=失败/2=输入错误 | §M11-T1 |
+| 2 | **MCP 工具**（第 19 个工具） | `mcp/server.py` 新增 `agri_verify_trust`：3 种 mode（current/check_prefix/end_to_end），零副作用只读，让 MCP 客户端不必先跑核心引擎也能独立验证 trust_mark | §M11-T1 |
+| 3 | **AgriTrust Verified 徽章 + 说明文档** | `scripts/generate_trust_badge.py`（SVG + Markdown 双导出）+ `artifacts/agritrust_badge.svg`（含 signature_prefix + verification_cmd）+ `docs/agritrust_verified.md`（外部消费者复算指引） | §M11-T1 |
+
+### 4 种验证模式（严格递减依赖）
+
+| 模式 | 依赖 | 验证内容 | 用途 |
+|---|---|---|---|
+| `check_prefix` | 只读输入 mark | `signature_prefix` 是否等于 `signature` 前 12 字符 | 结构完整性，秒级断言 |
+| `from-certificate` | 只读证书 JSON | 剥离 signature → canonical → SHA256 → 与声明 signature 比对 | 证书对象自签名未被篡改 |
+| `from-certificate --verify-artifacts` | 证书 + 磁盘数据文件 | artifacts[] 声明的 sha256 vs 磁盘实际哈希 | **最强验证**：数据源未被修改 |
+| `from-mark` | 完整项目数据文件 | 用 mark 声明的 issued_at + 本地数据源严格重现 signature | **端到端可复现**：跨版本一致性 |
+
+### 诚实边界（写进 schema 与 verify API 输出）
+
+- **signature 是内容一致性 SHA256，非密码学签名（无密钥）**：证明"数据未被修改"，不证明"我们就是签发者"
+- 端到端复算必须用 mark 声明的 `issued_at` 作 `fixed_issued_at`，否则签名必然不同
+- 任何降级/缺失都返回 `verified=False` + 具体原因，不静默通过
+
+### 基础设施改进
+
+- **`core.trust_layer.issue_certificate` 新增 `fixed_issued_at` 参数**：外部复算可用固定时间戳严格重现 signature（此前每次运行 issued_at 都变，导致 signature 无法重现——是"公共复算"的关键卡口）
+- **`schemas/trust_mark.schema.json`** `verification_cmd` 从 `python -m core.trust_layer` 更新为 `python scripts/verify_trust_mark.py from-mark <mark.json>`——外部消费者一步到位
+- **`scripts/generate_trust_badge.py` 修 argparse bug**：`parse_args(argv or [])` → `parse_args(argv)`（bug 让 CLI 参数全部被忽略）
+
+### 测试（新增 34 项单测 + 6 项 MCP 断言）
+
+| 测试文件 | 用例数 | 覆盖点 |
+|---|---|---|
+| `scripts/test_verify_trust_mark.py` | **34** | canonical/sha256 原语 / verify_certificate_content 4 分支 / verify_mark_internal 3 分支 / verify_mark_end_to_end 4 分支 / verify_artifact_hashes 3 分支 / CLI 6 分支（含篡改测试）/ MCP 工具 6 分支 / trust_layer fixed_issued_at 3 分支 |
+| `scripts/test_mcp_server.py` | **+6** | agri_verify_trust current/check_prefix/end_to_end 正常路径 + 非法 mode + 缺 mark 参数校验 |
+| **合计** | **+40** | 从 710 → **750 项单测** |
+
+### CI 门禁（`.github/workflows/ci.yml` 从 29 → 30 步）
+
+| 新增步骤 | 命令 | 判定标准 |
+|---|---|---|
+| M11-T1 可信标记公共复算 API | `python scripts/generate_trust_badge.py --svg ... --doc ...` + `python scripts/verify_trust_mark.py current/check-prefix/from-mark` + `python -m unittest scripts.test_verify_trust_mark -v` | 34/34 通过 + 3 条 CLI 手工验证 |
+
+### evolution_zones
+
+- `gate_version` **v3 → v4**
+- 新增可进化资产：`scripts/verify_trust_mark.py`
+- 纳入棘轮管控范围
+
+### 统计同步
+
+- MCP 工具 **18 → 19**（`agri_verify_trust` 加入）
+- `scripts/test_mcp_server.py` / `scripts/test_engine_v5.py` / `scripts/check_mcp_namespace.py` EXPECTED_TOOL_COUNT 全部同步
+- `README.md` 交付物表 + `mcp/README.md` 暴露的工具章节全部同步
+
+---
+
 ## [Unreleased · v1.1.5 待发] - 2026-10-14（编排层可审计性：M10-O2 跨 Agent 一致性 + M10-O4 trace 导出）
 
 > **性质**：落地 `docs/per_module_deep_assessment_2026-10-13.md` 板块评估报告 §M10-O2 与 §M10-O4，把「诚实暴露不确定性」的元层能力从**单点输出**（M11 可信层 T-1/T-3 证书）扩展到**多 Agent 协作层**（M10 编排层）。零新建数据依赖，纯逻辑增强。

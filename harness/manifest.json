@@ -1,7 +1,7 @@
 {
   "schema": "agri-harness-manifest/v1",
   "version": "2.3.0",
-  "generated_at": "2026-10-13T23:00:01",
+  "generated_at": "2026-10-14T13:20:00",
   "project": "智慧农业生态 (smart-agri-eco)",
   "protocols": {
     "env_recipe": "v1",
@@ -14,7 +14,7 @@
     "agent_plugins": "1.0.0"
   },
   "mcp": {
-    "tool_count": 18,
+    "tool_count": 19,
     "tools": [
       "agri_bp_screen",
       "agri_diagnose_pest",
@@ -33,7 +33,8 @@
       "agri_resolve_recipe",
       "agri_search",
       "agri_season_advisory",
-      "agri_soil_profile"
+      "agri_soil_profile",
+      "agri_verify_trust"
     ]
   },
   "agents": {

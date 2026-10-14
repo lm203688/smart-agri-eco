@@ -106,11 +106,16 @@
         "path": "agent/orchestration_audit.py",
         "ratchet_benchmark": "orchestration_audit",
         "rationale": "M10-O2+O4 编排层可审计性：跨 Agent 一致性检查 + trace 导出；advisory only，不得写回任何 Agent 输出（与 JEV 同构）"
+      },
+      {
+        "path": "scripts/verify_trust_mark.py",
+        "ratchet_benchmark": "verify_trust_mark",
+        "rationale": "M11-T1 可信标记公共复算 API：外部可独立验证 Trust Mark / Certificate 的三种模式（check_prefix / certificate_content / end_to_end + artifact_hashes）；零依赖 stdlib，签名是内容一致性 SHA256（非密码学签名）"
       }
     ]
   },
   "meta_policy": {
-    "gate_version": "v3",
+    "gate_version": "v4",
     "gate_version_history": [
       {
         "version": "v1",
@@ -139,6 +144,12 @@
         "introduced_at": "2026-10-14",
         "change": "M10-O2+O4 编排层可审计性资产纳入棘轮管控：agent/orchestration_audit.py（TraceRecord + check_cross_agent_consistency + export_trace_dict + _input/_output_summary）；orchestrator.run_pipeline 挂上 audit hook（写 consistency_audit + orchestration_trace）；scripts/test_orchestration_audit.py 29 项守卫",
         "reason": "报告 per_module_deep_assessment_2026-10-13.md §M10-O2「跨 Agent 一致性检查」+ §M10-O4「编排 trace 可导出」——「诚实暴露不确定性」品牌从单点输出扩展到编排协作层。任一改动不得破坏：(a) advisory-only 纪律（不阻断流水线、不写回 Agent 输出）；(b) trace summary_hash 同输入稳定性（可独立复算）；(c) 5 条一致性规则的严重度分级（error/warning/info 语义）；(d) zero-dependency stdlib 承诺。"
+      },
+      {
+        "version": "v4",
+        "introduced_at": "2026-10-14",
+        "change": "M11-T1 可信标记产品化：新增 scripts/verify_trust_mark.py（公共复算 API，4 种验证模式）+ MCP 工具 agri_verify_trust（第 19 个工具）+ schemas/trust_mark.schema.json verification_cmd 更新 + core/trust_layer.issue_certificate 新增 fixed_issued_at 参数（支持外部严格重现 signature）+ scripts/test_verify_trust_mark.py 34 项守卫 + artifacts/agritrust_badge.svg + docs/agritrust_verified.md",
+        "reason": "报告 per_module_deep_assessment_2026-10-13.md §M11-T1「可信标记产品化」——把 T-1 可信标记从内部纪律升级为对外公共复算资产。核心纪律：signature 是内容一致性 SHA256（非密码学签名，无密钥），必须诚实标注；端到端复算需要 fixed_issued_at 保证可复现；artifacts sha256 是更强的数据源验证。"
       }
     ],
     "revision_rule": "任何门禁口径变更必须 bump gate_version 并记录 change_reason；不可静默修改。",
@@ -146,7 +157,8 @@
       "ratchet_required_for": [
         "agent/",
         "skills/registry/",
-        "agent/orchestration_audit.py"
+        "agent/orchestration_audit.py",
+        "scripts/verify_trust_mark.py"
       ],
       "manual_review_required_for": [
         "core/",

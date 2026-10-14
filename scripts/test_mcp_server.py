@@ -83,7 +83,7 @@ def main() -> int:
         # 3) tools/list
         resp = _rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
         tools = (resp or {}).get("result", {}).get("tools", [])
-        check(len(tools) == 18, f"tools/list 返回 18 个工具（实际 {len(tools)}）")
+        check(len(tools) == 19, f"tools/list 返回 19 个工具（实际 {len(tools)}）")
         names = {t["name"] for t in tools}
         check("agri_env_recipe" in names, "包含 agri_env_recipe 工具")
         check("agri_season_advisory" in names, "包含 agri_season_advisory 工具")
@@ -517,6 +517,66 @@ def main() -> int:
                   "agri_recipe_profile diff 缺参时拒绝")
         except Exception:
             check(False, "agri_recipe_profile diff 缺参返回可解析 JSON")
+
+        # 6.5) M11-T1 agri_verify_trust 公共复算 API：三种 mode
+        resp = _rpc({"jsonrpc": "2.0", "id": 46, "method": "tools/call",
+                     "params": {"name": "agri_verify_trust",
+                                "arguments": {"mode": "current"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _vt = json.loads(_txt)
+            check("signature" in _vt and "status" in _vt,
+                  "agri_verify_trust current 返回签名 + 状态")
+            check(_vt["signature"] == _vt.get("signature_prefix", "") + _vt["signature"][12:],
+                  "agri_verify_trust current signature_prefix 是 signature 前缀（内部一致）")
+        except Exception:
+            check(False, "agri_verify_trust current 返回可解析 JSON")
+
+        # 用刚拿到的 current mark 做 check_prefix + end_to_end
+        resp = _rpc({"jsonrpc": "2.0", "id": 47, "method": "tools/call",
+                     "params": {"name": "agri_verify_trust",
+                                "arguments": {"mode": "check_prefix", "mark": _vt}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _cp = json.loads(_txt)
+            check(_cp.get("verified") is True,
+                  "agri_verify_trust check_prefix 自校验通过")
+        except Exception:
+            check(False, "agri_verify_trust check_prefix 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 48, "method": "tools/call",
+                     "params": {"name": "agri_verify_trust",
+                                "arguments": {"mode": "end_to_end", "mark": _vt}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _e2e = json.loads(_txt)
+            check(_e2e.get("verified") is True,
+                  "agri_verify_trust end_to_end 用固定 issued_at 严格复算通过")
+        except Exception:
+            check(False, "agri_verify_trust end_to_end 返回可解析 JSON")
+
+        # 参数校验：非法 mode + 缺 mark
+        resp = _rpc({"jsonrpc": "2.0", "id": 49, "method": "tools/call",
+                     "params": {"name": "agri_verify_trust",
+                                "arguments": {"mode": "bogus"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _err = json.loads(_txt)
+            check("error" in _err and "非法 mode" in _err["error"],
+                  "agri_verify_trust 非法 mode 被拒绝")
+        except Exception:
+            check(False, "agri_verify_trust 非法 mode 返回可解析 JSON")
+
+        resp = _rpc({"jsonrpc": "2.0", "id": 50, "method": "tools/call",
+                     "params": {"name": "agri_verify_trust",
+                                "arguments": {"mode": "check_prefix"}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _err = json.loads(_txt)
+            check("error" in _err and "mark" in _err["error"],
+                  "agri_verify_trust check_prefix 缺 mark 被拒绝")
+        except Exception:
+            check(False, "agri_verify_trust 缺 mark 返回可解析 JSON")
 
         # 7) 安全护栏：超长请求必须被拒绝（防内存耗尽型 DoS）
         big = "X" * 2000000  # ~2 MiB，超过 MAX_LINE_BYTES(1 MiB)

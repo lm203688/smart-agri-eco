@@ -655,6 +655,41 @@ def _tool_recipe_profile(args: dict) -> dict:
     return {"error": f"非法 kind='{kind}'，合法值: list/stats/lookup/diff/export"}
 
 
+def _tool_verify_trust(args: dict) -> dict:
+    """M11-T1 可信标记公共复算 API：外部独立验证 Trust Mark / Certificate。
+
+    支持 3 种模式：
+      - current:      返回当前信任标记 JSON（含 signature 与复算命令）
+      - check_prefix: 检查外部提供的 mark 内部一致性（signature_prefix vs signature 前 12 字符）
+      - end_to_end:   用外部 mark 的 issued_at + 本地数据源严格重现 signature 对比
+
+    诚实边界：signature 是内容一致性 SHA256，非密码学签名（无密钥）——
+    证明数据未被修改，不证明签发者身份。
+    """
+    mode = args.get("mode") or "current"
+    if mode not in ("current", "check_prefix", "end_to_end"):
+        return {"error": f"非法 mode='{mode}'，合法值: current/check_prefix/end_to_end"}
+
+    try:
+        from scripts.verify_trust_mark import (
+            current_mark_json, verify_mark_internal, verify_mark_end_to_end,
+        )
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"导入 verify_trust_mark 失败: {e}"}
+
+    if mode == "current":
+        return current_mark_json()
+
+    mark = args.get("mark")
+    if not isinstance(mark, dict):
+        return {"error": f"mode={mode} 需要提供 mark 对象"}
+
+    if mode == "check_prefix":
+        return verify_mark_internal(mark)
+    # mode == end_to_end
+    return verify_mark_end_to_end(mark)
+
+
 def _tool_list_ecosystem(args: dict) -> dict:
     """生态对接清单：返回 config/ecosystem.json 声明的开源/商业生态清单。
     声明对接状态（integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated），
@@ -1011,6 +1046,28 @@ TOOLS = [
             },
         },
     },
+    {
+        "name": "agri_verify_trust",
+        "description": (
+            "（可信标记公共复算 API M11-T1）外部独立验证 AgriTrust 可信标记 / 证书。"
+            "支持 3 种 mode：current=返回当前信任标记（含 signature 与复算命令）；"
+            "check_prefix=检查外部提供的 mark 内部一致性（signature_prefix 是否为 signature 前 12 字符）；"
+            "end_to_end=用外部 mark 的 issued_at + 本地数据源严格重现 signature 对比。"
+            "诚实边界：signature 是内容一致性 SHA256，非密码学签名（无密钥）——"
+            "证明数据未被修改，不证明签发者身份。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "mode": {"type": "string",
+                         "description": "验证模式：current/check_prefix/end_to_end",
+                         "enum": ["current", "check_prefix", "end_to_end"],
+                         "default": "current"},
+                "mark": {"type": "object",
+                         "description": "check_prefix / end_to_end 时必填：外部提供的 trust_mark JSON"},
+            },
+            "required": ["mode"],
+        },
+    },
 ]
 
 _DISPATCH = {
@@ -1032,6 +1089,7 @@ _DISPATCH = {
     "agri_knowledge_query": _tool_knowledge_query,
     "agri_forecast": _tool_forecast,
     "agri_recipe_profile": _tool_recipe_profile,
+    "agri_verify_trust": _tool_verify_trust,
 }
 
 

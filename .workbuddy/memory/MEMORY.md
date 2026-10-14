@@ -70,10 +70,19 @@
 - ✅ **M8-R2 配方 profile 四件套**（`scripts/recipe_profile.py` export/import/diff/clone + tests）
 - ✅ **M5-F1 Split Conformal 保形预测**（`agent/conformal.py` 204 行，零依赖 Split Conformal 校准器，90% 覆盖率下界；`agent/forecast_agent.py` 已接入 + `scripts/test_conformal.py`）
 - ✅ **M10-O2 跨 Agent 一致性检查 + M10-O4 编排 trace 导出**（`agent/orchestration_audit.py` ~400 行，5 条规则：climate_constraints_coverage / growth_crop_match / eco_devices_budget_fit / top_crop_device_match / growth_start_date_frost，含 error/warning/info 三级严重度；`TraceRecord` + `summary_hash` SHA256 稳定可复算；`orchestrator.run_pipeline` 挂 audit hook 写 `result["consistency_audit"]` + `result["orchestration_trace"]`；`scripts/test_orchestration_audit.py` 29 项单测 + CI 硬门禁）
-- ✅ **M11-T1 可信标记产品化徽章**（`scripts/generate_trust_badge.py`）
-- ✅ **M12-K1 检索/图谱 MCP 接入**（`mcp/server.py` 新增 `agri_search` + `agri_knowledge_query`，工具数 14 → 18）
+- ✅ **M12-K1 检索/图谱 MCP 接入**（`mcp/server.py` 新增 `agri_search` + `agri_knowledge_query`，工具数 14 → 16）
 - ✅ **gate_version v2 → v3**（`.well-known/evolution_zones.json`，M10 编排层可审计性资产纳入棘轮管控 + history 记录变更理由）
-- ✅ **14→18 工具漂移同步**（`scripts/check_mcp_namespace.py` `EXPECTED_TOOL_COUNT=18` / `scripts/test_engine_v5.py` / `README.md` / `mcp/README.md`）
+
+**P1 D3 特例续（2026-10-14 主线一批次 · M11-T1 收官）**——报告 `per_module_deep_assessment_2026-10-13.md` §M11-T1，把 T-1 可信标记从**内部纪律**升级为**对外公共复算资产**：
+- ✅ **M11-T1 公共复算 API**（`scripts/verify_trust_mark.py`，零依赖 stdlib，4 种验证模式：`current` 导出 / `check-prefix` 结构完整性 / `from-mark` 端到端复算 / `from-certificate` 内容一致性 + 可选 `--verify-artifacts` 磁盘哈希；退出码 0/1/2 语义清晰）
+- ✅ **core.trust_layer.issue_certificate 新增 `fixed_issued_at` 参数**——外部复算可用固定时间戳严格重现 signature（此前 issued_at 每次变导致 signature 无法重现，是"公共复算"关键卡口）
+- ✅ **MCP 工具 agri_verify_trust**（第 19 个工具，工具数 18 → 19，3 种 mode：current/check_prefix/end_to_end）
+- ✅ **AgriTrust Verified 徽章 + 说明文档**（`artifacts/agritrust_badge.svg` + `docs/agritrust_verified.md`；含 signature_prefix + verification_cmd）
+- ✅ **34 项单测**（`scripts/test_verify_trust_mark.py`：canonical/sha256 原语 + 4 种验证模式各分支 + CLI 6 分支含篡改测试 + MCP 6 分支 + trust_layer fixed_issued_at 3 分支）
+- ✅ **诚实边界**：signature 是内容一致性 SHA256（非密码学签名，无密钥），必须诚实标注；任何降级/缺失返回 `verified=False` + 原因，不静默通过
+- ✅ **gate_version v3 → v4**（`.well-known/evolution_zones.json`，`scripts/verify_trust_mark.py` 纳入棘轮管控 + history）
+- ✅ **顺手修**：`scripts/generate_trust_badge.py` argparse bug（`parse_args(argv or [])` → `parse_args(argv)`，原 bug 让 CLI 参数全部被忽略）
+- ✅ **统计同步**：MCP 18 → 19（`scripts/check_mcp_namespace.py` EXPECTED_TOOL_COUNT / `scripts/test_engine_v5.py` 两处 18→19 / `README.md` / `mcp/README.md` 表格 + 投递模板 / `harness/manifest.json` tool_count）；744 项单测全绿
 
 **不做**（超出 D3 特例范围或需外部数据）：A2 机制作物模型（PCSE/WOFOST 论文重实现 7-10 天）、L1 视觉、L0-2 CMIP7 情景、M-1 激励机制、L2-5 两项 eval pending（需真实数据 / 专家盲评）。
 

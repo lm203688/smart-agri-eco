@@ -149,7 +149,7 @@ def main(argv: List[str] = None) -> int:
     p.add_argument("--doc", help="导出说明文档到指定路径")
     p.add_argument("--json", action="store_true", help="JSON 输出信任标记")
     p.add_argument("--quiet", action="store_true", help="静默模式")
-    args = p.parse_args(argv or [])
+    args = p.parse_args(argv)
 
     trust_mark = get_trust_mark()
 

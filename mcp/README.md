@@ -41,7 +41,7 @@ MCP 客户端以 stdio 子进程方式拉起本文件即可。
 
 也可直接用 Agent Plugins 清单（`plugin/mcp.json`），支持 Agent Plugins 1.0.0 的客户端会自动读取。
 
-## 暴露的工具（18 个）
+## 暴露的工具（19 个）
 
 | 工具 | 说明 |
 |---|---|
@@ -59,6 +59,11 @@ MCP 客户端以 stdio 子进程方式拉起本文件即可。
 | `agri_resolve_recipe` | 城市名/经纬度 → 分区 → 该分区 Env Recipe 清单（完全离线） |
 | `agri_query_lineage` | 按作物/分区查数据溯源（外部 API 参与 + 本地 SHA256 指纹 + 校准实证） |
 | `agri_list_ecosystem` | 对接的开源/商业生态清单与对接状态 |
+| `agri_search` | 知识检索（crops/zones/pests/recipes 四语料混合搜索，含 relevance 排序） |
+| `agri_knowledge_query` | 知识图谱查询（crops_by_zone / crops_by_risk / neighbors / traverse） |
+| `agri_forecast` | 独立产量/采收期预测（含 T-3 置信区间，M13-P1） |
+| `agri_recipe_profile` | 配方 profile 四件套（list/stats/lookup/diff/export，M8-R2） |
+| `agri_verify_trust` | 可信标记公共复算 API（current/check_prefix/end_to_end 三模式，M11-T1） |
 
 ## 自测
 
@@ -90,7 +95,7 @@ Hi <项目维护者>,
 我们在做「智慧农业生态」——一个把全球农业知识（气候分区/作物适配/病虫害/Env Recipe 配方）
 做成 Agent 可调用工具的项目。已发布零依赖 MCP server（协议 2024-11-05）：
 
-  - 18 个工具：分区匹配 / 作物推荐 / 种植计划 / 病虫害诊断 / 养分管理 / Env Recipe 配方 / 物候播期 / 土壤剖面 / BP 投资初筛 / 多源气候调和（带偏差校正）/ 地理编码→配方 / 数据血缘查询 / 预设城市清单 / 生态对接清单 / 知识检索 agri_search / 知识图谱 agri_knowledge_query
+  - 19 个工具：分区匹配 / 作物推荐 / 种植计划 / 病虫害诊断 / 养分管理 / Env Recipe 配方 / 物候播期 / 土壤剖面 / BP 投资初筛 / 多源气候调和（带偏差校正）/ 地理编码→配方 / 数据血缘查询 / 预设城市清单 / 生态对接清单 / 知识检索 agri_search / 知识图谱 agri_knowledge_query / 可信标记公共复算 agri_verify_trust
   - 覆盖 8 个气候分区（新增 hot_arid 高温沙漠 / highland 高原）与 116 份可执行 Env Recipe
   - 纯标准库，stdio 拉起，可直接接 Claude Desktop / Cursor / 自研 Agent
   - 仓库：https://github.com/lm203688/smart-agri-eco  （mcp/ 目录）

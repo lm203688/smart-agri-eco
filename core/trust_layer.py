@@ -137,15 +137,18 @@ def _skill_coverage() -> Dict[str, Any]:
 def issue_certificate(
     run_id: str = "",
     inputs: Optional[Dict[str, Any]] = None,
+    fixed_issued_at: Optional[str] = None,
 ) -> Dict[str, Any]:
     """生成一份可复现证书。
 
     参数:
         run_id: 本次运行的外部标识，留空则自动生成时间戳 id。
         inputs: 本次运行的输入快照（场景、作物、分区等），用于固定可复现上下文。
+        fixed_issued_at: 固定签发时间戳（ISO 字符串）。外部复算时传入以重现完全一致的 signature；
+                        留空则用当前时间（每次运行都会不同）。
     返回: 证书字典（含 signature）。
     """
-    ts = datetime.datetime.now().isoformat(timespec="seconds")
+    ts = fixed_issued_at or datetime.datetime.now().isoformat(timespec="seconds")
     rid = run_id or f"agri-run-{ts}"
 
     zone_data = load_zone_meta()
@@ -295,8 +298,8 @@ def get_trust_mark() -> Dict[str, Any]:
             "signature": None,
             "signature_prefix": None,
             "issued_at": datetime.now().isoformat(timespec="seconds"),
-            "verification_cmd": "python -m core.trust_layer",
-            "status": "degraded",
+        "verification_cmd": "python scripts/verify_trust_mark.py from-mark <mark.json>",
+        "status": "degraded",
             "degraded_reasons": degraded,
             "note": "数据文件缺失，无法生成有效证书；外部消费者应视为未验证",
         }
@@ -309,7 +312,7 @@ def get_trust_mark() -> Dict[str, Any]:
         "signature": sig,
         "signature_prefix": sig[:12],
         "issued_at": cert["issued_at"],
-        "verification_cmd": "python -m core.trust_layer",
+        "verification_cmd": "python scripts/verify_trust_mark.py from-mark <mark.json>",
         "status": "trusted" if cert["rubric"]["full_pass"] else "partial",
         "degraded_reasons": [],
         "rubric_passed": f"{cert['rubric']['passed']}/{cert['rubric']['total']}",

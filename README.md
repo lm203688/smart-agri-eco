@@ -4,10 +4,13 @@
 
 <p align="center">
   <a href="artifacts/status_badge.svg"><img src="artifacts/status_badge.svg" alt="governance status" width="240" /></a>
+  <a href="artifacts/agritrust_badge.svg"><img src="artifacts/agritrust_badge.svg" alt="AgriTrust Verified" width="320" /></a>
 </p>
 
 <!-- 治理状态 badge 由 scripts/generate_status_badge.py 生成，CI 硬门禁产物；
      4 指标：data_sources 4/4 · agri_recipe_bench 5/5 · ratchet_gates 27/27 · golden_vectors 16/16 -->
+<!-- AgriTrust Verified 徽章由 scripts/generate_trust_badge.py 生成，M11-T1 公共复算 API 产物；
+     含 signature_prefix 与 verification_cmd，外部消费者可独立复算校验 signature -->
 
 > 🎯 **项目目标口径（单一权威）**：见 [`docs/CORE_OBJECTIVE.md`](docs/CORE_OBJECTIVE.md) —— 分布式农业的 **Agent-native 知识基座**。
 > 一句话：把「在哪里种什么、怎么种得好」做成**可被任何 AI Agent 直接调用**的可执行配置（Env Recipe），以**可审计的数据血缘**作为可信度资产。
@@ -123,6 +126,32 @@ from agent.orchestration_audit import check_cross_agent_consistency
 
 ---
 
+**🛡️ AgriTrust Verified 公共复算 API**（2026-10-14 新增，`scripts/verify_trust_mark.py` + MCP 工具 `agri_verify_trust`，34 项单测守卫）：
+
+把 T-1 可信标记从**内部纪律**升级为**对外公共复算资产**。落地 `per_module_deep_assessment_2026-10-13.md` §M11-T1「可信标记产品化」——外部消费者可独立验证任何 AgriTrust 输出，无需依赖私有代码。
+
+| 能力 | 实现 | 用途 |
+|---|---|---|
+| **公共复算 CLI** | `python scripts/verify_trust_mark.py <mode>` | 4 种验证模式：`current`（导出）/ `check-prefix`（结构完整性）/ `from-mark`（端到端）/ `from-certificate`（内容一致性 + 可选 `--verify-artifacts` 磁盘哈希） |
+| **MCP 工具** | `agri_verify_trust`（第 19 个工具） | 让 MCP 客户端不必跑核心引擎也能独立验证 trust_mark |
+| **AgriTrust Verified 徽章** | `artifacts/agritrust_badge.svg` + `docs/agritrust_verified.md` | 徽章含 signature_prefix + verification_cmd，外部消费者一步到位复算 |
+
+```bash
+# 1. 导出当前信任标记供外部下载
+python scripts/verify_trust_mark.py current > mark.json
+
+# 2. 用外部 mark 端到端复算（用 issued_at 严格重现 signature）
+python scripts/verify_trust_mark.py from-mark mark.json
+
+# 3. 最强验证：不仅证书对象一致，其引用的数据文件也未被修改
+python scripts/verify_trust_mark.py current --certificate > cert.json
+python scripts/verify_trust_mark.py from-certificate cert.json --verify-artifacts
+```
+
+**诚实边界**：**signature 是内容一致性 SHA256，非密码学签名（无密钥）**——它证明"数据未被修改"，**不**证明"我们就是签发者"。这一边界写进 schema 与 verify API 输出，不静默通过，任何降级/缺失都返回 `verified=False` + 具体原因。这是本项目"可验证 AI"三件套（T-1/T-3/D-4）在**对外接口**上的延伸。
+
+---
+
 ## 项目定位
 
 **一句话**：做分布式农业的 AI 操作系统与数据网络——回答「在哪里种什么、怎么种得好、怎么送到消费者」。
@@ -206,8 +235,8 @@ from agent.orchestration_audit import check_cross_agent_consistency
 | 数据扩展脚本 | `scripts/enrich_crop_data.py` | 每气候带补充适生作物至 ≥18 种 |
 | 端到端验证 | `scripts/verify_all.py` | 多城市 pipeline + Trust 证书 PASS/FAIL |
 | Skill 自动生成 | `engine/skill_factory.py` | 新作物/能力点 → 自动生成符合 Schema 的 Skill |
-| 单元测试 | `scripts/test_*.py` 系列 | **660 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + ForecastAgent(L2) + ControlAgent(L3) + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + Env Recipe 契约 + 数据完整性守卫 + MCP 18 工具 + A2A Card + Skills Registry 11 项一致 + 编排层可审计性 29 项 |
-| MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **18 个** agri 工具（分区匹配/作物推荐/种植计划/病虫害诊断/养分管理/Env Recipe 配方/物候播期/土壤剖面/BP 投资初筛/多源气候调和/地理编码→配方/数据血缘查询/预设城市/生态对接清单 + **知识检索 agri_search + 知识图谱 agri_knowledge_query**（M12-K1 接入））；协议版本 **2026-07-28（无状态）**，兼容 2025-06-18 / 2024-11-05；已适配 SEP-2575（免握手）/ SEP-2567（无 session）/ SEP-2243（`Mcp-Method`）/ SEP-2549（`ttlMs` 缓存）/ SEP-414（W3C traceparent）；注册与投递见 `mcp/README.md` |
+| 单元测试 | `scripts/test_*.py` 系列 | **700+ 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + ForecastAgent(L2) + ControlAgent(L3) + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + Env Recipe 契约 + 数据完整性守卫 + MCP 19 工具 + A2A Card + Skills Registry 11 项一致 + 编排层可审计性 29 项 + 可信标记公共复算 API 34 项 |
+| MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **19 个** agri 工具（分区匹配/作物推荐/种植计划/病虫害诊断/养分管理/Env Recipe 配方/物候播期/土壤剖面/BP 投资初筛/多源气候调和/地理编码→配方/数据血缘查询/预设城市/生态对接清单 + **知识检索 agri_search + 知识图谱 agri_knowledge_query**（M12-K1 接入）+ **可信标记公共复算 agri_verify_trust**（M11-T1 产品化））；协议版本 **2026-07-28（无状态）**，兼容 2025-06-18 / 2024-11-05；已适配 SEP-2575（免握手）/ SEP-2567（无 session）/ SEP-2243（`Mcp-Method`）/ SEP-2549（`ttlMs` 缓存）/ SEP-414（W3C traceparent）；注册与投递见 `mcp/README.md` |
 | A2A Agent Card | `.well-known/agent.json` | A2A v1.0 标准发现入口：声明 14 个 skill（与 MCP 工具一一对应）、`securitySchemes={}`、输入输出模式与许可红线（NC 来源不得转售）；校验 `scripts/check_agent_card.py` |
 | Agent Plugins 打包 | `plugin/` | Agent Plugins 1.0.0 标准：`plugin.json` + `mcp.json` + `skills/<id>/SKILL.md` × 11（含 Anthropic Agent Skills YAML frontmatter）；**由注册表生成，禁止手改**，`scripts/build_agent_plugin.py` 为唯一入口，CI 用 `--check` 防漂移 |
 | Env Recipe 协议 | `schemas/env_recipe.schema.json` + `docs/env_recipe_protocol_v1.md` | 配置协议 v1：作物×阶段×箱体 → 可执行环境参数；day-1 留位 `execution_log`/`outcome`/`image_consent` 独占数据字段；校验 `scripts/validate_env_recipe.py` |
@@ -264,7 +293,7 @@ for f in skills/registry/*.json; do python -c "import json; s=json.load(open('$f
 | 提升项 | 交付物 | 验证 |
 |---|---|---|
 | P0-G Env Recipe v1 协议 | `schemas/env_recipe.schema.json`（schema v1.1.0）+ `docs/env_recipe_protocol_v1.md` + `data/examples/sample_env_recipe.json` | `python scripts/validate_env_recipe.py data/env_recipes` |
-| P0-E/F 零依赖 MCP server | `mcp/server.py`（18 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
+| P0-E/F 零依赖 MCP server | `mcp/server.py`（19 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
 | P0-H 评测基线 | `engine/eval.py` + `scripts/run_eval.py` + `data/eval/zone_checks.json` | `python scripts/run_eval.py` |
 
 **决策门**（评审 §3.5）：P0-F/G 若 3 个月内零外部调用 / 零社区响应 → 降级为个人知识库项目，停止对外投入。

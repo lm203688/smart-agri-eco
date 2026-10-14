@@ -195,6 +195,14 @@ jobs:
       - name: M10-O2+O4 编排层可审计性（跨 Agent 一致性 + trace 导出）
         run: python -m unittest scripts.test_orchestration_audit -v
 
+      - name: M11-T1 可信标记公共复算 API + AgriTrust Verified 徽章
+        run: |
+          python scripts/generate_trust_badge.py --svg artifacts/agritrust_badge.svg --doc docs/agritrust_verified.md --quiet
+          python scripts/verify_trust_mark.py current --json > /tmp/mark.json
+          python scripts/verify_trust_mark.py check-prefix /tmp/mark.json
+          python scripts/verify_trust_mark.py from-mark /tmp/mark.json
+          python -m unittest scripts.test_verify_trust_mark -v
+
       - name: W5 治理状态 badge（CI 硬门禁 + SVG 导出）
         run: |
           mkdir -p artifacts
