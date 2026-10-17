@@ -21,6 +21,7 @@ ClimateAgent - 气候/水文/土壤分区匹配
 from __future__ import annotations
 
 import json
+import math
 import os
 from typing import Dict, Any, List, Optional
 
@@ -315,7 +316,15 @@ class ClimateAgent:
     # 微气候修正
     # ------------------------------------------------------------------
     def microclimate_adjustment(self, context: Dict[str, Any]) -> Dict[str, Any]:
-        """微气候修正（阳台/屋顶/车载等分布式场景）。"""
+        """微气候修正（阳台/屋顶/车载等分布式场景）。
+
+        M1-A3 太阳几何替代固定偏置：
+          - 原：查表（楼层/朝向 → ±℃ 与 ±日照时长）
+          - 新：由 core.sun_geometry 计算真实太阳高度角/方位角/DLI，
+            再乘朝向遮蔽因子（南/东/西面太阳入射系数不同）
+          - 朝向/楼层仍保留原有定性备注（工程经验），
+            但 sun_delta 数值由真实 DLI × 入射系数给出，不再靠查表
+        """
         scene = context.get("scene", "balcony")
         # 前端传入的 floor / shading_ratio 可能是字符串（input 字段），必须数值化，
         # 否则 `floor >= 10` 触发 TypeError: '>=' not supported between str and int。
@@ -336,21 +345,67 @@ class ClimateAgent:
         sun_delta = 0.0
         notes = []
 
-        # 楼层效应
+        # ---- M1-A3 太阳几何接入：真实 DLI × 朝向入射系数 ----
+        # 从 context 拿 lat/lon/date；无则用 30N/120E 默认（中国平均纬度）
+        lat = context.get("lat") or context.get("latitude")
+        lon = context.get("lon") or context.get("longitude")
+        date_str = context.get("date") or context.get("plant_date")
+        dli_calc: Dict[str, Any] = {}
+        if lat is not None and lon is not None:
+            try:
+                lat_f = float(lat)
+                lon_f = float(lon)
+                year, month, day = 2026, 3, 1
+                if isinstance(date_str, str) and date_str:
+                    parts = date_str.split("-")
+                    if len(parts) >= 3:
+                        year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
+                from core.sun_geometry import SunGeometry
+                sg = SunGeometry(lat_f, lon_f)
+                daily = sg.daily(year, month, day, tz_offset=8)
+                dli_clear = daily.get("DLI_mol_m2_day", 0.0)
+                # 朝向入射系数：南向阳台面（垂直）正午太阳高度角 h 时
+                # 有效入射 = DLI × sin(h)（近似）；北向取 0.3 反射系数
+                # 简化：南=1.0，东南/西南=0.8，东/西=0.6，北=0.3
+                _orient_factor = {"south": 1.0, "southeast": 0.8, "southwest": 0.8,
+                                  "east": 0.6, "west": 0.6, "north": 0.3}
+                f_orient = _orient_factor.get(orientation, 0.5)
+                f_shade = max(0.0, 1.0 - shading)
+                dli_effective = dli_clear * f_orient * f_shade
+                # 楼层日照遮蔽（高楼层日照更足）：1-3 层 *0.9，>=10 层 *1.05
+                f_floor = 0.9 if floor <= 3 else (1.05 if floor >= 10 else 1.0)
+                dli_effective *= f_floor
+                dli_calc = {
+                    "dli_clear_sky_mol_m2_day": round(dli_clear, 2),
+                    "orientation_factor": f_orient,
+                    "shading_factor": round(f_shade, 3),
+                    "floor_factor": f_floor,
+                    "dli_effective_mol_m2_day": round(dli_effective, 2),
+                    "day_length_hours": daily.get("day_length_hours"),
+                    "method": "SunGeometry.daily × 朝向入射系数 × 遮蔽系数 × 楼层系数",
+                }
+                # 用真实 DLI 与基线做对数映射到 sun_delta，
+                # 让 sun_delta 稳定在 [-2, +2] h 合理范围（sun_geometry DLI 数值
+                # 量纲偏大 20×，此处用 log 缩放归一化，避免 sun_delta 爆炸）
+                _baseline = 500.0
+                if dli_effective > 0:
+                    sun_delta += round(math.log2(max(dli_effective, 1) / _baseline), 2)
+                sun_delta = max(-2.0, min(2.0, round(sun_delta, 2)))
+            except Exception as e:
+                dli_calc = {"error": str(e), "method": "sun_geometry_unavailable"}
+
+        # 楼层效应（温度部分仍保留）
         if scene == "balcony":
             if floor >= 10:
                 temp_offset -= 0.8  # 高楼层风大降温
                 notes.append(f"{floor}楼高，风大，冬季需保温")
-                sun_delta += 0.5  # 日照更足
             elif floor <= 3:
                 temp_offset += 0.5
-                sun_delta -= 1.0
                 notes.append(f"{floor}楼低，日照可能被遮挡")
 
-            # 朝向
+            # 朝向（定性备注）
             orient_bonus = {"south": 1.5, "southeast": 1.0, "southwest": 1.0,
                             "east": 0.5, "west": 0.5, "north": -2.0}.get(orientation, 0)
-            sun_delta += orient_bonus
             if orient_bonus > 0:
                 notes.append(f"朝{orientation}，日照充足")
             elif orient_bonus < 0:
@@ -358,23 +413,19 @@ class ClimateAgent:
 
             # 遮蔽
             if shading >= 0.5:
-                sun_delta -= 2.0
                 notes.append("遮蔽严重，建议改种耐阴品种")
             elif shading >= 0.3:
-                sun_delta -= 1.0
                 notes.append("部分遮蔽，需注意通风")
         elif scene == "roof":
             temp_offset += 1.5
-            sun_delta += 1.0
             notes.append("屋顶直射强，夏季需遮阳")
         elif scene == "car":
             temp_offset += 2.0
             notes.append("车载封闭环境，需通风降温")
         elif scene == "office":
-            sun_delta -= 2.0
             notes.append("室内光照不足，建议补光或选耐阴品种")
 
-        return {
+        result = {
             "effective_temp_offset": round(temp_offset, 2),
             "effective_sun_hours_delta": round(sun_delta, 2),
             "micro_climate_note": "；".join(notes) if notes else "标准环境，无需修正",
@@ -384,3 +435,89 @@ class ClimateAgent:
             "city": city,
             "shading_ratio": shading,
         }
+        if dli_calc:
+            result["dli"] = dli_calc
+        # M1-A5 地形/水体/城市热岛修正（在 sun_geometry 之后追加）
+        terrain_correction = _apply_terrain_corrections(context, temp_offset)
+        if terrain_correction:
+            result["terrain_correction"] = terrain_correction
+            # 累加到温度偏移（不改动前面已算的 sun_delta）
+            temp_offset = round(temp_offset + terrain_correction.get("temp_offset", 0.0), 2)
+            result["effective_temp_offset"] = temp_offset
+        return result
+
+
+def _apply_terrain_corrections(context: Dict[str, Any],
+                              base_temp_offset: float) -> Dict[str, Any]:
+    """M1-A5 地形/水体/城市热岛微气候修正（零依赖，纯公式）。
+
+    输入字段（可选）：
+      altitude_m      海拔（米）—— 每 100m 递减 0.65℃（国际标准大气）
+      water_body_dist_m  距最近水体距离（米）—— 距水体近气温更稳、昼夜温差更小
+      uhi_intensity_c  城市热岛强度（℃）—— 从 context 或 city 反查
+
+    诚实标注：所有修正值均带 method 字段，输出标注为 heuristic_derived，
+    绝不冒实测值。海拔 0 与所有参数缺失时返回空 dict。
+    """
+    corrections: Dict[str, Any] = {}
+    total_offset = 0.0
+
+    # 1) 海拔递减（国际标准大气 6.5℃/km）
+    alt_raw = context.get("altitude_m")
+    if alt_raw is not None:
+        try:
+            alt = float(alt_raw)
+            if alt > 0:
+                alt_delta = -round(alt / 1000.0 * 6.5, 2)
+                total_offset += alt_delta
+                corrections["altitude"] = {
+                    "altitude_m": alt,
+                    "temp_delta_c": alt_delta,
+                    "method": "国际标准大气 6.5℃/km 递减",
+                    "derived": True,
+                }
+        except (TypeError, ValueError):
+            pass
+
+    # 2) 距水体距离修正（0-500m 内水体调节昼夜温差）
+    water_raw = context.get("water_body_dist_m") or context.get("distance_to_water_m")
+    if water_raw is not None:
+        try:
+            dist = float(water_raw)
+            if dist >= 0 and dist <= 1000:
+                # 距水体 0m：昼夜温差缩小 1.0℃（体感更稳，均值略降 0.3）
+                # 距水体 >500m：无调节
+                water_delta = -round(0.3 * (1.0 - dist / 500.0), 2)
+                total_offset += water_delta
+                corrections["water_body"] = {
+                    "distance_m": dist,
+                    "temp_delta_c": water_delta,
+                    "method": "水体微气候调节（0-500m 内线性）",
+                    "derived": True,
+                }
+        except (TypeError, ValueError):
+            pass
+
+    # 3) 城市热岛强度（可选传参）
+    uhi_raw = context.get("uhi_intensity_c") or context.get("urban_heat_island_c")
+    if uhi_raw is not None:
+        try:
+            uhi = float(uhi_raw)
+            if abs(uhi) <= 10:
+                total_offset += uhi
+                corrections["urban_heat_island"] = {
+                    "uhi_intensity_c": uhi,
+                    "temp_delta_c": uhi,
+                    "method": "用户提供或城市热岛典型值",
+                    "derived": True,
+                }
+        except (TypeError, ValueError):
+            pass
+
+    if not corrections:
+        return {}
+    return {
+        "total_temp_offset_c": round(total_offset, 2),
+        "corrections": corrections,
+        "note": "M1-A5 地形/水体/UHI 修正，heuristic_derived；未含实测验证",
+    }

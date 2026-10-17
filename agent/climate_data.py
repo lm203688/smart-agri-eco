@@ -27,6 +27,10 @@ import urllib.request
 import urllib.error
 from typing import Any, Dict, List, Optional
 
+# H1: 原子写入底座（缓存崩溃会污染缓存目录）
+from core.atomic_io import atomic_write_json
+from core.clock import CLOCK
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_CACHE_DIR = os.path.join(ROOT, "data", "_demo_runtime", "climate_cache")
 ZONE_META_PATH = os.path.join(ROOT, "data", "zone_meta", "global_zones.json")
@@ -74,7 +78,7 @@ def _read_cache(lat: float, lon: float, cache_dir: str,
     if not os.path.exists(p):
         return None
     try:
-        age_days = (time.time() - os.path.getmtime(p)) / 86400.0
+        age_days = (CLOCK.time() - os.path.getmtime(p)) / 86400.0
         if age_days > max_age_days:
             return None
         with open(p, encoding="utf-8") as f:
@@ -85,8 +89,9 @@ def _read_cache(lat: float, lon: float, cache_dir: str,
 
 def _write_cache(lat: float, lon: float, cache_dir: str, data: Dict[str, Any]) -> None:
     try:
-        with open(_cache_path(lat, lon, cache_dir), "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        # H1: 原子写（缓存崩溃不污染已有缓存）
+        atomic_write_json(_cache_path(lat, lon, cache_dir), data,
+                          ensure_ascii=False, indent=2, sort_keys=True)
     except Exception:
         pass
 

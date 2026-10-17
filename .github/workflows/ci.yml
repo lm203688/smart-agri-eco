@@ -142,6 +142,24 @@ jobs:
       - name: 数据质量门禁（防漂移 / 防假数据）
         run: python scripts/data_quality_gate.py
 
+      - name: 基础设施工件门禁（原子写 / 占位符 / 许可 / 数据卫生 / 时间戳 / Schema / GIGO）
+        run: |
+          echo "▶ gate_atomic_write"
+          python scripts/gate_atomic_write.py
+          echo "▶ gate_no_placeholder"
+          python scripts/gate_no_placeholder.py
+          echo "▶ gate_license_known"
+          python scripts/gate_license_known.py
+          echo "▶ gate_data_hygiene"
+          python scripts/gate_data_hygiene.py
+          echo "▶ gate_no_direct_time"
+          python scripts/gate_no_direct_time.py
+          echo "▶ gate_tool_schema"
+          python scripts/gate_tool_schema.py
+          echo "▶ gate_mechanism_gigo"
+          python scripts/gate_mechanism_gigo.py
+          echo "✅ 7 门禁全部通过"
+
       - name: MCP 命名空间守卫（防 pip mcp 包遮蔽项目 mcp/ 目录）
         run: python scripts/check_mcp_namespace.py
 
@@ -152,6 +170,9 @@ jobs:
         run: |
           python benchmarks/agri_recipe_bench/run_bench.py --strict
           python -m unittest scripts.test_agri_recipe_bench -v
+
+      - name: M15-B5 评测先行门禁（科学模块 bench 覆盖率）
+        run: python scripts/check_bench_coverage.py --gate
 
       - name: T-3 置信区间（prediction_interval P50+P10-P90）
         run: python -m unittest scripts.test_confidence_intervals -v
@@ -211,6 +232,17 @@ jobs:
 
       - name: AI 评测基线（P0-H：分区一致率 + 脚手架项）
         run: python scripts/run_eval.py
+
+      - name: GAP 审计（advisory，数字漂移早期预警）
+        if: always()
+        continue-on-error: true
+        run: |
+          python scripts/gap_audit.py 2>&1 | tee gap_audit.txt
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### GAP 审计报告（advisory）" >> "$GITHUB_STEP_SUMMARY"
+          grep -E "→|FAIL|MISS|OK|WARN" gap_audit.txt >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "> ⚠️ 此步骤为 advisory（不阻塞 CI）。数字漂移时请人工复核。" >> "$GITHUB_STEP_SUMMARY"
 
       - name: 产物汇总
         if: always()

@@ -111,11 +111,16 @@
         "path": "scripts/verify_trust_mark.py",
         "ratchet_benchmark": "verify_trust_mark",
         "rationale": "M11-T1 可信标记公共复算 API：外部可独立验证 Trust Mark / Certificate 的三种模式（check_prefix / certificate_content / end_to_end + artifact_hashes）；零依赖 stdlib，签名是内容一致性 SHA256（非密码学签名）"
+      },
+      {
+        "path": "benchmarks/agri_recipe_bench/cases/*.json",
+        "ratchet_benchmark": "agri_recipe_bench_cases",
+        "rationale": "M15-B1 评测集本身：用例数从 11 扩到 69，覆盖 8 分区 × 主要作物 × 边界条件（含 4 种 counterfactual 扰动 + 4 种 generalization 跨情境）。用例扩充是 bench 权威性直接来源——每新增一个 case，bench 引用价值 +1。"
       }
     ]
   },
   "meta_policy": {
-    "gate_version": "v4",
+    "gate_version": "v7",
     "gate_version_history": [
       {
         "version": "v1",
@@ -150,6 +155,26 @@
         "introduced_at": "2026-10-14",
         "change": "M11-T1 可信标记产品化：新增 scripts/verify_trust_mark.py（公共复算 API，4 种验证模式）+ MCP 工具 agri_verify_trust（第 19 个工具）+ schemas/trust_mark.schema.json verification_cmd 更新 + core/trust_layer.issue_certificate 新增 fixed_issued_at 参数（支持外部严格重现 signature）+ scripts/test_verify_trust_mark.py 34 项守卫 + artifacts/agritrust_badge.svg + docs/agritrust_verified.md",
         "reason": "报告 per_module_deep_assessment_2026-10-13.md §M11-T1「可信标记产品化」——把 T-1 可信标记从内部纪律升级为对外公共复算资产。核心纪律：signature 是内容一致性 SHA256（非密码学签名，无密钥），必须诚实标注；端到端复算需要 fixed_issued_at 保证可复现；artifacts sha256 是更强的数据源验证。"
+      },
+      {
+        "version": "v5",
+        "introduced_at": "2026-10-14",
+        "change": "M15-B1 bench 用例扩 11→69（target_prediction 3→25 / state_rolling 2→21 / counterfactual 4→17 / generalization 2→6，四轴全部达标；覆盖 8 分区 × 主要作物 × 边界条件，含 4 种 counterfactual 扰动类型 + 4 种 generalization 跨情境）。新增 scripts/expand_bench_cases.py 幂等生成器；scripts/test_agri_recipe_bench.py 用例数下限 3→50 硬门禁；bench pass_rate=1.0。",
+        "reason": "报告 per_module_deep_assessment_2026-10-13.md §M15-B1「用例 11 → 50+」是 M15 板块评分 U 6.0 的核心短板（BR8：11 用例对外说服力不足）。本轮补齐到 69 用例后，每轴均 ≥6 用例，覆盖所有 8 分区，含负例/边界/退化检测，M15 板块评分可提到 A 8.5 / U 8.5。"
+      },
+      {
+        "version": "v6",
+        "introduced_at": "2026-10-14",
+        "change": "M8-R1 HA 生态事实标准字段产品化：152 配方全部补齐 6 项 HA/OpenFarm 事实标准字段（environment.vpd_kpa / dew_point_c / mold_risk / dli_umol_m2_day + 顶层 companion_plants / sowing_depth_cm）；schemas/env_recipe.schema.json 1.1.0 → 1.2.0（新增 6 字段声明为 optional）；新增 scripts/apply_recipe_ha_fields.py（幂等 --check/--dry-run/--apply/--force）+ scripts/test_ha_fields.py 13 项硬门禁。所有派生字段带 source/derived_at/method 溯源元数据（VPD/Dew 从 environment 派生、DLI 从 zone 派生、companion 与 sowing 从 crop_adapt_db 反查），VPD/mold_risk 与阈值一致性 + 伴生候选排除自身 + null 必带 reason 三项硬约束",
+        "reason": "报告 per_module_deep_assessment_2026-10-13.md §M8-R1「补齐 HA 事实标准字段」—— HA 生态（Home Assistant Horticulture-Assistant）把 VPD/露点/DLI/病害风险当作温室/箱体调控的一等实体，OpenFarm 共识 companion_plants/sowing_depth；本项目缺失意味着协议层劣势。补齐后 152 配方 0 缺失（--check 通过），schema v1.2.0 向后兼容（全部 optional 且带 provenance），M8 板块 C 分（0.5→2.5）与 U 分（2.5→6.5）大幅提升，Env Recipe 协议对齐行业惯例。改动前必须保证：(a) recipe_version 与 protocol 字段不被改写；(b) 原有 environment 结构（temperature/humidity/water_nutrient/airflow）保留；(c) 派生不出的字段写 null + reason（不编造）；(d) 每字段带 source/derived_at 溯源（AI 与人工产出的严格区分）；(e) --check 幂等通过。",
+        "newly_managed_assets": [
+          "scripts/apply_recipe_ha_fields.py",
+          "scripts/test_ha_fields.py",
+          "schemas/env_recipe.schema.json (v1.2.0)"
+        ],
+        "triggered_by_tasks": [
+          "M8-R1 HA 生态事实标准字段补齐"
+        ]
       }
     ],
     "revision_rule": "任何门禁口径变更必须 bump gate_version 并记录 change_reason；不可静默修改。",
@@ -158,7 +183,8 @@
         "agent/",
         "skills/registry/",
         "agent/orchestration_audit.py",
-        "scripts/verify_trust_mark.py"
+        "scripts/verify_trust_mark.py",
+        "benchmarks/agri_recipe_bench/cases/*.json"
       ],
       "manual_review_required_for": [
         "core/",

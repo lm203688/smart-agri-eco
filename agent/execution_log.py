@@ -20,6 +20,9 @@ import json
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
+# H1: 原子写入底座（execution_log 崩溃即溯源全废）
+from core.atomic_io import atomic_write_json
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 _VALID_SOURCES = {"native", "imported_kasvanta", "imported_other", "shadow"}
@@ -97,8 +100,8 @@ def load_recipe(path: str) -> Dict[str, Any]:
 
 
 def save_recipe(path: str, recipe: Dict[str, Any]) -> None:
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(recipe, f, ensure_ascii=False, indent=2)
+    # H1: 原子写（execution_log 崩溃即溯源全废）
+    atomic_write_json(path, recipe, ensure_ascii=False, indent=2, sort_keys=True)
 
 
 # ---------------------------------------------------------------------------

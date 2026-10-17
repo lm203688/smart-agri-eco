@@ -22,11 +22,15 @@ Orchestration Audit — 编排层可审计性模块（M10-O2 + M10-O4）
 """
 from __future__ import annotations
 
+from core.clock import CLOCK
 import hashlib
 import json
 import time
 import uuid
 from typing import Any, Dict, List, Optional, Tuple
+
+# H1: 原子写入底座（审计日志损坏会破坏可审计性）
+from core.atomic_io import atomic_write_json
 
 
 # ---------------------------------------------------------------------------
@@ -95,7 +99,7 @@ class TraceRecord:
 
     def __init__(self, input_request: Dict[str, Any]) -> None:
         self.trace_id = uuid.uuid4().hex[:16]
-        self.started_at = time.time()
+        self.started_at = CLOCK.time()
         self.input_request = dict(input_request or {})
         self.steps: List[Dict[str, Any]] = []
         self.ended_at: Optional[float] = None
@@ -119,10 +123,10 @@ class TraceRecord:
         })
 
     def finish(self) -> None:
-        self.ended_at = time.time()
+        self.ended_at = CLOCK.time()
 
     def total_ms(self) -> float:
-        end = self.ended_at if self.ended_at is not None else time.time()
+        end = self.ended_at if self.ended_at is not None else CLOCK.time()
         return round((end - self.started_at) * 1000, 3)
 
     def summary_hash(self) -> str:
@@ -431,9 +435,9 @@ def export_trace_json(trace: TraceRecord, path: str,
     """把 trace 写入 JSON 文件；返回路径。"""
     import os
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(export_trace_dict(trace, result),
-                  f, ensure_ascii=False, indent=2, sort_keys=True)
+    # H1: 原子写（审计日志损坏会破坏可审计性）
+    atomic_write_json(path, export_trace_dict(trace, result),
+                      ensure_ascii=False, indent=2, sort_keys=True)
     return path
 
 

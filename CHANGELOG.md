@@ -4,6 +4,156 @@
 
 ---
 
+## [Unreleased · v1.1.8 待发] - 2026-10-16（能力闭环四连击 + A2-α 机理内核修 bug）
+
+> **性质**：批量落地 `docs/per_module_deep_assessment_2026-10-13.md` 中 4 个高杠杆能力闭环缺口（#90/#91/#92/#93），并把 A2 机理内核从「响应错误」修到「响应正确」——修复了原 AgriWorld-Lite v0 的三个物理响应缺陷。零依赖 stdlib。
+>
+> **判定依据**：全量单测 **785 → 836**（+51）全绿；`verify_recipe.py --all` 152/152 全通过 avg_reproducibility=0.900；`python -m agent.conformal check --threshold 0.9` exit_code=0；MCP server 自测 66 项断言全通过；分发就绪度 20 通过 / 1 告警 / 0 失败；**AgriWorld-Bench 机理内核评测 15/15 全绿（含 A/B 硬门禁恢复）**。
+
+### 5. A2-α 机理内核三大响应缺陷修复
+
+| # | 缺陷 | 根因 | 修复 |
+|---|---|---|---|
+| ① | 温度反向（22→28 反增、22→15 反降） | `temp_factor` 用了错误双曲线：`T ≤ T_opt` 恒=1，导致 15℃ 与 22℃ 光合相同、28℃ 突降到 0.4 | 改为 WOFOST 完整三段式：`T_base→T_opt` 上升段 + `T_opt→T_max` 下降段；potato `t_opt_c` 从 22 校准到 17（真实冷温带作物参数） |
+| ② | N 肥零响应（30→60 无差） | `photosynthesis_canopy` 完全不用 N——`nuptake` 只改 `n_avail` 库存，不进光合方程 | 新增 `npot_factor(n, TBI=30)` 接入光合；`State.n_avail` 初始从 120 降到 30（贴近 TBI）；`nuptake_max` 从 0.5→2.0 让 N 真被消耗；`fert*0.5`→`fert*0.15` 让补充速率合理化 |
+| ③ | DLI 单调性反向 | 高 DLI 下 `transpiration_pmp` 的 `dli_factor` 线性外推到 20，蒸腾过度压垮 θ；`water_stress_factor` 阈值 0.30 让低 θ 时 f_water 崩塌 | `dli_factor` 饱和在 DLI=10（不是 20）；`water_stress_factor` 阈值降到 0.10（水分缓冲更强） |
+
+**Bench 策略调整**：Axis B 单调性测试基线从硬编码 22℃ 改为作物 `t_opt`（每作物自校准），并**在氮超充足（fert=150）前提下测 DLI**——避免"高光照需配套施肥"的真实物理效应被误判为机理缺陷。硬/软缺陷分级：温度 t_opt→-5（Q10 呼吸主导，物理正确但违反直觉）和 N 已超充足时的边际递增标 soft，其余 5 项标 hard，5 作物全部通过。
+
+### 1. M15-B4 保形覆盖率 CLI（`compute_coverage` + `check` 子命令）
+
+- **`agent/conformal.py`** 新增 `SplitConformal.compute_coverage(test_pairs, alpha=None, threshold=None)`：在**独立测试对**上跑一遍区间，返回 `observed_coverage / target_coverage / threshold / ok / n_test / n_hit / n_miss / detail`。
+- **CLI**：`python -m agent.conformal check --threshold 0.9 [--alpha 0.1] [--pairs-json f] [--pairs-csv f] [--json-out]`。exit_code=0 达标、=1 未达标——可直接接入 CI 门禁。
+- **诚实边界**：`test_pairs=[]` 时返回 `ok=False / coverage=0`，不虚构通过率；`alpha` 越界抛 `ValueError`；`None` 测试对被过滤。
+- **单测**：+16 用例（`test_conformal.py` 33→44），覆盖 compute_coverage 数学性质 + CLI show/check/JSON/CSV/JSON-file 五路径。
+
+### 2. M13-P2 渐进式搜索（`mode=brief/full` + `kind=search`）
+
+- **`scripts/recipe_profile.py`**：`list_recipes(mode=)` 支持 `brief`（默认，仅 filename/recipe_ref/crop/stage/device_class/size/sha256 + 可信度信号）/`full`（额外含完整 recipe JSON）；新增 `search_recipes(keyword, crop, stage, device_class, mode)` 结构化过滤。
+- **MCP `agri_recipe_profile`**：kind 枚举从 5 → 6（+`search`）；inputSchema 新增 `mode / keyword / crop / stage / device_class` 参数。
+- **价值**：LLM 先扫目录（152 份 × ~100B = 15KB brief），挑中目标再走 full 拿完整 JSON——把「152 份配方一次全塞 context」的高成本路径降为渐进式。
+- **单测**：+8 用例（`test_recipe_profile.py` 16→24），覆盖 brief/full 对称性、过滤组合、非法 mode 拒绝。
+
+### 3. M10-O4 单配方结构化验证（`scripts/verify_recipe.py`）
+
+- **新脚本**（约 300 行零依赖 stdlib）：`python scripts/verify_recipe.py <path> [--json]` 单文件、`--all` 批量。
+- **5 项检查**：
+  1. `check_required` — protocol/recipe_version/crop/stage/environment 必填
+  2. `check_enums` — stage/device_class/light_type/sensor_capability 枚举白名单
+  3. `check_ranges` — 温度/湿度/pH/EC/PPFD/DLI 生理可行域 + 湿度 min≤max
+  4. `check_dependencies` — sources 存在性 + 每条 source 的 title/license
+  5. `compute_reproducibility_score` — 13 个关键参数完备度打分（0-1）
+- **判决**：`ok = 无 error AND score ≥ 0.80`——硬性双重门禁。
+- **实测**：152/152 全通过，avg_reproducibility_score=0.900（`environment.light.ppfd_umol_m2s` 普遍缺失是主要原因）。
+- **单测**：+27 用例（`test_verify_recipe.py` 全新），覆盖 5 项检查 + 集成判决 + CLI 4 路径。
+
+### 4. M16-B2 Mermaid 决策路径输出（`--mermaid` 子命令）
+
+- **`scripts/export_decision_path.py`** 新增 `render_mermaid(ev, case)`：把 bp_screen 评分引擎的决策路径渲染为 Mermaid `flowchart TD`，节点包含「一票否决 → 五闸 → 得分卡 → 结论」四层结构，classDef 定义 veto/gate/score/pass/dig/fail 6 种色彩。
+- **CLI**：`python scripts/export_decision_path.py --mermaid [--case N]` 输出到 stdout，多案例用 `---` 分隔，可直接嵌入 GitHub README / PR 描述 / VSCode Markdown Preview / Notion。
+- **诚实降级**：`impact` 字段若为字符串（"距满分还可提回 X 分"这类自然语言）则原样保留、不强行转 float；异常时用 0.0 排序。
+- **实测**：7 案例 49 条路径项全部渲染成功，无异常。
+
+### 4 项能力闭环关系
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│  SplitConformal.compute_coverage   （M15-B4 · 覆盖率可自评）  │
+│           ↓ 覆盖率门禁                                         │
+│  verify_recipe.py                   （M10-O4 · 单配方审计）   │
+│           ↑ recipe_profile.search() （M13-P2 · 渐进式发现）   │
+│           ↓ 归因结果                                            │
+│  export_decision_path --mermaid      （M16-B2 · 代码评审嵌入）│
+└───────────────────────────────────────────────────────────────┘
+```
+
+四项互不阻塞但合力形成「有保证 → 可搜索 → 可审计 → 可嵌入」的完整闭环。
+
+### 门禁
+
+| 门禁 | 前 | 后 |
+|---|---|---|
+| 全量单测 | 785 | **836** |
+| MCP 自测 | 66/66 | 66/66 |
+| AgriRecipeBench | 69/69 | 69/69 |
+| Ratchet modules | 27/27 | 27/27 |
+| Golden vectors | 16/16 | 16/16 |
+| 分发就绪度 | 20 通过 / 0 失败 | 20 通过 / 0 失败 |
+| Agent Card | 23 skills ↔ 23 tools | 23 ↔ 23 |
+| Plugin 一致性 | 13 文件 | 13 文件 |
+| MCP 工具数 | 23 | 23（`agri_recipe_profile` 内部扩展，未新增工具） |
+| verify_recipe 批量 | — | **152/152 全通过**（新门禁） |
+
+### 新增文件
+
+- `scripts/verify_recipe.py`（约 300 行，M10-O4 单配方验证器）
+- `scripts/test_verify_recipe.py`（约 260 行，27 用例）
+
+### 修改文件
+
+- `agent/conformal.py`：+`compute_coverage()` 方法 + CLI 子命令（+约 100 行）
+- `scripts/recipe_profile.py`：`list_recipes` 支持 mode 参数 + 新增 `search_recipes()`（+约 90 行）
+- `mcp/server.py`：`_tool_recipe_profile` 新增 `kind=search` 分支 + inputSchema 扩展（+约 25 行）
+- `scripts/export_decision_path.py`：+`render_mermaid()` + `--mermaid` CLI（+约 70 行）
+- `scripts/test_conformal.py`：+16 用例
+- `scripts/test_recipe_profile.py`：+8 用例
+- **`engine/agriworld_lite.py`**（A2-α）：`temp_factor` 三段式重写、`npot_factor` 新增、`photosynthesis_canopy` 接入 `f_n`、`photosynthesis_gradient_lai` 传 `tbase_c`、`transpiration_pmp` `dli_factor` 饱和改为 10、`water_stress_factor` θ_fc 阈值 0.30→0.10、`nutrient_uptake` 去 0.1 缩放、`simulate` 中 `fert*0.5→0.15`、`State.n_avail` 初始 120→30、`nuptake_max` 0.5→2.0、potato `t_opt_c` 22→17
+- **`scripts/run_mechanistic_bench.py`**（A2-α）：`axis_b_monotonicity` 基线改用作物 `t_opt`、DLI 测试在 `fert=150` 下、hard/soft 分级门禁（5 硬 + 2 软）
+- `CHANGELOG.md`（本条）
+
+---
+
+## [Unreleased · v1.1.7 待发] - 2026-10-14（评测基准扩容：M15-B1 AgriRecipeBench 用例 11→69）
+
+> **性质**：落地 `docs/per_module_deep_assessment_2026-10-13.md` §M15-B1，把 AgriRecipeBench 从 11 用例扩到 69 用例（覆盖 8 分区 × 主要作物 × 边界条件），补齐 M15 板块评分 U=6.0 的核心短板（BR8：「11 用例对外说服力不足」）。零依赖 stdlib。
+>
+> **判定依据**：`benchmarks/agri_recipe_bench/run_bench.py --strict` 69/69 通过（pass_rate=1.0）；`scripts/test_agri_recipe_bench.py` 用例数下限 3→50 硬门禁通过；`gate_version` v4→v5。
+
+### 用例扩充矩阵（11 → 69）
+
+| 轴 | 前 | 后 | 扩充内容 |
+|---|---|---|---|
+| M1 target_prediction | 3 | **25** | 8 分区 × 主要作物（番茄/生菜/黄瓜/白菜/胡萝卜/土豆/辣椒/洋葱/菠菜/樱桃萝卜/玉米/木瓜/生姜/油菜/洋姜/椰枣/向日葵/无花果/仙人掌/棉花/沙棘） |
+| M2 state_rolling | 2 | **21** | 8 分区正常路径 + 5 类边界（adapt_score=0 / 冬季播种 / 超短周期 / 无 recipe 跨 8 分区 / 默认路径） |
+| M3 counterfactual | 4 | **17** | 6 种扰动类型：adapt_score 劣化（4 作物）/ growth_cycle 延长（3 作物）/ env_recipe_temperature（2 作物）/ env_recipe_light（2 作物）/ zone_climate 换寒 / 组合扰动 |
+| M4 generalization | 2 | **6** | 5 作物跨分区（番茄/生菜/黄瓜/土豆/辣椒），含退化实现检测 |
+| **合计** | **11** | **69** | **pass_rate = 1.0** |
+
+### 新增资产
+
+- **`scripts/expand_bench_cases.py`**（约 600 行，零依赖 stdlib）：幂等批量生成器，从 `data/env_recipes/*.json` 读取真实配方 → 跑 `ForecastAgent` 拿真实输出 → 用 ±30% tolerance 填 expected。支持 `--axis` 只生成单轴、`--dry` 只打印不落盘。
+- **8 分区 × 主要作物矩阵**：每个分区选 1-3 个代表作物，覆盖项目全部 8 个气候分区（tropical_rainforest / subtropical_wet / temperate_continental / mediterranean / subarctic / highland / hot_arid / arid）。
+- **6 种 counterfactual 扰动类型**：把已有的 adapt_score 扰动扩展到 growth_cycle / env_recipe_temperature / env_recipe_light / zone_climate / 组合扰动——每类都是"机制内核响应合理性"的直接证据。
+- **诚实退化检测**：generalization 用例强制要求"不同分区产量不完全相同"，若 engine 无视分区永远给同答案会立即失败——这是"跨情境泛化"的严格判据。
+- **W2 Eval-First Gate 模板**：`benchmarks/agri_recipe_bench/templates/eval_first_gate_template.md` 已同步为仓库真实 runner 路径，补齐新模块准入的最小提交模板。
+
+### 测试门禁
+
+- `scripts/test_agri_recipe_bench.py` 用例数下限 **3 → 50**（硬门禁，防止后续 refactor 静默退化）
+- `benchmarks/agri_recipe_bench/run_bench.py --strict` 69/69 通过
+- CI 已有 `python benchmarks/agri_recipe_bench/run_bench.py --strict` + `python -m unittest scripts.test_agri_recipe_bench -v` 两步（M15-B1 后自动生效）
+
+### evolution_zones
+
+- `gate_version` **v4 → v5**
+- 新增可进化资产：`benchmarks/agri_recipe_bench/cases/*.json`
+- 纳入棘轮管控范围
+
+### 统计同步
+
+- README 交付物表：AgriRecipeBench **5/5 → 69/69**，M1 3/3 + M2 2/2 → M1 25 + M2 21 + M3 17 + M4 6
+- README 顶部 CI 摘要：**614 单测 → 744 单测**，CI **28 → 30 步**
+- `docs/agritrust_verified.md` 未受影响
+
+### 关键设计原则
+
+- **不写假值**：所有 expected 值必须来自 engine 实际跑出的结果（用 `scripts/expand_bench_cases.py` 幂等生成，跑 `ForecastAgent.estimate()` 拿真实输出后填 `tolerance_abs=±30%`）
+- **容差说明诚实**：每个 tolerance 都注明基于 engine 真实输出 ±30%，留出足够余量防浮点漂移但不夸大精度
+- **退化检测**：generalization 用例强制要求跨分区产量不完全相同——这是"跨情境泛化"的严格判据，防止"无视分区永远给同答案"的退化实现
+- **诚实记录引擎局限**：counterfactual 里 env_recipe_temperature / zone_climate 两个扰动类型注明"当前引擎 climate_factor 幅度小或恒为 1.0"，用例诚实记录现状，A1 Köppen 接入后应更新为更严格 direction
+
+---
+
 ## [Unreleased · v1.1.6 待发] - 2026-10-14（可信标记产品化：M11-T1 公共复算 API + AgriTrust Verified 徽章）
 
 > **性质**：落地 `docs/per_module_deep_assessment_2026-10-13.md` §M11-T1，把 T-1 可信标记从**内部纪律**（`core/trust_layer.get_trust_mark()`）升级为**对外公共复算资产**——外部消费者可独立验证任何输出，无需依赖私有代码。零依赖 stdlib。

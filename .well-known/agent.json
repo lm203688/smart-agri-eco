@@ -49,9 +49,44 @@
     },
     "confidenceIntervals": {
       "supported": true,
-      "method": "heuristic_spread_based",
+      "method": "split_conformal",
       "responseField": "prediction_interval",
-      "description": "预测类输出（产量 / 采收期 / 周期）返回 P50 + P10-P90 区间；输入越少区间越宽，非概率 CI。"
+      "description": "预测类输出（产量 / 采收期 / 周期）返回 P10/P50/P90 保形区间。alpha=0.10 时覆盖率 ≥ 90%（非渐近）。基于 AgriWorld-Lite bench 快照构造的 SplitConformal 校准器（当前 3 例，接入 feedback 后区间收紧）。"
+    },
+    "verificationService": {
+      "supported": true,
+      "method": "three_way_conflict_detection",
+      "endpoint": "agri_verify_recommendation",
+      "trustMarkField": "trust_mark",
+      "description": "Verify-as-a-Service 支柱五：作为「农业 Agent 的裁判」验证第三方主张。三类冲突检测：① 物理约束（光能转化效率上限 / 物质守恒）② 物候一致性（积温-发育期）③ 环境-品种（生态位适宜度）。输出 verdict=supported|contradicted|caution|unverifiable + 保形区间 + 矛盾清单 + 可复算 trust_mark。目标：让「不能验证的建议永远免费」变成工程能力。"
+    },
+    "mechanisticKernel": {
+      "supported": true,
+      "engine": "AgriWorld-Lite v0",
+      "dependency": "stdlib-only, zero third-party",
+      "methods": [
+        "Beer-Lambert 冠层光截获",
+        "Farquhar 型 CO2 同化（矩形双曲线）",
+        "Q10 呼吸（维持呼吸 TBASE=0）",
+        "Penman-Monteith 蒸腾",
+        "水量平衡（灌溉-蒸腾-亏缺）",
+        "养分质量流（NPK）",
+        "器官分流（叶-茎-穗）",
+        "解析梯度（FD 1e-4 中心差分验证，8/8 golden 通过）"
+      ],
+      "description": "Phase N+1 支柱一：把 7 作物的物候骨架移植进可微分机理内核。可离线运行、可私有化部署。当前作物参数移植完成，生理子模块完成到可产出生物量 g/m² 级别，尚未做实测反演。"
+    },
+    "counterfactualTrajectory": {
+      "supported": true,
+      "endpoint": "agri_counterfactual_trajectory",
+      "attributionFactors": [
+        "light",
+        "temperature",
+        "water",
+        "nutrient",
+        "development"
+      ],
+      "description": "Phase N+1 支柱一：把 17 个 bench 用例升级为产品能力。给定基线与候选动作序列，用机理内核仿真并输出 Δ生物量、器官级分解、因子归因、双轨分歧告警、理论光能上限。"
     },
     "cardSigning": {
       "supported": true,
@@ -80,138 +115,450 @@
   ],
   "skills": [
     {
-      "id": "agri_env_recipe",
-      "name": "环境配方生成",
-      "description": "给定作物 + 生长阶段 + 设备类别，返回一份 Env Recipe v1 合规的可执行环境配方。优先命中已发布的 116 份配方库；未入库作物回退为作物适应库现场派生，并明确标注来源。",
-      "tags": ["env-recipe", "grow-box", "climate-control", "executable-config"],
-      "examples": [
-        "番茄 在 fruiting 阶段、indoor_cabinet 设备类别的环境配方",
-        "生菜 seed 阶段的育苗环境参数"
+      "id": "agri_list_cities",
+      "name": "预设城市列表",
+      "description": "列出预设城市（经纬度 + 气候带），供 Agent 选点或核对分区。",
+      "tags": [
+        "climate",
+        "mcp-tool"
       ],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     },
     {
       "id": "agri_match_zone",
       "name": "气候分区匹配",
-      "description": "输入经纬度，返回 Köppen-Geiger 气候带 + FAO 农业分区匹配结果，含温度/降水/土壤/pH/霜冻风险等关键约束与证据链。",
-      "tags": ["climate", "zone-matching", "geospatial"],
-      "examples": ["北纬 30.27 东经 120.15 属于什么农业分区"],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
+      "description": "输入经纬度，返回气候分区匹配结果（含证据与限制因子）。",
+      "tags": [
+        "climate",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     },
     {
       "id": "agri_recommend_crops",
-      "name": "作物适配推荐",
-      "description": "根据分区（经纬度）与偏好（用途/空间面积/难度/场景）推荐适配作物，输出适配度评分、种植周期、易失败风险与兜底品种。",
-      "tags": ["crop-recommendation", "adaptation"],
-      "examples": ["1 平米阳台、新手、以食用为目的，推荐种什么"],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
+      "name": "作物推荐",
+      "description": "根据分区（lat/lon 或 city）与偏好（用途/空间/难度）推荐作物。",
+      "tags": [
+        "crop",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     },
     {
       "id": "agri_growth_plan",
-      "name": "种植计划生成",
-      "description": "作物 + 场景 + 分区 → 完整种植计划（播种→定植→管理→采收），含关键事件时间轴、风险提示与微气候修正（阳台朝向/楼层/遮挡）。",
-      "tags": ["growth-plan", "scheduling", "microclimate"],
-      "examples": ["北京阳台朝南 12 楼，3 月 1 日开始种番茄的计划"],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
-    },
-    {
-      "id": "agri_season_advisory",
-      "name": "物候推演与播期窗口",
-      "description": "三种模式：planting_window 由 12 个月均温推导无霜期与各作物最早/最晚安全播种日；stage_days 由作物 + 日均温推演出苗/开花/成熟天数（WOFOST 积温，覆盖 7 作物）；calendar 按 USDA 耐寒区与日期查外部种植日历。",
-      "tags": ["phenology", "sowing-window", "gdd", "wofost"],
-      "examples": [
-        "给出某地 12 个月均温，算番茄最早最晚安全播种日",
-        "日均温 22 度，黄瓜多久开花"
+      "name": "生长计划",
+      "description": "作物 + 场景 + 分区 → 生成种植计划（含微气候修正）。",
+      "tags": [
+        "phenology",
+        "mcp-tool"
       ],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
-    },
-    {
-      "id": "agri_reconcile_climate",
-      "name": "多源气候校准",
-      "description": "给定经纬度并行拉取 NASA POWER 与 Open-Meteo，逐月平均得调和基线，并计算逐月一致度与分歧告警（标准差超阈值标记）。无网络时优雅降级，绝不返回编造值。WorldClim 2.1 列为扩展点。",
-      "tags": ["climate", "multi-source", "calibration", "provenance"],
-      "examples": ["杭州坐标近 5 年逐月均温，两源是否一致"],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
-    },
-    {
-      "id": "agri_soil_profile",
-      "name": "土壤剖面",
-      "description": "按经纬度或分区返回土壤剖面（质地/pH/有机碳/养分）。在线查询 ISRIC SoilGrids v2.0 优先，不可用时降级为离线分区均值并明确标注 resolution=zone、confidence=low。可选传入作物做 pH 适宜性拟合。",
-      "tags": ["soil", "soilgrids", "degradation-aware"],
-      "examples": ["某坐标的土壤 pH 与质地"],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     },
     {
       "id": "agri_diagnose_pest",
-      "name": "病虫害与营养缺乏诊断",
-      "description": "根据作物、症状描述、可选图像引用、生长阶段与环境数据，诊断病虫害或营养缺乏，输出诊断结果、严重程度、处理建议与替代诊断。视觉后端未配置时走规则降级。",
-      "tags": ["pest", "diagnosis", "nutrition-deficiency"],
-      "examples": ["番茄叶片有黄褐色斑点并卷曲，什么病"],
-      "inputModes": ["application/json", "text/plain"],
-      "outputModes": ["application/json"]
+      "name": "病虫害诊断",
+      "description": "病虫害与营养缺乏诊断：输入作物、症状描述（可选图像引用、生长阶段、环境）。",
+      "tags": [
+        "pest",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     },
     {
       "id": "agri_nutrition_plan",
-      "name": "养分管理方案",
-      "description": "作物 + 生长阶段 + 容器容积 → 阶段化施肥方案，给出 NPK 侧重、浓度、频率与单次用量。",
-      "tags": ["nutrition", "fertilizer", "stage-based"],
-      "examples": ["阳台番茄结果期怎么施肥"],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
+      "name": "养分管理计划",
+      "description": "养分管理：作物 + 阶段 → 阶段化施肥方案。",
+      "tags": [
+        "nutrition",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_env_recipe",
+      "name": "环境配方生成",
+      "description": "（P0-G）作物 + 生长阶段 + 设备类别 → 返回一份 Env Recipe v1 合规配方 JSON。",
+      "tags": [
+        "recipe",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_season_advisory",
+      "name": "物候与播期建议",
+      "description": "（B1+B2）物候与播期：mode=planting_window 时给 12 个月均温返回无霜期与各作物最早/最晚安全播种日；mode=stage_days 时给作物+日均温返回出苗/开花/成熟天数；mode=calendar 时按 USDA 区+日期查外部日历（需数据到位）。",
+      "tags": [
+        "meta",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_soil_profile",
+      "name": "土壤剖面分析",
+      "description": "（土壤降级路径）经纬度或分区 → 土壤剖面。优先查 ISRIC SoilGrids v2.0（在线点数据），不可用时降级为离线分区均值并明确标注 resolution=zone、confidence=low。可选传入 crop 做 pH 适宜性拟合。",
+      "tags": [
+        "soil",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_bp_screen",
+      "name": "农业投资初筛",
+      "description": "（投资初筛）农业项目投资初筛系统：传入 BP/审计/流水文本（text）或已抽取字段（fields），跑九层管线 → 六分类（种业/农机/数字农业/生物投入品/供应链/养殖）+ 五闸爆雷 + 六评分卡 + 一票否决 → 三档结论（≥75 通过 / 60-75 需深挖 / <60 淘汰），并返回归因决策路径、反事实边界（补齐哪几项可翻档）、三级数据缺口清单、证照核验结果与合理性校验摘要。输入是 BP 文本，不依赖本项目种植数据，也不生成 ROI 数字。输出为初筛参考，不构成投资决策建议；核验层 local_hit 仅为本地示例库字符串匹配，不是官方核验。",
+      "tags": [
+        "business",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_reconcile_climate",
+      "name": "多源气候调和",
+      "description": "（多源气候校准）给定经纬度，并行拉 NASA POWER + Open-Meteo，逐月平均得调和月均温基线，并计算逐月一致度（多源标准差）与分歧月份告警（标准差超 3℃ 标记）。WorldClim 2.1 列为扩展点（暂未接逐点取数）。无网络时优雅降级（reconciled=null + provenance_complete=false），绝不返回编造值。对齐壁垒④ 真实结果回流校准。",
+      "tags": [
+        "climate",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     },
     {
       "id": "agri_resolve_recipe",
-      "name": "地理编码到配方",
-      "description": "城市名（中文/英文）或经纬度 → 匹配气候分区 → 检索该分区的 Env Recipe 清单。完全离线，是「城市种植生成箱」的核心分发路径。",
-      "tags": ["geocoding", "recipe-retrieval", "offline"],
-      "examples": ["杭州有哪些可用的种植配方"],
-      "inputModes": ["application/json", "text/plain"],
-      "outputModes": ["application/json"]
+      "name": "配方解析",
+      "description": "（地理编码→配方）城市名（中文/英文）或经纬度 → 匹配气候分区 → 检索该分区的 Env Recipe 清单。返回 zone_id / zone_name / 坐标 / 匹配配方（作物名+阶段+设备类+路径）。核心「城市种植生成箱」分发价值，完全离线。",
+      "tags": [
+        "recipe",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     },
     {
       "id": "agri_query_lineage",
-      "name": "数据血缘溯源",
-      "description": "按作物或分区查询配方的数据溯源：外部 API 参与情况、本地权威文件 SHA256 指纹、双源校准实证。用于回答「这个数字从哪来、可复现吗」。",
-      "tags": ["data-lineage", "provenance", "reproducibility", "audit"],
-      "examples": ["番茄配方的数据来自哪里，有校准实证吗"],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
-    },
-    {
-      "id": "agri_list_cities",
-      "name": "预设城市清单",
-      "description": "列出预设城市（经纬度 + 气候带），供 Agent 选点或核对分区。",
-      "tags": ["cities", "reference"],
-      "examples": ["有哪些预设城市"],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
+      "name": "数据血缘查询",
+      "description": "（数据血缘查询）按作物/分区查配方的数据溯源：外部 API 参与情况 + 本地权威文件 SHA256 指纹 + 校准实证（壁垒④）。传入 crop+zone_id 做单点追踪；仅 crop 查全分区；仅 zone_id 查全作物；皆空返回全局摘要。对齐 GOAI DataFlow-Agent 提升点3。",
+      "tags": [
+        "meta",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     },
     {
       "id": "agri_list_ecosystem",
       "name": "生态对接清单",
-      "description": "返回对接的开源/商业生态清单，含对接状态（integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated）、许可与用途。用于向调用方说明开放生态策略与差异化定位。",
-      "tags": ["ecosystem", "open-source", "interoperability"],
-      "examples": ["你们对接了哪些开源农业项目"],
-      "inputModes": ["application/json"],
-      "outputModes": ["application/json"]
+      "description": "（生态对接清单）返回智慧农业生态对接的开源/商业生态清单（config/ecosystem.json），含对接状态（integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated）、许可、URL、用途说明与集成计划。让 MCP 客户端一次看清我们的开放生态策略：能对接的不重复造轮子，只做 MCP 分发不做 SaaS。可选按 status 过滤。",
+      "tags": [
+        "meta",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     },
     {
-      "id": "agri_bp_screen",
-      "name": "农业项目投资初筛",
-      "description": "传入农业 BP / 审计报告 / 流水文本或已抽取字段，跑九层管线 → 六分类 + 五闸爆雷 + 六评分卡 + 一票否决 → 三档结论（≥75 通过 / 60-75 需深挖 / <60 淘汰），含归因决策路径、反事实边界与数据缺口清单。输出为初筛参考，不构成投资决策建议，也不生成 ROI 数字。",
-      "tags": ["investment-screening", "bp-analysis", "risk-gates"],
-      "examples": ["帮我初筛这份农业项目 BP"],
-      "inputModes": ["application/json", "text/plain"],
-      "outputModes": ["application/json"]
+      "id": "agri_search",
+      "name": "知识检索",
+      "description": "（知识检索 M12-K1）跨 4 语料（crops/zones/pests/recipes，共 335 条）做词法+向量混合检索，底层是 stdlib-only 的 char n-gram + cosine + SQLite FTS5（engine/local_search.py，565 行零依赖引擎）。把 M12 板块从『有引擎无调用』变为主链路可查。默认 hybrid 模式，可切 exact/keyword/vector。返回含 corpus/entity/snippet/score 分解与索引统计。",
+      "tags": [
+        "knowledge",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_knowledge_query",
+      "name": "知识图谱查询",
+      "description": "（知识图谱查询 M12-K1）查 261 实体 / 446 边的农业知识图谱（engine/knowledge_graph.py）。支持 5 种 kind：summary=整体统计；crops_by_zone=分区→作物排序；crops_by_risk=病虫害→受影响作物；neighbors=节点邻居；traverse=BFS 遍历。把图谱从『无调用』变为可查入口。",
+      "tags": [
+        "knowledge",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_forecast",
+      "name": "预测（含保形区间）",
+      "description": "（独立预测 M13-P1）产量/采收期预测，含 T-3 置信区间（P10/P50/P90）。底层与 agri_growth_plan 内的推荐部分同源（ForecastAgent），但独立暴露，让 MCP 客户端不必先跑 growth_plan 再解 recommendation。含 heuristic_spread_based 区间与诚实的 model=heuristic 标注。",
+      "tags": [
+        "forecast",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_recipe_profile",
+      "name": "配方 profile",
+      "description": "（配方 profile 五件套 M8-R2 + M13-P2）152 份 Env Recipe 资产的浏览、检索、比对、导出、加载。支持 6 种 kind：list=列出所有配方元信息（brief）；search=结构化过滤（keyword/crop/stage/device_class）+ mode=brief/full（渐进式发现，节省 context）；stats=资产统计（总数/字节/分布）；lookup=按文件名加载完整配方；diff=结构化 diff（difflib 统一 diff）；export=导出到 JSON 字符串（隐私字段默认剥离）。import/clone 涉及写盘，不进 MCP——请用 CLI scripts/recipe_profile.py。",
+      "tags": [
+        "recipe",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_verify_trust",
+      "name": "可信标记复算",
+      "description": "（可信标记公共复算 API M11-T1）外部独立验证 AgriTrust 可信标记 / 证书。支持 3 种 mode：current=返回当前信任标记（含 signature 与复算命令）；check_prefix=检查外部提供的 mark 内部一致性（signature_prefix 是否为 signature 前 12 字符）；end_to_end=用外部 mark 的 issued_at + 本地数据源严格重现 signature 对比。诚实边界：signature 是内容一致性 SHA256，非密码学签名（无密钥）——证明数据未被修改，不证明签发者身份。",
+      "tags": [
+        "meta",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_server_card",
+      "name": "Server Card",
+      "description": "（Server Card + ETags M13-P3）返回 MCP 服务元数据卡（能力/分类/协议/URL 等），带稳定 ETag（sha256 前 16 hex）。客户端可缓存；带 if_none_match 命中时返回 not_modified 短路。与 .well-known/mcp-card.json 同源；24h 建议缓存 TTL。",
+      "tags": [
+        "meta",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_decision_path_report",
+      "name": "决策路径报告",
+      "description": "（决策路径可视化报告 M16-B2）将 bp_screen 评分引擎的 decision_path 归因数据导出为可视化报告。返回结构化 JSON：每个案例含 verdict/decision_path/counterfactual/dimensions 完整数据。支持 case_id 筛选。输出格式为可解析的归因树，供前端渲染或下游报告系统消费。",
+      "tags": [
+        "bp_screen",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_counterfactual_trajectory",
+      "name": "反事实轨迹",
+      "description": "（反事实轨迹 API · Phase N+1 #6）给定作物与基线动作序列，用 AgriWorld-Lite 机理内核（光截获 Beer-Lambert + CO2 同化 + Q10 呼吸 + Penman-Monteith 蒸腾）仿真 45 天生物量轨迹。支持 quick_scenario 快速对比（光周期 12→16h / 降温 5℃ / 停肥 / 高湿等），返回 Δ生物量、归因分解（光/温/水/肥/发育）与机理-启发式双轨分歧告警。零依赖纯标准库。",
+      "tags": [
+        "counterfactual",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_verify_recommendation",
+      "name": "主张验证服务",
+      "description": "（Verify-as-a-Service · Phase N+3 #14 · 支柱五）作为「农业 Agent 的裁判」验证第三方（另一个 Agent、大模型、BP、农艺师）给出的农业主张。支持三类冲突检测：① 物理约束（光能转化效率、物质守恒）② 物候（积温-发育期一致性）③ 环境-品种（生态位适宜度）。输出 verdict=supported|contradicted|caution|unverifiable、保形区间 p10/p50/p90、矛盾清单、可复算 trust_mark（SHA256）。本工具是支柱五的核心：让「不能验证的建议永远免费」变成工程能力。",
+      "tags": [
+        "verify",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     }
   ],
+  "x-agri-registry-skills": [
+    {
+      "id": "climate_match",
+      "name": "农业分区气候匹配",
+      "domain": "climate",
+      "agent": "ClimateAgent",
+      "description": "根据地块经纬度匹配 Köppen-Geiger 气候带 + FAO 农业分区，输出分区元数据和关键环境约束（温度/降水/土壤/pH/霜冻风险）。支持微气候修正（阳台朝向/楼层/遮蔽）。",
+      "file": "climate_match.json"
+    },
+    {
+      "id": "control_commands",
+      "name": "L3 执行控制指令生成",
+      "domain": "control",
+      "agent": "ControlAgent",
+      "description": "把 GrowthAgent 种植计划 + EcoAgent 设备推荐翻译为硬件无关的控制指令协议（灌溉/施肥/补光/温控/CO2/通风），并给出执行补偿（车载颠簸、开放环境波动、设备故障降级）。经 orchestrator.call_skill('control_commands') 统一调用。",
+      "file": "control_commands.json"
+    },
+    {
+      "id": "crop_adapt",
+      "name": "作物-分区适配推荐",
+      "domain": "crop",
+      "agent": "CropAgent",
+      "description": "根据气候分区数据 + 用户偏好（食用/观赏/香料、空间、难度、采收周期）推荐适配作物，输出适配度评分、种植周期、易失败风险和兜底品种。",
+      "file": "crop_adapt.json"
+    },
+    {
+      "id": "device_recommend",
+      "name": "种植设备与工具推荐",
+      "domain": "eco",
+      "agent": "EcoAgent",
+      "description": "根据种植场景（阳台/车载/屋顶/教育）+ 作物类型 + 分区数据 + 预算，推荐适配的设备/工具组合（种植机/传感器/水肥/补光），输出设备清单、价格和推荐理由。",
+      "file": "device_recommend.json"
+    },
+    {
+      "id": "growth_plan",
+      "name": "生长周期管理与种植计划",
+      "domain": "growth",
+      "agent": "GrowthAgent",
+      "description": "根据选定作物 + 分区数据 + 种植场景生成完整种植计划（播种→定植→管理→采收），含关键事件、风险提示、兜底救活方案。",
+      "file": "growth_plan.json"
+    },
+    {
+      "id": "harvest_forecast",
+      "name": "L2 采收期/产量/风险预测",
+      "domain": "forecast",
+      "agent": "ForecastAgent",
+      "description": "基于 start_date + 种植计划阶段时长 + 分区气候（GDD-lite 修正）+ Env Recipe 环境完备度，预测采收日期、产量与风险。经 orchestrator.call_skill('harvest_forecast') 统一调用。",
+      "file": "harvest_forecast.json"
+    },
+    {
+      "id": "iceplant_advisory",
+      "name": "冰菜阳台种植建议",
+      "domain": "crop",
+      "agent": "CropAgent",
+      "description": "为新增作物冰菜（Mesembryanthemum crystallinum）提供分区适配与阳台种植建议，由 skill_factory 自动生成，扩大 CropAgent 覆盖。",
+      "file": "iceplant_advisory.json"
+    },
+    {
+      "id": "nutrition_plan",
+      "name": "养分管理与阶段化施肥方案",
+      "domain": "soil",
+      "agent": "NutritionAgent",
+      "description": "根据作物 + 科属养分需求 + 生长周期 + 容器/场景，生成阶段化施肥方案（播种→苗期→生长→采收），给出 NPK 侧重、浓度、频率、单次用量与安全边界。已由 agent/nutrition_agent.py (NutritionAgent) 真实实现。",
+      "file": "nutrition_plan.json"
+    },
+    {
+      "id": "pest_diagnose",
+      "name": "病虫害与营养缺乏诊断",
+      "domain": "pest",
+      "agent": "PestAgent",
+      "description": "根据症状描述（+ 可选图像识别）+ 作物生长阶段 + 环境数据，诊断病虫害/营养缺乏，输出诊断结果、严重程度、处理建议和替代诊断。已由 agent/pest_agent.py (PestAgent) 真实实现。",
+      "file": "pest_diagnose.json"
+    },
+    {
+      "id": "season_advisory",
+      "name": "物候推演与霜冻锚定播期窗口",
+      "domain": "growth",
+      "agent": "SeasonAgent",
+      "description": "按调用方提供的 12 个月均温推导无霜期，并结合 WOFOST 积温参数给出各作物的最早/最晚安全播种日；也可单查某作物在给定日均温下的出苗/开花/成熟天数。已由 agent/season_agent.py (SeasonAgent) 真实实现。",
+      "file": "season_advisory.json"
+    },
+    {
+      "id": "supply_match",
+      "name": "供需撮合（采摘即食）",
+      "domain": "eco",
+      "agent": "EcoAgent",
+      "description": "根据地理位置 + 农产品类型 + 数量 + 新鲜度要求，撮合本地供需双方。先做社区内循环（3km 内），逐步扩展到城市级。",
+      "file": "supply_match.json"
+    }
+  ],
+  "x-agri-concept-distinction": {
+    "skills_semantics": "A2A v1.0 skill = 外部 Agent 可发现并调用的能力。本项目把每个 MCP 工具（mcp/server.py 的 TOOLS 注册表）映射为一个 skill，skill.id 与 MCP tool name 完全一致（如 'agri_env_recipe'）。外部 Agent 按此 skills[] 调 tools/call 会命中同名 MCP 工具。",
+    "registry_skills_semantics": "x-agri-registry-skills[] 是 skills/registry/ 目录下的 AgriSkill 定义（用于人读的分工说明：谁负责什么、输入输出是什么、数据来源、安全边界）。这些 id（如 'climate_match'）不是 MCP 工具名，不能被外部 Agent 直接调用；它们是内部技能目录，用于工程治理和审计。",
+    "counts": {
+      "skills": 23,
+      "x-agri-registry-skills": 11
+    },
+    "authority": "本 Card 由 scripts/gen_agent_card.py 程序化生成，禁止手改。"
+  },
   "securitySchemes": {},
   "security": [],
   "supportsAuthenticatedExtendedCard": false,
@@ -224,7 +571,10 @@
     "contact": "https://github.com/lm203688/smart-agri-eco/issues",
     "mcpProtocol": {
       "version": "2026-07-28",
-      "backwardsCompatible": ["2025-06-18", "2024-11-05"],
+      "backwardsCompatible": [
+        "2025-06-18",
+        "2024-11-05"
+      ],
       "seps": {
         "SEP-2575": "免 initialize 握手，未握手直接 tools/list 与 tools/call 可用",
         "SEP-2567": "无会话状态，initialize 返回 stateless=true",
@@ -251,5 +601,6 @@
         "sizeBytes": 452400
       }
     }
-  }
+  },
+  "generated_by": "scripts/gen_agent_card.py"
 }

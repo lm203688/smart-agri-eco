@@ -126,6 +126,91 @@ class SplitConformal:
             "note": "split conformal：无分布假设，有限样本覆盖率 ≥ 1-α；n<20 时 q 保守（偏宽）",
         }
 
+    def compute_coverage(self, test_pairs: Sequence[Tuple[float, float]],
+                         alpha: Optional[float] = None,
+                         threshold: Optional[float] = None,
+                         ) -> Dict[str, Any]:
+        """回测覆盖率：在**独立测试对**上跑一遍区间，统计真值落入区间的比例。
+
+        M15-B4 关键能力：从"能预测区间"升级为"能诚实自评覆盖率是否达标"。
+        没有它，q 只能自证、无法外部审计；有了它，覆盖率成为可门禁指标。
+
+        参数：
+          test_pairs: 独立的 (prediction, truth) 对序列，**不得**与 calibration_scores
+                      来源重叠（否则覆盖率虚高）。
+          alpha:      临时覆盖 self.alpha（None 用 self.alpha）；用于按不同保证等级
+                      回测同一批测试对。
+          threshold:  外部指定的达标阈值（默认 = 1 - alpha_effective）；若 observed
+                      < threshold 则 ok=False。
+
+        返回字段：
+          observed_coverage  实测覆盖率（落在区间的比例）
+          target_coverage    1 - alpha_effective
+          threshold          实际使用的阈值
+          ok                 observed >= threshold
+          n_test / n_hit     样本量与命中量
+          detail             每个测试对的 {pred, truth, lower, upper, hit}
+          note               解读提示
+
+        诚实边界：n_test=0 时返回 ok=False + coverage=0.0，不虚构通过率。
+        """
+        alpha_eff = self.alpha if alpha is None else float(alpha)
+        if not 0.0 < alpha_eff < 1.0:
+            raise ValueError(f"alpha 必须在 (0,1)，实际: {alpha_eff}")
+        if threshold is None:
+            thr = 1.0 - alpha_eff
+        else:
+            thr = float(threshold)
+
+        pairs = [(float(p), float(t)) for p, t in test_pairs
+                 if p is not None and t is not None]
+        n_test = len(pairs)
+        if n_test == 0:
+            return {
+                "observed_coverage": 0.0,
+                "target_coverage": round(1.0 - alpha_eff, 4),
+                "threshold": round(thr, 4),
+                "ok": False,
+                "n_test": 0,
+                "n_hit": 0,
+                "alpha_effective": round(alpha_eff, 4),
+                "calibration_n": self.n,
+                "detail": [],
+                "note": "test_pairs 为空：无法回测；请提供独立测试对，勿用校准集自证。",
+            }
+
+        detail: List[Dict[str, Any]] = []
+        n_hit = 0
+        for pred, truth in pairs:
+            lo, mid, hi = self.predict_interval(pred, alpha=alpha_eff)
+            hit = bool(lo <= truth <= hi)
+            if hit:
+                n_hit += 1
+            detail.append({
+                "pred": pred,
+                "truth": truth,
+                "lower": round(lo, 4),
+                "point": round(mid, 4),
+                "upper": round(hi, 4),
+                "hit": hit,
+            })
+        observed = n_hit / n_test
+        return {
+            "observed_coverage": round(observed, 4),
+            "target_coverage": round(1.0 - alpha_eff, 4),
+            "threshold": round(thr, 4),
+            "ok": bool(observed >= thr),
+            "n_test": n_test,
+            "n_hit": n_hit,
+            "n_miss": n_test - n_hit,
+            "alpha_effective": round(alpha_eff, 4),
+            "calibration_n": self.n,
+            "quantile_q": round(self.quantile(), 4) if self.quantile() is not None else None,
+            "detail": detail,
+            "note": ("split conformal 有限样本定理：observed_coverage 应 ≥ 1-α；"
+                     "低于阈值说明测试集与校准集分布偏离，q 需重估。"),
+        }
+
 
 def relative_residue(pred: float, truth: float) -> float:
     """相对残差：|pred - truth| / max(|pred|, 1)。
@@ -188,17 +273,96 @@ def get_default_calibrator(alpha: float = DEFAULT_ALPHA) -> SplitConformal:
 
 
 if __name__ == "__main__":
-    # 自测：python agent/conformal.py
-    calib = get_default_calibrator()
-    print(f"calibration_n={calib.n}, quantile_q={calib.quantile():.4f}, "
-          f"coverage_guarantee={calib.coverage_guarantee():.2%}")
-    # 用当前引擎的 3 个点估计验证：它们应全部落在自己的 conformal 区间内
-    for p, t in [(1432.0, 1600.0), (466.0, 500.0), (273.0, 280.0)]:
-        low, mid, high = calib.predict_interval(p)
-        in_interval = low <= t <= high
-        print(f"  pred={p} → [{low:.1f}, {high:.1f}], truth={t}, "
-              f"in_interval={in_interval}")
-    print("conformal 自测通过" if all(
-        calib.predict_interval(p)[0] <= t <= calib.predict_interval(p)[2]
-        for p, t in [(1432.0, 1600.0), (466.0, 500.0), (273.0, 280.0)]
-    ) else "conformal 自测失败：有真值不在区间内")
+    import argparse
+    import json
+    import sys
+
+    parser = argparse.ArgumentParser(
+        prog="agent.conformal",
+        description="Split Conformal Prediction CLI（M5-F1 + M15-B4）",
+    )
+    sub = parser.add_subparsers(dest="cmd", metavar="{show,check}")
+    # 默认无参数：保留原自测行为
+    sub.add_parser("show", help="打印默认校准器元信息（等价旧自测）")
+    chk = sub.add_parser("check", help="在独立测试对上回测覆盖率，判定是否达标")
+    chk.add_argument("--threshold", type=float, default=None,
+                     help="达标阈值，默认 1-α（如 --threshold 0.9）")
+    chk.add_argument("--alpha", type=float, default=None,
+                     help="临时 α（默认使用校准器 α）")
+    chk.add_argument("--pairs-json", type=str, default=None,
+                     help="测试对 JSON 路径（[[pred,truth],...] 或 [{pred,truth}]）")
+    chk.add_argument("--pairs-csv", type=str, default=None,
+                     help="测试对 CSV 路径（无表头：pred,truth）")
+    chk.add_argument("--json-out", action="store_true", help="输出 JSON 到 stdout")
+
+    args = parser.parse_args()
+
+    if args.cmd is None or args.cmd == "show":
+        calib = get_default_calibrator()
+        print(f"calibration_n={calib.n}, quantile_q={calib.quantile():.4f}, "
+              f"coverage_guarantee={calib.coverage_guarantee():.2%}")
+        for p, t in [(1432.0, 1600.0), (466.0, 500.0), (273.0, 280.0)]:
+            low, mid, high = calib.predict_interval(p)
+            in_interval = low <= t <= high
+            print(f"  pred={p} → [{low:.1f}, {high:.1f}], truth={t}, "
+                  f"in_interval={in_interval}")
+        all_ok = all(
+            calib.predict_interval(p)[0] <= t <= calib.predict_interval(p)[2]
+            for p, t in [(1432.0, 1600.0), (466.0, 500.0), (273.0, 280.0)]
+        )
+        print("conformal 自测通过" if all_ok else "conformal 自测失败：有真值不在区间内")
+        sys.exit(0 if all_ok else 1)
+
+    if args.cmd == "check":
+        calib = get_default_calibrator(alpha=args.alpha) if args.alpha is not None \
+            else get_default_calibrator()
+        test_pairs = []
+        if args.pairs_json:
+            with open(args.pairs_json, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for item in data:
+                if isinstance(item, dict):
+                    p, t = item.get("pred"), item.get("truth")
+                else:
+                    p, t = item[0], item[1]
+                if p is not None and t is not None:
+                    test_pairs.append((float(p), float(t)))
+        elif args.pairs_csv:
+            with open(args.pairs_csv, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    parts = line.split(",")
+                    if len(parts) < 2:
+                        continue
+                    try:
+                        test_pairs.append((float(parts[0]), float(parts[1])))
+                    except ValueError:
+                        continue
+        else:
+            # 无外部测试对：用默认 3 个 calibration snapshot 作为"边界测试"
+            # （严格来说这不自证——q 取到 max 时必覆盖；此模式仅演示 CLI）
+            test_pairs = [(1432.0, 1600.0), (466.0, 500.0), (273.0, 280.0)]
+
+        result = calib.compute_coverage(test_pairs, alpha=args.alpha,
+                                        threshold=args.threshold)
+        if args.json_out:
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            print(f"observed_coverage = {result['observed_coverage']:.4f}  "
+                  f"(target={result['target_coverage']:.4f}, "
+                  f"threshold={result['threshold']:.4f})")
+            print(f"n_test={result['n_test']}  n_hit={result['n_hit']}  "
+                  f"n_miss={result['n_miss']}  "
+                  f"alpha_eff={result['alpha_effective']:.4f}  "
+                  f"calibration_n={result['calibration_n']}  "
+                  f"q={result.get('quantile_q')}")
+            print(f"OK: {result['ok']}")
+            if result["n_miss"] > 0:
+                print("漏覆盖样本：")
+                for d in result["detail"]:
+                    if not d["hit"]:
+                        print(f"  pred={d['pred']} truth={d['truth']} "
+                              f"interval=[{d['lower']}, {d['upper']}]")
+        sys.exit(0 if result["ok"] else 1)

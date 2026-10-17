@@ -26,8 +26,12 @@ import re
 import glob
 from typing import Dict, Any, List, Optional
 
+# H1: 原子写入底座（控制 Agent 临时状态丢失会破坏编排）
+from core.atomic_io import atomic_write_json
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_RECIPE_DIR = os.path.join(ROOT, "data", "env_recipes")
+EXECUTION_LOG_PATH = os.path.join(ROOT, "data", "execution_log.json")
 
 # 生长阶段 → Env Recipe 阶段枚举（用于匹配设定值）
 _PHASE_TO_STAGE = [
@@ -292,7 +296,7 @@ class ControlAgent:
     # ------------------------------------------------------------------
     def run(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """call_skill('control_commands') 入口。"""
-        return self.generate_control_plan(
+        result = self.generate_control_plan(
             scene=payload.get("scene", "balcony"),
             crop=payload.get("crop", ""),
             zone_id=payload.get("zone_id", ""),
@@ -301,3 +305,91 @@ class ControlAgent:
             env_recipe=payload.get("env_recipe"),
             microclimate=payload.get("microclimate"),
         )
+        # 影子运行：将控制计划写入 execution_log（mode=shadow，不实际执行）
+        self._shadow_log(result, payload)
+        return result
+
+    def _shadow_log(self, plan: Dict[str, Any], payload: Dict[str, Any]) -> None:
+        """将控制计划写入影子执行日志（mode=shadow）。
+        
+        这是不依赖任何硬件即可产生第 1 条 execution_log 的唯一路径。
+        记录「建议动作 + 预期效果」，不实际下发给设备。
+        """
+        entry = {
+            "run_id": f"shadow_{plan.get('evidence', {}).get('zone_id', 'unknown')}_{plan.get('evidence', {}).get('crop', 'unknown')}",
+            "recipe_ref": f"{plan.get('evidence', {}).get('crop', 'unknown')}:{plan.get('evidence', {}).get('phase', 'full_cycle')}:{plan.get('evidence', {}).get('zone_id', 'unknown')}",
+            "device_id": payload.get("scene", "unknown_scene") or "unknown_scene",
+            "started_at": "2026-10-14T00:00:00Z",  # 占位时间，后续可由用户补充
+            "source": "shadow",
+            "mode": "shadow",  # 影子模式：记录建议但不执行
+            "actual_params": {},
+            "params_unknown": True,
+            "actions_taken": [],
+            "expected_actions": [
+                cmd for phase in plan.get("recommendation", {}).get("actuator_commands", [])
+                for cmd in phase.get("commands", [])
+            ],
+            "deviations": [],
+            "observations": "影子运行：记录控制计划建议，未实际执行",
+            "outcome_ref": None,
+            # M9-X1 影子记录契约（data_quality_gate 硬门禁）：
+            # shadow_context.mode == 'shadow' 且 not_executed is True，
+            # 是「记录但不下发」语义的唯一机器可读标记，缺此字段门禁失败。
+            "shadow_context": {
+                "mode": "shadow",
+                "not_executed": True,
+                "crop": plan.get("evidence", {}).get("crop", "unknown"),
+                "zone_id": plan.get("evidence", {}).get("zone_id", "unknown"),
+                "phase": plan.get("evidence", {}).get("phase", "full_cycle"),
+                "device_id": payload.get("scene", "unknown_scene") or "unknown_scene",
+                "expected_actions_count": len([
+                    cmd for phase in plan.get("recommendation", {}).get("actuator_commands", [])
+                    for cmd in phase.get("commands", [])
+                ]),
+                "reference": "docs/per_module_deep_assessment_2026-10-13.md §M9-X1",
+            },
+        }
+        self._append_to_log(entry)
+
+    def _append_to_log(self, entry: Dict[str, Any]) -> None:
+        """将 entry 追加到 execution_log.json（若文件不存在则初始化）。
+
+        使用原子写入（先写临时文件再重命名）避免并发写入损坏文件。
+
+        **格式保留**：本项目的 execution_log.json 有两种历史格式共存：
+          · 裸 list：scripts/generate_shadow_execution_log.py 的产出格式
+          · dict ``{"entries": [...]}``：本方法首次创建时的默认格式
+        为避免脚本间格式漂移，追加时**保留原始格式**（list 追加后仍是 list，
+        dict 追加后仍是 dict）。这样 scripts/data_quality_gate.py / rsi.py /
+        test_shadow_execution_log.py 等只读裸 list 的下游不受影响。
+        """
+        log_data: Any = None
+        preserve_list = False
+        if os.path.exists(EXECUTION_LOG_PATH):
+            try:
+                with open(EXECUTION_LOG_PATH, "r", encoding="utf-8") as f:
+                    loaded = json.load(f)
+                if isinstance(loaded, list):
+                    log_data = loaded
+                    preserve_list = True
+                elif isinstance(loaded, dict):
+                    log_data = loaded
+            except Exception:  # noqa: BLE001
+                log_data = None  # 文件损坏时重新初始化
+
+        if log_data is None or preserve_list:
+            if log_data is None:
+                log_data = []
+        else:
+            # dict 格式：确保 entries 是 list
+            if not isinstance(log_data.get("entries"), list):
+                log_data["entries"] = []
+
+        if preserve_list:
+            log_data.append(entry)
+        else:
+            log_data["entries"].append(entry)
+
+        # H1: 原子写（用 atomic_io 替代手写 tmp+replace）
+        atomic_write_json(EXECUTION_LOG_PATH, log_data,
+                          ensure_ascii=False, indent=2, sort_keys=True)
