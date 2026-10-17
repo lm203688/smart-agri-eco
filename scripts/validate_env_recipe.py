@@ -38,6 +38,8 @@ def _type_ok(node: object, typ: str) -> bool:
         return isinstance(node, int) and not isinstance(node, bool)
     if typ == "boolean":
         return isinstance(node, bool)
+    if typ == "null":
+        return node is None
     return False
 
 
@@ -51,9 +53,14 @@ def _validate(node, schema, path, errors):
         errors.append(f"{path}: 值 {node!r} 不在允许枚举 {schema['enum']}")
     # type
     typ = schema.get("type")
-    if typ and not _type_ok(node, typ):
-        errors.append(f"{path}: 期望类型 {typ}，实际 {type(node).__name__}")
-        return
+    if typ:
+        if isinstance(typ, list):
+            if not any(_type_ok(node, t) for t in typ):
+                errors.append(f"{path}: 期望类型之一 {typ}，实际 {type(node).__name__}")
+                return
+        elif not _type_ok(node, typ):
+            errors.append(f"{path}: 期望类型 {typ}，实际 {type(node).__name__}")
+            return
     # pattern
     pat = schema.get("pattern")
     if pat and isinstance(node, str) and not re.match(pat, node):

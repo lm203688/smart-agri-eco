@@ -211,12 +211,27 @@ class ClimateGridTests(unittest.TestCase):
 
     def test_climate_agent_falls_back_to_heuristic_when_no_grid(self):
         """当无栅格文件时，climate_agent 应走启发式后端并显式标注。"""
-        from agent.climate_agent import ClimateAgent
-        agent = ClimateAgent()
-        r = agent.match_zone(40.0, 116.0)
-        self.assertEqual(r["evidence"]["classification_backend"], "heuristic")
-        self.assertEqual(r["evidence"]["data_source_tier"], "heuristic")
-        self.assertIn("classification_note", r["evidence"])
+        import tempfile
+        import shutil
+
+        default_grid = os.path.join(ROOT, "data", "zone_meta", "koppen_grid.json")
+        backup_path = None
+        if os.path.exists(default_grid):
+            backup_path = default_grid + ".bak_test_fallback"
+            shutil.copy(default_grid, backup_path)
+        try:
+            if os.path.exists(default_grid):
+                os.unlink(default_grid)
+
+            from agent.climate_agent import ClimateAgent
+            agent = ClimateAgent()
+            r = agent.match_zone(40.0, 116.0)
+            self.assertEqual(r["evidence"]["classification_backend"], "heuristic")
+            self.assertEqual(r["evidence"]["data_source_tier"], "heuristic")
+            self.assertIn("classification_note", r["evidence"])
+        finally:
+            if backup_path and os.path.exists(backup_path):
+                shutil.move(backup_path, default_grid)
 
     def test_project_zone_values_are_project_zones(self):
         """映射值必须与项目 global_zones.json 的 zone id 一致。"""
@@ -233,8 +248,9 @@ class ClimateGridTests(unittest.TestCase):
                     pass
         # 直接验证映射值在项目 8 分区内
         expected_zones = {
-            "tropical_rainforest", "subtropical_wet", "arid", "mediterranean",
-            "temperate_subhumid", "temperate_continental", "subarctic", "highland",
+            "tropical_rainforest", "subtropical_wet", "arid", "hot_arid",
+            "mediterranean", "temperate_subhumid", "temperate_continental",
+            "subarctic", "highland",
         }
         actual_zones = set(KOPPEN_TO_PROJECT_ZONE.values())
         self.assertTrue(actual_zones.issubset(expected_zones),

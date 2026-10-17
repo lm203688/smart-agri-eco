@@ -26,9 +26,11 @@ class AgriRecipeBenchTests(unittest.TestCase):
     def test_cases_dir_not_empty(self):
         self.assertTrue(os.path.isdir(CASES), f"cases 目录缺失: {CASES}")
         names = [n for n in os.listdir(CASES) if n.endswith(".json")]
+        # M15-B1：用例数 ≥50，覆盖 8 分区 × 主要作物 × 边界条件（对齐
+        # docs/per_module_deep_assessment_2026-10-13.md §M15-B1）
         self.assertGreaterEqual(
-            len(names), 3,
-            f"种子用例过少（<3），无法形成有效基准：{names}",
+            len(names), 50,
+            f"用例数不足（<50），M15-B1 覆盖目标未达成：实际 {len(names)}",
         )
 
     def test_runner_strict_passes(self):
@@ -42,8 +44,8 @@ class AgriRecipeBenchTests(unittest.TestCase):
             f"AgriRecipeBench 有失败用例：\nstdout={proc.stdout[:2000]}\nstderr={proc.stderr[:1000]}",
         )
         payload = json.loads(proc.stdout)
-        self.assertGreaterEqual(payload["summary"]["passed"], 3,
-                               "通过用例过少（<3），基准可信度不足")
+        self.assertGreaterEqual(payload["summary"]["passed"], 50,
+                               "通过用例过少（<50），M15-B1 覆盖目标未达成")
         self.assertEqual(payload["summary"]["failed"], 0,
                          f"失败用例：{json.dumps(payload['results'], ensure_ascii=False)[:2000]}")
 

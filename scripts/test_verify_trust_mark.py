@@ -295,7 +295,11 @@ class TestMCPTool(unittest.TestCase):
     def test_invalid_mode(self):
         r = self.tool({"mode": "bogus"})
         self.assertIn("error", r)
-        self.assertIn("非法 mode", r["error"])
+        # H5 加固：schema enum 校验给出 "not in enum"，或 fallback 到原 "非法 mode" 文案
+        self.assertTrue(
+            "非法 mode" in r["error"] or "not in enum" in r["error"],
+            f"unexpected error message: {r['error']}",
+        )
 
     def test_check_prefix_requires_mark(self):
         r = self.tool({"mode": "check_prefix"})

@@ -27,11 +27,15 @@ engine/skill_factory.py —— Skill 自动生成管线
 
 from __future__ import annotations
 
+from core.clock import CLOCK
 import os
 import re
 import json
 import datetime
 from typing import Any, Dict, List, Optional
+
+# H1: 原子写入底座（技能库丢失会破坏能力）
+from core.atomic_io import atomic_write_json
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REGISTRY = os.path.join(ROOT, "skills", "registry")
@@ -336,7 +340,7 @@ def generate_skill(
     if dependencies is not None:
         skill["dependencies"] = dependencies
     skill["auto_generated"] = True
-    skill["created_at"] = datetime.datetime.now().isoformat(timespec="seconds")
+    skill["created_at"] = CLOCK.now().isoformat(timespec="seconds")
 
     # YAGNI：删除零引用/空可选字段（不裁剪 required 字段）
     yagni_result = yagni_trim(skill, used_inputs=used_inputs,
@@ -362,8 +366,8 @@ def generate_skill(
     if os.path.exists(fpath) and not overwrite:
         raise FileExistsError(f"Skill 已存在: {fname}（用 overwrite=True 覆盖）")
 
-    with open(fpath, "w", encoding="utf-8") as f:
-        json.dump(skill, f, ensure_ascii=False, indent=2)
+    # H1: 原子写（技能库丢失会破坏能力）
+    atomic_write_json(fpath, skill, ensure_ascii=False, indent=2, sort_keys=True)
     return {"skill": skill, "path": fpath, "validated": True,
             "yagni": yagni_result["yagni"], "cls": skill["cls"]}
 

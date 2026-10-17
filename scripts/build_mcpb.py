@@ -61,7 +61,7 @@ DATA_INCLUDE = [
     "data/preset_cities.json",
     "data/zone_meta",
     "data/wofost_phenology_reference.json",
-    "data/linkage_protocol.schema.json",
+    "schemas/linkage_protocol.schema.json",
 ]
 
 

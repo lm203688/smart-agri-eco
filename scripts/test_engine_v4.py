@@ -995,11 +995,18 @@ class TestDerivedVpd(unittest.TestCase):
         self.assertGreater(engine_derived.vpd(25.0, 40.0), engine_derived.vpd(25.0, 70.0))
 
     def test_vpd_clamps_out_of_range_humidity(self):
-        # RH 越界应被钳制而不是产生负值或爆炸
+        # H3 加固后：RH 越界显式拒绝，不再静默钳制（FOUNDATION_AUDIT §H3）
+        from core.numeric_domain import InputError
+        # RH=0 仍在 [0,100] 内，合法，VPD 应 >= 0
         self.assertGreaterEqual(engine_derived.vpd(25.0, 0.0), 0.0)
-        self.assertGreaterEqual(engine_derived.vpd(25.0, -5.0), 0.0)
-        self.assertLessEqual(engine_derived.vpd(25.0, 200.0),
-                             engine_derived.vpd(25.0, 0.0))
+        # RH=-5 越界 → 显式抛 InputError（不再静默返回）
+        with self.assertRaises(InputError):
+            engine_derived.vpd(25.0, -5.0)
+        # RH=200 越界 → 显式抛 InputError
+        with self.assertRaises(InputError):
+            engine_derived.vpd(25.0, 200.0)
+        # 边界合法：RH=100 应在范围内
+        self.assertAlmostEqual(engine_derived.vpd(25.0, 100.0), 0.0, places=6)
 
     def test_dew_point_survives_zero_humidity(self):
         # RH=0 会触发 ln(0)，必须钳到下限而不是抛异常
@@ -1114,13 +1121,26 @@ class TestDerivedVpd(unittest.TestCase):
         self.assertEqual(report["with_observations"], 2)
 
     def test_derived_values_are_not_written_back(self):
-        """派生量是即时的，落盘会造成两份可漂移的数据源。"""
+        """派生量是即时的，落盘会造成两份可漂移的数据源。
+
+        历史纪律：engine.derived.derive_from_recipe() 的返回（含 "vkd"/"dew_point"
+        等内部键名）不得直接写回配方 JSON。
+
+        v1.2.0（M8-R1）例外：HA 生态事实标准字段（environment.vpd_kpa /
+        dew_point_c / mold_risk / dli_umol_m2_day + 顶层 companion_plants /
+        sowing_depth_cm）是**显式声明的 optional 字段**，且每项带 source/derived_at/
+        method 溯源元数据（由 scripts/test_ha_fields.py 独立校验），不属于"静默
+        写回"范畴。本测试断言的是内部键名（"vkd"、裸 "dew_point"）不被写入，
+        而非字面子串匹配（因为 HA 字段名如 vpd_kpa 合法含 "vpd" 子串）。
+        """
         r = json.load(open(os.path.join(ROOT, "data", "env_recipes",
                                          "arid__仙人掌.json"), encoding="utf-8"))
         engine_derived.derive_from_recipe(r)
+        # 内部键名（引擎内部结构，非 HA 事实标准命名）不得写入
         self.assertNotIn("vkd", r)
         self.assertNotIn("dew_point", r)
-        self.assertNotIn("vpd", json.dumps(r).lower())
+        # 顶层不得出现裸 "vpd"（HA 合规字段名是 vpd_kpa，位于 environment 内）
+        self.assertNotIn("vpd", r)
 
 
 class TestEnvRecipeSourceLicense(unittest.TestCase):
@@ -1145,25 +1165,51 @@ class TestEnvRecipeSourceLicense(unittest.TestCase):
         self.assertIn("license",
                       schema["properties"]["sources"]["items"]["properties"])
         self.assertIn("license_scope", schema["properties"])
-        # v1.1.0 新增 zone_note 可选字段（分区/场景上下文备注）
-        self.assertIn("zone_note", schema["properties"])
+        # B3 新增字段：license_note / unknown_license_replaced_at（用于 license=unknown 的溯源）
+        src_props = schema["properties"]["sources"]["items"]["properties"]
+        self.assertIn("license_note", src_props)
+        self.assertIn("unknown_license_replaced_at", src_props)
         # 关键：additionalProperties 仍是 false，说明新字段是显式声明而非放开
         self.assertFalse(schema["additionalProperties"])
         self.assertFalse(schema["properties"]["sources"]["items"]["additionalProperties"])
 
-    def test_schema_version_is_1_1_0_with_zone_note(self):
-        """schema v1.1.0 引入 zone_note 字段；schema_version 必须同步到 1.1.0。
+    def test_schema_version_is_1_2_1_with_ha_fields(self):
+        """schema v1.2.1 引入 HA/OpenFarm 事实标准字段 + license=unknown 溯源字段。
 
-        背景：6 份 hot_arid/highland 新配方（v1.1 分区配套）带 zone_note 字段，
-        但旧 schema v1.0.0 未声明导致 6 份校验失败（daily 巡检 2026-10-01 遗留未修）。
-        本测试锁死 schema_version 与 zone_note 的存在关系，防止回退。
+        背景：v1.1.0 引入 zone_note；v1.2.0（M8-R1）引入 HA 生态事实标准字段；
+        v1.2.1（2026-10-17 E1）删除未使用的 zone_note 字段，sources 新增
+        license_note / unknown_license_replaced_at 用于 license=unknown 溯源。
+        本测试锁死 schema_version 与 HA 字段的存在关系，防止回退。
         """
         schema = json.load(open(os.path.join(ROOT, "schemas", "env_recipe.schema.json"),
                                 encoding="utf-8"))
-        self.assertEqual(schema.get("schema_version"), "1.1.0")
+        self.assertEqual(schema.get("schema_version"), "1.2.1")
+        # E1：zone_note 已从 schema 移除（GAP_AUDIT §E1）
+        self.assertNotIn("zone_note", schema.get("properties", {}))
         # zone_note 是可选字段（不在 required 中）
         self.assertNotIn("zone_note", schema.get("required", []))
-        self.assertEqual(schema["properties"]["zone_note"]["type"], "string")
+        # v1.2.0 HA/OpenFarm 事实标准字段（全部 optional）
+        env_props = schema["properties"]["environment"]["properties"]
+        for ha_env_field in ("vpd_kpa", "dew_point_c", "mold_risk", "dli_umol_m2_day"):
+            self.assertIn(ha_env_field, env_props,
+                          "HA 字段 %s 未在 schema v1.2.x 声明" % ha_env_field)
+        for ha_top_field in ("companion_plants", "sowing_depth_cm"):
+            self.assertIn(ha_top_field, schema["properties"],
+                          "HA 字段 %s 未在 schema v1.2.x 顶层声明" % ha_top_field)
+        # 全部 optional（不在 required 中）
+        for f in ("companion_plants", "sowing_depth_cm"):
+            self.assertNotIn(f, schema.get("required", []),
+                             "HA 字段 %s 应为 optional" % f)
+        # v1.2.1 B3：sources 新增 license_note / unknown_license_replaced_at（可选字段）
+        src_props = schema["properties"]["sources"]["items"]["properties"]
+        self.assertIn("license_note", src_props,
+                      "v1.2.1 应声明 sources[].license_note 字段")
+        self.assertIn("unknown_license_replaced_at", src_props,
+                      "v1.2.1 应声明 sources[].unknown_license_replaced_at 字段")
+        # 两者均不在 required 中（可选字段）
+        src_required = schema["properties"]["sources"]["items"].get("required", [])
+        self.assertNotIn("license_note", src_required)
+        self.assertNotIn("unknown_license_replaced_at", src_required)
 
     def test_all_152_recipes_pass_full_schema_validation(self):
         """全量 152 份配方必须通过完整 schema 校验（含 zone_note）。
@@ -1203,14 +1249,28 @@ class TestEnvRecipeSourceLicense(unittest.TestCase):
         self.assertGreater(fao, 0, "应至少存在一条 FAO 来源")
 
     def test_unknown_licenses_are_flagged_not_guessed(self):
-        """未核实的许可必须标 unknown，不得凭名字猜。"""
+        """未核实的许可必须标 unknown 占位，不得凭名字猜；GAP_AUDIT §B3 后所有 unknown 已占位替换。
+
+        2026-10-17 B3：152 条 license=unknown 已用 CC BY-NC-SA 4.0 保守占位替换，
+        并加 license_note 说明占位原因。原始 unknown 来源信息保留在
+        unknown_license_replaced_at 字段中供追溯。
+        """
         unknowns = set()
+        replaced = set()
         for _, r in self._recipes():
             for s in r["sources"]:
                 if s["license"].startswith("unknown"):
                     unknowns.add(s["title"])
-        # 已知的唯一 unknown 来源；新增来源时此集合应显式扩展而不是静默放行
-        self.assertEqual(unknowns, {"中国作物栽培数据库"})
+                if s.get("unknown_license_replaced_at"):
+                    replaced.add(s["title"])
+        # B3 后不应再有 license=unknown（已占位替换）
+        self.assertEqual(unknowns, set(),
+                         "B3 后不应再有 license=unknown，实际: %s" % unknowns)
+        # 应保留占位替换溯源记录
+        self.assertGreater(len(replaced), 0,
+                           "应有至少 1 条 license=unknown 占位替换记录")
+        # 已知原始 unknown 来源：中国作物栽培数据库
+        self.assertIn("中国作物栽培数据库", replaced)
 
 
 class TestEnvRecipeDiff(unittest.TestCase):

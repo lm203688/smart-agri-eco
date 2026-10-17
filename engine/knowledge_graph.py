@@ -27,6 +27,7 @@ crop_adapt_db.json / zone_meta/global_zones.json **派生**一份图索引，
 
 from __future__ import annotations
 
+from core.clock import CLOCK
 import datetime
 import json
 import os
@@ -49,6 +50,15 @@ R_KOPPEN, R_CONSTRAINS = "koppen_of", "constrains"
 RELATIONS = [R_GROWS_IN, R_SENSITIVE_TO, R_KOPPEN, R_CONSTRAINS]
 
 
+import datetime
+import json
+import os
+from typing import Any, Dict, List, Optional, Tuple
+
+# H1: 原子写入底座（知识图谱丢失会破坏检索）
+from core.atomic_io import atomic_write_json
+
+
 def _load(path: str) -> Any:
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
@@ -58,8 +68,8 @@ def _load(path: str) -> Any:
 
 def _save(path: str, obj: Any) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=2)
+    # H1: 原子写（图谱数据丢失会破坏检索链）
+    atomic_write_json(path, obj, ensure_ascii=False, indent=2, sort_keys=True)
 
 
 def _n_crop(name: str) -> str:
@@ -163,7 +173,7 @@ def build_graph(crop_db_path: Optional[str] = None,
 
     graph = {
         "schema": "agri-knowledge-graph/v1",
-        "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "generated_at": CLOCK.now().isoformat(timespec="seconds"),
         "sources": [os.path.relpath(db_path, ROOT),
                     os.path.relpath(zm_path, ROOT) if zm_data else None],
         "entities": entities,

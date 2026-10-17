@@ -1,7 +1,7 @@
 {
   "schema": "agri-harness-manifest/v1",
   "version": "2.3.0",
-  "generated_at": "2026-10-14T13:20:00",
+  "generated_at": "2026-10-15T09:55:16",
   "project": "智慧农业生态 (smart-agri-eco)",
   "protocols": {
     "env_recipe": "v1",
@@ -14,9 +14,11 @@
     "agent_plugins": "1.0.0"
   },
   "mcp": {
-    "tool_count": 19,
+    "tool_count": 23,
     "tools": [
       "agri_bp_screen",
+      "agri_counterfactual_trajectory",
+      "agri_decision_path_report",
       "agri_diagnose_pest",
       "agri_env_recipe",
       "agri_forecast",
@@ -33,9 +35,20 @@
       "agri_resolve_recipe",
       "agri_search",
       "agri_season_advisory",
+      "agri_server_card",
       "agri_soil_profile",
+      "agri_verify_recommendation",
       "agri_verify_trust"
     ]
+  },
+  "ci": {
+    "step_count": 41,
+    "python_versions": [
+      "3.10",
+      "3.11",
+      "3.12"
+    ],
+    "note": "由 .github/workflows/ci.yml 的 `- name:` 步骤数派生；GAP_AUDIT §A3：CORE_OBJECTIVE §九 原写 22 步与实际 39 步不一致，已修正。"
   },
   "agents": {
     "pipeline": [
@@ -128,7 +141,7 @@
     },
     {
       "path": "data/zone_meta/global_zones.json",
-      "sha256_16": "120fd0f50538bd48"
+      "sha256_16": "0f44e236f212b590"
     },
     {
       "path": "data/wofost_phenology_reference.json",
@@ -161,7 +174,7 @@
       "eval_recipe_expert_adoption": "需 3-5 位农艺专家盲评 50 份配方 vs 现行栽培规程（评审 §2.3）",
       "eval_source_traceability": "需溯源层埋点：每条建议的引用 url 可访问性校验（评审 §2.3）"
     },
-    "updated_at": "2026-10-13T23:00:01"
+    "updated_at": "2026-10-15T09:55:16"
   },
   "knowledge_graph": {
     "schema": "agri-knowledge-graph/v1",
@@ -481,6 +494,21 @@
         "ts": "2026-10-13T23:00:01",
         "level": "B0",
         "hci": 0.167
+      },
+      {
+        "ts": "2026-10-14T13:20:00",
+        "level": "B0",
+        "hci": 0.167
+      },
+      {
+        "ts": "2026-10-15T08:53:56",
+        "level": "B0",
+        "hci": 0.333
+      },
+      {
+        "ts": "2026-10-15T09:55:16",
+        "level": "B0",
+        "hci": 0.167
       }
     ],
     "autonomy_level": "B0",
@@ -492,6 +520,21 @@
       "skill_generation",
       "meta_improvement"
     ]
+  },
+  "logs": {
+    "execution_log": {
+      "total": 72,
+      "shadow_count": 72,
+      "real_count": 0,
+      "shadow_percent": 100.0,
+      "note": "GAP_AUDIT §B2：拆分 shadow/real 计数。当前 71 条全 shadow（L3 闭环纸面化）。格式已从 dict→list 统一（data_quality_gate 要求根节点必须是数组）。真实最小可行路径见 CORE_OBJECTIVE §六 L3。"
+    },
+    "feedback_log": {
+      "total": 0,
+      "real_count": 0,
+      "target_g2": 30,
+      "note": "GAP_AUDIT §B1：0 条（G2 目标 ≥30）。真实回流是唯一能让配方从文献推导变为实测校准的路径。入口：agri_env_recipe 返回值含 feedback_url 字段（若已接入）。"
+    }
   },
   "env_vars": [
     "AGRI_ASSESS_PORT",
@@ -513,6 +556,7 @@
     "AGRI_KG_PATH",
     "AGRI_LIVE_TEST",
     "AGRI_MCP_AUDIT_LOG",
+    "AGRI_MCP_HEADER_IF_NONE_MATCH",
     "AGRI_MCP_HEADER_MCP_METHOD",
     "AGRI_MCP_HEADER_MCP_NAME",
     "AGRI_MCP_HTTP",

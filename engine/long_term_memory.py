@@ -58,6 +58,10 @@ import math
 import os
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
+# H1: 原子写入底座（崩溃时目标文件保持完整）
+from core.atomic_io import atomic_write_json
+from core.clock import CLOCK
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SCHEMA = "agri-long-term-memory/v1"
@@ -111,13 +115,13 @@ def _load() -> Dict[str, Any]:
 def _save(doc: Dict[str, Any]) -> str:
     p = _path()
     os.makedirs(os.path.dirname(p), exist_ok=True)
-    with open(p, "w", encoding="utf-8") as f:
-        json.dump(doc, f, ensure_ascii=False, indent=2)
+    # H1: 原子写（崩溃/断电时目标文件保持完整）
+    atomic_write_json(p, doc, ensure_ascii=False, indent=2, sort_keys=True)
     return p
 
 
 def _now() -> str:
-    return datetime.datetime.now().isoformat(timespec="seconds")
+    return CLOCK.now().isoformat(timespec="seconds")
 
 
 def _parse_ts(ts: str) -> Optional[datetime.datetime]:
@@ -202,7 +206,7 @@ def add_memory(session_id: str = "", skill: str = "",
 
     doc = _load()
     _SEQ["n"] = len(doc["memories"]) + 1
-    stamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    stamp = CLOCK.now().strftime("%Y%m%d%H%M%S")
     mid = "mem-%s-%05d" % (stamp, _SEQ["n"])
 
     entry: Dict[str, Any] = {
@@ -249,7 +253,7 @@ def link(memories: Sequence[str], label: str = "",
     valid = [m for m in ids if m in known]
     if len(valid) < 2:
         return None
-    hid = "he-%s-%03d" % (datetime.datetime.now().strftime("%Y%m%d%H%M%S"),
+    hid = "he-%s-%03d" % (CLOCK.now().strftime("%Y%m%d%H%M%S"),
                           len(doc["hyperedges"]) + 1)
     doc["hyperedges"].append({
         "id": hid,
@@ -277,7 +281,7 @@ def recall(query: str = "", session_id: str = "", skill: str = "",
     """
     doc = _load()
     rows = list(doc.get("memories") or [])
-    now = datetime.datetime.now()
+    now = CLOCK.now()
 
     def _g(m: Dict[str, Any], key: str) -> str:
         return str(m.get("subject", {}).get(key) or m.get(key) or "").strip()
@@ -428,8 +432,8 @@ def stats() -> Dict[str, Any]:
 def export_json(dest: Optional[str] = None) -> str:
     """导出记忆全文（可提交/可迁移）。默认写到 data/long_term_memory_export.json。"""
     out = dest or os.path.join(ROOT, "data", "long_term_memory_export.json")
-    with open(out, "w", encoding="utf-8") as f:
-        json.dump(_load(), f, ensure_ascii=False, indent=2)
+    # H1: 原子写
+    atomic_write_json(out, _load(), ensure_ascii=False, indent=2, sort_keys=True)
     return out
 
 

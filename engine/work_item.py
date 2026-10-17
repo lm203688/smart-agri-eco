@@ -58,6 +58,8 @@ import json
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
+from core.clock import CLOCK
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ---------------------------------------------------------------------------
@@ -101,7 +103,7 @@ MODE_ROLE = {
 
 
 def _now() -> str:
-    return datetime.datetime.now().isoformat(timespec="seconds")
+    return CLOCK.now().isoformat(timespec="seconds")
 
 
 def _digest(payload: Any) -> str:
@@ -239,7 +241,7 @@ def new_work_item(item_id: str = "", title: str = "",
     """创建工作项。item_id 为空时自动生成；reuse=True 时同 id 复用已有实例。"""
     if not item_id:
         _SEQ["n"] += 1
-        stamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        stamp = CLOCK.now().strftime("%Y%m%d%H%M%S")
         item_id = "wi-%s-%04d" % (stamp, _SEQ["n"])
     if reuse and item_id in _REGISTRY:
         return _REGISTRY[item_id]

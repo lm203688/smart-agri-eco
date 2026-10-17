@@ -48,6 +48,8 @@ import os
 import sqlite3
 from typing import Any, Dict, Iterator, List, Optional, Sequence, Set, Tuple
 
+from core.clock import CLOCK
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 INDEX_DIR = os.path.join(ROOT, "data", "search_index")
@@ -386,7 +388,7 @@ def rebuild(force: bool = False, corpora: Optional[Sequence[str]] = None) -> Dic
     conn.close()
     return {"reused": False, "rows": counts, "total": sum(v for v in counts.values() if v > 0),
             "fts": fts_ok, "index": index_path(),
-            "built_at": datetime.datetime.now().isoformat(timespec="seconds")}
+            "built_at": CLOCK.now().isoformat(timespec="seconds")}
 
 
 def _count(conn: sqlite3.Connection) -> Dict[str, int]:

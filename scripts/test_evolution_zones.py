@@ -51,7 +51,14 @@ class EvolutionZonesTests(unittest.TestCase):
             self.assertIn("rationale", a)
 
     def test_asset_paths_exist(self):
-        """所有声明的路径必须真实存在（防声明漂移）。"""
+        """所有声明的路径必须真实存在（防声明漂移）。
+
+        支持三种路径形式：
+          - 目录路径（以 / 结尾）：断言是目录
+          - 通配符路径（含 *）：glob 展开至少 1 个匹配
+          - 普通文件路径：断言文件存在
+        """
+        import glob
         for zone_key in ("immutable_core", "evolvable_shell"):
             for a in self.zones[zone_key]["assets"]:
                 p = a["path"]
@@ -59,6 +66,10 @@ class EvolutionZonesTests(unittest.TestCase):
                 if p.endswith("/"):
                     self.assertTrue(os.path.isdir(full),
                                     f"{zone_key} 目录不存在: {p}")
+                elif "*" in p:
+                    matches = glob.glob(full)
+                    self.assertGreaterEqual(len(matches), 1,
+                                            f"{zone_key} 通配符无匹配: {p}")
                 else:
                     self.assertTrue(os.path.exists(full),
                                     f"{zone_key} 文件不存在: {p}")

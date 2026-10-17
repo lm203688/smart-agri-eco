@@ -205,6 +205,8 @@ class TestShadowExecutionLog(unittest.TestCase):
 
     def test_cli_write_then_check(self):
         """先默认写入，再 --check 应闭合。"""
+        if os.path.exists(LOG_PATH):
+            os.unlink(LOG_PATH)
         rc1, _, _ = _run()
         self.assertEqual(rc1, 0)
         self.assertTrue(os.path.exists(LOG_PATH))

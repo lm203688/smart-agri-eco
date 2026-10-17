@@ -170,7 +170,12 @@ def _load_log() -> List[Dict[str, Any]]:
     if not os.path.exists(LOG_PATH):
         return []
     with open(LOG_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+    # 兼容两种格式：顶层 list（旧）或 {"entries": [...]}（新）
+    if isinstance(data, dict):
+        entries = data.get("entries", [])
+        return entries if isinstance(entries, list) else []
+    return data if isinstance(data, list) else []
 
 
 def _save_log(entries: List[Dict[str, Any]]) -> None:

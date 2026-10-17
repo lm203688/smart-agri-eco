@@ -182,5 +182,256 @@ class TestSplitConformalCoverageBound(unittest.TestCase):
         self.assertIsNotNone(q2)
 
 
+# ---------- M15-B4: bench 保形覆盖率指标 ----------
+
+class TestBenchConformalCoverage(unittest.TestCase):
+    """M15-B4：_compute_conformal_coverage 在 bench runner 中的集成测试。"""
+
+    def _run(self, results):
+        import sys, os
+        ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        sys.path.insert(0, ROOT)
+        from benchmarks.agri_recipe_bench.run_bench import _compute_conformal_coverage
+        return _compute_conformal_coverage(results)
+
+    def test_empty_results_disables(self):
+        cc = self._run([])
+        self.assertFalse(cc["enabled"])
+        self.assertEqual(cc["reason"], "无 target_prediction 用例")
+
+    def test_no_target_prediction_disables(self):
+        results = [
+            {"axis": "state_rolling", "ok": True, "case_id": "sr_1"},
+            {"axis": "counterfactual", "ok": True, "case_id": "cf_1"},
+        ]
+        cc = self._run(results)
+        self.assertFalse(cc["enabled"])
+        self.assertEqual(cc["reason"], "无 target_prediction 用例")
+
+    def test_basic_coverage_computation(self):
+        results = [
+            {"axis": "target_prediction", "ok": True, "case_id": "tp_1",
+             "checks": {"yield": {"pred": 500.0, "expected": 500.0, "ok": True}}},
+            {"axis": "target_prediction", "ok": True, "case_id": "tp_2",
+             "checks": {"yield": {"pred": 300.0, "expected": 280.0, "ok": True}}},
+        ]
+        cc = self._run(results)
+        self.assertTrue(cc["enabled"])
+        self.assertEqual(cc["method"], "split_conformal")
+        self.assertEqual(cc["alpha"], 0.10)
+        self.assertEqual(cc["total_metrics"], 2)
+        self.assertGreaterEqual(cc["covered"], 0)
+        self.assertLessEqual(cc["coverage"], 1.0)
+        self.assertEqual(cc["above_guarantee"], cc["coverage"] >= cc["coverage_guarantee"])
+
+    def test_perfect_predictions_give_full_coverage(self):
+        """所有 pred == expected → 残差全 0 → q=0 → 覆盖率 100%。"""
+        results = [
+            {"axis": "target_prediction", "ok": True, "case_id": f"tp_{i}",
+             "checks": {"yield": {"pred": 100.0, "expected": 100.0, "ok": True}}}
+            for i in range(5)
+        ]
+        cc = self._run(results)
+        self.assertTrue(cc["enabled"])
+        self.assertEqual(cc["coverage"], 1.0)
+        self.assertTrue(cc["above_guarantee"])
+
+    def test_missing_pred_or_expected_skipped(self):
+        """pred 或 expected 为 None 的 metric 应被跳过。"""
+        results = [
+            {"axis": "target_prediction", "ok": True, "case_id": "tp_1",
+             "checks": {
+                 "yield": {"pred": 500.0, "expected": 500.0, "ok": True},
+                 "duration": {"pred": None, "expected": 90, "ok": True},
+             }},
+        ]
+        cc = self._run(results)
+        self.assertTrue(cc["enabled"])
+        self.assertEqual(cc["total_metrics"], 1)  # 只算 yield
+
+    def test_coverage_above_guarantee_flag(self):
+        """覆盖率应 ≥ guarantee（full calibration 保证）。"""
+        results = [
+            {"axis": "target_prediction", "ok": True, "case_id": f"tp_{i}",
+             "checks": {"yield": {"pred": 100.0, "expected": 100.0 + i * 5, "ok": True}}}
+            for i in range(10)
+        ]
+        cc = self._run(results)
+        self.assertTrue(cc["enabled"])
+        self.assertTrue(cc["above_guarantee"],
+                        f"覆盖率 {cc['coverage']} 应 ≥ guarantee {cc['coverage_guarantee']}")
+
+    def test_guarantee_is_0_90(self):
+        cc = self._run([
+            {"axis": "target_prediction", "ok": True, "case_id": "tp_1",
+             "checks": {"yield": {"pred": 100.0, "expected": 100.0, "ok": True}}},
+        ])
+        self.assertAlmostEqual(cc["coverage_guarantee"], 0.90, places=4)
+
+    def test_details_contain_residue_and_covered(self):
+        results = [
+            {"axis": "target_prediction", "ok": True, "case_id": "tp_1",
+             "checks": {"yield": {"pred": 500.0, "expected": 500.0, "ok": True}}},
+        ]
+        cc = self._run(results)
+        self.assertTrue(cc["enabled"])
+        self.assertEqual(len(cc["details"]), 1)
+        d = cc["details"][0]
+        self.assertIn("case_id", d)
+        self.assertIn("metric", d)
+        self.assertIn("residue", d)
+        self.assertIn("covered", d)
+        self.assertIn("pred", d)
+        self.assertIn("expected", d)
+
+
+# ---------- M15-B4: SplitConformal.compute_coverage + CLI ----------
+
+class TestSplitConformalComputeCoverage(unittest.TestCase):
+    """M15-B4：新增 compute_coverage 方法——覆盖率可外部审计。"""
+
+    def test_empty_test_pairs_returns_ok_false(self):
+        c = get_default_calibrator()
+        r = c.compute_coverage([])
+        self.assertFalse(r["ok"])
+        self.assertEqual(r["observed_coverage"], 0.0)
+        self.assertEqual(r["n_test"], 0)
+        self.assertEqual(r["n_hit"], 0)
+
+    def test_perfect_predictions_full_coverage(self):
+        """区间半宽>0 时，若 truth==pred，命中率=1。"""
+        c = SplitConformal(calibration_scores=[0.05, 0.10], alpha=0.10)
+        pairs = [(100.0, 100.0), (200.0, 200.0), (300.0, 300.0)]
+        r = c.compute_coverage(pairs)
+        self.assertTrue(r["ok"])
+        self.assertEqual(r["observed_coverage"], 1.0)
+        self.assertEqual(r["n_hit"], 3)
+
+    def test_threshold_failure_marks_not_ok(self):
+        """阈值高于 observed 时 ok=False。"""
+        c = SplitConformal(calibration_scores=[0.05, 0.10], alpha=0.10)
+        # 让一部分测试对漏出：小残差校准但给极端真值
+        pairs = [(100.0, 200.0)]  # truth 远高于区间
+        r = c.compute_coverage(pairs, threshold=0.9)
+        self.assertFalse(r["ok"])
+        self.assertLess(r["observed_coverage"], 0.9)
+        self.assertEqual(r["n_miss"], 1)
+
+    def test_threshold_defaults_to_one_minus_alpha(self):
+        c = SplitConformal(calibration_scores=[0.05, 0.10], alpha=0.10)
+        r = c.compute_coverage([(100.0, 100.0)])
+        self.assertAlmostEqual(r["threshold"], 0.90, places=4)
+        self.assertEqual(r["target_coverage"], r["threshold"])
+
+    def test_alpha_override_applied(self):
+        """传入不同 alpha 覆盖 self.alpha。"""
+        c = SplitConformal(calibration_scores=[0.05, 0.10], alpha=0.10)
+        r = c.compute_coverage([(100.0, 100.0)], alpha=0.20)
+        self.assertAlmostEqual(r["alpha_effective"], 0.20, places=4)
+        self.assertAlmostEqual(r["target_coverage"], 0.80, places=4)
+        # self.alpha 未被就地修改
+        self.assertAlmostEqual(c.alpha, 0.10, places=6)
+
+    def test_invalid_alpha_raises(self):
+        c = SplitConformal(calibration_scores=[0.05], alpha=0.10)
+        with self.assertRaises(ValueError):
+            c.compute_coverage([(1.0, 1.0)], alpha=1.5)
+        with self.assertRaises(ValueError):
+            c.compute_coverage([(1.0, 1.0)], alpha=0.0)
+
+    def test_detail_contains_hit_flag(self):
+        c = SplitConformal(calibration_scores=[0.05, 0.10], alpha=0.10)
+        pairs = [(100.0, 100.0), (100.0, 500.0)]
+        r = c.compute_coverage(pairs)
+        self.assertEqual(len(r["detail"]), 2)
+        self.assertTrue(r["detail"][0]["hit"])
+        self.assertFalse(r["detail"][1]["hit"])
+        for d in r["detail"]:
+            self.assertIn("pred", d)
+            self.assertIn("truth", d)
+            self.assertIn("lower", d)
+            self.assertIn("upper", d)
+
+    def test_default_calibrator_high_coverage_on_known_pairs(self):
+        """内置校准器对已知 3 对 → 应达 100%（q=max 时区间宽）。"""
+        c = get_default_calibrator()
+        pairs = [(1432.0, 1600.0), (466.0, 500.0), (273.0, 280.0)]
+        r = c.compute_coverage(pairs, threshold=0.9)
+        self.assertTrue(r["ok"])
+        self.assertEqual(r["observed_coverage"], 1.0)
+
+    def test_none_pairs_filtered(self):
+        """None 对被过滤，n_test 只算有效对。"""
+        c = SplitConformal(calibration_scores=[0.05], alpha=0.10)
+        pairs = [(1.0, 1.0), (None, 2.0), (3.0, None)]
+        r = c.compute_coverage(pairs)
+        self.assertEqual(r["n_test"], 1)
+
+
+class TestSplitConformalCLI(unittest.TestCase):
+    """M15-B4：CLI `python -m agent.conformal check`。"""
+
+    def _run(self, args):
+        import subprocess, sys
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return subprocess.run(
+            [sys.executable, "-m", "agent.conformal", *args],
+            cwd=root, capture_output=True, text=True, timeout=30,
+        )
+
+    def test_check_default_exits_zero(self):
+        p = self._run(["check", "--threshold", "0.9"])
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn("OK: True", p.stdout)
+
+    def test_check_json_out_is_parseable(self):
+        p = self._run(["check", "--threshold", "0.9", "--json-out"])
+        self.assertEqual(p.returncode, 0, p.stderr)
+        import json
+        data = json.loads(p.stdout)
+        self.assertIn("observed_coverage", data)
+        self.assertIn("ok", data)
+        self.assertIn("detail", data)
+
+    def test_check_strict_threshold_fails(self):
+        p = self._run(["check", "--threshold", "0.99", "--json-out"])
+        # 阈值 0.99 对 3/3 命中(1.0) 仍通过；用 1.01 保证失败
+        p2 = self._run(["check", "--threshold", "1.01", "--json-out"])
+        self.assertEqual(p2.returncode, 1, p2.stdout + p2.stderr)
+        import json
+        self.assertFalse(json.loads(p2.stdout)["ok"])
+
+    def test_check_with_pairs_csv(self):
+        import tempfile, os
+        csv = tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False)
+        csv.write("100,100\n200,200\n300,300\n")
+        csv.close()
+        try:
+            p = self._run(["check", "--pairs-csv", csv.name, "--threshold", "0.9"])
+            self.assertEqual(p.returncode, 0, p.stderr)
+        finally:
+            os.unlink(csv.name)
+
+    def test_check_with_pairs_json(self):
+        import tempfile, os, json
+        tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
+        json.dump([[100.0, 100.0], {"pred": 200.0, "truth": 200.0}], tmp)
+        tmp.close()
+        try:
+            p = self._run(["check", "--pairs-json", tmp.name, "--threshold", "0.9"])
+            self.assertEqual(p.returncode, 0, p.stderr)
+        finally:
+            os.unlink(tmp.name)
+
+    def test_show_mode_still_works(self):
+        p = self._run(["show"])
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn("自测通过", p.stdout)
+
+    def test_no_args_defaults_to_show(self):
+        p = self._run([])
+        self.assertEqual(p.returncode, 0, p.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

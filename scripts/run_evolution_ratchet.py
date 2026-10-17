@@ -43,15 +43,24 @@ def _load_zones() -> Dict[str, Any]:
 
 
 def _check_whitelist_files(zones: Dict[str, Any]) -> Tuple[bool, List[Dict[str, Any]]]:
-    """校验棘轮白名单里的所有文件路径都真实存在。"""
+    """校验棘轮白名单里的所有文件路径都真实存在。
+
+    支持 glob 模式：若 entry 含通配符（* ? [），用 glob.glob 展开；
+    否则按精确路径检查。glob 展开后至少要匹配到 1 个文件才算存在。
+    """
+    import glob as _glob
     enf = zones.get("meta_policy", {}).get("enforcement", {})
     whitelist = enf.get("ratchet_required_for", [])
     missing = []
     for entry in whitelist:
-        # entry 可能是 glob 或精确路径；本模块只做前缀检查
         prefix = entry.rstrip("/")
         full = os.path.join(ROOT, prefix)
-        if not os.path.exists(full):
+        if any(c in prefix for c in "*?["):
+            # glob 模式：展开后至少要有匹配项
+            matches = _glob.glob(full)
+            if not matches:
+                missing.append({"prefix": entry, "path": full, "reason": "glob_no_match"})
+        elif not os.path.exists(full):
             missing.append({"prefix": entry, "path": full})
     return len(missing) == 0, missing
 

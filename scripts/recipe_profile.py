@@ -280,9 +280,38 @@ def clone_recipe(src_name: str, dest_name: str,
 # ---------------------------------------------------------------------------
 # list / stats / helper
 # ---------------------------------------------------------------------------
-def list_recipes(recipes_dir: str = "") -> List[Dict[str, Any]]:
-    """列出所有配方的元信息（不加载完整内容）。"""
+# brief mode 白名单：M13-P2 渐进式发现——先给"够判断相关性"的最小字段集，
+# 需要细节再走 kind=lookup 拉全量。目的是让 LLM 在 context budget 内先看目录。
+_BRIEF_KEYS = (
+    "filename",
+    "recipe_ref",
+    "crop",
+    "stage",
+    "device_class",
+    "size_bytes",
+    "sha256",
+)
+# brief 附加字段：来自 recipe 顶层的可信度信号（M11-T2 溯源法务字段）。
+# 缺失时诚实返回 None，不虚构。
+_BRIEF_OPTIONAL = ("license_scope", "data_quality", "reproducibility_score")
+
+
+def list_recipes(recipes_dir: str = "", mode: str = "brief") -> List[Dict[str, Any]]:
+    """列出所有配方的元信息。
+
+    参数：
+      recipes_dir: 配方库根目录（默认 data/env_recipes/）
+      mode:
+        "brief" 只返回 id/关键属性 + 可信度信号（默认；节省 context）
+        "full"   返回完整 recipe JSON（含 environment/exception_handling/...）
+
+    M13-P2 渐进式发现：LLM 先在 brief 模式看目录（~2KB/152 份），
+    挑中目标后再走 kind=lookup 或 full 模式拿完整 JSON。
+    """
     base = recipes_dir or RECIPES_DIR
+    mode = (mode or "brief").strip().lower()
+    if mode not in ("brief", "full"):
+        raise ValueError(f"非法 mode='{mode}'，合法值: brief/full")
     out = []
     if not os.path.isdir(base):
         return out
@@ -295,17 +324,85 @@ def list_recipes(recipes_dir: str = "") -> List[Dict[str, Any]]:
             crop = d.get("crop", {}).get("species", "?")
             stage = d.get("stage", "?")
             dc = d.get("device_profile", {}).get("device_class", "?")
-            out.append({
-                "filename": name,
-                "recipe_ref": f"{crop}:{stage}:{dc}",
-                "crop": crop,
-                "stage": stage,
-                "device_class": dc,
-                "size_bytes": os.path.getsize(path),
-                "sha256": _sha256_of(path)[:16],
-            })
+            if mode == "brief":
+                item = {
+                    "filename": name,
+                    "recipe_ref": f"{crop}:{stage}:{dc}",
+                    "crop": crop,
+                    "stage": stage,
+                    "device_class": dc,
+                    "size_bytes": os.path.getsize(path),
+                    "sha256": _sha256_of(path)[:16],
+                }
+                for opt in _BRIEF_OPTIONAL:
+                    if opt in d:
+                        item[opt] = d.get(opt)
+                out.append(item)
+            else:
+                # full 模式：扁平字段 + 完整 recipe JSON
+                out.append({
+                    "filename": name,
+                    "recipe_ref": f"{crop}:{stage}:{dc}",
+                    "crop": crop,
+                    "stage": stage,
+                    "device_class": dc,
+                    "size_bytes": os.path.getsize(path),
+                    "sha256": _sha256_of(path)[:16],
+                    "recipe": d,
+                })
         except Exception:  # noqa: BLE001
             out.append({"filename": name, "error": "parse_failed"})
+    return out
+
+
+def search_recipes(keyword: str = "",
+                   crop: str = "",
+                   zone: str = "",
+                   stage: str = "",
+                   device_class: str = "",
+                   recipes_dir: str = "",
+                   mode: str = "brief",
+                   ) -> List[Dict[str, Any]]:
+    """按字段过滤配方（结构化检索，区别于文本语料检索）。
+
+    参数：
+      keyword: 在 crop/species/latin/family 上做的模糊匹配（子串，大小写不敏感）
+      crop:    作物名精确或子串匹配
+      zone:    未使用（当前配方库按 crop 组织，zone 通过 recipe_ref 前缀体现）
+      stage:   阶段过滤（seed/seedling/vegetative/flowering/fruiting/harvest/full_cycle）
+      device_class: 设备类别过滤
+      recipes_dir: 配方库根目录
+      mode:    "brief"/"full"（见 list_recipes）
+
+    返回与 list_recipes 同结构，按 filename 排序。
+    """
+    items = list_recipes(recipes_dir=recipes_dir, mode=mode)
+    kw = (keyword or "").strip().lower()
+    cr = (crop or "").strip().lower()
+    st = (stage or "").strip().lower()
+    dc = (device_class or "").strip().lower()
+    out = []
+    for it in items:
+        if "error" in it:
+            continue
+        # brief 模式只有 crop 字段；full 模式有完整 recipe
+        crop_field = it.get("crop", "")
+        if mode == "full":
+            r = it.get("recipe", {})
+            latin = (r.get("crop", {}).get("latin") or "").lower()
+            family = (r.get("crop", {}).get("family") or "").lower()
+            searchable = f"{crop_field} {latin} {family}".lower()
+        else:
+            searchable = crop_field.lower()
+        if kw and kw not in searchable:
+            continue
+        if cr and cr not in crop_field.lower():
+            continue
+        if st and it.get("stage", "").lower() != st:
+            continue
+        if dc and it.get("device_class", "").lower() != dc:
+            continue
+        out.append(it)
     return out
 
 

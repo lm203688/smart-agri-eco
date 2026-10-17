@@ -1,8 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/lm203688/smart-agri-eco/main/schemas/env_recipe.schema.json",
-  "title": "Env Recipe (环境配置配方) v1",
-  "description": "智慧农业生态 · Env Recipe 协议 v1 的 JSON Schema。一份 Env Recipe = 作物 × 生长阶段 × 箱体条件 → 温湿/光谱/PPFD/CO2/EC/pH/水肥/气流/异常处理 的可执行参数集，是所有种植硬件与 Agent 共享的『配方语言』。execution_log / outcome / image_consent 为 day-1 必须留位的独占数据字段（配方→执行→结果三元组 + 中文病虫害图像），事后补字段是数据工程里最贵的错误。",
+  "title": "Env Recipe (环境配置配方) v1.2",
+  "description": "智慧农业生态 · Env Recipe 协议 v1 的 JSON Schema。一份 Env Recipe = 作物 × 生长阶段 × 箱体条件 → 温湿/光谱/PPFD/CO2/EC/pH/水肥/气流/异常处理 的可执行参数集，是所有种植硬件与 Agent 共享的『配方语言』。execution_log / outcome / image_consent 为 day-1 必须留位的独占数据字段（配方→执行→结果三元组 + 中文病虫害图像），事后补字段是数据工程里最贵的错误。v1.2 新增 HA 生态事实标准字段（vpd_kpa / dew_point_c / mold_risk / dli_umol_m2_day）与 OpenFarm 共识字段（companion_plants / sowing_depth_cm），全部 optional 且带溯源元数据（source/derived_at/method），供下游温室/箱体调控按行业惯例消费。",
+  "x-schema-maintenance-note": "v1.2.1：删除未使用的 zone_note 字段（GAP_AUDIT §E1：schema 声明但 152 份配方零使用，属于『schema 与数据双向漂移』的反例。新增字段前需先在 scripts/validate_env_recipe.py 中定义用途与消费方。",
   "type": "object",
   "required": [
     "protocol",
@@ -251,6 +252,61 @@
         "substrate": {
           "type": "string",
           "description": "基质/介质，如 椰糠 / 岩棉 / 营养土。"
+        },
+        "vpd_kpa": {
+          "type": "object",
+          "description": "HA 事实标准字段（v1.2 新增，optional）。水汽压亏缺 VPD（kPa），从 environment.temperature + humidity 派生。带 source/derived_at/method 溯源元数据，用于区分「人工设定」与「机器派生」。",
+          "additionalProperties": true,
+          "properties": {
+            "nominal": {"type": "number", "description": "标称 VPD（温湿区间中点）"},
+            "envelope_min": {"type": "number"},
+            "envelope_max": {"type": "number"},
+            "unit": {"const": "kPa"},
+            "method": {"type": "string"},
+            "source": {"type": "string"},
+            "derived_at": {"type": "string", "format": "date-time"}
+          }
+        },
+        "dew_point_c": {
+          "type": "object",
+          "description": "HA 事实标准字段（v1.2 新增，optional）。露点温度（°C），从 environment.temperature + humidity 派生。",
+          "additionalProperties": true,
+          "properties": {
+            "day_max": {"type": "number"},
+            "night": {"type": "number"},
+            "unit": {"const": "celsius"},
+            "method": {"type": "string"},
+            "source": {"type": "string"},
+            "derived_at": {"type": "string", "format": "date-time"}
+          }
+        },
+        "mold_risk": {
+          "type": "object",
+          "description": "HA 事实标准字段（v1.2 新增，optional）。真菌病害风险等级（low/medium/high/unknown），从 VPD + 夜露点判据派生。",
+          "additionalProperties": true,
+          "properties": {
+            "level": {"type": "string", "enum": ["low", "medium", "high", "unknown"]},
+            "reason": {"type": "string"},
+            "vpd_nominal_kpa": {"type": "number"},
+            "dew_point_night_c": {"type": "number"},
+            "thresholds": {"type": "object"},
+            "method": {"type": "string"},
+            "source": {"type": "string"},
+            "derived_at": {"type": "string", "format": "date-time"}
+          }
+        },
+        "dli_umol_m2_day": {
+          "type": "object",
+          "description": "HA 事实标准字段（v1.2 新增，optional）。每日光积分 DLI（umol/m²/day），从分区 climate_baseline 派生。单位从 NASA POWER 的 mol 换算为 umol（HA 惯例）。",
+          "additionalProperties": true,
+          "properties": {
+            "value": {"type": "number"},
+            "unit": {"const": "umol_m2_day"},
+            "zone_id": {"type": "string"},
+            "source": {"type": "string"},
+            "method": {"type": "string"},
+            "derived_at": {"type": "string", "format": "date-time"}
+          }
         }
       }
     },
@@ -408,6 +464,15 @@
             "type": "string",
             "description": "该来源的许可条款（与 license 字段对齐的冗余字段，供机器读取）。混合许可下必须逐条标注。",
             "default": "unknown"
+          },
+          "license_note": {
+            "type": "string",
+            "description": "许可条款补充说明（GAP_AUDIT §B3 新增，v1.2.1）。用于说明 license=unknown 时的处理决策：是否保守占位为 CC BY-NC-SA 4.0，并说明为何无法核实原始许可。占位替换后应保留原始信息在此字段供法务追溯。"
+          },
+          "unknown_license_replaced_at": {
+            "type": "string",
+            "format": "date",
+            "description": "该来源的 license 从 unknown 被占位替换的日期（GAP_AUDIT §B3 新增，v1.2.1）。格式 YYYY-MM-DD。此字段存在即说明原始许可未核实、经保守处理。法务审计时可用于识别哪些来源仍待核实。"
           }
         }
       }
@@ -421,10 +486,42 @@
       "type": "string",
       "description": "许可适用范围声明：说明 recipe 级 license 与 sources[].license 的关系，以及是否存在限制整包商用性的来源（如 CC BY-NC-SA）。"
     },
-    "zone_note": {
-      "type": "string",
-      "description": "可选：分区/场景上下文备注。用于标注配方引入背景（如 v1.1 新增 hot_arid/highland 分区配套配方）、特殊气候特征说明、或未来版本演进说明。不承载可执行参数。"
+    "companion_plants": {
+      "type": "object",
+      "description": "OpenFarm 共识字段（v1.2 新增，optional）。同分区伴生候选植物列表。本项目当前用 crop_adapt_db 同分区 Top-K 作占位（非最优伴生），字段带 source/derived_at 元数据。",
+      "additionalProperties": true,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "crop": {"type": "string"},
+              "latin": {"type": "string"},
+              "adapt_score": {"type": "number"},
+              "reason": {"type": "string"}
+            }
+          }
+        },
+        "source": {"type": "string"},
+        "derived_at": {"type": "string", "format": "date-time"},
+        "note": {"type": "string"}
+      }
+    },
+    "sowing_depth_cm": {
+      "type": "object",
+      "description": "OpenFarm 共识字段（v1.2 新增，optional）。播种深度（cm），从 crop_adapt_db.growth_days 派生（公式 round(growth_days/200, 1)）。缺 growth_days 时值为 null 且必带 reason（不编造纪律）。",
+      "additionalProperties": true,
+      "properties": {
+        "value": {"type": ["number", "null"]},
+        "unit": {"const": "cm"},
+        "growth_days": {"type": "number"},
+        "method": {"type": "string"},
+        "source": {"type": "string"},
+        "derived_at": {"type": "string", "format": "date-time"},
+        "reason": {"type": "string"}
+      }
     }
   },
-  "schema_version": "1.1.0"
+  "schema_version": "1.2.1"
 }

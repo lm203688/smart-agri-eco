@@ -22,7 +22,7 @@ sys.path.insert(0, ROOT)
 
 from scripts.recipe_profile import (  # noqa: E402
     export_recipe, import_recipe, diff_recipes, clone_recipe,
-    list_recipes, recipe_stats,
+    list_recipes, recipe_stats, search_recipes,
 )
 
 
@@ -77,6 +77,48 @@ class TestRecipeProfile(unittest.TestCase):
             self.assertIn("filename", it)
             self.assertIn("recipe_ref", it)
             self.assertEqual(it["recipe_ref"].split(":")[0], "番茄")
+
+    def test_list_recipes_mode_brief_excludes_full_recipe(self):
+        """M13-P2：brief 模式不返回完整 recipe JSON。"""
+        items = list_recipes(self._recipes_dir, mode="brief")
+        for it in items:
+            self.assertNotIn("recipe", it)
+
+    def test_list_recipes_mode_full_includes_recipe(self):
+        """M13-P2：full 模式返回完整 recipe JSON。"""
+        items = list_recipes(self._recipes_dir, mode="full")
+        for it in items:
+            self.assertIn("recipe", it)
+            self.assertIn("crop", it["recipe"])
+            self.assertIn("stage", it["recipe"])
+
+    def test_list_recipes_mode_invalid_raises(self):
+        with self.assertRaises(ValueError):
+            list_recipes(self._recipes_dir, mode="nonsense")
+
+    def test_search_recipes_by_keyword(self):
+        items = search_recipes(keyword="番茄", recipes_dir=self._recipes_dir)
+        self.assertEqual(len(items), 2)
+
+    def test_search_recipes_by_stage(self):
+        items = search_recipes(stage="full_cycle", recipes_dir=self._recipes_dir)
+        self.assertEqual(len(items), 2)
+        items_none = search_recipes(stage="seedling", recipes_dir=self._recipes_dir)
+        self.assertEqual(len(items_none), 0)
+
+    def test_search_recipes_by_device_class(self):
+        items = search_recipes(device_class="other", recipes_dir=self._recipes_dir)
+        self.assertEqual(len(items), 2)
+
+    def test_search_recipes_empty_matches_all(self):
+        items = search_recipes(recipes_dir=self._recipes_dir)
+        self.assertEqual(len(items), 2)
+
+    def test_search_recipes_mode_full(self):
+        items = search_recipes(keyword="番茄", mode="full",
+                                recipes_dir=self._recipes_dir)
+        self.assertEqual(len(items), 2)
+        self.assertIn("recipe", items[0])
 
     def test_recipe_stats(self):
         stats = recipe_stats(self._recipes_dir)

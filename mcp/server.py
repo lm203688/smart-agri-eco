@@ -48,15 +48,328 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
+from core.clock import CLOCK  # noqa: E402
+
+# H1: 原子写入底座（MCP 对外服务层崩溃不损坏审计日志）
+from core.atomic_io import atomic_append_jsonl, atomic_write_json
+
 from agent import AgriOrchestrator  # noqa: E402
 from agent.preset_cities import load_preset_cities  # noqa: E402
 from core.trust_layer import get_trust_mark  # noqa: E402
+from core.tool_schema import validate_tool_args  # noqa: E402
 
 PROTOCOL_VERSION = "2026-07-28"
 # 兼容声明的历史版本：新客户端取 PROTOCOL_VERSION，旧客户端接受以下任一。
 SUPPORTED_PROTOCOL_VERSIONS = ("2026-07-28", "2025-06-18", "2024-11-05")
 SERVER_NAME = "agri-eco"
 SERVER_VERSION = "1.1.0"
+
+
+# ===========================================================================
+# H5: MCP 工具参数 JSON Schema（FOUNDATION_AUDIT 2026-10-16）
+# 每个 _tool_* handler 前必须有同名 TOOL_SCHEMA_xxx = {...} 定义。
+# 缺失 → CI 门禁 gate_tool_schema.py 失败。
+# ===========================================================================
+
+TOOL_SCHEMA_list_cities = {
+    "type": "object",
+    "properties": {},
+}
+
+TOOL_SCHEMA_match_zone = {
+    "type": "object",
+    "required": ["lat", "lon"],
+    "properties": {
+        "lat": {"type": "number", "minimum": -90.0, "maximum": 90.0},
+        "lon": {"type": "number", "minimum": -180.0, "maximum": 180.0},
+    },
+}
+
+TOOL_SCHEMA_recommend_crops = {
+    "type": "object",
+    "properties": {
+        "lat": {"type": "number", "minimum": -90.0, "maximum": 90.0, "nullable": True},
+        "lon": {"type": "number", "minimum": -180.0, "maximum": 180.0, "nullable": True},
+        "purpose": {"type": "string"},
+        "space_sqm": {"type": "number", "minimum": 0.0},
+        "difficulty": {"type": "string", "enum": ["beginner", "intermediate", "expert"]},
+        "scene": {"type": "string", "enum": ["balcony", "office", "windowsill", "indoor", "outdoor"]},
+    },
+}
+
+TOOL_SCHEMA_diagnose_pest = {
+    "type": "object",
+    "required": ["crop"],
+    "properties": {
+        "crop": {"type": "string", "nullable": False},
+        "symptom_description": {"type": "string"},
+        "image_reference": {"type": "string"},
+        "growth_stage": {"type": "string"},
+        "environment": {"type": "object", "nullable": True},
+    },
+}
+
+TOOL_SCHEMA_nutrition_plan = {
+    "type": "object",
+    "required": ["crop"],
+    "properties": {
+        "crop": {"type": "string", "nullable": False},
+        "scene": {"type": "string"},
+        "growth_stage": {"type": "string"},
+        "growth_days": {"type": "integer", "minimum": 1, "maximum": 365, "nullable": True},
+        "container_volume_l": {"type": "number", "minimum": 0.0, "nullable": True},
+        "start_date": {"type": "string"},
+    },
+}
+
+TOOL_SCHEMA_season_advisory = {
+    "type": "object",
+    "properties": {
+        "mode": {"type": "string", "enum": ["planting_window", "stage_days", "calendar", "phenology"]},
+        "monthly_mean_c": {"type": "array", "items": {"type": "number"}, "nullable": True},
+        "crops": {"type": "array", "items": {"type": "string"}, "nullable": True},
+        "frost_threshold_c": {"type": "number", "nullable": True},
+        "safety_margin_days": {"type": "integer", "minimum": 0, "nullable": True},
+        "crop": {"type": "string"},
+        "mean_temp_c": {"type": "number", "nullable": True},
+        "zone": {"type": "string"},
+        "date": {"type": "string"},
+        "category": {"type": "string"},
+    },
+}
+
+TOOL_SCHEMA_soil_profile = {
+    "type": "object",
+    "properties": {
+        "lat": {"type": "number", "minimum": -90.0, "maximum": 90.0, "nullable": True},
+        "lon": {"type": "number", "minimum": -180.0, "maximum": 180.0, "nullable": True},
+        "zone_id": {"type": "string", "nullable": True},
+        "crop": {"type": "string", "nullable": True},
+        "online": {"type": "boolean"},
+        "timeout_s": {"type": "number", "minimum": 0.5, "maximum": 60.0},
+    },
+}
+
+TOOL_SCHEMA_bp_screen = {
+    "type": "object",
+    "properties": {
+        "text": {"type": "string", "nullable": True},
+        "fields": {"type": "object", "nullable": True},
+        "category": {"type": "string", "nullable": True},
+        "company": {"type": "string"},
+        "mode": {"type": "string", "enum": ["text", "fields", "audit"]},
+        "filename": {"type": "string", "nullable": True},
+    },
+}
+
+TOOL_SCHEMA_resolve_recipe = {
+    "type": "object",
+    "properties": {
+        "query": {"type": "string", "nullable": True},
+        "lat": {"type": "number", "minimum": -90.0, "maximum": 90.0, "nullable": True},
+        "lon": {"type": "number", "minimum": -180.0, "maximum": 180.0, "nullable": True},
+    },
+}
+
+TOOL_SCHEMA_query_lineage = {
+    "type": "object",
+    "properties": {
+        "crop": {"type": "string", "nullable": True},
+        "zone_id": {"type": "string", "nullable": True},
+    },
+}
+
+TOOL_SCHEMA_counterfactual_trajectory = {
+    "type": "object",
+    "properties": {
+        "crop": {"type": "string"},
+        "days": {"type": "integer", "minimum": 1, "maximum": 365},
+        "baseline_dli_mj": {"type": "number", "minimum": 0.0},
+        "baseline_temp_c": {"type": "number", "minimum": -50.0, "maximum": 80.0},
+        "quick_scenario": {"type": "string", "enum": [
+            "baseline", "light_12_to_16h", "cool_down_5c",
+            "stop_fertilizer", "high_humidity", "double_water"
+        ]},
+        "heuristic_engine_est": {"type": "number", "nullable": True},
+    },
+}
+
+TOOL_SCHEMA_verify_recommendation = {
+    "type": "object",
+    "properties": {
+        "claim": {"type": "object", "nullable": True},
+        "context": {"type": "object", "nullable": True},
+        "heuristic_engine_est": {"type": "number", "nullable": True},
+    },
+}
+
+# --- 新增 10 个 handler schema（H5 补漏） ---
+
+TOOL_SCHEMA_growth_plan = {
+    "type": "object",
+    "required": ["crop"],
+    "properties": {
+        "crop": {"type": "string", "nullable": False},
+        "lat": {"type": "number", "minimum": -90.0, "maximum": 90.0, "nullable": True},
+        "lon": {"type": "number", "minimum": -180.0, "maximum": 180.0, "nullable": True},
+        "scene": {"type": "string"},
+        "floor": {"type": "integer", "minimum": 0},
+        "orientation": {"type": "string"},
+        "city": {"type": "string"},
+        "start_date": {"type": "string"},
+    },
+}
+
+TOOL_SCHEMA_env_recipe = {
+    "type": "object",
+    "required": ["crop"],
+    "properties": {
+        "crop": {"type": "string", "nullable": False},
+        "stage": {"type": "string", "enum": [
+            "seed", "seedling", "vegetative", "flowering",
+            "fruiting", "harvest", "full_cycle",
+        ]},
+        "device_class": {"type": "string", "enum": [
+            "balcony", "windowsill", "indoor_cabinet", "aerogarden_orphan",
+            "greenhouse", "open_field", "other",
+        ]},
+    },
+}
+
+TOOL_SCHEMA_reconcile_climate = {
+    "type": "object",
+    "required": ["lat", "lon"],
+    "properties": {
+        "lat": {"type": "number", "minimum": -90.0, "maximum": 90.0},
+        "lon": {"type": "number", "minimum": -180.0, "maximum": 180.0},
+        "years": {"type": "integer", "minimum": 1, "maximum": 30},
+        "sources": {"type": "array", "items": {"type": "string"}, "nullable": True},
+    },
+}
+
+TOOL_SCHEMA_search = {
+    "type": "object",
+    "required": ["query"],
+    "properties": {
+        "query": {"type": "string", "nullable": False},
+        "corpus": {"type": "string", "enum": ["all", "crops", "zones", "pests", "recipes"]},
+        "k": {"type": "integer", "minimum": 1, "maximum": 50},
+        "mode": {"type": "string", "enum": ["exact", "keyword", "vector", "hybrid"]},
+    },
+}
+
+TOOL_SCHEMA_knowledge_query = {
+    "type": "object",
+    "properties": {
+        "kind": {"type": "string", "enum": [
+            "summary", "crops_by_zone", "crops_by_risk", "neighbors", "traverse",
+        ]},
+        "zone_id": {"type": "string", "nullable": True},
+        "risk": {"type": "string", "nullable": True},
+        "node": {"type": "string", "nullable": True},
+        "relation": {"type": "string", "nullable": True},
+        "reverse": {"type": "boolean"},
+        "top_k": {"type": "integer", "minimum": 1, "maximum": 100},
+        "depth": {"type": "integer", "minimum": 1, "maximum": 5},
+    },
+}
+
+TOOL_SCHEMA_forecast = {
+    "type": "object",
+    "required": ["crop"],
+    "properties": {
+        "crop": {"type": "string", "nullable": False},
+        "zone_id": {"type": "string", "nullable": True},
+        "start_date": {"type": "string", "nullable": True},
+        "adapt_score": {"type": "number", "minimum": 0.0, "maximum": 1.0, "nullable": True},
+        "env_recipe": {"type": "object", "nullable": True},
+        "growth_plan": {"type": "object", "nullable": True},
+        "zone_climate": {"type": "array", "nullable": True},
+    },
+}
+
+TOOL_SCHEMA_recipe_profile = {
+    "type": "object",
+    "properties": {
+        "kind": {"type": "string", "enum": [
+            "list", "search", "stats", "lookup", "diff", "export",
+        ]},
+        "mode": {"type": "string", "enum": ["brief", "full"]},
+        "keyword": {"type": "string"},
+        "crop": {"type": "string"},
+        "stage": {"type": "string"},
+        "device_class": {"type": "string"},
+        "filename": {"type": "string", "nullable": True},
+        "a": {"type": "string", "nullable": True},
+        "b": {"type": "string", "nullable": True},
+        "no_sources": {"type": "boolean"},
+        "include_execution_log": {"type": "boolean"},
+        "include_outcome": {"type": "boolean"},
+    },
+}
+
+TOOL_SCHEMA_verify_trust = {
+    "type": "object",
+    "properties": {
+        "mode": {"type": "string", "enum": ["current", "check_prefix", "end_to_end"]},
+        "mark": {"type": "object", "nullable": True},
+    },
+}
+
+TOOL_SCHEMA_list_ecosystem = {
+    "type": "object",
+    "properties": {
+        "status": {"type": "string", "enum": [
+            "integrated", "partial", "planned_mapping",
+            "evaluating", "competitor_reference", "not_evaluated",
+        ], "nullable": True},
+    },
+}
+
+TOOL_SCHEMA_decision_path_report = {
+    "type": "object",
+    "properties": {
+        "case_ids": {"type": "array", "items": {"type": "string"}, "nullable": True},
+        "format": {"type": "string", "enum": ["json", "summary"]},
+    },
+}
+
+# M13-P3 Server Card + ETags：稳定 ETag 种子（内容变更才改变），
+# 让客户端可缓存 tools/list 与 server card 而不必每次重拉。
+_CARD_PATH = os.path.join(ROOT, ".well-known", "mcp-card.json")
+_CARD_CACHE = {"body": None, "etag": None, "etag_tools_list": None}
+
+
+def _card_body() -> dict | None:
+    """懒加载 mcp-card.json，首次读取后缓存到进程内。"""
+    if _CARD_CACHE["body"] is not None:
+        return _CARD_CACHE["body"]
+    try:
+        with open(_CARD_PATH, "r", encoding="utf-8") as f:
+            body = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+    _CARD_CACHE["body"] = body
+    _CARD_CACHE["etag"] = hashlib.sha256(
+        json.dumps(body, ensure_ascii=False, sort_keys=True).encode("utf-8")
+    ).hexdigest()[:16]
+    return body
+
+
+def _card_etag() -> str | None:
+    """返回 mcp-card.json 的稳定 ETag（基于 sha256 前 16 hex）。"""
+    if _CARD_CACHE["etag"] is None:
+        _card_body()
+    return _CARD_CACHE["etag"]
+
+
+def _tools_list_etag() -> str:
+    """tools/list 响应的稳定 ETag：基于全量 TOOLS 内容 hash（分类过滤后 hash 不同）。"""
+    if _CARD_CACHE["etag_tools_list"] is None:
+        _CARD_CACHE["etag_tools_list"] = hashlib.sha256(
+            json.dumps(TOOLS, ensure_ascii=False, sort_keys=True).encode("utf-8")
+        ).hexdigest()[:16]
+    return _CARD_CACHE["etag_tools_list"]
 
 # SEP-2549 缓存提示：Env Recipe / 分区 / 作物库均为季度级低频变更数据，
 # 30 天 TTL 足够且能显著减少客户端重复拉取。cacheScope=public 表示
@@ -93,23 +406,25 @@ def _orch() -> AgriOrchestrator:
 # ---------- 工具实现 ----------
 
 def _tool_list_cities(args: dict) -> dict:
+    errs = validate_tool_args("agri_list_cities", TOOL_SCHEMA_list_cities, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     return {"cities": _PRESET_CITIES}
 
 
 def _tool_match_zone(args: dict) -> dict:
-    try:
-        lat = float(args["lat"])
-        lon = float(args["lon"])
-    except (KeyError, TypeError, ValueError):
-        return {"error": "需要数值 lat/lon"}
-    if not (-90.0 <= lat <= 90.0):
-        return {"error": f"lat 超出合法范围 [-90, 90]，收到 {lat}"}
-    if not (-180.0 <= lon <= 180.0):
-        return {"error": f"lon 超出合法范围 [-180, 180]，收到 {lon}"}
+    errs = validate_tool_args("agri_match_zone", TOOL_SCHEMA_match_zone, args)
+    if errs:
+        return {"error": "; ".join(errs)}
+    lat = float(args["lat"])
+    lon = float(args["lon"])
     return _orch().climate.match_zone(lat, lon)
 
 
 def _tool_recommend_crops(args: dict) -> dict:
+    errs = validate_tool_args("agri_recommend_crops", TOOL_SCHEMA_recommend_crops, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     # 需要分区数据：优先用传入 lat/lon 匹配，否则尝试 city 名称匹配
     if args.get("lat") is not None and args.get("lon") is not None:
         zone = _orch().climate.match_zone(float(args["lat"]), float(args["lon"]))
@@ -125,6 +440,9 @@ def _tool_recommend_crops(args: dict) -> dict:
 
 
 def _tool_growth_plan(args: dict) -> dict:
+    errs = validate_tool_args("agri_growth_plan", TOOL_SCHEMA_growth_plan, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     crop = args.get("crop", "")
     if not crop:
         return {"error": "缺少 crop（作物名）"}
@@ -148,6 +466,9 @@ def _tool_growth_plan(args: dict) -> dict:
 
 
 def _tool_diagnose_pest(args: dict) -> dict:
+    errs = validate_tool_args("agri_diagnose_pest", TOOL_SCHEMA_diagnose_pest, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     return _orch().pest.run({
         "crop": args.get("crop", ""),
         "symptom_description": args.get("symptom_description", ""),
@@ -158,6 +479,9 @@ def _tool_diagnose_pest(args: dict) -> dict:
 
 
 def _tool_nutrition_plan(args: dict) -> dict:
+    errs = validate_tool_args("agri_nutrition_plan", TOOL_SCHEMA_nutrition_plan, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     return _orch().nutrition.run({
         "crop": args.get("crop", ""),
         "scene": args.get("scene", ""),
@@ -196,6 +520,9 @@ def _lookup_stored_recipe(crop_name: str, stage: str, device_class: str) -> dict
 
 def _tool_env_recipe(args: dict) -> dict:
     """优先返回配方库中的 Env Recipe v1；未入库作物回退为 crop_adapt_db 现场派生。"""
+    errs = validate_tool_args("agri_env_recipe", TOOL_SCHEMA_env_recipe, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     crop_name = (args.get("crop") or "").strip()
     stage = args.get("stage", "full_cycle")
     device_class = args.get("device_class", "indoor_cabinet")
@@ -275,6 +602,9 @@ def _tool_env_recipe(args: dict) -> dict:
 
 
 def _tool_season_advisory(args: dict) -> dict:
+    errs = validate_tool_args("agri_season_advisory", TOOL_SCHEMA_season_advisory, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     return _orch().season.run({
         "mode": args.get("mode", "planting_window"),
         "monthly_mean_c": args.get("monthly_mean_c"),
@@ -291,6 +621,9 @@ def _tool_season_advisory(args: dict) -> dict:
 
 def _tool_soil_profile(args: dict) -> dict:
     """土壤剖面：在线 SoilGrids 优先；不可用则降级为离线分区均值（明确标注 resolution）。"""
+    errs = validate_tool_args("agri_soil_profile", TOOL_SCHEMA_soil_profile, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     from agent.soil_profile import get_soil_profile
     lat = args.get("lat")
     lon = args.get("lon")
@@ -311,6 +644,9 @@ def _tool_bp_screen(args: dict) -> dict:
     只输出初筛参考，不构成投资决策建议。输入是 BP 文本，不依赖本项目的种植数据，
     也不生成 ROI 数字（agri_project_roi 仍不做，理由见 docs/agriscreen_integration_assessment.md）。
     """
+    errs = validate_tool_args("agri_bp_screen", TOOL_SCHEMA_bp_screen, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     import bp_screen
 
     text = (args.get("text") or "").strip()
@@ -366,6 +702,9 @@ def _tool_reconcile_climate(args: dict) -> dict:
     """多源气候调和：给定 lat/lon，并行拉 NASA POWER + Open-Meteo，逐月平均得调和基线 +
     一致度 + 分歧告警（壁垒④ 真实结果回流校准）。WorldClim 列为扩展点。无网络时优雅降级。
     """
+    errs = validate_tool_args("agri_reconcile_climate", TOOL_SCHEMA_reconcile_climate, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     try:
         lat = float(args["lat"])
         lon = float(args["lon"])
@@ -391,6 +730,9 @@ def _tool_resolve_recipe(args: dict) -> dict:
     """地理编码 → 分区 → 配方：城市名（中文/英文）或经纬度 → 匹配气候分区 + 检索 Env Recipe。
     核心「城市种植生成箱」分发价值，完全离线。
     """
+    errs = validate_tool_args("agri_resolve_recipe", TOOL_SCHEMA_resolve_recipe, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     from core.geo_recipe import resolve
     query = args.get("query")
     lat = args.get("lat")
@@ -401,6 +743,9 @@ def _tool_resolve_recipe(args: dict) -> dict:
 def _tool_query_lineage(args: dict) -> dict:
     """数据血缘查询：按作物/分区查配方的数据溯源（外部 API 参与 + 本地文件指纹 + 校准实证）。
     对齐 GOAI DataFlow-Agent 提升点3 + 壁垒④。"""
+    errs = validate_tool_args("agri_query_lineage", TOOL_SCHEMA_query_lineage, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     from core.data_lineage import query_lineage
     crop = args.get("crop")
     zone = args.get("zone_id")
@@ -420,6 +765,9 @@ def _tool_search(args: dict) -> dict:
       mode: exact/keyword/vector/hybrid（默认 hybrid）
     返回：evidence（索引统计）+ results（含 corpus/entity/snippet/score 分解）。
     """
+    errs = validate_tool_args("agri_search", TOOL_SCHEMA_search, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     from engine import local_search
     query = (args.get("query") or "").strip()
     if not query:
@@ -471,6 +819,9 @@ def _tool_knowledge_query(args: dict) -> dict:
       kind=traverse: node 必填，depth 可选，返回 BFS 遍历路径
       kind=summary: 返回图谱整体统计（实体数/边数/类型分布）
     """
+    errs = validate_tool_args("agri_knowledge_query", TOOL_SCHEMA_knowledge_query, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     from engine import knowledge_graph as kg
     kind = args.get("kind") or "summary"
     if kind == "summary":
@@ -546,6 +897,9 @@ def _tool_forecast(args: dict) -> dict:
     返回：完整 forecast 输出（含 evidence/confidence/constraints/recommendation
           + prediction_interval P10/P50/P90）。
     """
+    errs = validate_tool_args("agri_forecast", TOOL_SCHEMA_forecast, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     from agent.forecast_agent import ForecastAgent
     crop = (args.get("crop") or "").strip()
     if not crop:
@@ -598,18 +952,42 @@ def _tool_recipe_profile(args: dict) -> dict:
     import/clone 涉及写盘，不进 MCP（保持分发通道只读）——
     需写盘请直接用 CLI: python scripts/recipe_profile.py import|clone ...
     """
+    errs = validate_tool_args("agri_recipe_profile", TOOL_SCHEMA_recipe_profile, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     kind = (args.get("kind") or "list").strip()
     try:
         # 懒加载：避免 MCP 主进程启动时加载 recipe 库
         sys.path.insert(0, os.path.join(ROOT, "scripts"))
         from recipe_profile import (export_recipe, diff_recipes,
-                                    list_recipes, recipe_stats)
+                                    list_recipes, recipe_stats, search_recipes)
         import tempfile
     except ImportError as e:
         return {"error": f"recipe_profile 模块加载失败: {e}"}
 
     if kind == "list":
         return {"kind": "list", "recipes": list_recipes()}
+    if kind == "search":
+        # M13-P2 渐进式发现：结构化过滤 + mode=brief/full
+        mode = (args.get("mode") or "brief").strip().lower()
+        if mode not in ("brief", "full"):
+            return {"error": f"非法 mode='{mode}'，合法值: brief/full"}
+        try:
+            results = search_recipes(
+                keyword=args.get("keyword", ""),
+                crop=args.get("crop", ""),
+                stage=args.get("stage", ""),
+                device_class=args.get("device_class", ""),
+                mode=mode,
+            )
+            return {
+                "kind": "search",
+                "mode": mode,
+                "count": len(results),
+                "recipes": results,
+            }
+        except ValueError as e:
+            return {"error": str(e)}
     if kind == "stats":
         return {"kind": "stats", **recipe_stats()}
     if kind == "lookup":
@@ -652,7 +1030,7 @@ def _tool_recipe_profile(args: dict) -> dict:
             return {"kind": "export", "meta": r}
         except FileNotFoundError as e:
             return {"error": f"配方不存在: {e}"}
-    return {"error": f"非法 kind='{kind}'，合法值: list/stats/lookup/diff/export"}
+    return {"error": f"非法 kind='{kind}'，合法值: list/search/stats/lookup/diff/export"}
 
 
 def _tool_verify_trust(args: dict) -> dict:
@@ -666,6 +1044,9 @@ def _tool_verify_trust(args: dict) -> dict:
     诚实边界：signature 是内容一致性 SHA256，非密码学签名（无密钥）——
     证明数据未被修改，不证明签发者身份。
     """
+    errs = validate_tool_args("agri_verify_trust", TOOL_SCHEMA_verify_trust, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     mode = args.get("mode") or "current"
     if mode not in ("current", "check_prefix", "end_to_end"):
         return {"error": f"非法 mode='{mode}'，合法值: current/check_prefix/end_to_end"}
@@ -694,6 +1075,9 @@ def _tool_list_ecosystem(args: dict) -> dict:
     """生态对接清单：返回 config/ecosystem.json 声明的开源/商业生态清单。
     声明对接状态（integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated），
     让 MCP 客户端知道我们的开放生态策略与差异化定位。"""
+    errs = validate_tool_args("agri_list_ecosystem", TOOL_SCHEMA_list_ecosystem, args)
+    if errs:
+        return {"error": "; ".join(errs)}
     import json as _json
     cfg_path = os.path.join(ROOT, "config", "ecosystem.json")
     try:
@@ -724,6 +1108,7 @@ def _tool_list_ecosystem(args: dict) -> dict:
 TOOLS = [
     {
         "name": "agri_list_cities",
+        "category": "climate",
         "description": "列出预设城市（经纬度 + 气候带），供 Agent 选点或核对分区。",
         "inputSchema": {
             "type": "object",
@@ -732,6 +1117,7 @@ TOOLS = [
     },
     {
         "name": "agri_match_zone",
+        "category": "climate",
         "description": "输入经纬度，返回气候分区匹配结果（含证据与限制因子）。",
         "inputSchema": {
             "type": "object",
@@ -744,6 +1130,7 @@ TOOLS = [
     },
     {
         "name": "agri_recommend_crops",
+        "category": "crop",
         "description": "根据分区（lat/lon 或 city）与偏好（用途/空间/难度）推荐作物。",
         "inputSchema": {
             "type": "object",
@@ -760,6 +1147,7 @@ TOOLS = [
     },
     {
         "name": "agri_growth_plan",
+        "category": "phenology",
         "description": "作物 + 场景 + 分区 → 生成种植计划（含微气候修正）。",
         "inputSchema": {
             "type": "object",
@@ -778,6 +1166,7 @@ TOOLS = [
     },
     {
         "name": "agri_diagnose_pest",
+        "category": "pest",
         "description": "病虫害与营养缺乏诊断：输入作物、症状描述（可选图像引用、生长阶段、环境）。",
         "inputSchema": {
             "type": "object",
@@ -793,6 +1182,7 @@ TOOLS = [
     },
     {
         "name": "agri_nutrition_plan",
+        "category": "nutrition",
         "description": "养分管理：作物 + 阶段 → 阶段化施肥方案。",
         "inputSchema": {
             "type": "object",
@@ -809,6 +1199,7 @@ TOOLS = [
     },
     {
         "name": "agri_env_recipe",
+        "category": "recipe",
         "description": "（P0-G）作物 + 生长阶段 + 设备类别 → 返回一份 Env Recipe v1 合规配方 JSON。",
         "inputSchema": {
             "type": "object",
@@ -822,6 +1213,7 @@ TOOLS = [
     },
     {
         "name": "agri_season_advisory",
+        "category": "meta",
         "description": "（B1+B2）物候与播期：mode=planting_window 时给 12 个月均温返回无霜期与各作物最早/最晚安全播种日；mode=stage_days 时给作物+日均温返回出苗/开花/成熟天数；mode=calendar 时按 USDA 区+日期查外部日历（需数据到位）。",
         "inputSchema": {
             "type": "object",
@@ -844,6 +1236,7 @@ TOOLS = [
     },
     {
         "name": "agri_soil_profile",
+        "category": "soil",
         "description": "（土壤降级路径）经纬度或分区 → 土壤剖面。优先查 ISRIC SoilGrids v2.0（在线点数据），不可用时降级为离线分区均值并明确标注 resolution=zone、confidence=low。可选传入 crop 做 pH 适宜性拟合。",
         "inputSchema": {
             "type": "object",
@@ -861,6 +1254,7 @@ TOOLS = [
     },
     {
         "name": "agri_bp_screen",
+        "category": "business",
         "description": (
             "（投资初筛）农业项目投资初筛系统：传入 BP/审计/流水文本（text）或已抽取字段（fields），"
             "跑九层管线 → 六分类（种业/农机/数字农业/生物投入品/供应链/养殖）+ 五闸爆雷 + "
@@ -892,6 +1286,7 @@ TOOLS = [
     },
     {
         "name": "agri_reconcile_climate",
+        "category": "climate",
         "description": (
             "（多源气候校准）给定经纬度，并行拉 NASA POWER + Open-Meteo，逐月平均得调和月均温基线，"
             "并计算逐月一致度（多源标准差）与分歧月份告警（标准差超 3℃ 标记）。"
@@ -911,6 +1306,7 @@ TOOLS = [
     },
     {
         "name": "agri_resolve_recipe",
+        "category": "recipe",
         "description": (
             "（地理编码→配方）城市名（中文/英文）或经纬度 → 匹配气候分区 → 检索该分区的 Env Recipe 清单。"
             "返回 zone_id / zone_name / 坐标 / 匹配配方（作物名+阶段+设备类+路径）。"
@@ -927,6 +1323,7 @@ TOOLS = [
     },
     {
         "name": "agri_query_lineage",
+        "category": "meta",
         "description": (
             "（数据血缘查询）按作物/分区查配方的数据溯源：外部 API 参与情况 + 本地权威文件 SHA256 指纹 + "
             "校准实证（壁垒④）。传入 crop+zone_id 做单点追踪；仅 crop 查全分区；仅 zone_id 查全作物；"
@@ -942,6 +1339,7 @@ TOOLS = [
     },
     {
         "name": "agri_list_ecosystem",
+        "category": "meta",
         "description": (
             "（生态对接清单）返回智慧农业生态对接的开源/商业生态清单（config/ecosystem.json），"
             "含对接状态（integrated/partial/planned_mapping/evaluating/competitor_reference/not_evaluated）、"
@@ -959,6 +1357,7 @@ TOOLS = [
     },
     {
         "name": "agri_search",
+        "category": "knowledge",
         "description": (
             "（知识检索 M12-K1）跨 4 语料（crops/zones/pests/recipes，共 335 条）做词法+向量混合检索，"
             "底层是 stdlib-only 的 char n-gram + cosine + SQLite FTS5（engine/local_search.py，565 行零依赖引擎）。"
@@ -979,6 +1378,7 @@ TOOLS = [
     },
     {
         "name": "agri_knowledge_query",
+        "category": "knowledge",
         "description": (
             "（知识图谱查询 M12-K1）查 261 实体 / 446 边的农业知识图谱（engine/knowledge_graph.py）。"
             "支持 5 种 kind：summary=整体统计；crops_by_zone=分区→作物排序；crops_by_risk=病虫害→受影响作物；"
@@ -1002,6 +1402,7 @@ TOOLS = [
     },
     {
         "name": "agri_forecast",
+        "category": "forecast",
         "description": (
             "（独立预测 M13-P1）产量/采收期预测，含 T-3 置信区间（P10/P50/P90）。"
             "底层与 agri_growth_plan 内的推荐部分同源（ForecastAgent），但独立暴露，"
@@ -1025,17 +1426,19 @@ TOOLS = [
     },
     {
         "name": "agri_recipe_profile",
+        "category": "recipe",
         "description": (
-            "（配方 profile 四件套 M8-R2）152 份 Env Recipe 资产的浏览、比对、导出、加载。"
-            "支持 5 种 kind：list=列出所有配方元信息；stats=资产统计（总数/字节/分布）；"
-            "lookup=按文件名加载完整配方；diff=结构化 diff（difflib 统一 diff）；"
-            "export=导出到 JSON 字符串（隐私字段默认剥离）。"
+            "（配方 profile 五件套 M8-R2 + M13-P2）152 份 Env Recipe 资产的浏览、检索、比对、导出、加载。"
+            "支持 6 种 kind：list=列出所有配方元信息（brief）；"
+            "search=结构化过滤（keyword/crop/stage/device_class）+ mode=brief/full（渐进式发现，节省 context）；"
+            "stats=资产统计（总数/字节/分布）；lookup=按文件名加载完整配方；"
+            "diff=结构化 diff（difflib 统一 diff）；export=导出到 JSON 字符串（隐私字段默认剥离）。"
             "import/clone 涉及写盘，不进 MCP——请用 CLI scripts/recipe_profile.py。"),
         "inputSchema": {
             "type": "object",
             "properties": {
                 "kind": {"type": "string", "description": "操作类型",
-                         "enum": ["list", "stats", "lookup", "diff", "export"],
+                         "enum": ["list", "search", "stats", "lookup", "diff", "export"],
                          "default": "list"},
                 "filename": {"type": "string", "description": "lookup/export 时必填"},
                 "a": {"type": "string", "description": "diff 时必填，配方 A 路径或文件名"},
@@ -1043,11 +1446,18 @@ TOOLS = [
                 "no_sources": {"type": "boolean", "description": "export 时是否剥离 sources"},
                 "include_execution_log": {"type": "boolean", "description": "export 时是否含私有 execution_log"},
                 "include_outcome": {"type": "boolean", "description": "export 时是否含私有 outcome"},
+                "mode": {"type": "string", "description": "search/list 输出粒度：brief=仅关键属性+可信度信号（默认，节省 context）；full=完整 JSON",
+                         "enum": ["brief", "full"], "default": "brief"},
+                "keyword": {"type": "string", "description": "search 时按作物/学名/科做模糊匹配"},
+                "crop": {"type": "string", "description": "search 时按作物名精确或子串匹配"},
+                "stage": {"type": "string", "description": "search 时按阶段过滤（seed/seedling/vegetative/flowering/fruiting/harvest/full_cycle）"},
+                "device_class": {"type": "string", "description": "search 时按设备类别过滤"},
             },
         },
     },
     {
         "name": "agri_verify_trust",
+        "category": "meta",
         "description": (
             "（可信标记公共复算 API M11-T1）外部独立验证 AgriTrust 可信标记 / 证书。"
             "支持 3 种 mode：current=返回当前信任标记（含 signature 与复算命令）；"
@@ -1068,7 +1478,330 @@ TOOLS = [
             "required": ["mode"],
         },
     },
+    {
+        "name": "agri_server_card",
+        "category": "meta",
+        "description": (
+            "（Server Card + ETags M13-P3）返回 MCP 服务元数据卡（能力/分类/协议/URL 等），"
+            "带稳定 ETag（sha256 前 16 hex）。客户端可缓存；带 if_none_match 命中时返回 "
+            "not_modified 短路。与 .well-known/mcp-card.json 同源；24h 建议缓存 TTL。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "if_none_match": {"type": "string",
+                                  "description": "客户端缓存的 ETag；命中时返回 not_modified 短路"},
+            },
+        },
+    },
+    {
+        "name": "agri_decision_path_report",
+        "category": "bp_screen",
+        "description": (
+            "（决策路径可视化报告 M16-B2）将 bp_screen 评分引擎的 decision_path 归因数据"
+            "导出为可视化报告。返回结构化 JSON：每个案例含 verdict/decision_path/counterfactual/"
+            "dimensions 完整数据。支持 case_id 筛选。输出格式为可解析的归因树，"
+            "供前端渲染或下游报告系统消费。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "case_ids": {"type": "array",
+                             "items": {"type": "integer"},
+                             "description": "案例 ID 列表（可选，默认全量非 benchmark 案例）"},
+                "format": {"type": "string",
+                           "enum": ["json", "summary"],
+                           "default": "json",
+                           "description": "输出格式：json=完整结构化数据，summary=精简摘要"},
+            },
+        },
+    },
+    {
+        "name": "agri_counterfactual_trajectory",
+        "category": "counterfactual",
+        "description": (
+            "（反事实轨迹 API · Phase N+1 #6）给定作物与基线动作序列，"
+            "用 AgriWorld-Lite 机理内核（光截获 Beer-Lambert + CO2 同化 + Q10 呼吸 + "
+            "Penman-Monteith 蒸腾）仿真 45 天生物量轨迹。支持 quick_scenario 快速对比"
+            "（光周期 12→16h / 降温 5℃ / 停肥 / 高湿等），返回 Δ生物量、归因分解"
+            "（光/温/水/肥/发育）与机理-启发式双轨分歧告警。零依赖纯标准库。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "crop": {"type": "string", "description": "作物名，如 potato/番茄/生菜"},
+                "days": {"type": "integer", "default": 45, "description": "种植天数"},
+                "quick_scenario": {"type": "string",
+                    "enum": ["light_12_to_16h", "cool_down_5c", "stop_fertilizer",
+                             "high_humidity", "double_water", "baseline"],
+                    "default": "baseline",
+                    "description": "预设场景，非 baseline 会覆盖 baseline_actions"},
+                "baseline_dli_mj": {"type": "number", "default": 10.0,
+                                    "description": "基线日累积辐射 MJ/m²/d"},
+                "baseline_temp_c": {"type": "number", "default": 22.0,
+                                    "description": "基线日均温 ℃"},
+                "heuristic_est": {"type": "number",
+                                   "description": "启发式轨点估计 g/m²，用于双轨分歧告警"},
+            },
+            "required": ["crop"],
+        },
+    },
+    {
+        "name": "agri_verify_recommendation",
+        "category": "verify",
+        "description": (
+            "（Verify-as-a-Service · Phase N+3 #14 · 支柱五）作为「农业 Agent 的裁判」"
+            "验证第三方（另一个 Agent、大模型、BP、农艺师）给出的农业主张。"
+            "支持三类冲突检测：① 物理约束（光能转化效率、物质守恒）"
+            "② 物候（积温-发育期一致性）③ 环境-品种（生态位适宜度）。"
+            "输出 verdict=supported|contradicted|caution|unverifiable、保形区间 p10/p50/p90、"
+            "矛盾清单、可复算 trust_mark（SHA256）。"
+            "本工具是支柱五的核心：让「不能验证的建议永远免费」变成工程能力。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "claim": {"type": "object",
+                          "description": "被验证主张，如 {crop, yield_g_m2, duration_days}",
+                          "required": ["crop"]},
+                "context": {"type": "object",
+                            "description": "上下文，如 {dli_mj_m2_d, days, temp_mean_c, "
+                                          "latitude, rh, co2_ppm, zone}"},
+                "heuristic_engine_est": {"type": "number",
+                                          "description": "启发式引擎点估计，用于双轨"},
+            },
+            "required": ["claim", "context"],
+        },
+    },
 ]
+
+def _tool_server_card(args: dict) -> dict:
+    """M13-P3 Server Card：返回 MCP 服务元数据（能力/分类/ETag/URL 等）。
+
+    与 .well-known/mcp-card.json 同源；客户端可缓存此结果，
+    后续请求带 If-None-Match（走 _meta.if_none_match 或 headers）
+    命中时直接返回 304 等价（result={"not_modified": true, "etag": ...}）。
+    """
+    etag = _card_etag()
+    if etag is None:
+        return {"error": "mcp-card.json 未找到或解析失败", "path": _CARD_PATH}
+    ifn = args.get("if_none_match") or ""
+    if isinstance(ifn, str) and ifn.strip().strip('"') == etag:
+        return {"not_modified": True, "etag": etag}
+    body = _card_body()
+    return {
+        "card": body,
+        "etag": etag,
+        "cache_hint": {
+            "ttl_ms": 86400000,  # 24h，server card 属慢变数据
+            "scope": "public",
+            "algorithm": "sha256",
+            "usage": "客户端可缓存 card；带 if_none_match 命中时返回 not_modified",
+        },
+    }
+
+
+def _tool_decision_path_report(args: dict) -> dict:
+    """M16-B2 决策路径可视化报告：将 bp_screen 评分引擎的 decision_path 归因数据
+    导出为结构化报告。支持按案例筛选、JSON/摘要两种格式。
+
+    与 _tool_bp_screen 的关系：bp_screen 是单次评估入口（输入文本/字段 → 评分），
+    本工具是批量归因导出（读 DB 存量案例 → 决策路径报告），供前端可视化或报告系统消费。
+    """
+    errs = validate_tool_args("agri_decision_path_report", TOOL_SCHEMA_decision_path_report, args)
+    if errs:
+        return {"error": "; ".join(errs)}
+    import json as _json
+    import sys as _sys
+    _sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from bp_screen import db, scorer
+
+    case_ids = args.get("case_ids") or None
+    fmt = args.get("format", "json")
+
+    cases = db.all_cases()
+    cases = [c for c in cases if not c["is_benchmark"]]
+    if case_ids:
+        cases = [c for c in cases if c["id"] in case_ids]
+
+    results = []
+    for c in cases:
+        m = c["metrics"]
+        if isinstance(m, str):
+            m = _json.loads(m) if m else {}
+        elif m is None:
+            m = {}
+        n = dict(m)
+        if "revenue" in n and "revenue_prev" in n and n["revenue_prev"]:
+            n["revenue_growth"] = round((n["revenue"] - n["revenue_prev"]) / n["revenue_prev"] * 100, 1)
+        if "cash_balance" in n and "monthly_burn" in n and n["monthly_burn"]:
+            n["cash_months"] = round(n["cash_balance"] / n["monthly_burn"], 1)
+            n["runway_months"] = round(n["cash_balance"] / n["monthly_burn"], 1)
+
+        ev = scorer.evaluate(c["category"], n)
+        card = ev.get("card", {})
+
+        if fmt == "summary":
+            results.append({
+                "case_id": c["id"],
+                "name": c["name"],
+                "category": c["category"],
+                "verdict": ev.get("verdict"),
+                "verdict_name": ev.get("verdict_name"),
+                "total_score": card.get("total"),
+                "verdict_reason": ev.get("verdict_reason"),
+                "gates_count": len(ev.get("gates_fired", [])),
+                "vetoes_count": len(ev.get("vetoes_fired", [])),
+                "path_item_count": len(ev.get("decision_path", [])),
+                "counterfactual_type": (ev.get("counterfactual") or {}).get("type"),
+            })
+        else:
+            results.append({
+                "case_id": c["id"],
+                "name": c["name"],
+                "category": c["category"],
+                "verdict": ev.get("verdict"),
+                "verdict_name": ev.get("verdict_name"),
+                "total_score": card.get("total"),
+                "total_range": card.get("total_range"),
+                "verdict_reason": ev.get("verdict_reason"),
+                "gates_fired": ev.get("gates_fired"),
+                "vetoes_fired": ev.get("vetoes_fired"),
+                "decision_path": ev.get("decision_path"),
+                "counterfactual": ev.get("counterfactual"),
+                "dimensions": card.get("dimensions"),
+                "rules_version": ev.get("rules_version"),
+            })
+
+    return {
+        "report_type": "decision_path_report",
+        "generated_at": _now_iso(),
+        "case_count": len(results),
+        "format": fmt,
+        "results": results,
+    }
+
+
+def _tool_counterfactual_trajectory(args: dict) -> dict:
+    """反事实轨迹 API（MCP #22）：给定作物与场景，用 AgriWorld-Lite 机理内核
+    仿真基线与候选动作序列，返回轨迹对比、Δ归因、双轨分歧告警。
+
+    设计：Phase N+1 动作 #6 —— 把 17 个 bench 用例升级为产品能力。
+    """
+    errs = validate_tool_args("agri_counterfactual_trajectory", TOOL_SCHEMA_counterfactual_trajectory, args)
+    if errs:
+        return {"error": "; ".join(errs)}
+    from engine.agriworld_lite import DailyInput, simulate, get_params, theoretical_yield_cap
+    from agent.dual_track import compare_tracks
+    import copy
+
+    crop = args.get("crop", "potato")
+    days = int(args.get("days", 45))
+    dli = float(args.get("baseline_dli_mj", 10.0))
+    t_mean = float(args.get("baseline_temp_c", 22.0))
+    scenario = args.get("quick_scenario", "baseline")
+    heuristic_est = args.get("heuristic_engine_est")
+
+    base = DailyInput(
+        dli=dli, temp_mean_c=t_mean,
+        temp_min_c=t_mean - 5.0, temp_max_c=t_mean + 5.0,
+        rh=0.60, wind_ms=1.5, co2_ppm=420.0,
+        irrigation_l_m2=2.0, fert_n_mg_l=30.0,
+    )
+    cand = copy.deepcopy(base)
+    if scenario == "light_12_to_16h":
+        cand.light_ext_kj_m2_h = 40.0  # 高功率补光
+        cand.light_ext_hours = 4.0
+    elif scenario == "cool_down_5c":
+        cand.temp_mean_c = t_mean - 5.0
+        cand.temp_min_c = cand.temp_mean_c - 5.0
+        cand.temp_max_c = cand.temp_mean_c + 5.0
+    elif scenario == "stop_fertilizer":
+        cand.fert_n_mg_l = 0.0
+    elif scenario == "high_humidity":
+        cand.rh = 0.85
+    elif scenario == "double_water":
+        cand.irrigation_l_m2 = base.irrigation_l_m2 * 2.0
+
+    base_sim = simulate(crop, [copy.deepcopy(base)] * days)
+    cand_sim = simulate(crop, [copy.deepcopy(cand)] * days)
+
+    b_bm = base_sim["final_biomass"]["total"]
+    c_bm = cand_sim["final_biomass"]["total"]
+    delta_pct = (c_bm - b_bm) / max(b_bm, 1e-6) * 100
+
+    # 理论上限
+    cap = theoretical_yield_cap(crop, dli, days)
+
+    # 双轨
+    dual = None
+    if heuristic_est is not None:
+        dual = compare_tracks(c_bm, heuristic_est, unit="g/m²",
+                              dimension="final_biomass")
+
+    # 归因（用 quick 场景直接给出定性说明）
+    scenario_note = {
+        "baseline": "基线：无变化",
+        "light_12_to_16h": "补光 4h × 40 kJ/m²/h（+24k·J/m² 光能）",
+        "cool_down_5c": "降温 5℃（Q10 呼吸减半，同化率可能受抑）",
+        "stop_fertilizer": "停止施肥（蒸腾驱动 N 吸收归零）",
+        "high_humidity": "高湿 RH=0.85（VPD 减半，蒸腾下降）",
+        "double_water": "灌溉翻倍（θ 上升，缓解水分胁迫）",
+    }.get(scenario, "自定义")
+
+    return {
+        "crop": crop,
+        "days": days,
+        "scenario": scenario,
+        "scenario_note": scenario_note,
+        "baseline": {
+            "final_biomass_g_m2": round(b_bm, 4),
+            "w_lv": round(base_sim["final_biomass"]["w_lv"], 4),
+            "w_st": round(base_sim["final_biomass"]["w_st"], 4),
+            "w_so": round(base_sim["final_biomass"]["w_so"], 4),
+            "lai_final": round(base_sim["final_state"]["lai"], 4),
+            "totals": base_sim["totals"],
+        },
+        "candidate": {
+            "final_biomass_g_m2": round(c_bm, 4),
+            "w_lv": round(cand_sim["final_biomass"]["w_lv"], 4),
+            "w_st": round(cand_sim["final_biomass"]["w_st"], 4),
+            "w_so": round(cand_sim["final_biomass"]["w_so"], 4),
+            "lai_final": round(cand_sim["final_state"]["lai"], 4),
+            "totals": cand_sim["totals"],
+        },
+        "delta": {
+            "biomass": round(c_bm - b_bm, 4),
+            "biomass_pct": round(delta_pct, 2),
+            "w_so": round(cand_sim["final_biomass"]["w_so"] - b_bm + base_sim["final_biomass"]["w_so"], 4),
+        },
+        "theoretical_yield_cap_g_m2": round(cap, 2),
+        "dual_track": dual,
+        "verdict": (
+            "materially_different" if abs(delta_pct) >= 5
+            else "marginal" if abs(delta_pct) >= 2
+            else "similar"
+        ),
+        "engine": "AgriWorld-Lite v0 (stdlib-only, zero deps)",
+    }
+
+
+def _tool_verify_recommendation(args: dict) -> dict:
+    """Verify-as-a-Service（MCP #23 · 支柱五）：验证第三方农业主张。
+
+    支持三类冲突检测：物理/物候/环境-品种。
+    """
+    errs = validate_tool_args("agri_verify_recommendation", TOOL_SCHEMA_verify_recommendation, args)
+    if errs:
+        return {"error": "; ".join(errs)}
+    from agent.verify_service import verify_recommendation
+
+    claim = args.get("claim") or {}
+    context = args.get("context") or {}
+    heuristic_est = args.get("heuristic_engine_est")
+
+    return verify_recommendation(
+        claim=claim, context=context,
+        heuristic_engine_est=heuristic_est,
+        use_conformal=True,
+    )
+
 
 _DISPATCH = {
     "agri_list_cities": _tool_list_cities,
@@ -1090,6 +1823,10 @@ _DISPATCH = {
     "agri_forecast": _tool_forecast,
     "agri_recipe_profile": _tool_recipe_profile,
     "agri_verify_trust": _tool_verify_trust,
+    "agri_server_card": _tool_server_card,
+    "agri_decision_path_report": _tool_decision_path_report,
+    "agri_counterfactual_trajectory": _tool_counterfactual_trajectory,
+    "agri_verify_recommendation": _tool_verify_recommendation,
 }
 
 
@@ -1131,6 +1868,43 @@ def _valid_traceparent(tp: str) -> bool:
             and tid != "0" * 32 and pid != "0" * 16)
 
 
+def _select_tools_by_category(params: dict) -> dict:
+    """M13-P2 渐进式发现：按 category 过滤工具子集。
+
+    支持三种参数形式（向后兼容，不传时返回全量）：
+      - 无 category / categories：返回全量 TOOLS
+      - params.category = "climate"：返回该分类工具（单分类快捷形式）
+      - params.categories = ["climate", "crop"]：返回多分类工具
+        · 空数组 = 全量（与"不传"等价）
+        · 不存在的分类会被忽略（不报错，保持渐进式发现的宽松语义）
+        · 重复分类去重
+
+    返回 ``{"tools": [过滤后的 tool 对象], "categories": [server 支持的所有分类]}``。
+    ``categories`` 始终返回完整分类列表，客户端可据此了解 server 全貌，
+    即使当前只加载了子集。
+    """
+    cats = set()
+    if isinstance(params, dict):
+        single = params.get("category")
+        if isinstance(single, str) and single.strip():
+            cats.add(single.strip())
+        multi = params.get("categories")
+        if isinstance(multi, list):
+            for c in multi:
+                if isinstance(c, str) and c.strip():
+                    cats.add(c.strip())
+    all_cats = sorted({t.get("category", "misc") for t in TOOLS})
+    if not cats:
+        return {"tools": list(TOOLS), "categories": all_cats}
+    # 已声明的分类中，命中即返回（不存在的分类静默忽略）
+    known = {c for c in cats if c in set(all_cats)}
+    if not known:
+        # 用户指定的分类全部不存在时，仍返回空列表 + 完整分类提示，让客户端感知
+        return {"tools": [], "categories": all_cats}
+    filtered = [t for t in TOOLS if t.get("category") in known]
+    return {"tools": filtered, "categories": all_cats}
+
+
 def _http_headers_ok(method: str, name: str) -> tuple:
     """SEP-2243 头部一致性校验（仅 HTTP 传输适用）。
 
@@ -1164,13 +1938,13 @@ def _audit(event: dict):
     不记录参数明文：仅记方法/工具名 + 参数指纹 + 时间戳 + 状态。
     """
     import datetime
-    event.setdefault("ts", datetime.datetime.now().isoformat(timespec="seconds"))
+    event.setdefault("ts", CLOCK.now().isoformat(timespec="seconds"))
     line = json.dumps(event, ensure_ascii=False, separators=(",", ":"))
     log_path = os.environ.get("AGRI_MCP_AUDIT_LOG")
     if log_path:
         try:
-            with open(log_path, "a", encoding="utf-8") as f:
-                f.write(line + "\n")
+            # H1: 原子追加（读-写-替换），避免半截 JSONL 损坏
+            atomic_append_jsonl(log_path, event)
         except Exception:
             sys.stderr.write("[mcp_audit] " + line + "\n")
             sys.stderr.flush()
@@ -1214,10 +1988,36 @@ def _handle(msg: dict) -> dict | None:
 
     if method == "tools/list":
         # SEP-2549：list 类响应带缓存提示，客户端可据 ttlMs 复用。
+        # M13-P2 渐进式发现：支持 params.category / params.categories 按分类过滤，
+        # 客户端只需加载自己关心的子集（如只装 climate 类），不必拉全 19 工具。
+        # 向后兼容：不传 category / categories 时返回全量，行为与旧版一致。
+        # M13-P3 ETags：返回 ETag（全量 TOOLS 内容 hash），客户端可缓存；
+        # 带 params.if_none_match 或 _meta.if_none_match 命中时返回 304 等价短路。
+        params = msg.get("params", {}) or {}
+        etag = _tools_list_etag()
+        ifn = params.get("if_none_match") or ""
+        # 也支持 HTTP 形态下的 header 透传（走环境变量）
+        if not ifn:
+            ifn = os.environ.get("AGRI_MCP_HEADER_IF_NONE_MATCH", "")
+        if isinstance(ifn, str) and ifn.strip().strip('"') == etag:
+            result = {
+                "not_modified": True,
+                "etag": etag,
+                "ttlMs": TOOLS_LIST_TTL_MS,
+                "cacheScope": TOOLS_LIST_CACHE_SCOPE,
+            }
+            if resp_meta:
+                result["_meta"] = resp_meta
+            return {"jsonrpc": "2.0", "id": mid, "result": result}
+        selected = _select_tools_by_category(params)
         result = {
-            "tools": TOOLS,
+            "tools": selected["tools"],
             "ttlMs": TOOLS_LIST_TTL_MS,
             "cacheScope": TOOLS_LIST_CACHE_SCOPE,
+            # 客户端可据此了解 server 支持哪些分类，无需先拉全量。
+            "categories": selected["categories"],
+            # M13-P3：稳定 ETag，客户端可缓存并带 If-None-Match 复用
+            "etag": etag,
         }
         if resp_meta:
             result["_meta"] = resp_meta

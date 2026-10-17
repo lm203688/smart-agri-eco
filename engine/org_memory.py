@@ -28,12 +28,16 @@ engine/org_memory.py —— 组织记忆：执行轨迹 → 私有经验 → 共
 
 from __future__ import annotations
 
+from core.clock import CLOCK
 import datetime
 import hashlib
 import json
 import os
 from collections import Counter
 from typing import Any, Dict, List, Optional
+
+# H1: 原子写入底座（组织记忆丢失会破坏信任）
+from core.atomic_io import atomic_write_json
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -67,7 +71,7 @@ PLAYBOOK_SEED = {
 
 
 def _now() -> str:
-    return datetime.datetime.now().isoformat(timespec="seconds")
+    return CLOCK.now().isoformat(timespec="seconds")
 
 
 def _load_list(path: str) -> List[Any]:
@@ -83,8 +87,8 @@ def _load_list(path: str) -> List[Any]:
 
 def _save(path: str, obj: Any) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=2)
+    # H1: 原子写（组织记忆丢失会破坏信任）
+    atomic_write_json(path, obj, ensure_ascii=False, indent=2, sort_keys=True)
 
 
 def _digest(obj: Any) -> str:

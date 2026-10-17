@@ -21,8 +21,12 @@ PY = sys.executable
 def _rpc(msg: dict) -> dict | None:
     """向子进程发送一条并读取下一条响应（请求）。"""
     line = json.dumps(msg, ensure_ascii=False) + "\n"
-    proc.stdin.write(line)
-    proc.stdin.flush()
+    try:
+        proc.stdin.write(line)
+        proc.stdin.flush()
+    except OSError:
+        # Windows 上子进程提前退出会抛 OSError(EINVAL)；此时管道已关闭
+        return None
     raw = proc.stdout.readline()
     if not raw:
         return None
@@ -32,8 +36,12 @@ def _rpc(msg: dict) -> dict | None:
 def _notify(msg: dict) -> None:
     """发送通知（无 id，服务端不回响应，调用方不可读）。"""
     line = json.dumps(msg, ensure_ascii=False) + "\n"
-    proc.stdin.write(line)
-    proc.stdin.flush()
+    try:
+        proc.stdin.write(line)
+        proc.stdin.flush()
+    except OSError:
+        # Windows 上子进程提前退出会抛 OSError(EINVAL)；通知丢失可接受
+        pass
 
 
 def main() -> int:
@@ -83,7 +91,7 @@ def main() -> int:
         # 3) tools/list
         resp = _rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
         tools = (resp or {}).get("result", {}).get("tools", [])
-        check(len(tools) == 19, f"tools/list 返回 19 个工具（实际 {len(tools)}）")
+        check(len(tools) == 23, f"tools/list 返回 23 个工具（实际 {len(tools)}）")
         names = {t["name"] for t in tools}
         check("agri_env_recipe" in names, "包含 agri_env_recipe 工具")
         check("agri_season_advisory" in names, "包含 agri_season_advisory 工具")
@@ -523,6 +531,7 @@ def main() -> int:
                      "params": {"name": "agri_verify_trust",
                                 "arguments": {"mode": "current"}}})
         _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        _vt = None
         try:
             _vt = json.loads(_txt)
             check("signature" in _vt and "status" in _vt,
@@ -533,27 +542,28 @@ def main() -> int:
             check(False, "agri_verify_trust current 返回可解析 JSON")
 
         # 用刚拿到的 current mark 做 check_prefix + end_to_end
-        resp = _rpc({"jsonrpc": "2.0", "id": 47, "method": "tools/call",
-                     "params": {"name": "agri_verify_trust",
-                                "arguments": {"mode": "check_prefix", "mark": _vt}}})
-        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
-        try:
-            _cp = json.loads(_txt)
-            check(_cp.get("verified") is True,
-                  "agri_verify_trust check_prefix 自校验通过")
-        except Exception:
-            check(False, "agri_verify_trust check_prefix 返回可解析 JSON")
+        if _vt is not None:
+            resp = _rpc({"jsonrpc": "2.0", "id": 47, "method": "tools/call",
+                         "params": {"name": "agri_verify_trust",
+                                    "arguments": {"mode": "check_prefix", "mark": _vt}}})
+            _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+            try:
+                _cp = json.loads(_txt)
+                check(_cp.get("verified") is True,
+                      "agri_verify_trust check_prefix 自校验通过")
+            except Exception:
+                check(False, "agri_verify_trust check_prefix 返回可解析 JSON")
 
-        resp = _rpc({"jsonrpc": "2.0", "id": 48, "method": "tools/call",
-                     "params": {"name": "agri_verify_trust",
-                                "arguments": {"mode": "end_to_end", "mark": _vt}}})
-        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
-        try:
-            _e2e = json.loads(_txt)
-            check(_e2e.get("verified") is True,
-                  "agri_verify_trust end_to_end 用固定 issued_at 严格复算通过")
-        except Exception:
-            check(False, "agri_verify_trust end_to_end 返回可解析 JSON")
+            resp = _rpc({"jsonrpc": "2.0", "id": 48, "method": "tools/call",
+                         "params": {"name": "agri_verify_trust",
+                                    "arguments": {"mode": "end_to_end", "mark": _vt}}})
+            _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+            try:
+                _e2e = json.loads(_txt)
+                check(_e2e.get("verified") is True,
+                      "agri_verify_trust end_to_end 用固定 issued_at 严格复算通过")
+            except Exception:
+                check(False, "agri_verify_trust end_to_end 返回可解析 JSON")
 
         # 参数校验：非法 mode + 缺 mark
         resp = _rpc({"jsonrpc": "2.0", "id": 49, "method": "tools/call",
@@ -562,7 +572,10 @@ def main() -> int:
         _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
         try:
             _err = json.loads(_txt)
-            check("error" in _err and "非法 mode" in _err["error"],
+            # H5 加固：schema enum 校验给出 "not in enum"，或 fallback 到原 "非法 mode" 文案
+            _is_bad_mode = ("非法 mode" in _err.get("error", "")
+                            or "not in enum" in _err.get("error", ""))
+            check("error" in _err and _is_bad_mode,
                   "agri_verify_trust 非法 mode 被拒绝")
         except Exception:
             check(False, "agri_verify_trust 非法 mode 返回可解析 JSON")
