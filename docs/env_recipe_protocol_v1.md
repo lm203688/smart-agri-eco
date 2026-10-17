@@ -1,7 +1,10 @@
 # Env Recipe 协议 v1（环境配置配方）
 
+> ⚠️ **本文档最后更新于 2026-09-05，距今 >30 天。权威口径见 `docs/CORE_OBJECTIVE.md` 与 `schemas/env_recipe.schema.json` v1.2.1。**
+> 152 份配方在此窗口内已持续演进（新增 `sources[].source_license / data_quality / trial_location` 三字段、HA 事实标准字段 vpd_kpa/dew_point_c/mold_risk/dli_umol_m2_day、OpenFarm 共识字段 companion_plants/sowing_depth_cm、`license_scope` 字段）。**本文档描述的字段与数据实际字段已脱节**；以 schema 为唯一字段源。
+>
 > 状态：v1.0.0 草案 · 2026-09-05
-> 配套：见 `schemas/env_recipe.schema.json`（JSON Schema）、`data/examples/sample_env_recipe.json`（样例）
+> 配套：见 `schemas/env_recipe.schema.json`（JSON Schema v1.2.1，权威字段源）、`data/examples/sample_env_recipe.json`（样例）
 > 定位：全球农业「可机读底座」与「配置协议」的核心交付物（评审建议 #3 / #9：从远期卡位升为近期最高优先）
 
 ---

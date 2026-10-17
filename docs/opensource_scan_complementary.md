@@ -1,3 +1,4 @@
+> ⚠️ **本文档最后更新于 2026-09-12（距今 35 天），可能已过期。权威口径见 `docs/CORE_OBJECTIVE.md`。**
 # 开源平台扫描 · 互补与借鉴研发清单
 
 > 编制日期：2026-09-07｜方法：6 路 WebSearch 一手情报采集（MCP 农业 / 病害 YOLO / PCSE-WOFOST / farmOS-OpenFarm / 农业 VLM / Home Assistant AeroGarden），交叉核实 license 与可达性

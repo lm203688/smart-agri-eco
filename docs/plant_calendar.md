@@ -1,3 +1,4 @@
+> ⚠️ **本文档最后更新于 2026-09-08（距今 39 天），可能已过期。权威口径见 `docs/CORE_OBJECTIVE.md`。**
 # 种植日历 / 播期窗口（B2）落地说明
 
 > 对应 `docs/opensource_scan_complementary.md` 的 **B2** 项。

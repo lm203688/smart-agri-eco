@@ -35,12 +35,16 @@ from __future__ import annotations
 
 import argparse
 import datetime
+from core.clock import CLOCK
 import hashlib
 import json
 import os
 import shutil
 import tempfile
 from typing import Any, Callable, Dict, List, Optional
+
+# H1: 原子写入底座（进化数据损坏会破坏棘轮）
+from core.atomic_io import atomic_write_json
 
 import engine.flywheel as fw
 import engine.rsi as rsi_mod
@@ -71,7 +75,7 @@ KEEP_SNAPSHOTS = 10
 
 
 def _now() -> str:
-    return datetime.datetime.now().isoformat(timespec="seconds")
+    return CLOCK.now().isoformat(timespec="seconds")
 
 
 def _dedup(paths: List[str]) -> List[str]:
@@ -95,8 +99,8 @@ def _load(path: str) -> Any:
 
 def _save(path: str, obj: Any) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=2)
+    # H1: 原子写（进化状态损坏会破坏棘轮）
+    atomic_write_json(path, obj, ensure_ascii=False, indent=2, sort_keys=True)
 
 
 def _find_crop(db: Dict[str, Any], zone_id: str, crop: str) -> Optional[Dict[str, Any]]:
@@ -259,7 +263,7 @@ def score_benchmark(benchmark: Optional[Dict[str, Any]] = None,
 # ---------------------------------------------------------------------------
 
 def _snap_id(label: str) -> str:
-    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    ts = CLOCK.now().strftime("%Y%m%d_%H%M%S_%f")
     safe = "".join(c for c in label if c.isalnum() or c in "_-")[:32]
     return "%s__%s" % (ts, safe or "snap")
 

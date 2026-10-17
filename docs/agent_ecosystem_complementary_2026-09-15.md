@@ -1,3 +1,4 @@
+> ⚠️ **本文档最后更新于 2026-09-15（距今 31 天），可能已过期。权威口径见 `docs/CORE_OBJECTIVE.md`。**
 # AI Agent 生态项目借鉴研发清单（2026-09-15）
 
 > 配套文档：`docs/heyclicky_complementary.md`（HeyClicky 单项目）、`docs/opensource_scan_complementary.md`（农业垂直开源基准）。

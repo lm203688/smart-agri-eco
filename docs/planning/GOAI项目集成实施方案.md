@@ -1,3 +1,4 @@
+> ⚠️ **本文档最后更新于 2026-09-24（距今 22 天），可能已过期。权威口径见 `docs/CORE_OBJECTIVE.md`。**
 # 2026 GOAI开源项目集成实施方案
 
 > ⚠️ **未落地方案分析（仅供战略参考）**：本文所述 DataFlow-Agent / RepoMesh / CyberGuard 等集成方案**均未落地**，全文为 markdown 伪代码与设想、**零代码进入 `agent/`/`mcp/`/`engine/`**。不代表项目已具备对应能力。Concrete 技术实现须以真实代码为准。

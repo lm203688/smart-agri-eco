@@ -25,12 +25,16 @@ engine/harness_tree.py —— Harness 完整组件树：Agents / Skills / Comman
 
 from __future__ import annotations
 
+from core.clock import CLOCK
 import argparse
 import copy
 import datetime
 import json
 import os
 from typing import Any, Dict, List, Optional
+
+# H1: 原子写入底座（Harness丢失会破坏编排）
+from core.atomic_io import atomic_write_json
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HARNESS_DIR = os.path.join(ROOT, "skills", "harness")
@@ -172,7 +176,7 @@ def tree() -> Dict[str, Any]:
     """返回完整组件树（含统计），供 harness 清单与 CI 引用。"""
     return {
         "schema": "agri-harness-tree/v1",
-        "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "generated_at": CLOCK.now().isoformat(timespec="seconds"),
         "layers": {
             "agents": {
                 "count": 4,
@@ -269,16 +273,16 @@ def export(tree_obj: Optional[Dict[str, Any]] = None,
                for k in ("commands", "hooks", "rules")}
     for key, (fname, items) in mapping.items():
         path = os.path.join(HARNESS_DIR, fname)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump({"schema": "agri-harness-%s/v1" % key,
-                       "generated_at": t["generated_at"],
-                       "count": len(items), "items": items},
-                      f, ensure_ascii=False, indent=2)
+        # H1: 原子写（Harness丢失会破坏编排）
+        atomic_write_json(path, {"schema": "agri-harness-%s/v1" % key,
+                                "generated_at": t["generated_at"],
+                                "count": len(items), "items": items},
+                          ensure_ascii=False, indent=2, sort_keys=True)
         written[key] = os.path.relpath(path, ROOT)
 
     idx_path = os.path.join(HARNESS_DIR, "index.json")
-    with open(idx_path, "w", encoding="utf-8") as f:
-        json.dump(t, f, ensure_ascii=False, indent=2)
+    # H1: 原子写（索引丢失会破坏编排）
+    atomic_write_json(idx_path, t, ensure_ascii=False, indent=2, sort_keys=True)
     written["index"] = os.path.relpath(idx_path, ROOT)
     return written
 

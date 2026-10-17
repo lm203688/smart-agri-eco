@@ -1,3 +1,4 @@
+> ⚠️ **本文档最后更新于 2026-09-14（距今 33 天），可能已过期。权威口径见 `docs/CORE_OBJECTIVE.md`。**
 # HeyClicky 借鉴研发清单（农业项目版）
 
 > 编制日期：2026-09-14｜方法：WebSearch 一手情报（heyclicky.com / HokAI / DailyDropout / NeatPrompts 评测）+ GitHub `farzaa/clicky` README/CLAUDE.md 技术核实

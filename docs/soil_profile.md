@@ -1,3 +1,4 @@
+> ⚠️ **本文档最后更新于 2026-09-10（距今 36 天），可能已过期。权威口径见 `docs/CORE_OBJECTIVE.md`。**
 # 土壤剖面查询（在线优先 + 离线分区降级）
 
 > 模块：`agent/soil_profile.py`｜MCP 工具：`agri_soil_profile`｜落地日期：2026-09-10

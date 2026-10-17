@@ -19,10 +19,14 @@ engine/flywheel.py —— 反馈闭环 / 主动学习
 
 from __future__ import annotations
 
+from core.clock import CLOCK
 import json
 import os
 import datetime
 from typing import Any, Dict, List, Optional
+
+# H1: 原子写入底座（飞轮学习数据丢失不可恢复）
+from core.atomic_io import atomic_write_json
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -79,8 +83,8 @@ def _load(path: str) -> Any:
 
 def _save(path: str, obj: Any):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=2)
+    # H1: 原子写（飞轮学习数据丢失不可恢复）
+    atomic_write_json(path, obj, ensure_ascii=False, indent=2, sort_keys=True)
 
 
 def _observed_score(survival_rate: float, yield_rating: float, user_rating: float) -> float:
@@ -151,7 +155,7 @@ def record_feedback(
     if not isinstance(log, list):
         log = []
 
-    ts = datetime.datetime.now().isoformat(timespec="seconds")
+    ts = CLOCK.now().isoformat(timespec="seconds")
     entry = {
         "ts": ts, "zone_id": zone_id, "crop": crop,
         "survival_rate": survival_rate, "yield_rating": yield_rating,

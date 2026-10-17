@@ -1,3 +1,4 @@
+> ⚠️ **本文档最后更新于 2026-09-25（距今 22 天），可能已过期。权威口径见 `docs/CORE_OBJECTIVE.md`。**
 # Agent架构改进建议 - 实施方案
 
 > ⚠️ **结论修订声明（2026-09-25）**：本文的 MarketAgent/FinanceAgent/RiskAgent 设计实际上

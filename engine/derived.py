@@ -44,6 +44,9 @@ import math
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
+# H3：数值契约装饰器（FOUNDATION_AUDIT 2026-10-16 §H3）
+from core.numeric_domain import bounded, non_negative
+
 # VPD 经验区间（叶菜类通用参考）
 VPD_OPTIMAL: Tuple[float, float] = (0.5, 1.0)
 VPD_STRESS: float = 1.5
@@ -57,8 +60,15 @@ def saturation_vapor_pressure(temp_c: float) -> float:
     return 0.6108 * math.exp(17.27 * t / (t + 237.3))
 
 
+@bounded("temp_c", -45.0, 60.0)
+@bounded("humidity_pct", 0.0, 100.0)
 def vpd(temp_c: float, humidity_pct: float) -> float:
-    """水汽压亏缺 VPD，单位 kPa。"""
+    """水汽压亏缺 VPD，单位 kPa。
+
+    H3 加固：
+    - temp_c ∈ [-45, 60]（Magnus 近似适用域）
+    - humidity_pct ∈ [0, 100]（拒 -5% 静默接受、拒 150% 静默裁零）
+    """
     return saturation_vapor_pressure(temp_c) * (1.0 - max(0.0, min(100.0, float(humidity_pct))) / 100.0)
 
 

@@ -451,7 +451,7 @@
     {
       "zone_id": "arid",
       "zone_name": "干旱带",
-      "koppen_class": "BWh/BSh",
+      "koppen_class": "BWk/BSk",
       "temperature_range": {
         "min_c": -5,
         "max_c": 45
@@ -704,7 +704,7 @@
         "car": "低（车载空间小，湿度难控）",
         "rooftop": "高（配合屋顶滴灌系统）"
       },
-      "note": "v1.1 新增（2026-09-30）：细分自 arid 分区的极端热漠场景，Köppen BWh。arid 覆盖 BWh/BSh 混合，本分区专注撒哈拉南部/戈壁/鲁卜哈利等纯热带沙漠，配偏差校正后 climate_reconcile 精度显著提升。",
+      "note": "v1.1 新增（2026-09-30）：细分自 arid 分区的极端热漠场景，Köppen BWh。v1.3 (2026-10-14) 起 arid 改为 BWk/BSk（冷旱带），本分区专注撒哈拉南部/戈壁/鲁卜哈利等纯热带沙漠，配偏差校正后 climate_reconcile 精度显著提升。",
       "climate_baseline": {
         "monthly_mean_c": [
           14.34,
