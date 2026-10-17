@@ -1,0 +1,196 @@
+{
+  "meta": {
+    "title": "微场景作物物候参数扩展表（Phase N+1 从 7 → 30+ 作物）",
+    "description": "在 wofost_phenology_reference.json（7 种 WOFOST 移植作物）基础上，扩展 23 种微场景常见作物（阳台/屋顶/社区/室内），使总覆盖达 30+。扩展作物参数来自公开文献与园艺手册，标注 source；WOFOST 7 作物保持权威优先级，本表仅在 wofost 缺失时兜底。",
+    "source_note": "本表参数为公开文献综合值，用于微场景种植建议；不用于科研级产量模拟。WOFOST 7 作物（potato/wheat/soybean/sunflower/rice/sweetpotato/mungbean）优先使用 wofost_phenology_reference.json。",
+    "ported_at": "2026-10-16",
+    "license": "综合值（CC-BY 4.0）",
+    "units": "TSUM* C.d; TBASE C; VERN* d or DVS"
+  },
+  "crops": {
+    "tomato": {
+      "species_cn": "番茄", "species_latin": "Solanum lycopersicum", "photo_type": "C3",
+      "representative_variety": "Cherry_Tomato",
+      "tsum_em": 120, "tsum1": 450, "tsum2": 1150,
+      "tbase_c": 8.0, "teffmx_c": 30.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "樱桃番茄；阳台/盆栽主力；DVI 全周期约 70-80 天。"
+    },
+    "capsicum": {
+      "species_cn": "辣椒", "species_latin": "Capsicum annuum", "photo_type": "C3",
+      "representative_variety": "Small_Pepper",
+      "tsum_em": 140, "tsum1": 500, "tsum2": 1200,
+      "tbase_c": 10.0, "teffmx_c": 32.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "对冷敏感，TBASE=10℃。"
+    },
+    "lettuce": {
+      "species_cn": "生菜", "species_latin": "Lactuca sativa", "photo_type": "C3",
+      "representative_variety": "Iceberg",
+      "tsum_em": 80, "tsum1": 150, "tsum2": 200,
+      "tbase_c": 5.0, "teffmx_c": 22.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "短周期叶菜，35-45 天可收。"
+    },
+    "carrot": {
+      "species_cn": "胡萝卜", "species_latin": "Daucus carota", "photo_type": "C3",
+      "representative_variety": "Nantes",
+      "tsum_em": 130, "tsum1": 400, "tsum2": 500,
+      "tbase_c": 3.0, "teffmx_c": 25.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "冷凉作物；根类，需深盆。"
+    },
+    "cucumber": {
+      "species_cn": "黄瓜", "species_latin": "Cucumis sativus", "photo_type": "C3",
+      "representative_variety": "Slicing_Cuke",
+      "tsum_em": 100, "tsum1": 350, "tsum2": 600,
+      "tbase_c": 10.0, "teffmx_c": 30.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "喜温喜湿，需搭架。"
+    },
+    "strawberry": {
+      "species_cn": "草莓", "species_latin": "Fragaria × ananassa", "photo_type": "C3",
+      "representative_variety": "Albion",
+      "tsum_em": 150, "tsum1": 700, "tsum2": 1300,
+      "tbase_c": 4.0, "teffmx_c": 25.0,
+      "vernalization": {"vernbase_d": 60, "vernsat_d": 60, "verndvs": 0.2, "idls": 1},
+      "note": "需低温春化；阳台/温室主力。"
+    },
+    "radish": {
+      "species_cn": "樱桃萝卜", "species_latin": "Raphanus sativus", "photo_type": "C3",
+      "representative_variety": "Cherry Belle",
+      "tsum_em": 90, "tsum1": 100, "tsum2": 80,
+      "tbase_c": 4.0, "teffmx_c": 25.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "超短周期，30 天可收。"
+    },
+    "spinach": {
+      "species_cn": "菠菜", "species_latin": "Spinacia oleracea", "photo_type": "C3",
+      "representative_variety": "Sabon",
+      "tsum_em": 100, "tsum1": 200, "tsum2": 150,
+      "tbase_c": 2.0, "teffmx_c": 22.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "冷凉叶菜；易抽薹。"
+    },
+    "kale": {
+      "species_cn": "羽衣甘蓝", "species_latin": "Brassica oleracea", "photo_type": "C3",
+      "representative_variety": "Lacinato",
+      "tsum_em": 120, "tsum1": 300, "tsum2": 200,
+      "tbase_c": 3.0, "teffmx_c": 24.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "耐霜冻；阳台/屋顶常见。"
+    },
+    "arugula": {
+      "species_cn": "芝麻菜", "species_latin": "Eruca vesicaria", "photo_type": "C3",
+      "representative_variety": "Italian",
+      "tsum_em": 80, "tsum1": 100, "tsum2": 80,
+      "tbase_c": 5.0, "teffmx_c": 22.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "30 天可收；微场景友好。"
+    },
+    "basil": {
+      "species_cn": "罗勒", "species_latin": "Ocimum basilicum", "photo_type": "C3",
+      "representative_variety": "Genovese",
+      "tsum_em": 90, "tsum1": 200, "tsum2": 200,
+      "tbase_c": 12.0, "teffmx_c": 28.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "香草；不耐寒。"
+    },
+    "mint": {
+      "species_cn": "薄荷", "species_latin": "Mentha spicata", "photo_type": "C3",
+      "representative_variety": "Spearmint",
+      "tsum_em": 80, "tsum1": 200, "tsum2": 300,
+      "tbase_c": 8.0, "teffmx_c": 25.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "多年生；易蔓延，需容器隔离。"
+    },
+    "cilantro": {
+      "species_cn": "香菜", "species_latin": "Coriandrum sativum", "photo_type": "C3",
+      "representative_variety": "Slow Bolt",
+      "tsum_em": 100, "tsum1": 150, "tsum2": 100,
+      "tbase_c": 5.0, "teffmx_c": 22.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "喜凉；高温易抽薹。"
+    },
+    "chard": {
+      "species_cn": "甜菜叶", "species_latin": "Beta vulgaris", "photo_type": "C3",
+      "representative_variety": "Rainbow",
+      "tsum_em": 110, "tsum1": 300, "tsum2": 250,
+      "tbase_c": 4.0, "teffmx_c": 26.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "营养+观赏双用。"
+    },
+    "zucchini": {
+      "species_cn": "西葫芦", "species_latin": "Cucurbita pepo", "photo_type": "C3",
+      "representative_variety": "Grey",
+      "tsum_em": 110, "tsum1": 350, "tsum2": 650,
+      "tbase_c": 10.0, "teffmx_c": 30.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "高产；阳台/温室均可。"
+    },
+    "melon": {
+      "species_cn": "甜瓜", "species_latin": "Cucumis melo", "photo_type": "C3",
+      "representative_variety": "Honeydew",
+      "tsum_em": 130, "tsum1": 550, "tsum2": 950,
+      "tbase_c": 10.0, "teffmx_c": 30.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "喜温；果实大，需支架。"
+    },
+    "eggplant": {
+      "species_cn": "茄子", "species_latin": "Solanum melongena", "photo_type": "C3",
+      "representative_variety": "Black Beauty",
+      "tsum_em": 130, "tsum1": 500, "tsum2": 1000,
+      "tbase_c": 10.0, "teffmx_c": 30.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "喜温；南方常见。"
+    },
+    "okra": {
+      "species_cn": "秋葵", "species_latin": "Abelmoschus esculentus", "photo_type": "C3",
+      "representative_variety": "Clemson",
+      "tsum_em": 130, "tsum1": 550, "tsum2": 900,
+      "tbase_c": 12.0, "teffmx_c": 35.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "耐热；夏季种植。"
+    },
+    "beetroot": {
+      "species_cn": "甜菜", "species_latin": "Beta vulgaris", "photo_type": "C3",
+      "representative_variety": "Detroit",
+      "tsum_em": 120, "tsum1": 350, "tsum2": 450,
+      "tbase_c": 4.0, "teffmx_c": 25.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "根类；耐霜。"
+    },
+    "onion": {
+      "species_cn": "洋葱", "species_latin": "Allium cepa", "photo_type": "C3",
+      "representative_variety": "Yellow Storage",
+      "tsum_em": 130, "tsum1": 400, "tsum2": 700,
+      "tbase_c": 2.0, "teffmx_c": 26.0,
+      "vernalization": {"vernbase_d": 30, "vernsat_d": 45, "verndvs": 0.15, "idls": 1},
+      "note": "需低温春化。"
+    },
+    "garlic": {
+      "species_cn": "大蒜", "species_latin": "Allium sativum", "photo_type": "C3",
+      "representative_variety": "Hardneck Purple",
+      "tsum_em": 140, "tsum1": 550, "tsum2": 850,
+      "tbase_c": 1.0, "teffmx_c": 25.0,
+      "vernalization": {"vernbase_d": 45, "vernsat_d": 60, "verndvs": 0.2, "idls": 1},
+      "note": "需低温春化；北方种植。"
+    },
+    "pepper_green": {
+      "species_cn": "青椒", "species_latin": "Capsicum annuum", "photo_type": "C3",
+      "representative_variety": "Bell",
+      "tsum_em": 140, "tsum1": 500, "tsum2": 1300,
+      "tbase_c": 10.0, "teffmx_c": 32.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "喜温；果实大。"
+    },
+    "sweetcorn": {
+      "species_cn": "甜玉米", "species_latin": "Zea mays var. saccharata", "photo_type": "C4",
+      "representative_variety": "SugarBee",
+      "tsum_em": 140, "tsum1": 450, "tsum2": 700,
+      "tbase_c": 8.0, "teffmx_c": 35.0,
+      "vernalization": {"vernbase_d": 0, "vernsat_d": 0, "verndvs": 0, "idls": 0},
+      "note": "C4 高光效；需多行授粉。"
+    }
+  }
+}

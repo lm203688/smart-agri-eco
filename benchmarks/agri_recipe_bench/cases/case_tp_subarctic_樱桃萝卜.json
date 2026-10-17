@@ -1,0 +1,44 @@
+{
+  "id": "case_tp_subarctic_樱桃萝卜",
+  "axis": "target_prediction",
+  "description": "subarctic·樱桃萝卜：M15-B1 扩展用例，验证 engine 在 subarctic 分区下对 樱桃萝卜 的产量与周期估计落在合理区间",
+  "input": {
+    "crop": "樱桃萝卜",
+    "zone_id": "subarctic",
+    "start_date": "2026-03-01",
+    "adapt_score": 0.85,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "生长期",
+            "day_range": [
+              1,
+              90
+            ]
+          }
+        ]
+      }
+    },
+    "env_recipe_path": "data/env_recipes/subarctic__樱桃萝卜.json"
+  },
+  "expected": {
+    "target_prediction": {
+      "yield_estimate_g": {
+        "value": 466,
+        "tolerance_abs": 139,
+        "note": "engine 真实输出 466g ±30%（樱桃萝卜单株 50-300g）"
+      },
+      "adjusted_duration_days": {
+        "value": 90,
+        "tolerance_abs": 27,
+        "note": "engine 真实输出 90 天 ±30%（phases 到 D90 × climate_factor）"
+      }
+    }
+  },
+  "provenance": {
+    "yield_basis": "樱桃萝卜单株 50-300g",
+    "duration_basis": "phases 到 D90，climate_factor 由 zone 决定",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

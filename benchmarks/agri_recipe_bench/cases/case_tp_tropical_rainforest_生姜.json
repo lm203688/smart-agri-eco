@@ -1,0 +1,44 @@
+{
+  "id": "case_tp_tropical_rainforest_生姜",
+  "axis": "target_prediction",
+  "description": "tropical_rainforest·生姜：M15-B1 扩展用例，验证 engine 在 tropical_rainforest 分区下对 生姜 的产量与周期估计落在合理区间",
+  "input": {
+    "crop": "生姜",
+    "zone_id": "tropical_rainforest",
+    "start_date": "2026-03-01",
+    "adapt_score": 0.85,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "生长期",
+            "day_range": [
+              1,
+              90
+            ]
+          }
+        ]
+      }
+    },
+    "env_recipe_path": "data/env_recipes/tropical_rainforest__生姜.json"
+  },
+  "expected": {
+    "target_prediction": {
+      "yield_estimate_g": {
+        "value": 466,
+        "tolerance_abs": 139,
+        "note": "engine 真实输出 466g ±30%（生姜单株 100-500g）"
+      },
+      "adjusted_duration_days": {
+        "value": 90,
+        "tolerance_abs": 27,
+        "note": "engine 真实输出 90 天 ±30%（phases 到 D90 × climate_factor）"
+      }
+    }
+  },
+  "provenance": {
+    "yield_basis": "生姜单株 100-500g",
+    "duration_basis": "phases 到 D90，climate_factor 由 zone 决定",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

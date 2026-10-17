@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/lm203688/smart-agri-eco/main/schemas/knowledge_graph.schema.json",
+  "title": "Agri Knowledge Graph Schema",
+  "description": "农业知识图谱数据契约。定义 261 实体 / 446 边（grows_in / sensitive_to / koppen_of / constrains）的结构与语义。由 engine/knowledge_graph.py 消费，任何字段改动必须同步刷新 data/knowledge_graph.json + local_search 索引。",
+  "type": "object",
+  "required": ["schema", "generated_at", "entities", "edges", "stats"],
+  "additionalProperties": true,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "description": "Schema 版本标识，如 'agri-knowledge-graph/v1'"
+    },
+    "generated_at": {
+      "type": "string",
+      "description": "生成时间（ISO 8601）"
+    },
+    "sources": {
+      "type": "object",
+      "description": "数据源清单（作物库 / 分区库 / 病虫害库 等）",
+      "additionalProperties": true
+    },
+    "entities": {
+      "type": "array",
+      "description": "实体列表（261 个：8 分区 + 152 作物 + 23 病虫害 + 78 其他）",
+      "items": {"$ref": "#/$defs/entity"}
+    },
+    "edges": {
+      "type": "array",
+      "description": "边列表（446 条：grows_in 152 / sensitive_to 261 / koppen_of 8 / constrains 25）",
+      "items": {"$ref": "#/$defs/edge"}
+    },
+    "stats": {
+      "type": "object",
+      "description": "统计摘要（与 harness/manifest.json knowledge_graph 段一致）",
+      "additionalProperties": true,
+      "properties": {
+        "nodes": {"type": "integer", "minimum": 0},
+        "edges": {"type": "integer", "minimum": 0},
+        "edges_by_rel": {
+          "type": "object",
+          "additionalProperties": {"type": "integer"},
+          "description": "按关系类型统计的边数"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "entity": {
+      "type": "object",
+      "required": ["id", "type"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "实体唯一 ID（如 'crop:番茄' / 'zone:temperate_continental' / 'pest:蚜虫'）"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["crop", "zone", "pest", "pathogen", "nutrient", "disease", "concept", "practice"],
+          "description": "实体类型"
+        },
+        "name": {
+          "type": "string",
+          "description": "显示名"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "别名列表"
+        },
+        "properties": {
+          "type": "object",
+          "description": "实体属性（如 temperature_range / family / latin 等）",
+          "additionalProperties": true
+        }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["source", "relation", "target"],
+      "additionalProperties": true,
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "源实体 ID"
+        },
+        "relation": {
+          "type": "string",
+          "enum": ["grows_in", "sensitive_to", "koppen_of", "constrains", "depends_on", "counteracts"],
+          "description": "关系类型（本项目事实标准 4 种 + 扩展 2 种）"
+        },
+        "target": {
+          "type": "string",
+          "description": "目标实体 ID"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "关系强度（可选，默认 1.0）"
+        },
+        "evidence": {
+          "type": "object",
+          "description": "证据/来源（含 source_id / confidence / derived_at）",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

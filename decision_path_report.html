@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>决策路径可视化报告</title>
+<style>
+
+:root {
+  --bg: #0f1117;
+  --card: #1a1d27;
+  --card-alt: #222633;
+  --border: #2e3345;
+  --text: #e2e4ed;
+  --text-dim: #8b8fa3;
+  --pass: #34d399;
+  --dig: #fbbf24;
+  --fail: #f87171;
+  --veto: #ef4444;
+  --gate: #fb923c;
+  --score: #60a5fa;
+  --accent: #818cf8;
+  --bar-bg: #2a2e3d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+h1 { font-size: 1.8em; margin-bottom: 6px; }
+h2 { font-size: 1.3em; margin: 28px 0 12px; color: var(--accent);
+     border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.05em; margin: 18px 0 8px; }
+.meta { color: var(--text-dim); font-size: 0.85em; margin-bottom: 20px; }
+.meta span { margin-right: 18px; }
+
+/* 结论卡 */
+.verdict-box {
+  display: flex; align-items: center; gap: 20px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 24px; margin-bottom: 8px;
+}
+.verdict-badge {
+  font-size: 2em; font-weight: 700; padding: 8px 22px;
+  border-radius: 10px; color: #fff; min-width: 80px; text-align: center;
+}
+.verdict-badge.PASS { background: rgba(52,211,153,0.2); color: var(--pass); }
+.verdict-badge.DIG  { background: rgba(251,191,36,0.2); color: var(--dig); }
+.verdict-badge.FAIL { background: rgba(248,113,113,0.2); color: var(--fail); }
+.verdict-info { flex: 1; }
+.verdict-info .score { font-size: 1.5em; font-weight: 600; }
+.verdict-info .reason { color: var(--text-dim); font-size: 0.9em; margin-top: 4px; }
+
+/* 路径卡 */
+.path-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--border);
+  border-radius: 8px; padding: 12px 16px; margin: 8px 0;
+  transition: background 0.15s;
+}
+.path-item:hover { background: var(--card-alt); }
+.path-item.veto  { border-left-color: var(--veto); }
+.path-item.gate  { border-left-color: var(--gate); }
+.path-item.score { border-left-color: var(--score); }
+
+.path-rank {
+  font-size: 1.4em; font-weight: 700; color: var(--text-dim);
+  min-width: 32px; text-align: center; padding-top: 2px;
+}
+.path-content { flex: 1; }
+.path-type {
+  display: inline-block; font-size: 0.75em; font-weight: 600;
+  padding: 2px 8px; border-radius: 4px; margin-bottom: 4px;
+}
+.path-type.veto  { background: rgba(239,68,68,0.2);  color: var(--veto); }
+.path-type.gate  { background: rgba(251,146,60,0.2);  color: var(--gate); }
+.path-type.score { background: rgba(96,165,250,0.2);  color: var(--score); }
+.path-name { font-weight: 600; font-size: 0.95em; }
+.path-detail { color: var(--text-dim); font-size: 0.85em; margin-top: 2px; }
+.path-impact { color: var(--accent); font-size: 0.82em; margin-top: 3px;
+               font-style: italic; }
+
+/* 反事实 */
+.cf-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px; padding: 14px 18px; margin: 12px 0;
+}
+.cf-label { font-size: 0.78em; font-weight: 600; color: var(--accent);
+            text-transform: uppercase; letter-spacing: 0.5px; }
+.cf-text { font-size: 0.92em; margin-top: 4px; }
+
+/* 条形图 */
+.bar-chart { margin: 12px 0; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+.bar-label { width: 180px; font-size: 0.85em; text-align: right;
+             color: var(--text-dim); flex-shrink: 0; }
+.bar-track { flex: 1; height: 22px; background: var(--bar-bg);
+             border-radius: 4px; overflow: hidden; position: relative; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
+.bar-value { width: 60px; font-size: 0.85em; font-weight: 600;
+             flex-shrink: 0; }
+
+/* 维度总览 */
+.dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px; margin: 12px 0; }
+.dim-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px;
+}
+.dim-name { font-size: 0.85em; color: var(--text-dim); }
+.dim-score { font-size: 1.3em; font-weight: 700; }
+.dim-weight { font-size: 0.8em; color: var(--text-dim); }
+.dim-bar { height: 4px; background: var(--bar-bg); border-radius: 2px;
+           margin-top: 6px; overflow: hidden; }
+.dim-bar-fill { height: 100%; border-radius: 2px; }
+
+/* 案例导航 */
+.case-nav { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0; }
+.case-nav a {
+  display: inline-block; padding: 4px 12px; font-size: 0.82em;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); text-decoration: none;
+}
+.case-nav a:hover { border-color: var(--accent); }
+.case-nav a.active { border-color: var(--accent); background: rgba(129,140,248,0.1); }
+
+/* 页脚 */
+footer { margin-top: 36px; padding-top: 16px;
+         border-top: 1px solid var(--border);
+         color: var(--text-dim); font-size: 0.78em; text-align: center; }
+
+/* 响应式 */
+@media (max-width: 768px) {
+  body { padding: 12px; }
+  .verdict-box { flex-direction: column; align-items: flex-start; }
+  .bar-label { width: 120px; }
+  .dim-grid { grid-template-columns: 1fr 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<h1>决策路径可视化报告</h1>
+<div class="meta">
+  <span>生成时间: 2026-10-15 11:03</span>
+  <span>案例数: 7</span>
+  <span>规则版本: v2.2.0</span>
+</div>
+<div class="case-nav">
+<a href="#case-3" class="active">某生物育种公司A（正对照） <span style="color:var(--dig);font-weight:700">71.8</span></a><a href="#case-5" class="">某智能农机公司B <span style="color:var(--fail);font-weight:700">17.5</span></a><a href="#case-7" class="">某数字农业SaaS公司C <span style="color:var(--dig);font-weight:700">65.8</span></a><a href="#case-9" class="">某微生物制剂公司D <span style="color:var(--fail);font-weight:700">29.5</span></a><a href="#case-12" class="">某生鲜供应链公司E <span style="color:var(--fail);font-weight:700">33.8</span></a><a href="#case-14" class="">某县域养殖项目F <span style="color:var(--fail);font-weight:700">55.2</span></a><a href="#case-15" class="">某养殖项目G（无环评） <span style="color:var(--fail);font-weight:700">30.8</span></a>
+</div>
+<div id="case-3">
+<h2>某生物育种公司A（正对照）</h2>
+<div class="meta">
+  <span>分类: ①种业与生物育种</span>
+  <span>规则: v2.2.0</span>
+  <span>案例ID: 3</span>
+</div>
+
+<div class="verdict-box">
+  <div class="verdict-badge DIG">需深挖</div>
+  <div class="verdict-info">
+    <div class="score">71.8 / 100 <span style="font-size:0.55em;color:var(--text-dim)">区间 71.8–71.8</span></div>
+    <div class="reason">总分 71.8（区间 71.8–71.8）</div>
+  </div>
+</div>
+
+<h3>维度评分总览</h3>
+<div class="dim-grid">
+
+<div class="dim-card">
+  <div class="dim-name">品种管线与知识产权</div>
+  <div class="dim-score" style="color:var(--dig)">70<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 25%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:70%;background:var(--dig)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">财务质量</div>
+  <div class="dim-score" style="color:var(--dig)">75<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 20%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:75%;background:var(--dig)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">成长性</div>
+  <div class="dim-score" style="color:var(--gate)">55<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:55%;background:var(--gate)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">授权费与单位经济</div>
+  <div class="dim-score" style="color:var(--dig)">70<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:70%;background:var(--dig)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">现金流与跑道</div>
+  <div class="dim-score" style="color:var(--pass)">90<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:90%;background:var(--pass)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">政策与合规风险</div>
+  <div class="dim-score" style="color:var(--dig)">70<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 10%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:70%;background:var(--dig)"></div></div>
+</div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">1</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">品种管线与知识产权</div>
+    <div class="path-detail">维度得分 70 × 权重25% → 贡献 17.5 分</div>
+    <div class='path-impact'>距满分还可提回 7.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">2</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">财务质量</div>
+    <div class="path-detail">维度得分 75 × 权重20% → 贡献 15.0 分</div>
+    <div class='path-impact'>距满分还可提回 5.0 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">3</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">现金流与跑道</div>
+    <div class="path-detail">维度得分 90 × 权重15% → 贡献 13.5 分</div>
+    <div class='path-impact'>距满分还可提回 1.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">4</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">授权费与单位经济</div>
+    <div class="path-detail">维度得分 70 × 权重15% → 贡献 10.5 分</div>
+    <div class='path-impact'>距满分还可提回 4.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">5</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">成长性</div>
+    <div class="path-detail">维度得分 55 × 权重15% → 贡献 8.2 分</div>
+    <div class='path-impact'>距满分还可提回 6.8 分</div>
+  </div>
+</div>
+
+<div class="cf-box">
+  <div class="cf-label">反事实分析 · 翻档边界</div>
+  <div class="cf-text">距「通过」档需 3.2 分。最短路径：改善「授权费与单位经济」维度（当前值 当前 32%，维度得分 70），补齐后最多可提回 4.5 分</div>
+</div>
+
+<h3>维度贡献度（按贡献排序）</h3>
+<div class="bar-chart">
+
+<div class="bar-row">
+  <div class="bar-label">品种管线与知识产权</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">财务质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">现金流与跑道</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">授权费与单位经济</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">成长性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+</div>
+</div><div id="case-5">
+<h2>某智能农机公司B</h2>
+<div class="meta">
+  <span>分类: ②农机装备与机器人</span>
+  <span>规则: v2.2.0</span>
+  <span>案例ID: 5</span>
+</div>
+
+<div class="verdict-box">
+  <div class="verdict-badge FAIL">淘汰</div>
+  <div class="verdict-info">
+    <div class="score">17.5 / 100 <span style="font-size:0.55em;color:var(--text-dim)">区间 17.5–17.5</span></div>
+    <div class="reason">一票否决触发：补贴依赖过高 · 1 项否决 · 3 项爆雷</div>
+  </div>
+</div>
+
+<h3>维度评分总览</h3>
+<div class="dim-grid">
+
+<div class="dim-card">
+  <div class="dim-name">装机量与服务网络</div>
+  <div class="dim-score" style="color:var(--fail)">10<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 25%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:10%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">财务质量</div>
+  <div class="dim-score" style="color:var(--fail)">30<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 20%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:30%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">成长性</div>
+  <div class="dim-score" style="color:var(--fail)">30<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:30%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">单台经济性</div>
+  <div class="dim-score" style="color:var(--fail)">10<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:10%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">现金流与跑道</div>
+  <div class="dim-score" style="color:var(--fail)">10<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:10%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">政策与合规风险</div>
+  <div class="dim-score" style="color:var(--fail)">15<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 10%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:15%;background:var(--fail)"></div></div>
+</div>
+</div>
+
+<div class="path-item veto">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type veto">一票否决</span>
+    <div class="path-name">补贴依赖过高</div>
+    <div class="path-detail">政府补贴占收入&gt;50% = 生存依赖政策而非市场，否决</div>
+    <div class='path-impact'>直接淘汰</div>
+  </div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">前五大客户占比</div>
+    <div class="path-detail">前五大客户占比 = 72%，触发红线（gt 60）。③政企SaaS大客户常见，70%才预警</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">毛利率低于赛道基准</div>
+    <div class="path-detail">毛利率低于赛道基准 = -12.0pct（毛利 18% vs 基准 30%），触发红线（lt -5）。毛利率 - 分类基准 &lt; -5pct 触发</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">现金跑道</div>
+    <div class="path-detail">现金跑道 = 5，触发红线（lt 18）。①④研发周期长，红线放宽至24月</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">1</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">财务质量</div>
+    <div class="path-detail">维度得分 30 × 权重20% → 贡献 6.0 分</div>
+    <div class='path-impact'>距满分还可提回 14.0 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">2</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">成长性</div>
+    <div class="path-detail">维度得分 30 × 权重15% → 贡献 4.5 分</div>
+    <div class='path-impact'>距满分还可提回 10.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">3</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">装机量与服务网络</div>
+    <div class="path-detail">维度得分 10 × 权重25% → 贡献 2.5 分</div>
+    <div class='path-impact'>距满分还可提回 22.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">4</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">单台经济性</div>
+    <div class="path-detail">维度得分 10 × 权重15% → 贡献 1.5 分</div>
+    <div class='path-impact'>距满分还可提回 13.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">5</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">现金流与跑道</div>
+    <div class="path-detail">维度得分 10 × 权重15% → 贡献 1.5 分</div>
+    <div class='path-impact'>距满分还可提回 13.5 分</div>
+  </div>
+</div>
+
+<div class="cf-box">
+  <div class="cf-label">反事实分析 · 翻档边界</div>
+  <div class="cf-text">总分距「需深挖」档较远，建议优先解决否决项/爆雷项后重新评估</div>
+</div>
+
+<h3>维度贡献度（按贡献排序）</h3>
+<div class="bar-chart">
+
+<div class="bar-row">
+  <div class="bar-label">财务质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">成长性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">装机量与服务网络</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">单台经济性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">现金流与跑道</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+</div>
+</div><div id="case-7">
+<h2>某数字农业SaaS公司C</h2>
+<div class="meta">
+  <span>分类: ③智慧农业SaaS/数字农业</span>
+  <span>规则: v2.2.0</span>
+  <span>案例ID: 7</span>
+</div>
+
+<div class="verdict-box">
+  <div class="verdict-badge DIG">需深挖</div>
+  <div class="verdict-info">
+    <div class="score">65.8 / 100 <span style="font-size:0.55em;color:var(--text-dim)">区间 65.8–65.8</span></div>
+    <div class="reason">总分 65.8（区间 65.8–65.8）；五闸爆雷，建议优先核查 · 1 项爆雷</div>
+  </div>
+</div>
+
+<h3>维度评分总览</h3>
+<div class="dim-grid">
+
+<div class="dim-card">
+  <div class="dim-name">ARR与订阅质量</div>
+  <div class="dim-score" style="color:var(--dig)">70<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 25%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:70%;background:var(--dig)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">财务质量</div>
+  <div class="dim-score" style="color:var(--dig)">75<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 20%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:75%;background:var(--dig)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">成长性</div>
+  <div class="dim-score" style="color:var(--dig)">75<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:75%;background:var(--dig)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">客户留存与复购</div>
+  <div class="dim-score" style="color:var(--dig)">70<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:70%;background:var(--dig)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">现金流与跑道</div>
+  <div class="dim-score" style="color:var(--fail)">30<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:30%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">政策与合规风险</div>
+  <div class="dim-score" style="color:var(--dig)">70<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 10%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:70%;background:var(--dig)"></div></div>
+</div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">现金跑道</div>
+    <div class="path-detail">现金跑道 = 12.9，触发红线（lt 18）。①④研发周期长，红线放宽至24月</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">1</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">ARR与订阅质量</div>
+    <div class="path-detail">维度得分 70 × 权重25% → 贡献 17.5 分</div>
+    <div class='path-impact'>距满分还可提回 7.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">2</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">财务质量</div>
+    <div class="path-detail">维度得分 75 × 权重20% → 贡献 15.0 分</div>
+    <div class='path-impact'>距满分还可提回 5.0 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">3</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">成长性</div>
+    <div class="path-detail">维度得分 75 × 权重15% → 贡献 11.2 分</div>
+    <div class='path-impact'>距满分还可提回 3.8 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">4</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">客户留存与复购</div>
+    <div class="path-detail">维度得分 70 × 权重15% → 贡献 10.5 分</div>
+    <div class='path-impact'>距满分还可提回 4.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">5</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">政策与合规风险</div>
+    <div class="path-detail">维度得分 70 × 权重10% → 贡献 7.0 分</div>
+    <div class='path-impact'>距满分还可提回 3.0 分</div>
+  </div>
+</div>
+
+<div class="cf-box">
+  <div class="cf-label">反事实分析 · 翻档边界</div>
+  <div class="cf-text">距「通过」档需 9.2 分。最短路径：改善「现金流与跑道」维度（当前值 当前 12.9个月，维度得分 30），补齐后最多可提回 10.5 分</div>
+</div>
+
+<h3>维度贡献度（按贡献排序）</h3>
+<div class="bar-chart">
+
+<div class="bar-row">
+  <div class="bar-label">ARR与订阅质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">财务质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">成长性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">客户留存与复购</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">政策与合规风险</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+</div>
+</div><div id="case-9">
+<h2>某微生物制剂公司D</h2>
+<div class="meta">
+  <span>分类: ④生物农资与合成生物</span>
+  <span>规则: v2.2.0</span>
+  <span>案例ID: 9</span>
+</div>
+
+<div class="verdict-box">
+  <div class="verdict-badge FAIL">淘汰</div>
+  <div class="verdict-info">
+    <div class="score">29.5 / 100 <span style="font-size:0.55em;color:var(--text-dim)">区间 29.5–29.5</span></div>
+    <div class="reason">总分 29.5（区间 29.5–29.5） · 3 项爆雷</div>
+  </div>
+</div>
+
+<h3>维度评分总览</h3>
+<div class="dim-grid">
+
+<div class="dim-card">
+  <div class="dim-name">登记证管线</div>
+  <div class="dim-score" style="color:var(--fail)">10<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 25%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:10%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">财务质量</div>
+  <div class="dim-score" style="color:var(--fail)">30<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 20%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:30%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">成长性</div>
+  <div class="dim-score" style="color:var(--gate)">55<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:55%;background:var(--gate)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">产能与单位经济</div>
+  <div class="dim-score" style="color:var(--gate)">45<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:45%;background:var(--gate)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">现金流与跑道</div>
+  <div class="dim-score" style="color:var(--fail)">10<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:10%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">政策与合规风险</div>
+  <div class="dim-score" style="color:var(--gate)">45<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 10%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:45%;background:var(--gate)"></div></div>
+</div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">前五大客户占比</div>
+    <div class="path-detail">前五大客户占比 = 65%，触发红线（gt 60）。③政企SaaS大客户常见，70%才预警</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">毛利率低于赛道基准</div>
+    <div class="path-detail">毛利率低于赛道基准 = -13.0pct（毛利 32% vs 基准 45%），触发红线（lt -5）。毛利率 - 分类基准 &lt; -5pct 触发</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">现金跑道</div>
+    <div class="path-detail">现金跑道 = 4.8，触发红线（lt 24）。①④研发周期长，红线放宽至24月</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">1</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">成长性</div>
+    <div class="path-detail">维度得分 55 × 权重15% → 贡献 8.2 分</div>
+    <div class='path-impact'>距满分还可提回 6.8 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">2</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">产能与单位经济</div>
+    <div class="path-detail">维度得分 45 × 权重15% → 贡献 6.8 分</div>
+    <div class='path-impact'>距满分还可提回 8.2 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">3</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">财务质量</div>
+    <div class="path-detail">维度得分 30 × 权重20% → 贡献 6.0 分</div>
+    <div class='path-impact'>距满分还可提回 14.0 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">4</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">政策与合规风险</div>
+    <div class="path-detail">维度得分 45 × 权重10% → 贡献 4.5 分</div>
+    <div class='path-impact'>距满分还可提回 5.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">5</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">登记证管线</div>
+    <div class="path-detail">维度得分 10 × 权重25% → 贡献 2.5 分</div>
+    <div class='path-impact'>距满分还可提回 22.5 分</div>
+  </div>
+</div>
+
+<div class="cf-box">
+  <div class="cf-label">反事实分析 · 翻档边界</div>
+  <div class="cf-text">总分距「需深挖」档较远，建议优先解决否决项/爆雷项后重新评估</div>
+</div>
+
+<h3>维度贡献度（按贡献排序）</h3>
+<div class="bar-chart">
+
+<div class="bar-row">
+  <div class="bar-label">成长性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">产能与单位经济</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">财务质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">政策与合规风险</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">登记证管线</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+</div>
+</div><div id="case-12">
+<h2>某生鲜供应链公司E</h2>
+<div class="meta">
+  <span>分类: ⑤供应链与品牌食品</span>
+  <span>规则: v2.2.0</span>
+  <span>案例ID: 12</span>
+</div>
+
+<div class="verdict-box">
+  <div class="verdict-badge FAIL">淘汰</div>
+  <div class="verdict-info">
+    <div class="score">33.8 / 100 <span style="font-size:0.55em;color:var(--text-dim)">区间 33.8–33.8</span></div>
+    <div class="reason">一票否决触发：单店边际连续为负 · 1 项否决 · 2 项爆雷</div>
+  </div>
+</div>
+
+<h3>维度评分总览</h3>
+<div class="dim-grid">
+
+<div class="dim-card">
+  <div class="dim-name">渠道与SKU质量</div>
+  <div class="dim-score" style="color:var(--gate)">45<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 25%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:45%;background:var(--gate)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">财务质量</div>
+  <div class="dim-score" style="color:var(--fail)">30<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 20%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:30%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">成长性</div>
+  <div class="dim-score" style="color:var(--fail)">30<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:30%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">单店/单SKU经济</div>
+  <div class="dim-score" style="color:var(--fail)">10<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:10%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">现金流与跑道</div>
+  <div class="dim-score" style="color:var(--fail)">10<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:10%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">政策与合规风险</div>
+  <div class="dim-score" style="color:var(--pass)">90<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 10%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:90%;background:var(--pass)"></div></div>
+</div>
+</div>
+
+<div class="path-item veto">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type veto">一票否决</span>
+    <div class="path-name">单店边际连续为负</div>
+    <div class="path-detail">单店边际贡献&lt;-5%且连续2年恶化 = 增长越快失血越快，否决</div>
+    <div class='path-impact'>直接淘汰</div>
+  </div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">毛利率低于赛道基准</div>
+    <div class="path-detail">毛利率低于赛道基准 = -13.0pct（毛利 12% vs 基准 25%），触发红线（lt -5）。毛利率 - 分类基准 &lt; -5pct 触发</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">现金跑道</div>
+    <div class="path-detail">现金跑道 = 3.3，触发红线（lt 18）。①④研发周期长，红线放宽至24月</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">1</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">渠道与SKU质量</div>
+    <div class="path-detail">维度得分 45 × 权重25% → 贡献 11.2 分</div>
+    <div class='path-impact'>距满分还可提回 13.8 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">2</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">政策与合规风险</div>
+    <div class="path-detail">维度得分 90 × 权重10% → 贡献 9.0 分</div>
+    <div class='path-impact'>距满分还可提回 1.0 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">3</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">财务质量</div>
+    <div class="path-detail">维度得分 30 × 权重20% → 贡献 6.0 分</div>
+    <div class='path-impact'>距满分还可提回 14.0 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">4</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">成长性</div>
+    <div class="path-detail">维度得分 30 × 权重15% → 贡献 4.5 分</div>
+    <div class='path-impact'>距满分还可提回 10.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">5</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">单店/单SKU经济</div>
+    <div class="path-detail">维度得分 10 × 权重15% → 贡献 1.5 分</div>
+    <div class='path-impact'>距满分还可提回 13.5 分</div>
+  </div>
+</div>
+
+<div class="cf-box">
+  <div class="cf-label">反事实分析 · 翻档边界</div>
+  <div class="cf-text">总分距「需深挖」档较远，建议优先解决否决项/爆雷项后重新评估</div>
+</div>
+
+<h3>维度贡献度（按贡献排序）</h3>
+<div class="bar-chart">
+
+<div class="bar-row">
+  <div class="bar-label">渠道与SKU质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">政策与合规风险</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">财务质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">成长性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">单店/单SKU经济</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+</div>
+</div><div id="case-14">
+<h2>某县域养殖项目F</h2>
+<div class="meta">
+  <span>分类: ⑥规模化养殖与县域基建</span>
+  <span>规则: v2.2.0</span>
+  <span>案例ID: 14</span>
+</div>
+
+<div class="verdict-box">
+  <div class="verdict-badge FAIL">淘汰</div>
+  <div class="verdict-info">
+    <div class="score">55.2 / 100 <span style="font-size:0.55em;color:var(--text-dim)">区间 55.2–55.2</span></div>
+    <div class="reason">总分 55.2（区间 55.2–55.2） · 1 项爆雷</div>
+  </div>
+</div>
+
+<h3>维度评分总览</h3>
+<div class="dim-grid">
+
+<div class="dim-card">
+  <div class="dim-name">产能与项目质量</div>
+  <div class="dim-score" style="color:var(--dig)">70<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 25%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:70%;background:var(--dig)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">财务质量</div>
+  <div class="dim-score" style="color:var(--dig)">75<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 20%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:75%;background:var(--dig)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">成长性</div>
+  <div class="dim-score" style="color:var(--fail)">30<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:30%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">头均经济性</div>
+  <div class="dim-score" style="color:var(--gate)">45<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:45%;background:var(--gate)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">现金流与跑道</div>
+  <div class="dim-score" style="color:var(--fail)">30<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:30%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">政策与合规风险</div>
+  <div class="dim-score" style="color:var(--dig)">70<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 10%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:70%;background:var(--dig)"></div></div>
+</div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">现金跑道</div>
+    <div class="path-detail">现金跑道 = 15，触发红线（lt 18）。①④研发周期长，红线放宽至24月</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">1</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">产能与项目质量</div>
+    <div class="path-detail">维度得分 70 × 权重25% → 贡献 17.5 分</div>
+    <div class='path-impact'>距满分还可提回 7.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">2</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">财务质量</div>
+    <div class="path-detail">维度得分 75 × 权重20% → 贡献 15.0 分</div>
+    <div class='path-impact'>距满分还可提回 5.0 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">3</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">政策与合规风险</div>
+    <div class="path-detail">维度得分 70 × 权重10% → 贡献 7.0 分</div>
+    <div class='path-impact'>距满分还可提回 3.0 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">4</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">头均经济性</div>
+    <div class="path-detail">维度得分 45 × 权重15% → 贡献 6.8 分</div>
+    <div class='path-impact'>距满分还可提回 8.2 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">5</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">成长性</div>
+    <div class="path-detail">维度得分 30 × 权重15% → 贡献 4.5 分</div>
+    <div class='path-impact'>距满分还可提回 10.5 分</div>
+  </div>
+</div>
+
+<div class="cf-box">
+  <div class="cf-label">反事实分析 · 翻档边界</div>
+  <div class="cf-text">距「需深挖」档需 4.8 分。最短路径：改善「财务质量」维度（当前值 当前 15%，维度得分 75），补齐后最多可提回 5.0 分</div>
+</div>
+
+<h3>维度贡献度（按贡献排序）</h3>
+<div class="bar-chart">
+
+<div class="bar-row">
+  <div class="bar-label">产能与项目质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">财务质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">政策与合规风险</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">头均经济性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">成长性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+</div>
+</div><div id="case-15">
+<h2>某养殖项目G（无环评）</h2>
+<div class="meta">
+  <span>分类: ⑥规模化养殖与县域基建</span>
+  <span>规则: v2.2.0</span>
+  <span>案例ID: 15</span>
+</div>
+
+<div class="verdict-box">
+  <div class="verdict-badge FAIL">淘汰</div>
+  <div class="verdict-info">
+    <div class="score">30.8 / 100 <span style="font-size:0.55em;color:var(--text-dim)">区间 30.8–30.8</span></div>
+    <div class="reason">一票否决触发：环评缺失 · 1 项否决 · 1 项爆雷</div>
+  </div>
+</div>
+
+<h3>维度评分总览</h3>
+<div class="dim-grid">
+
+<div class="dim-card">
+  <div class="dim-name">产能与项目质量</div>
+  <div class="dim-score" style="color:var(--fail)">10<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 25%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:10%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">财务质量</div>
+  <div class="dim-score" style="color:var(--gate)">55<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 20%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:55%;background:var(--gate)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">成长性</div>
+  <div class="dim-score" style="color:var(--fail)">30<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:30%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">头均经济性</div>
+  <div class="dim-score" style="color:var(--gate)">45<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:45%;background:var(--gate)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">现金流与跑道</div>
+  <div class="dim-score" style="color:var(--fail)">10<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 15%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:10%;background:var(--fail)"></div></div>
+</div>
+<div class="dim-card">
+  <div class="dim-name">政策与合规风险</div>
+  <div class="dim-score" style="color:var(--gate)">45<span style="font-size:0.5em;color:var(--text-dim)">/100</span></div>
+  <div class="dim-weight">权重 10%</div>
+  <div class="dim-bar"><div class="dim-bar-fill" style="width:45%;background:var(--gate)"></div></div>
+</div>
+</div>
+
+<div class="path-item veto">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type veto">一票否决</span>
+    <div class="path-name">环评缺失</div>
+    <div class="path-detail">养殖项目无环评 = 合规硬伤（复产即关停风险），否决</div>
+    <div class='path-impact'>直接淘汰</div>
+  </div>
+</div>
+
+<div class="path-item gate">
+  <div class="path-rank"></div>
+  <div class="path-content">
+    <span class="path-type gate">五闸爆雷</span>
+    <div class="path-name">现金跑道</div>
+    <div class="path-detail">现金跑道 = 5，触发红线（lt 18）。①④研发周期长，红线放宽至24月</div>
+    <div class='path-impact'>相关维度封顶50分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">1</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">财务质量</div>
+    <div class="path-detail">维度得分 55 × 权重20% → 贡献 11.0 分</div>
+    <div class='path-impact'>距满分还可提回 9.0 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">2</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">头均经济性</div>
+    <div class="path-detail">维度得分 45 × 权重15% → 贡献 6.8 分</div>
+    <div class='path-impact'>距满分还可提回 8.2 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">3</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">成长性</div>
+    <div class="path-detail">维度得分 30 × 权重15% → 贡献 4.5 分</div>
+    <div class='path-impact'>距满分还可提回 10.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">4</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">政策与合规风险</div>
+    <div class="path-detail">维度得分 45 × 权重10% → 贡献 4.5 分</div>
+    <div class='path-impact'>距满分还可提回 5.5 分</div>
+  </div>
+</div>
+
+<div class="path-item score">
+  <div class="path-rank">5</div>
+  <div class="path-content">
+    <span class="path-type score">得分贡献</span>
+    <div class="path-name">产能与项目质量</div>
+    <div class="path-detail">维度得分 10 × 权重25% → 贡献 2.5 分</div>
+    <div class='path-impact'>距满分还可提回 22.5 分</div>
+  </div>
+</div>
+
+<div class="cf-box">
+  <div class="cf-label">反事实分析 · 翻档边界</div>
+  <div class="cf-text">总分距「需深挖」档较远，建议优先解决否决项/爆雷项后重新评估</div>
+</div>
+
+<h3>维度贡献度（按贡献排序）</h3>
+<div class="bar-chart">
+
+<div class="bar-row">
+  <div class="bar-label">财务质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">头均经济性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">成长性</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">政策与合规风险</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+<div class="bar-row">
+  <div class="bar-label">产能与项目质量</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:0%;background:var(--score)"
+         title="贡献 0.0分，距满分+0.0"></div>
+  </div>
+  <div class="bar-value">0.0分</div>
+</div>
+</div>
+</div>
+
+<footer>
+  智慧农业生态 · 决策路径可视化报告 · M16-B2 · 由 bp_screen 评分引擎自动生成
+</footer>
+</body>
+</html>

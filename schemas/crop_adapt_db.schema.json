@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/lm203688/smart-agri-eco/main/schemas/crop_adapt_db.schema.json",
+  "title": "Crop Adaptation Database Schema",
+  "description": "作物适应库数据契约。定义 zones.{zone_id}.crops[] 的字段结构与取值范围。152 份配方的分区→作物映射来源，任何结构改动必须同步刷 crop_adapt_db.json + env_recipes/ + local_search。",
+  "type": "object",
+  "required": ["meta", "zones"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "元数据（schema 版本、生成时间、来源等）",
+      "additionalProperties": true,
+      "properties": {
+        "schema_version": {"type": "string"},
+        "generated_at": {"type": "string"},
+        "sources": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "zones": {
+      "type": "object",
+      "description": "分区字典（zone_id → zone 定义）",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["zone_name", "crops"],
+        "additionalProperties": true,
+        "properties": {
+          "zone_name": {
+            "type": "string",
+            "description": "分区中文名，如 '热带雨林'"
+          },
+          "crops": {
+            "type": "array",
+            "description": "该分区下适配的作物清单",
+            "items": {"$ref": "#/$defs/crop"}
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "crop": {
+      "type": "object",
+      "description": "作物条目：作物名 + 学名 + 科 + 适应度 + 生长周期 + 环境参数 + 适配场景 + 溯源",
+      "required": ["crop", "adapt_score"],
+      "additionalProperties": true,
+      "properties": {
+        "crop": {
+          "type": "string",
+          "description": "作物中文名，如 '番茄'"
+        },
+        "latin": {
+          "type": "string",
+          "description": "作物学名（斜体拉丁名），如 'Solanum lycopersicum'"
+        },
+        "family": {
+          "type": "string",
+          "description": "作物科名，如 '茄科'"
+        },
+        "adapt_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "适应度分数 0-1（1=完美适配）"
+        },
+        "growth_days": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "生长周期天数"
+        },
+        "temp_range_c": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"type": "number"},
+          "description": "适宜温度范围 [min, max]（摄氏度）"
+        },
+        "ph_range": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"type": "number"},
+          "description": "适宜 pH 范围 [min, max]"
+        },
+        "water_ml_day": {
+          "type": "number",
+          "minimum": 0,
+          "description": "日均需水量（毫升）"
+        },
+        "suitable_scenes": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "适配场景，如 ['garden', 'balcony', 'indoor_cabinet']"
+        },
+        "light_hours_day": {
+          "type": "number",
+          "minimum": 0,
+          "description": "日均光照需求（小时）"
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["easy", "medium", "hard"],
+          "description": "种植难度分级"
+        },
+        "notes": {
+          "type": "string",
+          "description": "备注（如特殊注意事项）"
+        }
+      }
+    }
+  }
+}
