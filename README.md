@@ -39,19 +39,22 @@ python scripts/check_distribution_readiness.py
 一次性验证 10 类分发入口：MCP server / A2A Card / Agent Plugin / Smithery / 官方 Registry /
 MCPB 包 / CI workflow / Demo 部署 / 市场材料 / GitHub 同步。
 
-CI：28 步 × Python 3.10/3.11/3.12 全绿 · 单测 614 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（393 文件差异 0）· Skill 注册表 11/11 一致 · **AgriRecipeBench 5/5 通过**（M1 目标预测 3/3 + M2 状态滚动 2/2）。
+CI：41 步 × Python 3.10/3.11/3.12 全绿 · 单测 956 OK · Demo 端点 14/14 · MCPB 构建确定性可复现 · GitHub 本地=远端（差异 0）· Skill 注册表 11/11 一致 · **AgriRecipeBench 69/69 通过**（四轴齐全：M1 目标预测 25 + M2 状态滚动 21 + M3 反事实响应 17 + M4 跨情境泛化 6，覆盖 8 分区 × 主要作物 × 边界条件）。
 
-**🏆 AgriRecipeBench**（[`benchmarks/agri_recipe_bench/`](benchmarks/agri_recipe_bench/)）——Env Recipe 环境配方的**可复现评测基准**，独立于功能回归测试：
+**🏆 AgriRecipeBench**（[`benchmarks/agri_recipe_bench/`](benchmarks/agri_recipe_bench/)）——Env Recipe 环境配方的**可复现评测基准**，独立于功能回归测试。M15-B1 把用例从 11 扩到 69（四轴全部达标、覆盖 8 分区、含负例与退化检测）：
 
 ```bash
 python benchmarks/agri_recipe_bench/run_bench.py                # 跑全部
 python benchmarks/agri_recipe_bench/run_bench.py --axis target_prediction --strict
 python benchmarks/agri_recipe_bench/run_bench.py --case case_luobo_mediterranean --json
+python scripts/expand_bench_cases.py                            # 幂等生成器（重新生成新用例）
 ```
 
-- **M1 target_prediction**：预测值 vs 公开农艺基准（单株产量 / 采收期），3 个种子用例
-- **M2 state_rolling**：数学边界（周期≥1 / harvest≥start / yield>0），2 个种子用例
-- 挂钩：SNWM 神农世界模型四轴协议裁剪，详见 [`benchmarks/agri_recipe_bench/docs/PROTOCOL.md`](benchmarks/agri_recipe_bench/docs/PROTOCOL.md)
+- **M1 target_prediction**（25 用例）：预测值 vs 公开农艺基准，覆盖 8 分区 × 主要作物
+- **M2 state_rolling**（21 用例）：数学边界（周期≥1 / harvest≥start / yield>0），含 adapt_score=0 / 冬季播种 / 超短周期 / 无 recipe 等 5 类边界场景
+- **M3 counterfactual**（17 用例）：6 种扰动类型（adapt_score / growth_cycle / env_recipe_temperature / env_recipe_light / zone_climate / 组合扰动）——反事实机制内核直接证据
+- **M4 generalization**（6 用例）：5 作物跨分区泛化，含退化实现检测（不同分区产量完全相同即失败）
+- 挂钩：SNWM 神农世界模型四轴协议完整版，详见 [`benchmarks/agri_recipe_bench/docs/PROTOCOL.md`](benchmarks/agri_recipe_bench/docs/PROTOCOL.md)
 
 ---
 
@@ -133,7 +136,7 @@ from agent.orchestration_audit import check_cross_agent_consistency
 | 能力 | 实现 | 用途 |
 |---|---|---|
 | **公共复算 CLI** | `python scripts/verify_trust_mark.py <mode>` | 4 种验证模式：`current`（导出）/ `check-prefix`（结构完整性）/ `from-mark`（端到端）/ `from-certificate`（内容一致性 + 可选 `--verify-artifacts` 磁盘哈希） |
-| **MCP 工具** | `agri_verify_trust`（第 19 个工具） | 让 MCP 客户端不必跑核心引擎也能独立验证 trust_mark |
+| **MCP 工具** | `agri_decision_path_report`（第 23 个工具，v2026-10-16 新增） | M16-B2 决策路径可视化报告：将 bp_screen 评分引擎的 decision_path 归因数据导出为结构化报告，供前端可视化或报告系统消费 |
 | **AgriTrust Verified 徽章** | `artifacts/agritrust_badge.svg` + `docs/agritrust_verified.md` | 徽章含 signature_prefix + verification_cmd，外部消费者一步到位复算 |
 
 ```bash
@@ -208,7 +211,7 @@ python scripts/verify_trust_mark.py from-certificate cert.json --verify-artifact
 |------|------|---------|-----------|
 | L6 | 运营生态 | 社区/城市合伙人/数据市场 | ⏸ **正式暂缓**（无实现） |
 | L5 | 消费服务 | 采摘即食/本地撮合/认证溯源 | ⏸ **正式暂缓**（仅溯源字段留位，无服务实现） |
-| L4 | 业务支撑 | 链路数据/鲜度中枢/损耗预测 | ⏸ **正式暂缓**（**仅 `data/linkage_protocol.schema.json` 一个 Schema，0 行实现**；此前标注"已落地"有误） |
+| L4 | 业务支撑 | 链路数据/鲜度中枢/损耗预测 | ⏸ **正式暂缓**（**仅 `schemas/linkage_protocol.schema.json` 一个 Schema，0 行实现**；此前标注"已落地"有误） |
 | L3 | 执行控制 | 水肥一体化/环境调控/执行补偿 | ✅ 已落地（NutritionAgent 水肥 + **ControlAgent** L3：生长计划→硬件无关 actuator 指令 + 车载/开放环境/设备故障执行补偿）。**缺口**：`execution_log` 0 条，闭环未真实验证；`needs_gateway` 网关未实现 |
 | L2 | 模型 AI | 生长模型/病虫害/决策引擎/世界模型 | 🟡 部分落地（**ForecastAgent** L2：采收期/产量/风险预测，诚实标注 `model=heuristic` + WOFOST 物候 + 病虫害规则诊断）。**缺口**：世界模型未做；`eval_pest_diagnosis_topk` / `eval_recipe_expert_adoption` 两项核心 eval pending |
 | L1 | 感知层 | 传感器/摄像头/边缘AI | 🟡 最弱环节（`agent/vision.py` **63 行**可插拔后端，未配置即规则降级）。**注意**：PlantVillage **无 license**（原仓库无 LICENSE 文件），不可商用；合规替代为 PlantDoc (CC BY 4.0)。传感接入协议 0 行代码 |
@@ -235,9 +238,9 @@ python scripts/verify_trust_mark.py from-certificate cert.json --verify-artifact
 | 数据扩展脚本 | `scripts/enrich_crop_data.py` | 每气候带补充适生作物至 ≥18 种 |
 | 端到端验证 | `scripts/verify_all.py` | 多城市 pipeline + Trust 证书 PASS/FAIL |
 | Skill 自动生成 | `engine/skill_factory.py` | 新作物/能力点 → 自动生成符合 Schema 的 Skill |
-| 单元测试 | `scripts/test_*.py` 系列 | **700+ 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + ForecastAgent(L2) + ControlAgent(L3) + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + Env Recipe 契约 + 数据完整性守卫 + MCP 19 工具 + A2A Card + Skills Registry 11 项一致 + 编排层可审计性 29 项 + 可信标记公共复算 API 34 项 |
-| MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **19 个** agri 工具（分区匹配/作物推荐/种植计划/病虫害诊断/养分管理/Env Recipe 配方/物候播期/土壤剖面/BP 投资初筛/多源气候调和/地理编码→配方/数据血缘查询/预设城市/生态对接清单 + **知识检索 agri_search + 知识图谱 agri_knowledge_query**（M12-K1 接入）+ **可信标记公共复算 agri_verify_trust**（M11-T1 产品化））；协议版本 **2026-07-28（无状态）**，兼容 2025-06-18 / 2024-11-05；已适配 SEP-2575（免握手）/ SEP-2567（无 session）/ SEP-2243（`Mcp-Method`）/ SEP-2549（`ttlMs` 缓存）/ SEP-414（W3C traceparent）；注册与投递见 `mcp/README.md` |
-| A2A Agent Card | `.well-known/agent.json` | A2A v1.0 标准发现入口：声明 14 个 skill（与 MCP 工具一一对应）、`securitySchemes={}`、输入输出模式与许可红线（NC 来源不得转售）；校验 `scripts/check_agent_card.py` |
+| 单元测试 | `scripts/test_*.py` 系列 | **700+ 项** unittest（零依赖），覆盖四 Agent + PestAgent + NutritionAgent + SeasonAgent + SoilProfile + ForecastAgent(L2) + ControlAgent(L3) + Orchestrator 统一路由 + 视觉后端降级 + Trust + flywheel + Env Recipe 契约 + 数据完整性守卫 + MCP 23 工具 + A2A Card + Skills Registry 11 项一致 + 编排层可审计性 29 项 + 可信标记公共复算 API 34 项 |
+| MCP server（Agent-native 分发） | `mcp/` | 零依赖 JSON-RPC over stdio，暴露 **23 个** agri 工具（分区匹配/作物推荐/种植计划/病虫害诊断/养分管理/Env Recipe 配方/物候播期/土壤剖面/BP 投资初筛/多源气候调和/地理编码→配方/数据血缘查询/预设城市/生态对接清单 + **知识检索 agri_search + 知识图谱 agri_knowledge_query**（M12-K1 接入）+ **可信标记公共复算 agri_verify_trust**（M11-T1 产品化）+ **Server Card agri_server_card**（M13-P3 ETags 缓存）+ **决策路径报告 agri_decision_path_report**（M16-B2 可视化导出））；协议版本 **2026-07-28（无状态）**，兼容 2025-06-18 / 2024-11-05；已适配 SEP-2575（免握手）/ SEP-2567（无 session）/ SEP-2243（`Mcp-Method`）/ SEP-2549（`ttlMs` 缓存）/ SEP-414（W3C traceparent）；注册与投递见 `mcp/README.md` |
+| A2A Agent Card | `.well-known/agent.json` | A2A v1.0 标准发现入口：声明 23 个 tool（对应 MCP 工具）+ 11 个 skill（对应 `skills/registry/`），`securitySchemes={}`、输入输出模式与许可红线（NC 来源不得转售）；由 `scripts/gen_agent_card.py` 程序化生成；校验 `scripts/check_agent_card.py` |
 | Agent Plugins 打包 | `plugin/` | Agent Plugins 1.0.0 标准：`plugin.json` + `mcp.json` + `skills/<id>/SKILL.md` × 11（含 Anthropic Agent Skills YAML frontmatter）；**由注册表生成，禁止手改**，`scripts/build_agent_plugin.py` 为唯一入口，CI 用 `--check` 防漂移 |
 | Env Recipe 协议 | `schemas/env_recipe.schema.json` + `docs/env_recipe_protocol_v1.md` | 配置协议 v1：作物×阶段×箱体 → 可执行环境参数；day-1 留位 `execution_log`/`outcome`/`image_consent` 独占数据字段；校验 `scripts/validate_env_recipe.py` |
 | AI 评测基线 | `engine/eval.py` + `scripts/run_eval.py` | P0-H：分区分类一致率（真实基线）+ 4 个脚手架项（绝不谎报）；评测集 `data/eval/zone_checks.json` |
@@ -249,7 +252,7 @@ python scripts/verify_trust_mark.py from-certificate cert.json --verify-artifact
 | 物候/播期层 | `agent/phenology.py` + `agent/plant_calendar.py` + `agent/season_agent.py` | WOFOST 积温物候（7 作物，EUPL 1.2 署名）+ 霜冻锚定播期窗口；技能 `season_advisory` |
 | L3 执行控制 Agent | `agent/control_agent.py` | 生长计划 → 硬件无关 actuator intents（灌溉/施肥/补光/气候/CO₂/风机）+ `needs_gateway` 网关标记 + 车载颠簸/开放环境/设备故障执行补偿；技能 `control_commands` |
 | L2 预测 Agent | `agent/forecast_agent.py` | 采收期（GDD-lite 积温）/ 产量（基准×气候×适配×光照）/ 风险（霜冻/高温/计划）预测，诚实标注 `model=heuristic`、未知作物安全回退；技能 `harvest_forecast` |
-| L4 链路数据协议 | `data/linkage_protocol.schema.json` | 开源标准链路数据（batch→product→7 环节三元组 + 鲜度/损耗/货架期模型），支撑 L5 认证溯源 |
+| L4 链路数据协议 | `schemas/linkage_protocol.schema.json` | 开源标准链路数据（batch→product→7 环节三元组 + 鲜度/损耗/货架期模型），支撑 L5 认证溯源 |
 | 土壤剖面（降级源） | `agent/soil_profile.py` | 在线 SoilGrids 优先 → 离线分区均值降级；`resolution=zone` / `confidence=low`，不虚构指标 |
 | 文档死链扫描 | `scripts/check_doc_links.py` | 全量 md 外链四态判定（ALIVE / DEAD_CONFIRMED / UNREACHABLE / UNPROBEABLE） |
 | 回流通路自检 | `scripts/check_feedback_loop.py` | 用 `AGRI_FEEDBACK_LOG` 隔离，13 项验证 record → calibrate → report 全链路，零污染真实数据 |
@@ -293,7 +296,7 @@ for f in skills/registry/*.json; do python -c "import json; s=json.load(open('$f
 | 提升项 | 交付物 | 验证 |
 |---|---|---|
 | P0-G Env Recipe v1 协议 | `schemas/env_recipe.schema.json`（schema v1.1.0）+ `docs/env_recipe_protocol_v1.md` + `data/examples/sample_env_recipe.json` | `python scripts/validate_env_recipe.py data/env_recipes` |
-| P0-E/F 零依赖 MCP server | `mcp/server.py`（19 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
+| P0-E/F 零依赖 MCP server | `mcp/server.py`（23 工具）+ `mcp/README.md`（含外部投递模板，对标 aishield 上架 Glama/npm） | `python scripts/test_mcp_server.py` |
 | P0-H 评测基线 | `engine/eval.py` + `scripts/run_eval.py` + `data/eval/zone_checks.json` | `python scripts/run_eval.py` |
 
 **决策门**（评审 §3.5）：P0-F/G 若 3 个月内零外部调用 / 零社区响应 → 降级为个人知识库项目，停止对外投入。
@@ -308,7 +311,7 @@ for f in skills/registry/*.json; do python -c "import json; s=json.load(open('$f
 | 提升项 | 交付物 | 验证 |
 |---|---|---|
 | P0-1 MCP 2026-07-28 无状态适配 | `mcp/server.py`：免 initialize 握手（SEP-2575）、显式 `stateless`（SEP-2567）、`Mcp-Method`/`Mcp-Name` 头校验（SEP-2243，HTTP 形态生效）、`ttlMs`/`cacheScope` 缓存提示（SEP-2549）、W3C `traceparent` 透传与回写（SEP-414） | `python scripts/test_mcp_server.py` |
-| P0-2 A2A Agent Card | `.well-known/agent.json`（A2A v1.0）：14 skill 声明 + 输入输出模式 + 许可红线 | `python scripts/check_agent_card.py` |
+| P0-2 A2A Agent Card | `.well-known/agent.json`（A2A v1.0）：23 个 skill（对应 MCP 工具）+ 11 个 registry 定义 | `python scripts/check_agent_card.py` |
 | P0-3 Agent Plugins 打包 | `plugin/plugin.json` + `plugin/mcp.json` + `plugin/skills/*/SKILL.md` × 11 | `python scripts/build_agent_plugin.py --check` |
 | P0-7 消除硬编码密钥 | `agent/finance_agent.py` / `market_agent.py` 的 `secret_key` 占位随模块一并移出主链路 | `grep -rn "secret_key" --include=*.py .` = 0 命中 |
 
@@ -411,7 +414,7 @@ python scripts/gh_push.py <token临时文件> "<提交信息>" file1 file2 ...
 
 ### 4. 单元测试（零依赖）
 ```bash
-python -m unittest discover -s scripts -p "test_*.py" -v     # 556 项用例全过
+python -m unittest discover -s scripts -p "test_*.py" -v     # 836 项用例全过
 ```
 
 ### 4b. MCP / 协议 / 评测（v2.1 提升项）
@@ -450,7 +453,7 @@ python scripts/submit_feedback.py --zone subtropical_wet --crop 生菜 \
 
 执行内容（全部只读，禁改代码 / 禁 git / 禁推送）：
 
-1. **回归十八项（556 项单测 + MCP 自测）**：`test_engine_v4.py`（137 项）、`test_engine_v3.py`（43 项）、`test_engine_v2.py`（59 项）、`test_agents.py`（66 项）、`test_engine_v5.py`（94 项，BP 初筛引擎）、`test_climate_data.py`（19 项）、`test_climate_reconcile.py`（14 项）、`test_data_lineage.py`（25 项）、`test_geo_recipe.py`（7 项）、`test_audit_analyzer.py`（16 项）、`test_jev_gate.py`（15 项）、`test_jev_decision.py`（10 项）、`test_jev_attribution.py`（8 项）、`test_mcp_server.py`（14 工具）、`test_dist_readiness.py`（5 项）、`test_env_derived_v12.py`（8 项）、`test_source_provenance.py`（5 项）、`test_mcp_server_unit.py`（3 项）、`test_mcp_namespace.py`（4 项）、`verify_all.py`（5 城 PLACEHOLDER=0）、`diff_daily_loop.py --selftest`
+1. **回归十八项（836 项单测 + MCP 自测）**：`test_engine_v4.py`（137 项）、`test_engine_v3.py`（43 项）、`test_engine_v2.py`（59 项）、`test_agents.py`（66 项）、`test_engine_v5.py`（94 项，BP 初筛引擎）、`test_climate_data.py`（19 项）、`test_climate_reconcile.py`（14 项）、`test_data_lineage.py`（25 项）、`test_geo_recipe.py`（7 项）、`test_audit_analyzer.py`（16 项）、`test_jev_gate.py`（15 项）、`test_jev_decision.py`（10 项）、`test_jev_attribution.py`（8 项）、`test_mcp_server.py`（23 工具）、`test_dist_readiness.py`（5 项）、`test_env_derived_v12.py`（8 项）、`test_source_provenance.py`（5 项）、`test_mcp_server_unit.py`（3 项）、`test_mcp_namespace.py`（4 项）、`verify_all.py`（5 城 PLACEHOLDER=0）、`diff_daily_loop.py --selftest`
 2. **数据源存活探测**：GAEZ / WorldClim / SoilGrids(`rest.isric.org`) / PlantVillage / EPPO / GitHub 等 7 个外部源 —— 防止引用死数据源（Ecocrop / OpenFarm / @pondlog 三次教训）
 3. **回流通路健康检查**：跑 `check_feedback_loop.py`，**区分「通路故障（≠0 报警）」与「数据量缺口（=0 条、不报警）」**（JSON 字段 `snapshot.feedback_path` = ok/broken）
 4. **状态快照 + 跨日 diff**：feedback 条数 / recipes 数 / wofost 作物数；与昨日报告对比，零漂移即静默，漂移即暴露
@@ -462,3 +465,39 @@ python scripts/submit_feedback.py --zone subtropical_wet --crop 生菜 \
 ## 开源协议
 
 待确定。核心数据标准与协议倾向开源（抢生态话语权），应用层与决策引擎闭源（保利润）。
+
+<!-- GEN_TOOL_TABLE:BEGIN -->
+
+### MCP 工具全表（23 个）
+
+> 本表由 `scripts/gen_tool_table.py` 从 `mcp/server.py` 的 TOOLS 注册表**程序化生成**，禁止手写。工具总数 23。
+
+| # | 工具名 | 分类 | 一句话说明 | 必填参数 | 返回类型 |
+|---|---|---|---|---|---|
+| 1 | `agri_list_cities` | climate | 列出预设城市（经纬度 + 气候带），供 Agent 选点或核对分区。 | 无 | `[City]` JSON |
+| 2 | `agri_match_zone` | climate | 输入经纬度，返回气候分区匹配结果（含证据与限制因子）。 | `lat` — 纬度<br>`lon` — 经度 | `Zone Match` JSON |
+| 3 | `agri_recommend_crops` | crop | 根据分区（lat/lon 或 city）与偏好（用途/空间/难度）推荐作物。 | 见参数详情 | `JSON` |
+| 4 | `agri_growth_plan` | phenology | 作物 + 场景 + 分区 → 生成种植计划（含微气候修正）。 | `crop` — 作物名，如 番茄 | `Plan` JSON（阶段化） |
+| 5 | `agri_diagnose_pest` | pest | 病虫害与营养缺乏诊断：输入作物、症状描述（可选图像引用、生长阶段、环境）。 | `crop` | `JSON` |
+| 6 | `agri_nutrition_plan` | nutrition | 养分管理：作物 + 阶段 → 阶段化施肥方案。 | `crop` | `Plan` JSON（阶段化） |
+| 7 | `agri_env_recipe` | recipe | （P0-G）作物 + 生长阶段 + 设备类别 → 返回一份 Env Recipe v1 合规配方 JSON。 | 无 | `Env Recipe v1` JSON |
+| 8 | `agri_season_advisory` | meta | （B1+B2）物候与播期：mode=planting_window 时给 12 个月均温返回无霜期与各作物最早/最晚安全播种日；mode=stage_days 时给作物+日均温返回… | 见参数详情 | `JSON` |
+| 9 | `agri_soil_profile` | soil | （土壤降级路径）经纬度或分区 → 土壤剖面。优先查 ISRIC SoilGrids v2.0（在线点数据），不可用时降级为离线分区均值并明确标注 resolution=zone、c… | 见参数详情 | `SoilProfile` JSON |
+| 10 | `agri_bp_screen` | business | （投资初筛）农业项目投资初筛系统：传入 BP/审计/流水文本（text）或已抽取字段（fields），跑九层管线 → 六分类（种业/农机/数字农业/生物投入品/供应链/养殖）+ 五… | 见参数详情 | `BPScreenReport` JSON |
+| 11 | `agri_reconcile_climate` | climate | （多源气候校准）给定经纬度，并行拉 NASA POWER + Open-Meteo，逐月平均得调和月均温基线，并计算逐月一致度（多源标准差）与分歧月份告警（标准差超 3℃ 标记）。… | `lat` — 纬度<br>`lon` — 经度 | `Climate Reconcile` JSON |
+| 12 | `agri_resolve_recipe` | recipe | （地理编码→配方）城市名（中文/英文）或经纬度 → 匹配气候分区 → 检索该分区的 Env Recipe 清单。返回 zone_id / zone_name / 坐标 / 匹配配方… | 见参数详情 | `Env Recipe v1` JSON |
+| 13 | `agri_query_lineage` | meta | （数据血缘查询）按作物/分区查配方的数据溯源：外部 API 参与情况 + 本地权威文件 SHA256 指纹 + 校准实证（壁垒④）。传入 crop+zone_id 做单点追踪；仅 … | 见参数详情 | `Lineage` JSON |
+| 14 | `agri_list_ecosystem` | meta | （生态对接清单）返回智慧农业生态对接的开源/商业生态清单（config/ecosystem.json），含对接状态（integrated/partial/planned_mappi… | 见参数详情 | `[Ecosystem]` JSON |
+| 15 | `agri_search` | knowledge | （知识检索 M12-K1）跨 4 语料（crops/zones/pests/recipes，共 335 条）做词法+向量混合检索，底层是 stdlib-only 的 char n-… | `query` — 查询串（必填） | `SearchResult` JSON |
+| 16 | `agri_knowledge_query` | knowledge | （知识图谱查询 M12-K1）查 261 实体 / 446 边的农业知识图谱（engine/knowledge_graph.py）。支持 5 种 kind：summary=整体统计… | 见参数详情 | `KnowledgeGraph` JSON |
+| 17 | `agri_forecast` | forecast | （独立预测 M13-P1）产量/采收期预测，含 T-3 置信区间（P10/P50/P90）。底层与 agri_growth_plan 内的推荐部分同源（ForecastAgent）… | `crop` — 作物中文名（必填） | `Forecast` JSON（含 P10/P50/P90） |
+| 18 | `agri_recipe_profile` | recipe | （配方 profile 五件套 M8-R2 + M13-P2）152 份 Env Recipe 资产的浏览、检索、比对、导出、加载。支持 6 种 kind：list=列出所有配方元… | 见参数详情 | `Profile` JSON（多 mode） |
+| 19 | `agri_verify_trust` | meta | （可信标记公共复算 API M11-T1）外部独立验证 AgriTrust 可信标记 / 证书。支持 3 种 mode：current=返回当前信任标记（含 signature 与… | `mode` — 验证模式：current/check_prefi | `Verification` JSON（含 signature 校验） |
+| 20 | `agri_server_card` | meta | （Server Card + ETags M13-P3）返回 MCP 服务元数据卡（能力/分类/协议/URL 等），带稳定 ETag（sha256 前 16 hex）。客户端可缓存… | 见参数详情 | `ServerCard` JSON（含 ETag） |
+| 21 | `agri_decision_path_report` | bp_screen | （决策路径可视化报告 M16-B2）将 bp_screen 评分引擎的 decision_path 归因数据导出为可视化报告。返回结构化 JSON：每个案例含 verdict/de… | 见参数详情 | `DecisionPathReport` JSON |
+| 22 | `agri_counterfactual_trajectory` | counterfactual | （反事实轨迹 API · Phase N+1 #6）给定作物与基线动作序列，用 AgriWorld-Lite 机理内核（光截获 Beer-Lambert + CO2 同化 + Q1… | `crop` — 作物名，如 potato/番茄/生菜 | `Trajectory` JSON（数组 + CI） |
+| 23 | `agri_verify_recommendation` | verify | （Verify-as-a-Service · Phase N+3 #14 · 支柱五）作为「农业 Agent 的裁判」验证第三方（另一个 Agent、大模型、BP、农艺师）给出的农… | `claim` — 被验证主张，如 {crop, yield_g_m<br>`context` — 上下文，如 {dli_mj_m2_d, days | `Verdict` JSON（含 trust_mark） |
+
+> 每个工具的详细参数说明见 `mcp/README.md` 对应章节。
+
+<!-- GEN_TOOL_TABLE:END -->
