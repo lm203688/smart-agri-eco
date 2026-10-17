@@ -12,6 +12,7 @@ AgriOrchestrator - 四 Agent 串行 + 反馈闭环编排
 对标 SwarmLabs engine/flywheel.py 的 multi-agent 串行 + 主动学习反馈闭环
 """
 
+from core.clock import CLOCK
 from typing import Any, Dict, List, Optional
 
 from .climate_agent import ClimateAgent
@@ -204,6 +205,16 @@ def verify_pipeline_result(result: Dict[str, Any],
     }
 
 
+# ---------------------------------------------------------------------------
+# M10-O2 跨 Agent 一致性检查（差异化）
+#
+# 实际实现位于 agent/orchestration_audit.py，本模块仅 re-export：
+#   from .orchestration_audit import check_cross_agent_consistency
+#
+# 历史上本文件曾内联一版 3 规则实现，与 audit 模块的 5 规则版本重复；
+# 本地定义会遮蔽 import，导致 run_pipeline 里 2 参调用抛
+# "takes 1 positional argument but 2 were given"。此处统一走 audit 模块。
+# ---------------------------------------------------------------------------
 
 # 按需调用（反应式）技能：由 call_skill 直接路由到独立 Agent 的 run(payload)
 ONDEMAND_SKILLS = {
@@ -383,16 +394,16 @@ class AgriOrchestrator:
 
         # Step 1: 分区匹配
         trace = TraceRecord(user_request)
-        t0 = time.time()
+        t0 = CLOCK.time()
         lat, lon = user_request.get("lat", 0), user_request.get("lon", 0)
         zone_data = self.climate.match_zone(lat, lon)
-        t1 = time.time()
+        t1 = CLOCK.time()
         trace.add_step("ClimateAgent", t0, t1,
                        _input_summary("ClimateAgent", {"lat": lat, "lon": lon}),
                        _output_summary("ClimateAgent", zone_data))
 
         # Step 2: 微气候修正
-        t0 = time.time()
+        t0 = CLOCK.time()
         micro = self.climate.microclimate_adjustment(
             {
                 "scene": user_request.get("scene", "balcony"),
@@ -401,12 +412,12 @@ class AgriOrchestrator:
                 "city": user_request.get("city", ""),
             }
         )
-        t1 = time.time()
+        t1 = CLOCK.time()
         trace.extra["microclimate_ms"] = round((t1 - t0) * 1000, 3)
         trace.extra["microclimate"] = {k: micro.get(k) for k in list((micro or {}).keys())[:6]}
 
         # Step 3: 作物推荐
-        t0 = time.time()
+        t0 = CLOCK.time()
         crop_input = {
             "zone_data": zone_data,
             "preferences": {
@@ -417,7 +428,7 @@ class AgriOrchestrator:
             },
         }
         crop_reco = self.crop.recommend(**crop_input)
-        t1 = time.time()
+        t1 = CLOCK.time()
         trace.add_step("CropAgent", t0, t1,
                        _input_summary("CropAgent", crop_input),
                        _output_summary("CropAgent", crop_reco))
@@ -425,7 +436,7 @@ class AgriOrchestrator:
         # Step 4: 种植计划（选第一个推荐作物，传入微气候与分区约束）
         growth_plan = {}
         top_crop = ""
-        t0 = time.time()
+        t0 = CLOCK.time()
         if crop_reco.get("recommendation"):
             top_crop = crop_reco["recommendation"][0].get("crop", "")
             growth_input = {
@@ -436,18 +447,18 @@ class AgriOrchestrator:
                 "microclimate": micro,
             }
             growth_plan = self.growth.generate_growth_plan(**growth_input)
-            t1 = time.time()
+            t1 = CLOCK.time()
             trace.add_step("GrowthAgent", t0, t1,
                            _input_summary("GrowthAgent", growth_input),
                            _output_summary("GrowthAgent", growth_plan))
         else:
-            t1 = time.time()
+            t1 = CLOCK.time()
             trace.add_step("GrowthAgent", t0, t1,
                            {"skipped": True, "reason": "CropAgent 无推荐作物"},
                            {"skipped": True}, status="skipped")
 
         # Step 5: 生态撮合
-        t0 = time.time()
+        t0 = CLOCK.time()
         eco_input = {
             "scene": user_request.get("scene", "balcony"),
             "crop": top_crop if crop_reco.get("recommendation") else "",
@@ -455,7 +466,7 @@ class AgriOrchestrator:
             "budget": user_request.get("budget_cny", 0),
         }
         devices = self.eco.recommend_device(**eco_input)
-        t1 = time.time()
+        t1 = CLOCK.time()
         trace.add_step("EcoAgent", t0, t1,
                        _input_summary("EcoAgent", eco_input),
                        _output_summary("EcoAgent", devices))

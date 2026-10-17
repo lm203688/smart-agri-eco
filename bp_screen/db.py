@@ -11,7 +11,11 @@
     sqlite3.OperationalError: no such table: cases。现在首次连接自动建表 + 灌种子案例，
     幂等，任何入口（MCP / Web / 单测）都能直接调。
 """
-import sqlite3, json, time, os
+import sqlite3
+import json
+import time
+import os
+import datetime
 
 _DB_DIR = os.path.join(os.path.dirname(__file__), "data")
 DB_PATH = os.environ.get("AGRI_BP_DB") or os.path.join(_DB_DIR, "cases.db")

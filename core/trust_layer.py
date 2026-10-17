@@ -17,6 +17,7 @@
 
 from __future__ import annotations
 
+from core.clock import CLOCK
 import hashlib
 import json
 import os
@@ -148,7 +149,7 @@ def issue_certificate(
                         留空则用当前时间（每次运行都会不同）。
     返回: 证书字典（含 signature）。
     """
-    ts = fixed_issued_at or datetime.datetime.now().isoformat(timespec="seconds")
+    ts = fixed_issued_at or CLOCK.now().isoformat(timespec="seconds")
     rid = run_id or f"agri-run-{ts}"
 
     zone_data = load_zone_meta()
@@ -297,7 +298,7 @@ def get_trust_mark() -> Dict[str, Any]:
             "cert_id": "UNAVAILABLE",
             "signature": None,
             "signature_prefix": None,
-            "issued_at": datetime.now().isoformat(timespec="seconds"),
+            "issued_at": CLOCK.now().isoformat(timespec="seconds"),
         "verification_cmd": "python scripts/verify_trust_mark.py from-mark <mark.json>",
         "status": "degraded",
             "degraded_reasons": degraded,

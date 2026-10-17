@@ -29,9 +29,153 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
+from agent.conformal import SplitConformal, relative_residue
+
 from agent.forecast_agent import ForecastAgent  # noqa: E402
+from core.clock import CLOCK  # noqa: E402
 
 CASES_DIR = os.path.join(HERE, "cases")
+HISTORY_PATH = os.path.join(HERE, "results_history.json")
+LEADERBOARD_PATH = os.path.join(HERE, "leaderboard.html")
+
+
+def _record_to_leaderboard(summary: Dict[str, Any],
+                          results: List[Dict[str, Any]],
+                          args) -> None:
+    """M15-B3 leaderboard：每次 run_bench 后追加一行到 results_history.json 并渲染 leaderboard.html。
+
+    设计要点（诚实性优先）：
+      1. **每次运行都记**——无论通过与否。"不允许退步"必须可视化。
+      2. **保留失败记录**——即使 pass_rate < 1.0 也入库，让"被棘轮拒绝的退步"可查。
+      3. **零依赖 HTML**——纯字符串模板，无 CDN、无第三方 JS，本地可打开。
+      4. **不删历史**——只追加，形成单调递增的时间序列。
+    """
+    import subprocess as _sp
+    commit = ""
+    try:
+        commit = _sp.check_output(["git", "rev-parse", "--short", "HEAD"],
+                                  cwd=ROOT, stderr=_sp.DEVNULL).decode().strip()
+    except Exception:  # noqa: BLE001
+        pass
+
+    entry = {
+        "timestamp": summary.get("generated_at"),
+        "commit": commit or "unknown",
+        "total": summary.get("total"),
+        "passed": summary.get("passed"),
+        "failed": summary.get("failed"),
+        "pass_rate": summary.get("pass_rate"),
+        "by_axis": summary.get("by_axis", {}),
+        "conformal_coverage": (summary.get("conformal_coverage", {}) or {}).get("coverage"),
+        "conformal_guarantee": (summary.get("conformal_coverage", {}) or {}).get("coverage_guarantee"),
+        "axis": args.axis if args.axis != "all" else "all",
+        "case": args.case or "all",
+        "failed_cases": [r.get("case_id") for r in results if not r.get("ok")],
+    }
+
+    # 1) 追加到 results_history.json
+    history: List[Dict[str, Any]] = []
+    if os.path.exists(HISTORY_PATH):
+        try:
+            with open(HISTORY_PATH, "r", encoding="utf-8") as f:
+                history = json.load(f)
+            if not isinstance(history, list):
+                history = []
+        except Exception:  # noqa: BLE001
+            history = []
+    history.append(entry)
+    with open(HISTORY_PATH, "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=2)
+
+    # 2) 渲染 leaderboard.html（最近 50 条，倒序）
+    _render_leaderboard_html(history[-50:][::-1])
+
+
+def _render_leaderboard_html(entries: List[Dict[str, Any]]) -> None:
+    """零依赖 HTML 渲染：把 leaderboard 记录渲成静态页（倒序，最新在上）。"""
+    if not entries:
+        return
+    total_rows = len(entries)
+    peak_rate = max(e.get("pass_rate", 0) for e in entries)
+    latest = entries[0]
+
+    rows = []
+    for i, e in enumerate(entries):
+        rate = e.get("pass_rate", 0) or 0
+        bar_width = int(rate * 100)
+        color = "#4ade80" if rate >= 1.0 else ("#fbbf24" if rate >= 0.7 else "#f87171")
+        failed_str = ", ".join(e.get("failed_cases", []))[:120] if e.get("failed_cases") else "—"
+        cov = e.get("conformal_coverage")
+        cov_str = f"{cov*100:.1f}%" if cov is not None else "—"
+        rows.append(
+            f'<tr>'
+            f'<td>{total_rows - i}</td>'
+            f'<td>{e.get("timestamp", "")}</td>'
+            f'<td><code>{e.get("commit", "")}</code></td>'
+            f'<td>{e.get("passed", 0)}/{e.get("total", 0)}</td>'
+            f'<td>'
+            f'<div style="background:#1e293b;border-radius:4px;height:14px;overflow:hidden">'
+            f'<div style="background:{color};width:{bar_width}%;height:100%"></div>'
+            f'</div>'
+            f'<span style="font-size:0.85em;color:{color}">{rate*100:.1f}%</span>'
+            f'</td>'
+            f'<td>{cov_str}</td>'
+            f'<td style="max-width:280px;font-size:0.8em;color:#94a3b8">{failed_str}</td>'
+            f'</tr>'
+        )
+
+    html = f'''<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>AgriRecipeBench · Leaderboard</title>
+<style>
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+          background:#0f172a; color:#e2e8f0; padding:32px; }}
+  h1 {{ font-size:1.6em; margin-bottom:8px; }}
+  .subtitle {{ color:#94a3b8; margin-bottom:24px; font-size:0.95em; }}
+  .stats {{ display:flex; gap:24px; margin-bottom:24px; flex-wrap:wrap; }}
+  .stat {{ background:#1e293b; padding:16px 24px; border-radius:8px; min-width:180px; }}
+  .stat .num {{ font-size:2em; font-weight:700; color:#4ade80; }}
+  .stat .lbl {{ font-size:0.85em; color:#94a3b8; margin-top:4px; }}
+  table {{ width:100%; border-collapse:collapse; font-size:0.9em;
+           background:#1e293b; border-radius:8px; overflow:hidden; }}
+  th, td {{ padding:10px 12px; text-align:left; border-bottom:1px solid #334155; }}
+  th {{ background:#334155; font-weight:600; color:#f1f5f9; }}
+  tr:hover {{ background:#253048; }}
+  code {{ background:#0f172a; padding:2px 6px; border-radius:3px; font-size:0.85em; }}
+  footer {{ margin-top:24px; color:#64748b; font-size:0.85em; text-align:center; }}
+</style>
+</head>
+<body>
+<h1>AgriRecipeBench · 历史分数曲线</h1>
+<div class="subtitle">SNWM 四轴协议裁剪 · 零依赖 · 公开可复现 · 每次运行自动入库（含被棘轮拒绝的退步）</div>
+
+<div class="stats">
+  <div class="stat"><div class="num">{latest.get("pass_rate", 0)*100:.1f}%</div><div class="lbl">最新通过率</div></div>
+  <div class="stat"><div class="num">{peak_rate*100:.1f}%</div><div class="lbl">历史峰值</div></div>
+  <div class="stat"><div class="num">{len(entries)}</div><div class="lbl">历史记录</div></div>
+  <div class="stat"><div class="num">{latest.get("total", 0)}</div><div class="lbl">当前用例数</div></div>
+  <div class="stat"><div class="num">{latest.get("conformal_coverage", 0)*100:.1f}%</div><div class="lbl">保形覆盖率 (M15-B4)</div></div>
+</div>
+
+<table>
+<thead><tr><th>#</th><th>时间</th><th>commit</th><th>通过</th><th>通过率</th><th>保形覆盖率</th><th>失败用例</th></tr></thead>
+<tbody>
+{"".join(rows)}
+</tbody>
+</table>
+
+<footer>
+生成于 {latest.get("timestamp", "")} · commit {latest.get("commit", "unknown")} · 
+数据源: results_history.json · 判定依据: benchmarks/agri_recipe_bench/
+</footer>
+</body>
+</html>
+'''
+    with open(LEADERBOARD_PATH, "w", encoding="utf-8") as f:
+        f.write(html)
 
 
 # ---------- Env Recipe 加载 ----------
@@ -408,6 +552,92 @@ AXIS_RUNNERS = {
 }
 
 
+# ---------- M15-B4 保形覆盖率指标 ----------
+
+def _compute_conformal_coverage(results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """M15-B4：跨 target_prediction 用例计算 Split Conformal 覆盖率。
+
+    方法：
+      1. 收集所有 target_prediction 用例的 (pred, expected) 对
+      2. 用全部对构建 SplitConformal 校准器（full calibration）
+      3. 对每个用例，检查 expected 是否落在 conformal 区间 [pred*(1-q), pred*(1+q)] 内
+      4. 覆盖率 = 被区间覆盖的用例数 / 总用例数
+
+    诚实边界：
+      - full calibration 略乐观（测试点也在校准集中），G2 接入真实回流后
+        可用 holdout 或 sliding window 提升严谨性
+      - n<20 时 q 保守（偏宽），覆盖率可能高于 1-α
+    """
+    tp_results = [r for r in results if r.get("axis") == "target_prediction" and r.get("ok")]
+    if not tp_results:
+        return {"enabled": False, "reason": "无 target_prediction 用例", "coverage": None}
+
+    # 收集 (pred, expected) 对
+    pairs: List[Tuple[float, float]] = []
+    case_details: List[Dict[str, Any]] = []
+    for r in tp_results:
+        checks = r.get("checks") or {}
+        for metric, spec in checks.items():
+            if not isinstance(spec, dict):
+                continue
+            pred = spec.get("pred")
+            expected = spec.get("expected")
+            if pred is None or expected is None:
+                continue
+            try:
+                p, e = float(pred), float(expected)
+            except (TypeError, ValueError):
+                continue
+            pairs.append((p, e))
+            case_details.append({
+                "case_id": r.get("case_id"),
+                "metric": metric,
+                "pred": p,
+                "expected": e,
+                "residue": relative_residue(p, e),
+            })
+
+    if not pairs:
+        return {"enabled": False, "reason": "无有效 (pred, expected) 对", "coverage": None}
+
+    # 构建校准器
+    calibrator = SplitConformal(
+        calibration_scores=[relative_residue(p, e) for p, e in pairs],
+        alpha=0.10,  # 90% 覆盖率
+    )
+    q = calibrator.quantile()
+
+    # 计算覆盖率
+    covered = 0
+    for d in case_details:
+        pred, expected = d["pred"], d["expected"]
+        if q is None:
+            d["covered"] = False
+            continue
+        lower = pred * (1.0 - q)
+        upper = pred * (1.0 + q)
+        is_covered = lower <= expected <= upper
+        d["covered"] = is_covered
+        if is_covered:
+            covered += 1
+
+    coverage = covered / len(case_details) if case_details else 0.0
+
+    return {
+        "enabled": True,
+        "method": "split_conformal",
+        "alpha": 0.10,
+        "coverage_guarantee": round(calibrator.coverage_guarantee(), 4),
+        "calibration_n": calibrator.n,
+        "quantile_q": round(q, 4) if q is not None else None,
+        "total_metrics": len(case_details),
+        "covered": covered,
+        "coverage": round(coverage, 4),
+        "above_guarantee": coverage >= calibrator.coverage_guarantee(),
+        "details": case_details,
+    }
+
+
 # ---------- 主流程 ----------
 
 def run_case(case: Dict[str, Any]) -> Dict[str, Any]:
@@ -439,7 +669,7 @@ def summarize(results: List[Dict[str, Any]]) -> Dict[str, Any]:
         "pass_rate": round(passed / total, 3) if total else 0.0,
         "by_axis": {a: dict(v, pass_rate=round(v["passed"] / v["total"], 3) if v["total"] else 0)
                     for a, v in sorted(by_axis.items())},
-        "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "generated_at": CLOCK.now().isoformat(timespec="seconds"),
     }
 
 
@@ -477,6 +707,19 @@ def main(argv: List[str]) -> int:
 
     summary = summarize(results)
 
+    # M15-B4 保形覆盖率：跨 target_prediction 用例计算 conformal coverage
+    try:
+        summary["conformal_coverage"] = _compute_conformal_coverage(results)
+    except Exception as e:  # noqa: BLE001
+        summary["conformal_coverage"] = {"enabled": False, "error": str(e)}
+
+    # M15-B3 公开 leaderboard：把本次结果追加到 results_history.json（含被棘轮拒绝的退步）
+    # 与 leaderboard.html，让"不允许退步"可视化。写入失败不阻塞 benchmark 主流程。
+    try:
+        _record_to_leaderboard(summary, results, args)
+    except Exception as e:  # noqa: BLE001
+        print(f"⚠️ leaderboard 写入失败（不影响 bench 主流程）: {e}", file=sys.stderr)
+
     if args.json:
         print(json.dumps({"summary": summary, "results": results},
                          ensure_ascii=False, indent=2, default=str))
@@ -497,6 +740,17 @@ def main(argv: List[str]) -> int:
               f"(pass_rate={summary['pass_rate']})")
         for axis, v in summary["by_axis"].items():
             print(f"  · {axis}: {v['passed']}/{v['total']} ({v['pass_rate']})")
+
+        # M15-B4 保形覆盖率
+        cc = summary.get("conformal_coverage", {})
+        if cc.get("enabled"):
+            cov = cc.get("coverage", 0)
+            guarantee = cc.get("coverage_guarantee", 0)
+            mark = "✅" if cc.get("above_guarantee") else "⚠️"
+            print(f"  · conformal_coverage: {mark} {cc['covered']}/{cc['total_metrics']} "
+                  f"(coverage={cov:.1%} guarantee≥{guarantee:.1%} q={cc.get('quantile_q')})")
+        elif cc.get("reason"):
+            print(f"  · conformal_coverage: ⏭ {cc['reason']}")
 
     if summary["failed"] and args.strict:
         return 1

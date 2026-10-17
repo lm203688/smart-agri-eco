@@ -249,7 +249,212 @@ def _canonical(obj: Any) -> str:
 # ---------------------------------------------------------------------------
 _HIT_MIN = 0.45                      # 命中阈值：低于此值视为「模糊归类」不算命中
 _ENV_KEYS = ("humidity", "humidity_pct", "temp", "temperature", "temp_c",
-             "ppfd", "light", "ec", "ph", "wind")
+             "ppfd", "light", "ec", "ph", "wind", "vpd", "vpd_kpa",
+             "leaf_wet_hours", "leaf_wet_h", "recent_rain_days")
+
+
+# ---------------------------------------------------------------------------
+# M6-D2 环境耦合诊断（差异化核心）
+#
+# 纯视觉竞品（Plantix 等）没有环境上下文，本项目独有：把当前观测到的温湿度 /
+# VPD / 叶面湿润时长纳入诊断评分，让"同一症状在不同环境下给出不同概率排序"。
+# 这是本项目对纯视觉竞品的唯一结构性优势，报告 §M6-D2 判定为优先项。
+#
+# 方法：每条病原按"环境触发条件"给出一个乘子（[0.5, 1.5]）作用到基础评分上。
+# 乘子来自公开的病虫害气象触发知识（如灰霉病偏爱高湿+中等温，白粉病偏爱干燥+
+# 凉爽，锈病偏爱高湿+凉爽）。乘子仅影响**排序**，不影响 evidence_gate 的
+# 零误报门槛（后者仍要求 >= 2 项独立环境观测）——两条纪律互不冲突。
+# ---------------------------------------------------------------------------
+
+def _compute_vpd(temp_c: float, rh_pct: float) -> Optional[float]:
+    """VPD (kPa) = e_s * (1 - RH/100)，e_s 由 Magnus 近似给出。
+
+    温度 < -40 或 RH 越界时返回 None；不编造数字。
+    """
+    if not isinstance(temp_c, (int, float)) or not isinstance(rh_pct, (int, float)):
+        return None
+    if rh_pct < 0 or rh_pct > 100 or temp_c < -40 or temp_c > 60:
+        return None
+    a, b = 17.27, 237.7
+    # Magnus 公式用自然指数 exp()（不是 10^），e_s 单位 kPa
+    e_s = 0.6108 * __import__("math").exp((a * temp_c) / (b + temp_c))
+    return e_s * (1.0 - rh_pct / 100.0)
+
+
+def _apply_environment_coupling(candidates: List[str],
+                                scored: List[tuple],
+                                environment: Optional[Dict[str, Any]]
+                                ) -> Dict[str, Any]:
+    """按环境触发条件调整候选病原的相对评分，返回：
+      - adjusted_scored: [(score', risk, rcat, kb), ...]（原样按分降序）
+      - env_detail:      {risk: {base_score, multiplier, adjusted_score, triggers_hit}}
+      - env_profile:     实际观测到并生效的环境变量汇总
+
+    乘子映射（每条病原类别 → 触发条件 → 触发后乘子）：
+      灰霉病/炭疽病/疫病类：高湿(RH>=75) 或 高 VPD 反面(低 VPD<=0.5 kPa) 或 叶面湿润≥4h
+      白粉病：干燥(RH<=55) 且 中等温(15-25℃)
+      锈病：高湿 且 低温(<20℃)
+      蓟马/螨：低湿(RH<=50) 且 高温(>28℃)
+      蚜虫：低温(<15℃) 或 高温(>32℃)
+      营养缺乏（钙/硼）：高 EC(>3.0 mS) 或 pH 偏差
+
+    只有环境被真实观测（>= 2 项有效数值）时才应用乘子，否则保持基础评分不变。
+    """
+    env_detail: Dict[str, Dict[str, Any]] = {}
+    env_profile: Dict[str, Any] = {}
+
+    env_observed = _environment_observed(environment)
+    if not env_observed or environment is None:
+        # 环境不足以做耦合：直接返回原评分，乘子一律 1.0
+        for (_score, r, rcat, _kb) in scored:
+            env_detail[r] = {"base_score": round(_score, 3),
+                             "multiplier": 1.0,
+                             "adjusted_score": round(_score, 3),
+                             "triggers_hit": [], "env_available": False}
+        return {"adjusted_scored": list(scored), "env_detail": env_detail,
+                "env_profile": env_profile, "applied": False}
+
+    # 提取观测值
+    rh = None
+    for k in ("humidity_pct", "humidity", "relative_humidity"):
+        v = environment.get(k)
+        if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v:
+            rh = float(v)
+            break
+    tc = None
+    for k in ("temp_c", "temp", "temperature"):
+        v = environment.get(k)
+        if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v:
+            tc = float(v)
+            break
+    ec = environment.get("ec")
+    ph = environment.get("ph")
+    vpd = environment.get("vpd") or environment.get("vpd_kpa")
+    if isinstance(vpd, str):
+        try:
+            vpd = float(vpd)
+        except Exception:
+            vpd = None
+    if not isinstance(vpd, (int, float)) or vpd != vpd:
+        if tc is not None and rh is not None:
+            vpd = _compute_vpd(tc, rh)
+    lwh = environment.get("leaf_wet_hours") or environment.get("leaf_wet_h")
+
+    env_profile = {
+        "rh_pct": rh, "temp_c": tc, "vpd_kpa": round(vpd, 3) if vpd is not None else None,
+        "ec_ms": ec, "ph": ph, "leaf_wet_hours": lwh,
+        "observed": env_observed,
+    }
+
+    adjusted: List[tuple] = []
+    for (_score, r, rcat, kb) in scored:
+        # 病原名称/类别关键字
+        r_lower = r.lower()
+        name_key = r  # 中文名
+        mult = 1.0
+        triggers: List[str] = []
+
+        def _hit(desc: str, cond: bool):
+            nonlocal mult, triggers
+            if cond:
+                triggers.append(desc)
+                mult += 0.10   # 每命中一项触发 +10%
+
+        # --- 病害类 ---
+        if "灰霉" in name_key or "botrytis" in r_lower:
+            if rh is not None and rh >= 75:
+                _hit("RH≥75%（灰霉病喜湿）", True)
+            if vpd is not None and vpd <= 0.5:
+                _hit("VPD≤0.5 kPa（低蒸发）", True)
+            if lwh is not None and lwh >= 4:
+                _hit("叶面湿润≥4h", True)
+        elif "炭疽" in name_key or "anthracnose" in r_lower:
+            if rh is not None and rh >= 75:
+                _hit("RH≥75%（炭疽喜湿）", True)
+            if tc is not None and 20 <= tc <= 30:
+                _hit("温度 20-30℃（炭疽适宜）", True)
+        elif "疫病" in name_key or "晚疫病" in name_key or "phthiora" in r_lower or "late_blight" in r_lower:
+            if rh is not None and rh >= 80:
+                _hit("RH≥80%（疫病爆发性高湿）", True)
+            if tc is not None and 15 <= tc <= 25:
+                _hit("温度 15-25℃（疫病适宜）", True)
+            if lwh is not None and lwh >= 8:
+                _hit("叶面湿润≥8h（疫病窗口期）", True)
+        elif "白粉" in name_key or "powdery" in r_lower:
+            if rh is not None and rh <= 55:
+                _hit("RH≤55%（白粉病喜干燥）", True)
+            if tc is not None and 15 <= tc <= 25:
+                _hit("温度 15-25℃（白粉适宜）", True)
+        elif "锈" in name_key or "rust" in r_lower:
+            if rh is not None and rh >= 70:
+                _hit("RH≥70%（锈病喜湿）", True)
+            if tc is not None and tc <= 20:
+                _hit("温度≤20℃（锈病偏凉）", True)
+        elif "根腐" in name_key or "root_rot" in r_lower:
+            if rh is not None and rh >= 80:
+                _hit("RH≥80%（根腐喜湿）", True)
+            if lwh is not None and lwh >= 6:
+                _hit("叶面湿润≥6h（水分过度）", True)
+
+        # --- 虫害类 ---
+        elif "蓟马" in name_key or "thrips" in r_lower:
+            if rh is not None and rh <= 50:
+                _hit("RH≤50%（蓟马喜干燥）", True)
+            if tc is not None and tc >= 28:
+                _hit("温度≥28℃（蓟马喜温）", True)
+        elif "螨" in name_key or "mite" in r_lower or "spider" in r_lower:
+            if rh is not None and rh <= 40:
+                _hit("RH≤40%（红蜘蛛极喜干燥）", True)
+            if tc is not None and tc >= 30:
+                _hit("温度≥30℃（红蜘蛛喜高温）", True)
+        elif "蚜" in name_key or "aphid" in r_lower:
+            if tc is not None and tc <= 15:
+                _hit("温度≤15℃（蚜虫早春爆发）", True)
+            if tc is not None and tc >= 32:
+                _hit("温度≥32℃（蚜虫晚夏爆发）", True)
+        elif "粉虱" in name_key or "whitefly" in r_lower:
+            if tc is not None and tc >= 25:
+                _hit("温度≥25℃（粉虱喜温）", True)
+            if rh is not None and rh <= 60:
+                _hit("RH≤60%（粉虱偏干燥）", True)
+
+        # --- 营养缺乏类 ---
+        elif "缺钙" in name_key or "缺硼" in name_key or "缺钾" in name_key or "缺镁" in name_key:
+            if isinstance(ec, (int, float)) and ec > 3.0:
+                _hit("EC>3.0 mS（营养拮抗）", True)
+            if isinstance(ph, (int, float)) and (ph < 5.5 or ph > 7.0):
+                _hit("pH 偏离最优区间", True)
+        elif "缺氮" in name_key or "缺铁" in name_key:
+            if isinstance(ec, (int, float)) and ec < 1.0:
+                _hit("EC<1.0 mS（营养不足）", True)
+            if isinstance(ph, (int, float)) and ph < 5.5:
+                _hit("pH<5.5（酸性致铁缺乏）", True)
+
+        # --- 通用：VPD 极端 ---
+        if vpd is not None and vpd >= 1.8:
+            if rcat in ("disease", "nutrient"):
+                _hit("VPD≥1.8 kPa（蒸腾过强致胁迫）", True)
+                mult -= 0.10   # 高 VPD 抑制病原活性，但加剧营养胁迫
+
+        # 限制乘子在 [0.7, 1.5]
+        mult = max(0.7, min(1.5, round(mult, 3)))
+        new_score = _score * mult
+        adjusted.append((new_score, r, rcat, kb))
+        env_detail[r] = {
+            "base_score": round(_score, 3),
+            "multiplier": mult,
+            "adjusted_score": round(new_score, 3),
+            "triggers_hit": triggers,
+            "env_available": True,
+        }
+
+    adjusted.sort(key=lambda x: x[0], reverse=True)
+    return {
+        "adjusted_scored": adjusted,
+        "env_detail": env_detail,
+        "env_profile": env_profile,
+        "applied": True,
+    }
 
 
 def _environment_observed(environment: Optional[Dict[str, Any]]) -> bool:
@@ -410,6 +615,10 @@ def diagnose(
 
     scored.sort(key=lambda x: x[0], reverse=True)
 
+    # M6-D2 环境耦合：应用环境乘子，仅影响排序不影响门控
+    env_coupling = _apply_environment_coupling(candidates, scored, environment)
+    scored = env_coupling["adjusted_scored"]
+
     primary = None
     severity = "light"
     actions: List[str] = []
@@ -502,6 +711,13 @@ def diagnose(
                 "threshold": ">= 2 项有效数值（排除 NaN / bool）",
                 "values": {k: environment.get(k) for k in sorted((environment or {}))
                            if k in _ENV_KEYS},
+            },
+            "environment_coupling": {
+                "applied": env_coupling.get("applied", False),
+                "profile": env_coupling.get("env_profile", {}),
+                "per_candidate": env_coupling.get("env_detail", {}),
+                "method": "环境触发条件乘子 [0.7, 1.5]，仅影响排序不影响 evidence_gate 零误报门槛",
+                "note": "M6-D2 差异化核心：纯视觉竞品没有环境上下文，本项目可给出同一症状在不同环境下的不同排序",
             },
             "vision_note": vision_note,
             "knowledge_source": knowledge_source,

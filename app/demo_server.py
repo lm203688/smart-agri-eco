@@ -54,6 +54,7 @@ from agent.preset_cities import load_preset_cities  # noqa: E402
 from agent.pest_agent import PestAgent  # noqa: E402
 from agent.nutrition_agent import NutritionAgent  # noqa: E402
 from core.trust_layer import issue_certificate  # noqa: E402
+from core.clock import CLOCK
 
 PORT = int(os.environ.get("AGRI_DEMO_PORT", "8000"))
 HOST = os.environ.get("AGRI_DEMO_HOST", "127.0.0.1")
@@ -187,7 +188,7 @@ class Handler(BaseHTTPRequestHandler):
                 orch = AgriOrchestrator()
                 result = orch.run_pipeline(payload)
                 result["_meta"] = {
-                    "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+                    "generated_at": CLOCK.now().isoformat(timespec="seconds"),
                     "preset_zone_hint": _zone_hint(payload),
                 }
                 self._send_json(result)
@@ -587,7 +588,7 @@ def _platform_stats() -> dict:
         soil_probe = {"error": str(e)[:120]}
 
     return {
-        "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "generated_at": CLOCK.now().isoformat(timespec="seconds"),
         "cities": len(PRESET_CITIES),
         "zones": zone_count,
         "crops": len(crop_set),

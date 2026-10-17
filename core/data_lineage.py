@@ -30,6 +30,8 @@ import os
 import datetime
 from typing import Any, Dict, List, Optional
 
+from core.clock import CLOCK
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(ROOT)
 DATA = os.path.join(PROJECT_ROOT, "data")
@@ -216,7 +218,7 @@ def trace_recipe(crop: str, zone_id: str) -> Dict[str, Any]:
     """
     return {
         "trace_id": "lineage-%s@%s" % (crop, zone_id),
-        "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "generated_at": CLOCK.now().isoformat(timespec="seconds"),
         "query": {"crop": crop, "zone_id": zone_id},
         "external_apis": trace_external_apis(),
         "local_files": trace_local_files(),
@@ -239,7 +241,7 @@ def trace_pipeline_result(result: Dict[str, Any]) -> Dict[str, Any]:
     # 退化：至少追踪全局文件血缘
     return {
         "trace_id": "lineage-pipeline-global",
-        "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "generated_at": CLOCK.now().isoformat(timespec="seconds"),
         "query": {"crop": top_crop, "zone_id": zone},
         "external_apis": trace_external_apis(),
         "local_files": trace_local_files(),

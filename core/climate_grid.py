@@ -65,9 +65,9 @@ KOPPEN_TO_PROJECT_ZONE = {
     "Aw": "subtropical_wet",
     "As": "subtropical_wet",
     # 干旱
-    "BWh": "arid",
+    "BWh": "hot_arid",
     "BWk": "arid",
-    "BSh": "arid",
+    "BSh": "hot_arid",
     "BSk": "arid",
     # 地中海
     "Csa": "mediterranean",
@@ -79,16 +79,17 @@ KOPPEN_TO_PROJECT_ZONE = {
     "Cfc": "temperate_subhumid",
     "Cwa": "temperate_subhumid",
     "Cwb": "temperate_subhumid",
-    # 温带大陆性
+    # 温带大陆性（暖夏季）
     "Dfa": "temperate_continental",
     "Dfb": "temperate_continental",
-    "Dfc": "temperate_continental",
-    "Dfd": "temperate_continental",
     "Dsa": "temperate_continental",
     "Dsb": "temperate_continental",
     "Dsc": "temperate_continental",
-    "Dwc": "temperate_continental",
-    "Dwd": "temperate_continental",
+    # 亚寒带（冷夏季）—— 对应 subarctic 分区声明的 Dfc/Dwc
+    "Dfc": "subarctic",
+    "Dfd": "subarctic",
+    "Dwc": "subarctic",
+    "Dwd": "subarctic",
     # 高纬
     "Efa": "subarctic",
     "Efb": "subarctic",
