@@ -1,0 +1,35 @@
+{
+  "id": "case_sr_edge_adapt_zero",
+  "axis": "state_rolling",
+  "description": "边界·adapt_score=0：最差适应度场景，engine 仍应产出正产量（数学性质不依赖输入质量）",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "start_date": "2026-03-01",
+    "adapt_score": 0.0,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "生长期",
+            "day_range": [
+              1,
+              90
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "expected": {
+    "state_rolling": {
+      "min_duration_days": 1,
+      "yield_must_be_positive": true,
+      "harvest_must_be_after_start": true
+    }
+  },
+  "provenance": {
+    "note": "验证 adapt_score=0 时 yield 仍 > 0（engine 里 suit 下限 0，但 yield_g = base * factor * (0.55 + 0.45*0) = base * factor * 0.55 > 0）",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "case_sr_edge_min_duration",
+  "axis": "state_rolling",
+  "description": "边界·超短周期：phases 只到 D1，验证 adjusted_duration_days >= 1",
+  "input": {
+    "crop": "樱桃萝卜",
+    "zone_id": "subarctic",
+    "start_date": "2026-05-01",
+    "adapt_score": 0.9,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "极速",
+            "day_range": [
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "expected": {
+    "state_rolling": {
+      "min_duration_days": 1,
+      "yield_must_be_positive": true,
+      "harvest_must_be_after_start": true
+    }
+  },
+  "provenance": {
+    "note": "验证 phases 到 D1 时 adjusted_duration_days 至少为 1",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "id": "case_cf_cycle_马铃薯",
+  "axis": "counterfactual",
+  "description": "反事实·土豆 周期延长：phases 60→150 天，调整周期应显著增加",
+  "input": {
+    "crop": "土豆",
+    "zone_id": "highland",
+    "start_date": "2026-03-01",
+    "adapt_score": 0.85,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "生长期",
+            "day_range": [
+              1,
+              60
+            ]
+          }
+        ]
+      }
+    },
+    "env_recipe": {
+      "protocol": "env-recipe",
+      "recipe_version": "1.0.0",
+      "crop": {
+        "species": "马铃薯",
+        "latin": "Solanum tuberosum",
+        "family": "Solanaceae"
+      },
+      "stage": "full_cycle",
+      "device_profile": {
+        "device_class": "other",
+        "sensor_capability": [
+          "temp",
+          "humidity"
+        ]
+      },
+      "environment": {
+        "temperature": {
+          "day_c": 22,
+          "night_c": 10
+        },
+        "humidity": {
+          "min_pct": 50,
+          "max_pct": 80
+        },
+        "water_nutrient": {
+          "ph": 5.75,
+          "water_ml_day": 300
+        },
+        "airflow": {
+          "level": "medium"
+        }
+      },
+      "exception_handling": [
+        {
+          "condition": "出现「晚疫病」相关症状",
+          "action": "经 agri_diagnose_pest 工具诊断后按建议处理",
+          "severity": "warn"
+        },
+        {
+          "condition": "出现「蚜虫」相关症状",
+          "action": "经 agri_diagnose_pest 工具诊断后按建议处理",
+          "severity": "warn"
+        }
+      ],
+      "execution_log": [],
+      "outcome": {},
+      "image_consent": {
+        "captured": false,
+        "license": "",
+        "attribution": ""
+      },
+      "sources": [
+        {
+          "title": "FAO GAEZ v4 (含 Ecocrop 参数)",
+          "url": "",
+          "accessed_at": "2026-08-27",
+          "data_quality": "modeled",
+          "trial_location": "GAEZ v4 全球农业生态区划栅格（模型模拟，非田间试验）",
+          "source_license": "CC BY 4.0",
+          "license": "CC BY-NC-SA 3.0 IGO"
+        },
+        {
+          "title": "WorldClim 2.1",
+          "url": "",
+          "accessed_at": "2026-08-27",
+          "data_quality": "interpolated",
+          "trial_location": "WorldClim 2.1 栅格（站点插值，非田间试验）",
+          "source_license": "CC BY 4.0",
+          "license": "CC BY 4.0"
+        },
+        {
+          "title": "中国作物栽培数据库",
+          "url": "",
+          "accessed_at": "2026-08-27",
+          "data_quality": "modeled",
+          "trial_location": "中国，多点作物栽培通识汇编（非单一试验点）",
+          "source_license": "unknown（未标注许可）",
+          "license": "unknown"
+        },
+        {
+          "title": "USDA Plant Guides",
+          "url": "",
+          "accessed_at": "2026-08-27",
+          "data_quality": "modeled",
+          "trial_location": "美国农业部 Plant Guides（官方汇编，非单一试验点）",
+          "source_license": "公有领域（美国联邦政府作品）",
+          "license": "Public Domain (US Government)"
+        },
+        {
+          "title": "IPNI",
+          "url": "",
+          "accessed_at": "2026-08-27",
+          "data_quality": "measured",
+          "trial_location": "IPNI 国际植物名称索引（名录数据，非田间试验）",
+          "source_license": "CC BY 4.0",
+          "license": "CC BY 3.0"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "含 FAO/FAOSTAT（CC BY-NC-SA，非商用）来源时，整包不得作为付费资产转售。 数据始终免费开源；付费标的为服务能力（接入配额、优先响应、定制分区建模、企业部署支持）。 详见 docs/CORE_OBJECTIVE.md §五。"
+    }
+  },
+  "perturbation": {
+    "growth_plan": {
+      "after": {
+        "recommendation": {
+          "phases": [
+            {
+              "name": "生长期",
+              "day_range": [
+                1,
+                150
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expected": {
+    "counterfactual": {
+      "adjusted_duration_days": {
+        "direction": "increase",
+        "min_delta_pct": 0.4,
+        "note": "土豆 phases 从 60 延长到 150（+150%），调整周期应显著增加"
+      }
+    }
+  },
+  "provenance": {
+    "note": "反事实机制证据：cycle 是 adjusted_duration_days 的直接乘子",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

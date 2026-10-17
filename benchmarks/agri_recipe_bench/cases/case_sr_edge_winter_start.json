@@ -1,0 +1,35 @@
+{
+  "id": "case_sr_edge_winter_start",
+  "axis": "state_rolling",
+  "description": "边界·冬季播种：start_date=2026-01-15，harvest_date 应 >= start_date",
+  "input": {
+    "crop": "生菜",
+    "zone_id": "temperate_continental",
+    "start_date": "2026-01-15",
+    "adapt_score": 0.85,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "短周期",
+            "day_range": [
+              1,
+              45
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "expected": {
+    "state_rolling": {
+      "min_duration_days": 1,
+      "yield_must_be_positive": true,
+      "harvest_must_be_after_start": true
+    }
+  },
+  "provenance": {
+    "note": "验证极端日期下 harvest_date 不倒挂",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

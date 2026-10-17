@@ -1,0 +1,118 @@
+{
+  "version": "1.1.0",
+  "name": "智慧农业生态 Agri-Eco",
+  "description": "面向分布式农业的 Agent-native 知识基座。提供可执行的 Env Recipe 环境配方、多源气候校准、物候与播期推演、土壤剖面、农业分区匹配、病虫害与养分诊断、数据血缘溯源与农业项目投资初筛。",
+  "author": "smart-agri-eco",
+  "contact": {
+    "url": "https://github.com/lm203688/smart-agri-eco",
+    "email": "lm203688@users.noreply.github.com"
+  },
+  "capabilities": {
+    "tools": {
+      "count": 19,
+      "categories": {
+        "climate": 3,
+        "crop": 2,
+        "phenology": 1,
+        "pest": 1,
+        "nutrition": 1,
+        "recipe": 2,
+        "meta": 2,
+        "soil": 1,
+        "business": 1,
+        "knowledge": 2,
+        "forecast": 1
+      },
+      "discovery": "progressive",
+      "supports_etags": true
+    },
+    "trust": {
+      "supported": true,
+      "algorithm": "sha256",
+      "response_field": "_trust_mark",
+      "verification_command": "python -m core.trust_layer"
+    },
+    "confidence_intervals": {
+      "supported": true,
+      "method": "split_conformal",
+      "response_field": "prediction_interval"
+    },
+    "signing": {
+      "supported": true,
+      "algorithm": "HS256",
+      "signature_file": ".well-known/agent.json.jws"
+    }
+  },
+  "categories": {
+    "climate": "气候数据与分区匹配",
+    "crop": "作物推荐与生长规划",
+    "phenology": "物候期推演",
+    "pest": "病虫害诊断",
+    "nutrition": "营养方案",
+    "recipe": "环境配方",
+    "meta": "元数据与生态",
+    "soil": "土壤剖面",
+    "business": "商业投资",
+    "knowledge": "知识检索",
+    "forecast": "产量与采收预测"
+  },
+  "protocols": {
+    "mcp": "2026-07-28",
+    "jsonrpc": "2.0",
+    "stdio": true,
+    "http": false
+  },
+  "data": {
+    "env_recipes": 152,
+    "crop_species": 150,
+    "koppen_zones": 11,
+    "preset_cities": 100,
+    "execution_logs": 3
+  },
+  "benchmarks": {
+    "agri_recipe_bench": {
+      "version": "1.0",
+      "total_cases": 69,
+      "pass_rate": 1.0,
+      "score": 0.875
+    }
+  },
+  "evolution": {
+    "gate_version": 2.0,
+    "immutable_core": [
+      "core/trust_layer.py",
+      "schemas/env_recipe.schema.json",
+      "harness/manifest.json",
+      ".well-known/agent.json",
+      ".well-known/evolution_zones.json",
+      "scripts/sign_agent_card.py",
+      "scripts/verify_trust_mark.py",
+      "scripts/generate_trust_badge.py"
+    ]
+  },
+  "etag": {
+    "algorithm": "sha256",
+    "response_headers": {
+      "tools_list": "ETag: \"agri-eco-1.1.0-tools-{hash}\"",
+      "tools_call": "ETag: \"agri-eco-1.1.0-call-{hash}\""
+    }
+  },
+  "urls": {
+    "repository": "https://github.com/lm203688/smart-agri-eco",
+    "documentation": "https://github.com/lm203688/smart-agri-eco/blob/main/docs/CORE_OBJECTIVE.md",
+    "benchmarks": "https://github.com/lm203688/smart-agri-eco/blob/main/benchmarks/agri_recipe_bench",
+    "ecosystem": "https://github.com/lm203688/smart-agri-eco/blob/main/config/ecosystem.json"
+  },
+  "metadata": {
+    "created": "2024-08-01",
+    "last_updated": "2026-10-15",
+    "license": "MIT",
+    "language": "zh-CN",
+    "dependencies": [],
+    "environment_variables": [
+      "AGRI_A2A_SIGNING_KEY",
+      "AGRI_TRUST_SECRET_KEY",
+      "AGRI_DATA_PATH"
+    ]
+  }
+}

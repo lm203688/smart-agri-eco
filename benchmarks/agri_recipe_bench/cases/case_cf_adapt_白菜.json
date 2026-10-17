@@ -1,0 +1,44 @@
+{
+  "id": "case_cf_adapt_白菜",
+  "axis": "counterfactual",
+  "description": "反事实·白菜 适应度劣化：adapt_score 0.9→0.3，产量应显著下降",
+  "input": {
+    "crop": "白菜",
+    "zone_id": "subtropical_wet",
+    "start_date": "2026-03-01",
+    "adapt_score": 0.9,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "生长期",
+            "day_range": [
+              1,
+              90
+            ]
+          }
+        ]
+      }
+    },
+    "env_recipe": null
+  },
+  "perturbation": {
+    "adapt_score": {
+      "before": 0.9,
+      "after": 0.3
+    }
+  },
+  "expected": {
+    "counterfactual": {
+      "yield_estimate_g": {
+        "direction": "decrease",
+        "min_delta_pct": 0.2,
+        "note": "白菜 adapt_score 从 0.9 降到 0.3（落差 0.6），产量应显著下降"
+      }
+    }
+  },
+  "provenance": {
+    "note": "反事实机制证据：适应度是 yield 的直接乘子（yield = base * factor * (0.55 + 0.45*adapt_score)）",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "case_sr_subtropical_wet_番茄",
+  "axis": "state_rolling",
+  "description": "subtropical_wet·番茄：M15-B1 扩展，验证数学性质（yield>0, dur>=1, harvest>=start）",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "subtropical_wet",
+    "start_date": "2026-03-01",
+    "adapt_score": 0.8,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "生长期",
+            "day_range": [
+              1,
+              90
+            ]
+          }
+        ]
+      }
+    },
+    "env_recipe_path": "data/env_recipes/subtropical_wet__番茄.json"
+  },
+  "expected": {
+    "state_rolling": {
+      "min_duration_days": 1,
+      "yield_must_be_positive": true,
+      "harvest_must_be_after_start": true
+    }
+  },
+  "provenance": {
+    "note": "M2 轴只验证数学性质（非精度），真值来自守恒性质",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

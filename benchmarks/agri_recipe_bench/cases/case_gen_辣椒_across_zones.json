@@ -1,0 +1,78 @@
+{
+  "id": "case_gen_辣椒_across_zones",
+  "axis": "generalization",
+  "description": "跨情境泛化·辣椒：同一作物在 3 个气候分区（tropical_rainforest, subtropical_wet, mediterranean）应都产出合法结果",
+  "input": {
+    "crop": "辣椒",
+    "zones": [
+      {
+        "zone_id": "tropical_rainforest",
+        "start_date": "2026-03-01",
+        "adapt_score": 0.95,
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "生长期",
+                "day_range": [
+                  1,
+                  90
+                ]
+              }
+            ]
+          }
+        },
+        "env_recipe_path": "data/env_recipes/tropical_rainforest__辣椒.json"
+      },
+      {
+        "zone_id": "subtropical_wet",
+        "start_date": "2026-03-01",
+        "adapt_score": 0.9,
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "生长期",
+                "day_range": [
+                  1,
+                  90
+                ]
+              }
+            ]
+          }
+        },
+        "env_recipe_path": "data/env_recipes/subtropical_wet__辣椒.json"
+      },
+      {
+        "zone_id": "mediterranean",
+        "start_date": "2026-03-01",
+        "adapt_score": 0.88,
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "生长期",
+                "day_range": [
+                  1,
+                  90
+                ]
+              }
+            ]
+          }
+        },
+        "env_recipe_path": "data/env_recipes/mediterranean__辣椒.json"
+      }
+    ]
+  },
+  "expected": {
+    "generalization": {
+      "all_zones_legal": true,
+      "yields_distinct": true,
+      "note": "辣椒 在 3 个分区都产出 yield>0 且 duration>=1，且不同分区的产量不完全相同"
+    }
+  },
+  "provenance": {
+    "note": "验证 辣椒 的跨分区泛化能力",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

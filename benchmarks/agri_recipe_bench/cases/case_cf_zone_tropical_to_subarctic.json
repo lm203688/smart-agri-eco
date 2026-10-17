@@ -1,0 +1,43 @@
+{
+  "id": "case_cf_zone_tropical_to_subarctic",
+  "axis": "counterfactual",
+  "description": "反事实·分区换寒：zone_id 热带→寒带，观察 climate_factor 响应",
+  "input": {
+    "crop": "木瓜",
+    "zone_id": "tropical_rainforest",
+    "start_date": "2026-03-01",
+    "adapt_score": 0.9,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "生长期",
+            "day_range": [
+              1,
+              90
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "perturbation": {
+    "zone_id": {
+      "before": "tropical_rainforest",
+      "after": "subarctic"
+    }
+  },
+  "expected": {
+    "counterfactual": {
+      "climate_factor": {
+        "direction": "change",
+        "min_delta_pct": 0.0,
+        "note": "当前引擎 climate_factor 基于 zone 数据文件；换分区可能改变但幅度取决于 zone 数据；诚实记录"
+      }
+    }
+  },
+  "provenance": {
+    "note": "诚实记录引擎行为：zone 是 climate_factor 的输入之一",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

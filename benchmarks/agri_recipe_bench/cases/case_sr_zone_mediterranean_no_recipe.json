@@ -1,0 +1,35 @@
+{
+  "id": "case_sr_zone_mediterranean_no_recipe",
+  "axis": "state_rolling",
+  "description": "边界·mediterranean 无 env_recipe：走引擎默认路径，数学性质仍应成立",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "start_date": "2026-04-01",
+    "adapt_score": 0.85,
+    "growth_plan": {
+      "recommendation": {
+        "phases": [
+          {
+            "name": "生长期",
+            "day_range": [
+              1,
+              90
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "expected": {
+    "state_rolling": {
+      "min_duration_days": 1,
+      "yield_must_be_positive": true,
+      "harvest_must_be_after_start": true
+    }
+  },
+  "provenance": {
+    "note": "验证无 env_recipe 时引擎降级路径仍产出合法输出",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "case_gen_黄瓜_across_zones",
+  "axis": "generalization",
+  "description": "跨情境泛化·黄瓜：同一作物在 2 个气候分区（subtropical_wet, temperate_continental）应都产出合法结果",
+  "input": {
+    "crop": "黄瓜",
+    "zones": [
+      {
+        "zone_id": "subtropical_wet",
+        "start_date": "2026-03-01",
+        "adapt_score": 0.9,
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "生长期",
+                "day_range": [
+                  1,
+                  90
+                ]
+              }
+            ]
+          }
+        },
+        "env_recipe_path": "data/env_recipes/subtropical_wet__黄瓜.json"
+      },
+      {
+        "zone_id": "temperate_continental",
+        "start_date": "2026-03-01",
+        "adapt_score": 0.85,
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "生长期",
+                "day_range": [
+                  1,
+                  90
+                ]
+              }
+            ]
+          }
+        },
+        "env_recipe_path": "data/env_recipes/temperate_continental__黄瓜.json"
+      }
+    ]
+  },
+  "expected": {
+    "generalization": {
+      "all_zones_legal": true,
+      "yields_distinct": true,
+      "note": "黄瓜 在 2 个分区都产出 yield>0 且 duration>=1，且不同分区的产量不完全相同"
+    }
+  },
+  "provenance": {
+    "note": "验证 黄瓜 的跨分区泛化能力",
+    "generator": "scripts/expand_bench_cases.py (M15-B1)"
+  }
+}
