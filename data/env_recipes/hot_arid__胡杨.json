@@ -29,6 +29,62 @@
     },
     "airflow": {
       "level": "medium"
+    },
+    "vpd_kpa": {
+      "nominal": 1.362,
+      "envelope_min": 0.341,
+      "envelope_max": 4.099,
+      "unit": "kPa",
+      "method": "magnus_vpd",
+      "source": "derived_from_environment",
+      "derived_at": "2026-10-14T09:34:40Z",
+      "note": "Magnus 近似式；标称点为温湿区间中点。叶菜类参考：<0.5 过湿，0.5-1.0 舒适，1.0-1.5 偏干，>1.5 胁迫。"
+    },
+    "dew_point_c": {
+      "day_max": 37.82,
+      "night": 11.58,
+      "unit": "celsius",
+      "method": "magnus_dew_point",
+      "source": "derived_from_environment",
+      "derived_at": "2026-10-14T09:34:40Z"
+    },
+    "mold_risk": {
+      "level": "low",
+      "reason": "标称 VPD=1.36 kPa 在偏干区，真菌病害风险低（需关注蒸腾）",
+      "vpd_nominal_kpa": 1.362,
+      "dew_point_night_c": 11.58,
+      "thresholds": {
+        "optimal_low": 0.5,
+        "optimal_high": 1.0,
+        "stress": 1.5
+      },
+      "method": "vpd_plus_dew_point",
+      "source": "derived_from_environment",
+      "derived_at": "2026-10-14T09:34:40Z"
+    },
+    "dli_umol_m2_day": {
+      "value": 100170.0,
+      "unit": "umol_m2_day",
+      "zone_id": "hot_arid",
+      "source": "derived_from_zone",
+      "source_file": {
+        "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+        "zone": "hot_arid",
+        "coord": [
+          24.7136,
+          46.6753
+        ],
+        "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+        "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+        "license": "NASA POWER public domain",
+        "years_used": [
+          2015,
+          2024
+        ]
+      },
+      "method": "climate_baseline_annual_mean",
+      "derived_at": "2026-10-14T09:34:40Z",
+      "note": "全谱短波辐射光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（项目内无实测），专业应用请自行乘 PAR 比例。 单位从 mol 换算为 umol（HA 惯例）。"
     }
   },
   "exception_handling": [
@@ -75,8 +131,10 @@
       "accessed_at": "2026-08-27",
       "data_quality": "modeled",
       "trial_location": "中国，多点作物栽培通识汇编（非单一试验点）",
-      "source_license": "unknown（未标注许可）",
-      "license": "unknown"
+      "source_license": "CC BY-NC-SA 4.0",
+      "license": "CC BY-NC-SA 4.0 (保守占位：中国作物栽培数据库未标注许可，按最严格非商业条款处理，实际商用前需人工核实)",
+      "license_note": "占位许可：源方（中国作物栽培数据库）未标注许可，本项目按 CC BY-NC-SA 4.0 保守处理。法务上等同「不可商用」，需实际授权前请人工核实原始来源。",
+      "unknown_license_replaced_at": "2026-10-17"
     },
     {
       "title": "USDA Plant Guides",
@@ -98,5 +156,39 @@
     }
   ],
   "license": "CC-BY-4.0",
-  "license_scope": "含 FAO/FAOSTAT（CC BY-NC-SA，非商用）来源时，整包不得作为付费资产转售。 数据始终免费开源；付费标的为服务能力（接入配额、优先响应、定制分区建模、企业部署支持）。 详见 docs/CORE_OBJECTIVE.md §五。"
+  "license_scope": "含 FAO/FAOSTAT（CC BY-NC-SA，非商用）来源时，整包不得作为付费资产转售。 数据始终免费开源；付费标的为服务能力（接入配额、优先响应、定制分区建模、企业部署支持）。 详见 docs/CORE_OBJECTIVE.md §五。",
+  "companion_plants": {
+    "items": [
+      {
+        "crop": "西瓜",
+        "latin": "Citrullus lanatus",
+        "adapt_score": 0.87,
+        "reason": "同分区（hot_arid）适配度 0.87，可作伴生候选"
+      },
+      {
+        "crop": "枸杞",
+        "latin": "Lycium barbarum",
+        "adapt_score": 0.86,
+        "reason": "同分区（hot_arid）适配度 0.86，可作伴生候选"
+      },
+      {
+        "crop": "哈密瓜",
+        "latin": "Cucumis melo",
+        "adapt_score": 0.85,
+        "reason": "同分区（hot_arid）适配度 0.85，可作伴生候选"
+      }
+    ],
+    "source": "crop_adapt_db",
+    "derived_at": "2026-10-14T09:34:40Z",
+    "note": "同分区 adapt_score 前 3 作物（不含自身）；仅为候选，非最优伴生。OpenFarm 共识字段，本项目当前无实测伴生数据，用同分区推荐作占位。"
+  },
+  "sowing_depth_cm": {
+    "value": 6.0,
+    "unit": "cm",
+    "source": "crop_adapt_db",
+    "derived_at": "2026-10-14T09:34:40Z",
+    "method": "growth_days_over_200",
+    "note": "复用 agent/growth_agent.py 公式 round(growth_days/200, 1)。缺 growth_days 时值为 null（不编造）。",
+    "growth_days": 1200
+  }
 }
