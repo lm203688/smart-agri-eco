@@ -1,5 +1,5 @@
 {
-  "schema": "agri-golden-vectors/forecast/v1",
+  "schema": "agri-golden-vectors/forecast/v2",
   "target_module": "agent/forecast_agent.py",
   "target_class": "ForecastAgent",
   "target_method": "estimate",
@@ -22,20 +22,62 @@
         "growth_plan": {
           "recommendation": {
             "phases": [
-              {"day_range": [1, 30]},
-              {"day_range": [31, 60]},
-              {"day_range": [61, 95]},
-              {"day_range": [96, 130]}
+              {
+                "day_range": [
+                  1,
+                  30
+                ]
+              },
+              {
+                "day_range": [
+                  31,
+                  60
+                ]
+              },
+              {
+                "day_range": [
+                  61,
+                  95
+                ]
+              },
+              {
+                "day_range": [
+                  96,
+                  130
+                ]
+              }
             ]
           }
         },
-        "env_recipe": {"environment": {"temperature": {"day_c": 32}}}
+        "env_recipe": {
+          "environment": {
+            "temperature": {
+              "day_c": 32
+            }
+          }
+        }
       },
       "expected": {
-        "yield_estimate_g": {"p50": 1432, "p10": 859, "p90": 2005},
-        "adjusted_duration_days": {"p50": 130, "p10": 114, "p90": 146},
-        "harvest_date": {"p50": "2026-06-25", "p10": "2026-06-09", "p90": "2026-07-11"}
-      }
+        "yield_estimate_g": {
+          "p50": 1432,
+          "p10": 859,
+          "p90": 2005
+        },
+        "adjusted_duration_days": {
+          "p50": 130,
+          "p10": 114,
+          "p90": 146
+        },
+        "harvest_date": {
+          "p50": "2026-06-25",
+          "p10": "2026-06-09",
+          "p90": "2026-07-11"
+        }
+      },
+      "reference_keys": [
+        "vovk2012",
+        "bates2021"
+      ]
     },
     {
       "id": "lettuce_subtropical_empty_input",
@@ -46,10 +88,26 @@
         "start_date": "2026-03-20"
       },
       "expected": {
-        "yield_estimate_g": {"p50": 260, "p10": 151, "p90": 369},
-        "adjusted_duration_days": {"p50": 90, "p10": 79, "p90": 101},
-        "harvest_date": {"p50": "2026-06-18", "p10": "2026-06-07", "p90": "2026-06-29"}
-      }
+        "yield_estimate_g": {
+          "p50": 260,
+          "p10": 151,
+          "p90": 369
+        },
+        "adjusted_duration_days": {
+          "p50": 90,
+          "p10": 79,
+          "p90": 101
+        },
+        "harvest_date": {
+          "p50": "2026-06-18",
+          "p10": "2026-06-07",
+          "p90": "2026-06-29"
+        }
+      },
+      "reference_keys": [
+        "vovk2012",
+        "bates2021"
+      ]
     },
     {
       "id": "unknown_crop_fallback",
@@ -61,10 +119,26 @@
         "adapt_score": 0.7
       },
       "expected": {
-        "yield_estimate_g": {"p50": 432, "p10": 216, "p90": 648},
-        "adjusted_duration_days": {"p50": 90, "p10": 79, "p90": 101},
-        "harvest_date": {"p50": "2026-06-30", "p10": "2026-06-19", "p90": "2026-07-11"}
-      }
+        "yield_estimate_g": {
+          "p50": 432,
+          "p10": 216,
+          "p90": 648
+        },
+        "adjusted_duration_days": {
+          "p50": 90,
+          "p10": 79,
+          "p90": 101
+        },
+        "harvest_date": {
+          "p50": "2026-06-30",
+          "p10": "2026-06-19",
+          "p90": "2026-07-11"
+        }
+      },
+      "reference_keys": [
+        "vovk2012",
+        "bates2021"
+      ]
     },
     {
       "id": "carrot_subtropical_mid_input",
@@ -77,18 +151,72 @@
         "growth_plan": {
           "recommendation": {
             "phases": [
-              {"day_range": [1, 25]},
-              {"day_range": [26, 50]},
-              {"day_range": [51, 75]}
+              {
+                "day_range": [
+                  1,
+                  25
+                ]
+              },
+              {
+                "day_range": [
+                  26,
+                  50
+                ]
+              },
+              {
+                "day_range": [
+                  51,
+                  75
+                ]
+              }
             ]
           }
         }
       },
       "expected": {
-        "yield_estimate_g": {"p50": 466, "p10": 233, "p90": 699},
-        "adjusted_duration_days": {"p50": 75, "p10": 66, "p90": 84},
-        "harvest_date": {"p50": "2026-05-15", "p10": "2026-05-06", "p90": "2026-05-24"}
-      }
+        "yield_estimate_g": {
+          "p50": 466,
+          "p10": 233,
+          "p90": 699
+        },
+        "adjusted_duration_days": {
+          "p50": 75,
+          "p10": 66,
+          "p90": 84
+        },
+        "harvest_date": {
+          "p50": "2026-05-15",
+          "p10": "2026-05-06",
+          "p90": "2026-05-24"
+        }
+      },
+      "reference_keys": [
+        "vovk2012",
+        "bates2021"
+      ]
     }
-  ]
+  ],
+  "references": [
+    {
+      "key": "bates2021",
+      "kind": "paper",
+      "authors": "Bates, S.; Angelopoulos, A.; Lei, J.; Romano, Y.; Wasserman, L.",
+      "year": 2021,
+      "title": "Distribution-free, Risk-controlling Prediction Sets",
+      "venue": "Journal of the ACM",
+      "doi": "10.1145/3478535",
+      "provenance": "分布无关预测集（split conformal 收敛性，JACM 2021）"
+    },
+    {
+      "key": "vovk2012",
+      "kind": "paper",
+      "authors": "Vovk, V.",
+      "year": 2012,
+      "title": "Conditional validity of inductive conformal predictors",
+      "venue": "Machine Learning",
+      "doi": "10.1007/s10994-013-5355-6",
+      "provenance": "归纳式保形预测条件有效性理论"
+    }
+  ],
+  "attached_at": "2026-10-18"
 }

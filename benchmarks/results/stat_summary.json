@@ -1,0 +1,206 @@
+{
+  "generated_by": "benchmarks/agri_recipe_bench/stat_report.py",
+  "roadmap_task": "S1.3",
+  "history": {
+    "enabled": true,
+    "file": "benchmarks\\agri_recipe_bench\\results_history.json",
+    "entries": 656,
+    "date_span": {
+      "first": "2026-10-15T07:09:02",
+      "last": "2026-10-18T12:55:06"
+    },
+    "pass_rate": {
+      "mean": 1.0,
+      "std": 0.0,
+      "n": 656
+    },
+    "conformal_coverage": {
+      "mean": 0.92,
+      "std": 0.0,
+      "n": 503
+    },
+    "by_total": {
+      "20": {
+        "n": 3,
+        "pass_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 3
+        },
+        "conformal_coverage": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      },
+      "69": {
+        "n": 648,
+        "pass_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 648
+        },
+        "conformal_coverage": {
+          "mean": 0.92,
+          "std": 0.0,
+          "n": 498
+        }
+      },
+      "89": {
+        "n": 5,
+        "pass_rate": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 5
+        },
+        "conformal_coverage": {
+          "mean": 0.92,
+          "std": 0.0,
+          "n": 5
+        }
+      }
+    },
+    "by_axis": {
+      "counterfactual": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n": 653
+      },
+      "generalization": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n": 653
+      },
+      "negative_counterfactual_invariant": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n": 8
+      },
+      "negative_honest_degradation": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n": 8
+      },
+      "negative_input_bounds": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n": 8
+      },
+      "negative_trust_breakage": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n": 8
+      },
+      "state_rolling": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n": 653
+      },
+      "target_prediction": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n": 653
+      }
+    },
+    "trend": {
+      "method": "ols_on_entry_index",
+      "slope": 0.0,
+      "pearson_r": null
+    }
+  },
+  "repeat_experiment": {
+    "n_repeats": 5,
+    "seed": 20241018,
+    "fraction": 0.8,
+    "metrics": {
+      "pass_rate": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n": 5
+      },
+      "conformal_coverage": {
+        "mean": 0.9488,
+        "std": 0.0223,
+        "n": 5
+      },
+      "mean_abs_dev": {
+        "mean": 0.0039,
+        "std": 0.0036,
+        "n": 5
+      },
+      "n_cases": {
+        "mean": 71.0,
+        "std": 0.0,
+        "n": 5
+      },
+      "negative_passed": {
+        "mean": 14.8,
+        "std": 1.6432,
+        "n": 5
+      }
+    },
+    "runs": [
+      {
+        "repeat": 1,
+        "seed": 20241018,
+        "n_cases": 71,
+        "passed": 71,
+        "failed": 0,
+        "pass_rate": 1.0,
+        "conformal_coverage": 0.9286,
+        "conformal_quantile": 0.0256,
+        "mean_abs_dev": 0.007888095238095237
+      },
+      {
+        "repeat": 2,
+        "seed": 20241019,
+        "n_cases": 71,
+        "passed": 71,
+        "failed": 0,
+        "pass_rate": 1.0,
+        "conformal_coverage": 0.9737,
+        "conformal_quantile": 0.0,
+        "mean_abs_dev": 0.0006578947368421052
+      },
+      {
+        "repeat": 3,
+        "seed": 20241020,
+        "n_cases": 71,
+        "passed": 71,
+        "failed": 0,
+        "pass_rate": 1.0,
+        "conformal_coverage": 0.9318,
+        "conformal_quantile": 0.0256,
+        "mean_abs_dev": 0.0075295454545454546
+      },
+      {
+        "repeat": 4,
+        "seed": 20241021,
+        "n_cases": 71,
+        "passed": 71,
+        "failed": 0,
+        "pass_rate": 1.0,
+        "conformal_coverage": 0.9722,
+        "conformal_quantile": 0.0,
+        "mean_abs_dev": 0.0006944444444444445
+      },
+      {
+        "repeat": 5,
+        "seed": 20241022,
+        "n_cases": 71,
+        "passed": 71,
+        "failed": 0,
+        "pass_rate": 1.0,
+        "conformal_coverage": 0.9375,
+        "conformal_quantile": 0.0,
+        "mean_abs_dev": 0.00290625
+      }
+    ]
+  },
+  "verdict": {
+    "pass_rate_varies": false,
+    "conformal_coverage_varies": true,
+    "mean_abs_dev_varies": true,
+    "statement": "pass_rate 为回归判定（全用例通过即 1.0），在测试集固定时为确定性指标，无方差是事实而非缺陷；论文不得把 pass_rate=1.0 表述为预测精度。应引用 mean_abs_dev（预测相对偏差均值）与 conformal_coverage（保形覆盖率）的 mean±std 作为带不确定度的效果指标。"
+  }
+}

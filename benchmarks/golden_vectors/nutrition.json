@@ -1,5 +1,5 @@
 {
-  "schema": "agri-golden-vectors/nutrition/v1",
+  "schema": "agri-golden-vectors/nutrition/v2",
   "target_module": "agent/nutrition_agent.py",
   "target_function": "plan",
   "generated_at": "2026-10-13",
@@ -11,52 +11,110 @@
     {
       "id": "tomato_vegetative_90d",
       "rationale": "番茄 @ 90 天（茄科，4 阶段化）：完整 NPK 结构 + 4 阶段",
-      "payload": {"crop": "番茄", "growth_days": 90},
+      "payload": {
+        "crop": "番茄",
+        "growth_days": 90
+      },
       "expected": {
         "min_phases": 4,
         "has_np3": true,
         "has_confidence": true
-      }
+      },
+      "reference_keys": [
+        "heuvelink1996",
+        "allen1998"
+      ]
     },
     {
       "id": "lettuce_short_cycle_45d",
       "rationale": "生菜 @ 45 天（菊科，短周期）：结构完整",
-      "payload": {"crop": "生菜", "growth_days": 45},
+      "payload": {
+        "crop": "生菜",
+        "growth_days": 45
+      },
       "expected": {
         "min_phases": 4,
         "has_np3": true,
         "has_confidence": true
-      }
+      },
+      "reference_keys": [
+        "heuvelink1996",
+        "allen1998"
+      ]
     },
     {
       "id": "chili_long_cycle_100d",
       "rationale": "辣椒 @ 100 天（茄科，长周期）：结构完整",
-      "payload": {"crop": "辣椒", "growth_days": 100},
+      "payload": {
+        "crop": "辣椒",
+        "growth_days": 100
+      },
       "expected": {
         "min_phases": 4,
         "has_np3": true,
         "has_confidence": true
-      }
+      },
+      "reference_keys": [
+        "heuvelink1996",
+        "allen1998"
+      ]
     },
     {
       "id": "bok_choy_40d",
       "rationale": "小白菜 @ 40 天（十字花科）：结构完整",
-      "payload": {"crop": "小白菜", "growth_days": 40},
+      "payload": {
+        "crop": "小白菜",
+        "growth_days": 40
+      },
       "expected": {
         "min_phases": 4,
         "has_np3": true,
         "has_confidence": true
-      }
+      },
+      "reference_keys": [
+        "heuvelink1996",
+        "allen1998"
+      ]
     },
     {
       "id": "carrot_root_70d",
       "rationale": "胡萝卜 @ 70 天（伞形科根菜）：结构完整",
-      "payload": {"crop": "胡萝卜", "growth_days": 70},
+      "payload": {
+        "crop": "胡萝卜",
+        "growth_days": 70
+      },
       "expected": {
         "min_phases": 4,
         "has_np3": true,
         "has_confidence": true
-      }
+      },
+      "reference_keys": [
+        "heuvelink1996",
+        "allen1998"
+      ]
     }
-  ]
+  ],
+  "references": [
+    {
+      "key": "allen1998",
+      "kind": "report",
+      "authors": "Allen, R.G.; Pereira, L.S.; Raes, D.; Smith, M.",
+      "year": 1998,
+      "title": "Crop evapotranspiration - Guidelines for computing crop water requirements (FAO Irrigation and Drainage Paper 56)",
+      "venue": "FAO, Rome",
+      "url": "https://www.fao.org/3/x0490e/x0490e00.htm",
+      "provenance": "作物系数/水分需求计算国际标准"
+    },
+    {
+      "key": "heuvelink1996",
+      "kind": "paper",
+      "authors": "Heuvelink, E.",
+      "year": 1996,
+      "title": "Dry Matter Partitioning in Tomato: Validation of a Dynamic Simulation Model",
+      "venue": "Annals of Botany",
+      "doi": "10.1006/anbo.1996.0009",
+      "provenance": "番茄干物质/N-P-K 分配动态模型（营养液 uptake 曲线方法论）"
+    }
+  ],
+  "attached_at": "2026-10-18"
 }

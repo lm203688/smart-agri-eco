@@ -1,0 +1,22 @@
+{
+  "id": "neg_D1",
+  "axis": "negative_trust_breakage",
+  "case_type": "negative",
+  "description": "篡改配方后签名失效：修改 environment.temperature 后 trust_mark 必须 verify 失败",
+  "input": {
+    "recipe_ref": "tamper_test_001",
+    "tamper": {
+      "environment.temperature.day_c": 99.0
+    }
+  },
+  "expect_failure": true,
+  "expect_failure_type": "raise",
+  "expect_failure_detail": "TrustVerificationError",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

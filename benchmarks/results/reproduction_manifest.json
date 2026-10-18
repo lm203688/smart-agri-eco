@@ -1,0 +1,279 @@
+{
+  "generated_by": "scripts/s2_a4_reproduction_packaging.py",
+  "roadmap_task": "S2-A4",
+  "environment": {
+    "python_version": "3.13.14",
+    "python_implementation": "CPython",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "system": "Windows",
+    "machine": "AMD64",
+    "requires_python": ">=3.10",
+    "third_party_dependencies": "none (stdlib only)"
+  },
+  "dependency_audit": {
+    "total_files_scanned": 220,
+    "module_level_violations": [],
+    "n_module_level_violations": 0,
+    "lazy_optional_imports": [
+      {
+        "file": "bp_screen\\parser.py",
+        "line": 32,
+        "kind": "import",
+        "module": "pdfplumber"
+      },
+      {
+        "file": "bp_screen\\parser.py",
+        "line": 52,
+        "kind": "import",
+        "module": "openpyxl"
+      },
+      {
+        "file": "bp_screen\\parser.py",
+        "line": 47,
+        "kind": "import",
+        "module": "pandas"
+      },
+      {
+        "file": "bp_screen\\web.py",
+        "line": 40,
+        "kind": "from-import",
+        "module": "fastapi"
+      },
+      {
+        "file": "bp_screen\\web.py",
+        "line": 41,
+        "kind": "from-import",
+        "module": "fastapi.responses"
+      },
+      {
+        "file": "bp_screen\\web.py",
+        "line": 179,
+        "kind": "import",
+        "module": "uvicorn"
+      },
+      {
+        "file": "bp_screen\\web.py",
+        "line": 158,
+        "kind": "from-import",
+        "module": "fastapi.responses"
+      },
+      {
+        "file": "core\\seed.py",
+        "line": 265,
+        "kind": "import",
+        "module": "numpy"
+      }
+    ],
+    "n_lazy_optional_imports": 8,
+    "stdlib_only_pass": true,
+    "excluded_parts": [
+      ".git",
+      ".venv",
+      ".workbuddy",
+      "__pycache__",
+      "_archive",
+      "node_modules",
+      "venv"
+    ],
+    "excluded_segments": [
+      ".ref"
+    ]
+  },
+  "file_fingerprints": {
+    "files": [
+      {
+        "path": "pyproject.toml",
+        "sha256": "55bdee0fe0736a630542b8e32b01a17fad09d15e3e1066dfd737bafb0253ce08",
+        "bytes": 1181
+      },
+      {
+        "path": "README.md",
+        "sha256": "174e0eb84acacbf6f9a5a80037f28d85295a7e9a404858dc31ca0eafb965373d",
+        "bytes": 42914
+      },
+      {
+        "path": "docs\\CORE_OBJECTIVE.md",
+        "sha256": "02a79012a6ffe99639b27b9e006a92a05ef32473026fd5c67279d6be774b47e5",
+        "bytes": 19967
+      },
+      {
+        "path": "data\\wofost_phenology_reference.json",
+        "sha256": "4a3c9baa09d4fa38e4cde99df0777a82630af1b64d6a62adbef0511caaebb453",
+        "bytes": 4019
+      },
+      {
+        "path": "data\\zone_meta\\koppen_grid.json",
+        "sha256": "4356eb84799e8bda752bc9e77e9a8953fd2bf03c1579e48881fbc078803b819b",
+        "bytes": 931775
+      },
+      {
+        "path": "data\\zone_meta\\global_zones.json",
+        "sha256": "0408faf5e5be8b967e5190fb5c544b6d22a86a739406f918586e49b8cdf26ffe",
+        "bytes": 24859
+      },
+      {
+        "path": "agent\\phenology.py",
+        "sha256": "d777b4229f85c31e61fe93f22b0a75eed91998dbaaa78eda98f0cf50d70459ce",
+        "bytes": 4172
+      },
+      {
+        "path": "agent\\phenology_extended.py",
+        "sha256": "6fc1c29217beed9429abcd9c7a4ead4b6e3c8e5ca8b08f71ba449a381080fdab",
+        "bytes": 5742
+      },
+      {
+        "path": "agent\\forecast_agent.py",
+        "sha256": "f1a3d526c95b1dd09033ae933c2101bdae846b50a910a4aeb576a0f350be596f",
+        "bytes": 15060
+      },
+      {
+        "path": "engine\\agriworld_lite.py",
+        "sha256": "93e6261b27f783a0b0560dc047a60bea92ac78006188cc79313fb905b75114a9",
+        "bytes": 31431
+      },
+      {
+        "path": "core\\numeric_domain.py",
+        "sha256": "fb633e26ebc35bc3593f4f8d6345838837584dd70dc06aaeaaf0811907275695",
+        "bytes": 15063
+      },
+      {
+        "path": "core\\honest_policy.py",
+        "sha256": "9fa24d12c5cb74d3646091b410604eb169743b07a3c91f333ac9b6226d51c297",
+        "bytes": 7477
+      },
+      {
+        "path": "benchmarks\\agri_recipe_bench\\run_bench.py",
+        "sha256": "ff728d257dede942575a4cb0e3c3ce2661bd3baf15913ecb11bc3f48fa469ae2",
+        "bytes": 37027
+      },
+      {
+        "path": "benchmarks\\agri_recipe_bench\\negative_runner.py",
+        "sha256": "789283a59590030cca45edda4c6fc2d4a3bbcf073f02f81deb51d36400fa9225",
+        "bytes": 16484
+      },
+      {
+        "path": "benchmarks\\agri_recipe_bench\\stat_report.py",
+        "sha256": "158017a28e10c198fd6d13f00e493412a6d242371c9c74319bd4d164670af8d6",
+        "bytes": 14723
+      },
+      {
+        "path": "benchmarks\\baseline_external\\run_baseline.py",
+        "sha256": "4f7d7e894d13248a53594660e567fbff9b8768692508045a0017aab0bd3e497a",
+        "bytes": 23695
+      },
+      {
+        "path": "scripts\\s2_a1_phenology_consistency.py",
+        "sha256": "410ac0c8b87560376dab84d79a67a067862a10587f0824781fa1ef99ae6666ad",
+        "bytes": 17173
+      },
+      {
+        "path": "scripts\\s2_a2_koppen_consistency.py",
+        "sha256": "200dc51fe20247a51f4a9f9016120e37e4c73c7597e80d3b16f263527e8f235d",
+        "bytes": 13136
+      },
+      {
+        "path": "scripts\\s2_a3_envelope_robustness.py",
+        "sha256": "23f60aceb3745a39551a940cd21f0ab10f08540e50548be6a3094248f4635f3f",
+        "bytes": 16110
+      },
+      {
+        "path": "scripts\\s2_a4_reproduction_packaging.py",
+        "sha256": "aee8cbb6527a19fa62765c8c724b5d318db05d8ff89eafcbb628dedb6c991e2b",
+        "bytes": 20507
+      }
+    ],
+    "total": 20
+  },
+  "stat_summary_verification": {
+    "exists": true,
+    "n_history_entries": 656,
+    "issues": [],
+    "verdict": "PASS"
+  },
+  "reproduction_commands": [
+    {
+      "cmd": "python -m unittest discover -s scripts -p 'test_*.py' -v",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python benchmarks/agri_recipe_bench/run_bench.py --strict",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python benchmarks/agri_recipe_bench/run_bench.py --axis negative --summary --strict",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python -m benchmarks.ratchet_modules --strict",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/run_golden_vectors.py --strict",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/verify_all.py",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/data_quality_gate.py",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/check_demo_endpoints.py",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/check_distribution_readiness.py",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/build_agent_plugin.py --check",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/test_mcp_server.py",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/validate_references.py --fast",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python benchmarks/baseline_external/run_baseline.py --strict",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/s2_a1_phenology_consistency.py --strict",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/s2_a2_koppen_consistency.py --strict",
+      "expected": "exit 0"
+    },
+    {
+      "cmd": "python scripts/s2_a3_envelope_robustness.py --strict",
+      "expected": "exit 0"
+    }
+  ],
+  "reproduction_steps": [
+    "python -m venv .venv",
+    "source .venv/bin/activate  # 或 .venv\\Scripts\\activate (Windows)",
+    "（无需 pip install 任何包）",
+    "python scripts/s2_a4_reproduction_packaging.py --strict  # 验证环境",
+    "依次运行 reproduction_commands 中的每条命令"
+  ],
+  "honesty_notes": [
+    "本项目的零依赖约束是硬约束（见 CORE_OBJECTIVE.md）：核心代码只允许使用Python 标准库。本脚本用 ast 静态扫描所有 .py 文件的 import，**模块顶层**出现第三方包即判失败——这是防漂移门禁。",
+    "扫描到 220 个 .py 文件，模块顶层第三方依赖违反 0 处，函数体内 lazy import（可选依赖）8 处。",
+    "函数体内 lazy import 不违反零依赖约束：bp_screen/parser.py 的 openpyxl/pdfplumber、bp_screen/web.py 的 fastapi 均为可选功能，未装依赖时对应功能静默降级、核心逻辑照常。论文 §Reproducibility 应如实区分'核心零依赖'与'可选功能依赖'。",
+    "本脚本不实际执行 reproduction_commands；论文复现步骤须逐条执行并与 CI 结果比对。命令序列已列入 manifest，供论文 §Reproducibility 引用。",
+    "stat_summary.json 完备性只查 mean/std/n 三件套齐备，不验证数值与CI 历史一致——那是 CI 本身的职责（每次运行 bench 都会重算）。"
+  ],
+  "acceptance": {
+    "stdlib_only_pass": true,
+    "stat_summary_completeness_pass": true,
+    "n_repro_commands": 16,
+    "all_pass": true
+  }
+}

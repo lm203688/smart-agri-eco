@@ -1,0 +1,28 @@
+{
+  "id": "neg_B4",
+  "axis": "negative_honest_degradation",
+  "case_type": "negative",
+  "description": "多源冲突：两源给出互斥的 Topt（25 vs 40°C），应拒绝合并并报冲突",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "sources": [
+      {
+        "Topt": 25.0
+      },
+      {
+        "Topt": 40.0
+      }
+    ]
+  },
+  "expect_failure": true,
+  "expect_failure_type": "abstain",
+  "expect_failure_detail": "source_conflict",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

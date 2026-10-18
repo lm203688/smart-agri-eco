@@ -1,0 +1,21 @@
+{
+  "id": "neg_B2",
+  "axis": "negative_honest_degradation",
+  "case_type": "negative",
+  "description": "气候漂移超 3σ：目标气候远离历史校准域，应拒绝或标注 out-of-domain",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "climate_shift_sd": 3.5
+  },
+  "expect_failure": true,
+  "expect_failure_type": "abstain",
+  "expect_failure_detail": "out_of_domain",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

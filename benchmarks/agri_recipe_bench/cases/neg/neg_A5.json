@@ -1,0 +1,22 @@
+{
+  "id": "neg_A5",
+  "axis": "negative_input_bounds",
+  "case_type": "negative",
+  "description": "光照负值：dli=-1 MJ/m²/day 应被拒绝",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "dli": -1.0,
+    "days": 120
+  },
+  "expect_failure": true,
+  "expect_failure_type": "InputError",
+  "expect_failure_detail": "core/numeric_domain.non_negative",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

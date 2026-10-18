@@ -1,0 +1,21 @@
+{
+  "id": "neg_B6",
+  "axis": "negative_honest_degradation",
+  "case_type": "negative",
+  "description": "超出保形校准域：新样本偏离校准集支持，区间不得保证 90% 覆盖，需标注 uncalibrated",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "distance_to_calib_set": ">p99"
+  },
+  "expect_failure": true,
+  "expect_failure_type": "flag",
+  "expect_failure_detail": "conformal_uncalibrated",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

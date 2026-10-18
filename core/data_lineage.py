@@ -345,6 +345,33 @@ def render_text(report: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def verify_lineage_intact(recipe: Dict[str, Any]) -> Dict[str, Any]:
+    """校验配方的数据血缘是否完整（S1.2 负例 D2 的真实校验器）。
+
+    契约：配方应含
+      - lineage_refs: [{"id": ..., "sha256": ...}, ...]  ← 配方声明依赖的源
+      - sources:      [{"id": ..., ...}, ...]            ← 配方实际携带的源
+
+    判据：lineage_refs 中任一 id 未出现在 sources 里 → 血缘断链（break=True）。
+    真实案例（D2）：删除 sources[0] 后，其 id 不再存在 → break=True。
+
+    本函数与 trace_recipe/query_lineage 互补：前者做「溯源查询」，本函数做
+    「完整性断言」，让配方不可被静默裁剪来源。
+    """
+    refs = recipe.get("lineage_refs") or []
+    sources = recipe.get("sources") or []
+    present_ids = {s.get("id") for s in sources if isinstance(s, dict) and s.get("id") is not None}
+    missing = [r.get("id") for r in refs
+               if isinstance(r, dict) and r.get("id") is not None
+               and r.get("id") not in present_ids]
+    return {
+        "break": bool(missing),
+        "missing_ids": missing,
+        "expected_sources": len(refs),
+        "present_sources": len(present_ids),
+    }
+
+
 def main():
     import argparse
     ap = argparse.ArgumentParser(description="AgriDataLineage 数据血缘追踪")

@@ -1,0 +1,21 @@
+{
+  "id": "neg_B3",
+  "axis": "negative_honest_degradation",
+  "case_type": "negative",
+  "description": "数据源过期：sources[] 中最新 trial_location 时间戳早于 3 年，应标 stale",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "source_max_age_years": 4
+  },
+  "expect_failure": true,
+  "expect_failure_type": "flag",
+  "expect_failure_detail": "stale_sources",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

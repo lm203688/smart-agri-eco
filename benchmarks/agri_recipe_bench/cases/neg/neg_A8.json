@@ -1,0 +1,21 @@
+{
+  "id": "neg_A8",
+  "axis": "negative_input_bounds",
+  "case_type": "negative",
+  "description": "空字符串作物：crop='' 应被拒绝",
+  "input": {
+    "crop": "",
+    "zone_id": "mediterranean",
+    "days": 120
+  },
+  "expect_failure": true,
+  "expect_failure_type": "InputError",
+  "expect_failure_detail": "core/numeric_domain.not_empty_string",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

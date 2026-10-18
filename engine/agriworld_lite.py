@@ -35,6 +35,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 # 用 core/numeric_domain.py 提供的 bounded/positive/known_enum/non_negative
 # 在机理核心函数入口做物理/统计/类型校验，杜绝 GIGO 静默通过。
 from core.numeric_domain import bounded, known_enum, non_negative, positive
+from core.crop_registry import ENGINE_CROPS  # S1.4：作物枚举单一来源
 
 
 # ---------------------------------------------------------------------------
@@ -669,8 +670,7 @@ def simulate(crop: str, actions: Sequence[DailyInput],
 # 物理约束冲突检测（供 verify_service 复用）
 # ---------------------------------------------------------------------------
 
-@known_enum("crop", {"potato", "wheat", "soybean", "sunflower", "rice",
-                     "sweetpotato", "mungbean"})
+@known_enum("crop", ENGINE_CROPS)
 @positive("dli_mj_m2_d")
 @bounded("days", 1, 365)
 def theoretical_yield_cap(crop: str, dli_mj_m2_d: float, days: int) -> float:

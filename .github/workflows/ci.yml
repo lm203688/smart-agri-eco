@@ -158,7 +158,9 @@ jobs:
           python scripts/gate_tool_schema.py
           echo "▶ gate_mechanism_gigo"
           python scripts/gate_mechanism_gigo.py
-          echo "✅ 7 门禁全部通过"
+          echo "▶ check_immutable_zone_paths"
+          python scripts/check_immutable_zone_paths.py
+          echo "✅ 8 门禁全部通过"
 
       - name: MCP 命名空间守卫（防 pip mcp 包遮蔽项目 mcp/ 目录）
         run: python scripts/check_mcp_namespace.py
@@ -170,6 +172,16 @@ jobs:
         run: |
           python benchmarks/agri_recipe_bench/run_bench.py --strict
           python -m unittest scripts.test_agri_recipe_bench -v
+
+      - name: Bench 负例回归（S1.2：A/B/C/D 四类共 20 个，全部映射到真实代码路径）
+        run: |
+          python benchmarks/agri_recipe_bench/run_bench.py --axis negative --summary --strict
+          python -m benchmarks.agri_recipe_bench.negative_runner
+
+      - name: Bench 统计纪律（S1.3：多种子重复实验 + 历史分析 → stat_summary.json）
+        run: |
+          python benchmarks/agri_recipe_bench/run_bench.py --repeats 5 --seed 20241018 --fraction 0.8 --strict
+          python benchmarks/agri_recipe_bench/stat_report.py
 
       - name: M15-B5 评测先行门禁（科学模块 bench 覆盖率）
         run: python scripts/check_bench_coverage.py --gate
@@ -199,6 +211,32 @@ jobs:
 
       - name: E4 科学模块 Golden Vectors 回归门禁
         run: python scripts/run_golden_vectors.py --strict
+
+      - name: S1.1 文献 DOI 逐条核对（SCI 投稿前置，防猜测 DOI）
+        run: python scripts/validate_references.py --fast
+
+      - name: S1.4 机理内核边界契约 + 作物注册表漂移守卫（SCI 投稿前置）
+        run: |
+          python scripts/test_mechanism_domain.py
+          python scripts/test_crop_registry.py
+
+      - name: S1.5 外部 baseline 对比（Köppen 复算 + 溯源审计，SCI 投稿前置）
+        run: python benchmarks/baseline_external/run_baseline.py --strict
+
+      - name: S2-A1 物候一致性交叉验证（7 作物 × 5 温度 + TBASE 边界 + 单调性）
+        run: python scripts/s2_a1_phenology_consistency.py --strict
+
+      - name: S2-A2 Köppen 分区一致性（栅格↔分区类集合对账 + 溯源引用链）
+        run: python scripts/s2_a2_koppen_consistency.py --strict
+
+      - name: S2-A3 包络稳健性验证（152 配方 × ±10% 温度扰动）
+        run: python scripts/s2_a3_envelope_robustness.py --strict
+
+      - name: S2-A4 可复现性证据打包（零依赖审计 + 文件指纹 + 复现命令）
+        run: python scripts/s2_a4_reproduction_packaging.py --strict
+
+      - name: S3.1 论文组件生成器（4 表 + 2 图，全部源自 benchmarks/results/*.json）
+        run: python scripts/paper_tables.py --strict
 
       - name: M9-X1 影子执行日志（RSI L1 execution_log 门闭合证据）
         run: |

@@ -57,3 +57,5 @@ dist/
 # 部署配置（含 ECS 主机地址等环境信息，不入公开仓库；模板见 deploy_config.example.sh）
 deploy/deploy_config.sh
 
+.pytest_cache/
+.workbuddy-ai/

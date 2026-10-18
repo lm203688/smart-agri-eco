@@ -35,6 +35,8 @@ from agent.forecast_agent import ForecastAgent  # noqa: E402
 from core.clock import CLOCK  # noqa: E402
 
 CASES_DIR = os.path.join(HERE, "cases")
+NEG_CASES_DIR = os.path.join(HERE, "cases", "neg")
+NEG_RUNNER_PATH = os.path.join(HERE, "negative_runner.py")
 HISTORY_PATH = os.path.join(HERE, "results_history.json")
 LEADERBOARD_PATH = os.path.join(HERE, "leaderboard.html")
 
@@ -217,23 +219,59 @@ def _normalize_input(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 # ---------- 用例加载 ----------
 
-def load_cases() -> List[Dict[str, Any]]:
-    """扫描 cases/ 下所有 JSON，返回按 id 排序的用例列表。"""
+def load_cases(include_negative: bool = True) -> List[Dict[str, Any]]:
+    """扫描 cases/ 下所有 JSON，返回按 id 排序的用例列表。
+
+    S1.2：cases/neg/ 下的负例骨架（case_type=negative）一并纳入，
+    由 run_case 分派给 negative_runner 的真实校验器。
+    """
     if not os.path.isdir(CASES_DIR):
         raise FileNotFoundError(f"cases 目录不存在: {CASES_DIR}")
     out = []
-    for name in sorted(os.listdir(CASES_DIR)):
-        if not name.endswith(".json"):
-            continue
-        path = os.path.join(CASES_DIR, name)
-        with open(path, "r", encoding="utf-8") as f:
-            c = json.load(f)
-        # 必填字段校验
-        for k in ("id", "axis", "input"):
-            if k not in c:
-                raise ValueError(f"{name}: 缺 {k}")
-        out.append(c)
+    dirs = [CASES_DIR]
+    if include_negative and os.path.isdir(NEG_CASES_DIR):
+        dirs.append(NEG_CASES_DIR)
+    for base in dirs:
+        for name in sorted(os.listdir(base)):
+            if not name.endswith(".json"):
+                continue
+            path = os.path.join(base, name)
+            with open(path, "r", encoding="utf-8") as f:
+                c = json.load(f)
+            # 必填字段校验（负例同样具备 id/axis/input，只是无 expected 数值期望）
+            for k in ("id", "axis", "input"):
+                if k not in c:
+                    raise ValueError(f"{name}: 缺 {k}")
+            out.append(c)
     return out
+
+
+# ---------- S1.2 负例（case_type=negative）真实校验器接入 ----------
+
+def _import_negative_runner():
+    """延迟导入 negative_runner（其拉入 engine.agriworld_lite，避免拖慢 bench 启动）。
+
+    benchmarks/ 无 __init__.py，直接按文件路径装载最稳。
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("agri_bench_negative_runner", NEG_RUNNER_PATH)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)  # type: ignore[union-attr]
+    return mod
+
+
+def run_negative_case(case: Dict[str, Any]) -> Dict[str, Any]:
+    """负例执行：按 axis/expect_failure_type 分派到真实校验器（不得用桩函数）。"""
+    runner = _import_negative_runner()
+    r = runner.run_negative_case(case)
+    return {
+        "case_id": case["id"],
+        "axis": case.get("axis"),
+        "ok": bool(r.get("ok")),
+        "detail": r.get("detail", ""),
+        "checks": {"verdict": {"ok": bool(r.get("ok")), "detail": r.get("detail", "")}},
+        "expect_failure_type": case.get("expect_failure_type"),
+    }
 
 
 # ---------- 各轴的判定 ----------
@@ -642,6 +680,10 @@ def _compute_conformal_coverage(results: List[Dict[str, Any]]) -> Dict[str, Any]
 
 def run_case(case: Dict[str, Any]) -> Dict[str, Any]:
     axis = case.get("axis")
+    # S1.2：负例（negative_input_bounds / negative_honest_degradation /
+    # negative_counterfactual_invariant / negative_trust_breakage）走真实校验器
+    if case.get("case_type") == "negative" or str(axis or "").startswith("negative_"):
+        return run_negative_case(case)
     runner = AXIS_RUNNERS.get(axis)
     if runner is None:
         return {"case_id": case["id"], "axis": axis, "ok": False,
@@ -662,24 +704,105 @@ def summarize(results: List[Dict[str, Any]]) -> Dict[str, Any]:
         by_axis[a]["total"] += 1
         if r.get("ok"):
             by_axis[a]["passed"] += 1
+
+    # S1.2：把所有 negative_* 轴聚合成单一 "negative" 桶，供 --summary 输出
+    # "negative: 20/20 passed"；同时保留细粒度轴便于 CI 分诊。
+    neg_total = sum(v["total"] for k, v in by_axis.items() if k.startswith("negative_"))
+    neg_passed = sum(v["passed"] for k, v in by_axis.items() if k.startswith("negative_"))
+
     return {
         "total": total,
         "passed": passed,
         "failed": total - passed,
         "pass_rate": round(passed / total, 3) if total else 0.0,
+        "negative": {"total": neg_total, "passed": neg_passed, "failed": neg_total - neg_passed},
         "by_axis": {a: dict(v, pass_rate=round(v["passed"] / v["total"], 3) if v["total"] else 0)
                     for a, v in sorted(by_axis.items())},
         "generated_at": CLOCK.now().isoformat(timespec="seconds"),
     }
 
 
+def _filter_cases(cases: List[Dict[str, Any]], axis: str = "all",
+                  case_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    """按轴 / 用例 id 过滤。negative 是 S1.2 四类负例的聚合别名。
+
+    单一实现：stat_report.filter_cases 委托到本函数，避免判据漂移。
+    """
+    out = list(cases)
+    if axis != "all":
+        if axis == "negative":
+            out = [c for c in out
+                   if c.get("case_type") == "negative"
+                   or str(c.get("axis") or "").startswith("negative_")]
+        else:
+            out = [c for c in out if c.get("axis") == axis]
+    if case_id:
+        out = [c for c in out if c.get("id") == case_id]
+    return out
+
+
+def _run_repeats(args) -> int:
+    """S1.3：多次随机划分实验，报告每个指标 mean±std。
+
+    与单次运行不同：本分支**不写 leaderboard / results_history.json** ——
+    否则 N 次重复会向 M15-B3 历史序列注入抽样噪声，而那里要证明的恰恰是
+    "方差为零"这一事实。统计判据（mean/std/抽样）复用 stat_report.py。
+    """
+    try:
+        import stat_report  # 同目录；脚本模式下 HERE 在 sys.path[0]
+    except ImportError:  # noqa: BLE001
+        from benchmarks.agri_recipe_bench import stat_report  # type: ignore[no-redef]
+
+    try:
+        cases = _filter_cases(load_cases(), args.axis, args.case)
+    except Exception as e:  # noqa: BLE001
+        print(f"❌ 用例加载失败: {e}", file=sys.stderr)
+        return 2
+    if not cases:
+        print("⏭ 无匹配用例")
+        return 0
+
+    rep = stat_report.repeat_experiment(args.repeats, args.seed, args.fraction, cases=cases)
+
+    if args.json:
+        print(json.dumps({"repeat_experiment": rep}, ensure_ascii=False, indent=2, default=str))
+        return 0
+
+    total_runs = sum(r["n_cases"] for r in rep["runs"])
+    total_failed = sum(r["failed"] for r in rep["runs"])
+    print(f"=== AgriRecipeBench 多种子实验（S1.3）：{rep['n_repeats']} 次重复，"
+          f"seed={rep['seed']}，fraction={rep['fraction']}，共 {total_runs} 次运行 ===")
+    for k, v in rep["metrics"].items():
+        print(f"  {k:<20} : {stat_report._fmt(v)}")
+
+    if total_failed:
+        print(f"\n❌ 重复实验中 {total_failed} 个用例失败")
+        return 1 if args.strict else 0
+    print(f"\n✅ {total_runs} 次运行零失败")
+    return 0
+
+
 def main(argv: List[str]) -> int:
     p = argparse.ArgumentParser(description="AgriRecipeBench runner")
-    p.add_argument("--axis", choices=list(AXIS_RUNNERS) + ["all"], default="all")
+    p.add_argument("--axis", choices=list(AXIS_RUNNERS) + ["negative", "all"], default="all",
+                   help="仅跑某轴；negative = S1.2 负例四类聚合")
     p.add_argument("--case", help="仅跑指定 id")
     p.add_argument("--json", action="store_true", help="输出 JSON")
+    p.add_argument("--summary", action="store_true",
+                   help="只输出聚合摘要（含 negative: X/Y passed），适合 CI")
     p.add_argument("--strict", action="store_true", help="失败即退出 1")
+    # S1.3 统计纪律：多次随机划分实验，报告 mean±std（治"648 次恒 1.0"）
+    p.add_argument("--repeats", type=int, default=1,
+                   help="重复运行次数（S1.3）；>1 时每次随机抽样一次用例，报告 mean±std")
+    p.add_argument("--seed", type=int, default=20241018,
+                   help="随机种子基准（S1.3）；第 r 次重复用 seed+r，可完全复现")
+    p.add_argument("--fraction", type=float, default=0.8,
+                   help="每次重复抽取的用例比例（S1.3）；<1 才会产生子集波动")
     args = p.parse_args(argv)
+
+    # S1.3：重复实验走独立分支（不写 leaderboard，避免污染 results_history.json）
+    if args.repeats and args.repeats > 1:
+        return _run_repeats(args)
 
     try:
         cases = load_cases()
@@ -687,10 +810,7 @@ def main(argv: List[str]) -> int:
         print(f"❌ 用例加载失败: {e}", file=sys.stderr)
         return 2
 
-    if args.axis != "all":
-        cases = [c for c in cases if c.get("axis") == args.axis]
-    if args.case:
-        cases = [c for c in cases if c.get("id") == args.case]
+    cases = _filter_cases(cases, args.axis, args.case)
 
     if not cases:
         print("⏭ 无匹配用例")
@@ -751,6 +871,17 @@ def main(argv: List[str]) -> int:
                   f"(coverage={cov:.1%} guarantee≥{guarantee:.1%} q={cc.get('quantile_q')})")
         elif cc.get("reason"):
             print(f"  · conformal_coverage: ⏭ {cc['reason']}")
+
+    # S1.2 / CI：--summary 输出紧凑聚合行，验收判据为 "negative: 20/20 passed"
+    if args.summary:
+        print(f"=== AgriRecipeBench summary @ {summary['generated_at']} ===")
+        for axis, v in summary["by_axis"].items():
+            print(f"  · {axis}: {v['passed']}/{v['total']} passed")
+        neg = summary.get("negative", {})
+        mark = "✅" if neg.get("failed", 0) == 0 else "❌"
+        print(f"  · negative: {mark} {neg.get('passed', 0)}/{neg.get('total', 0)} passed")
+        print(f"总计 {summary['passed']}/{summary['total']} 通过 "
+              f"(pass_rate={summary['pass_rate']})")
 
     if summary["failed"] and args.strict:
         return 1

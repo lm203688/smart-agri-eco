@@ -65,6 +65,31 @@ def _check_whitelist_files(zones: Dict[str, Any]) -> Tuple[bool, List[Dict[str, 
     return len(missing) == 0, missing
 
 
+def _check_immutable_files(zones: Dict[str, Any]) -> Tuple[bool, List[Dict[str, Any]]]:
+    """校验不可进化区（immutable_core.assets[].path）全部真实存在。
+
+    解决 GAP_AUDIT §A4：若 immutable 清单里的路径不存在，evolution 的保护逻辑
+    会静默跳过该文件。启动时即报错，杜绝静默失效。
+    """
+    core = zones.get("immutable_core")
+    if not isinstance(core, dict):
+        return False, [{"path": "immutable_core", "reason": "missing_or_not_dict"}]
+    assets = core.get("assets")
+    if not isinstance(assets, list):
+        return False, [{"path": "immutable_core.assets", "reason": "missing_or_not_list"}]
+    missing = []
+    for a in assets:
+        if not isinstance(a, dict):
+            continue
+        p = a.get("path")
+        if not p:
+            continue
+        full = os.path.join(ROOT, p.rstrip("/"))
+        if not os.path.exists(full):
+            missing.append({"path": p, "reason": "not_found"})
+    return len(missing) == 0, missing
+
+
 def _score_evolution_benchmark() -> Dict[str, Any]:
     """跑 evolution benchmark 并返回分数摘要。"""
     import engine.evolution as ev
@@ -99,6 +124,15 @@ def run_gate(min_score: float = 0.5) -> Dict[str, Any]:
             "exit_code": 2,
         }
 
+    ok_imm, imm_missing = _check_immutable_files(zones)
+    if not ok_imm:
+        return {
+            "status": "config_error",
+            "error": "不可进化区路径缺失（GAP_AUDIT §A4）",
+            "missing_files": imm_missing,
+            "exit_code": 2,
+        }
+
     try:
         score_info = _score_evolution_benchmark()
     except Exception as e:  # noqa: BLE001
@@ -129,9 +163,19 @@ def check_files_only() -> Dict[str, Any]:
     """只检查棘轮白名单文件是否存在（不跑 benchmark）。"""
     zones = _load_zones()
     ok, missing = _check_whitelist_files(zones)
-    return {"status": "passed" if ok else "config_error",
+    if not ok:
+        return {"status": "config_error",
+                "missing_files": missing,
+                "exit_code": 2}
+    ok_imm, imm_missing = _check_immutable_files(zones)
+    if not ok_imm:
+        return {"status": "config_error",
+                "error": "不可进化区路径缺失（GAP_AUDIT §A4）",
+                "missing_files": imm_missing,
+                "exit_code": 2}
+    return {"status": "passed",
             "missing_files": missing,
-            "exit_code": 0 if ok else 2}
+            "exit_code": 0}
 
 
 def main() -> int:

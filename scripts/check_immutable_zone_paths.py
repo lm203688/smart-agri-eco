@@ -37,20 +37,36 @@ def extract_core_objective_immutable_paths() -> list[str]:
 
     text = CORE_OBJ.read_text(encoding="utf-8")
 
-    # 找 §10.1 到 §10.2 之间的内容
-    m = re.search(r"###\s*10\.1.*?(\|.*?\n)+", text, re.DOTALL)
+    # 找 §10.1 区间里「不可进化区」那张表：从 §10.1 到「可进化区」标记为止
+    m = re.search(r"###\s*10\.1.*?(?=\n\*\*可进化区|\n###\s*10\.2)", text, re.DOTALL)
     if not m:
-        print("❌ 找不到 CORE_OBJECTIVE §10.1 表格")
+        print("❌ 找不到 CORE_OBJECTIVE §10.1 区间")
         return []
 
     section = m.group(0)
-    paths = []
+    paths: list[str] = []
     for line in section.split("\n"):
-        # 匹配表格行：| `path` | description |
+        # 匹配表格数据行：| `path` | description |
         pm = re.match(r"\|\s*`([^`]+)`\s*\|", line)
-        if pm:
-            paths.append(pm.group(1))
-    return paths
+        if not pm:
+            continue
+        token = pm.group(1).strip()
+        # 跳过表头（资产 / 路径）与分隔行
+        if token in ("资产", "路径", "Asset", "Path"):
+            continue
+        if set(token) <= set("-"):  # 分隔行 |---|---|
+            continue
+        # 只保留像路径的 token（含斜杠，或已知扩展名），过滤掉表头误匹配
+        if "/" in token or token.endswith((".py", ".json", ".md", ".yml", ".yaml")):
+            paths.append(token)
+    # 去重保序
+    seen: set[str] = set()
+    out: list[str] = []
+    for p in paths:
+        if p not in seen:
+            seen.add(p)
+            out.append(p)
+    return out
 
 
 def check_evolution_zones_consistency(core_paths: list[str]) -> list[str]:
@@ -66,13 +82,17 @@ def check_evolution_zones_consistency(core_paths: list[str]) -> list[str]:
         errs.append(f"❌ evolution_zones.json 解析失败: {e}")
         return errs
 
-    # 检查 immutable 列表
-    immutable = zones.get("immutable", zones.get("immutable_zones", []))
-    if not isinstance(immutable, list):
-        errs.append("❌ evolution_zones.json 的 immutable 字段不是数组")
+    # 读取 immutable_core.assets[].path（evolution_zones.json 的真实 schema）
+    immutable_core = zones.get("immutable_core")
+    if not isinstance(immutable_core, dict):
+        errs.append("❌ evolution_zones.json 缺少 immutable_core 对象")
+        return errs
+    assets = immutable_core.get("assets")
+    if not isinstance(assets, list):
+        errs.append("❌ evolution_zones.json immutable_core.assets 不是数组")
         return errs
 
-    evo_immutable = set(immutable)
+    evo_immutable = {a["path"] for a in assets if isinstance(a, dict) and "path" in a}
     core_immutable = set(core_paths)
 
     # 只检查文件路径（目录以 / 结尾的不做精确匹配）

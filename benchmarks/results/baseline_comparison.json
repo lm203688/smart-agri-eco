@@ -1,0 +1,519 @@
+{
+  "generated_by": "benchmarks/baseline_external/run_baseline.py",
+  "roadmap_task": "S1.5",
+  "baseline": "Köppen-Geiger 复算（Kottek 2006 / Trubert 2009 / Peel 2007）+ NASA POWER 气候基线",
+  "baseline_selection": {
+    "roadmap_proposal": "FAO GAEZ v4 分区交叉表（推荐项）",
+    "substituted": true,
+    "reasons": [
+      "仓库内无 GAEZ 数据；GAEZ v4 原始栅格为数 GB 级 GeoTIFF，需 geopandas/rasterio，违反本项目核心纯标准库的零依赖硬约束。",
+      "GAEZ v4 需按 FAO 条款署名说明用途，离线自动化无法自动完成署名链条。",
+      "数 GB 下载在 CI 中不稳定，会削弱论文可复现性。"
+    ],
+    "substitute_data": "data/zone_meta/global_zones.json -> climate_baseline（NASA POWER，public domain，每分区附 url + accessed_at + years_used，可独立复核）",
+    "substitute_method": "公开发表的 Köppen-Geiger 决策树，非项目自有规则 → 不构成自我验证"
+  },
+  "summary_table": {
+    "part1_zone_koppen": {
+      "n": 8,
+      "primary_agree_literal": "2/8",
+      "primary_agree_corrected": "8/8",
+      "full_agree_corrected": "6/8"
+    },
+    "part2_recipe_temperature": {
+      "n": 152,
+      "mean_deviation_c": -3.899,
+      "std_deviation_c": 5.993,
+      "rmse_c": 7.133,
+      "ccc": 0.6581
+    },
+    "part3_provenance": {
+      "claimed": [
+        "NASA POWER"
+      ],
+      "claimed_but_unverified": [],
+      "used_but_unclaimed": [
+        "fetch_monthly_climate (NASA POWER / Open-Meteo)"
+      ]
+    }
+  },
+  "part1_zone_koppen": {
+    "name": "Part 1 — 分区级 Köppen-Geiger 复算",
+    "method": "Kottek et al. 2006 / Trubert 2009 / Peel Finlayson & Taylor 2007 (含 H 类)",
+    "external_reference": "data/zone_meta/global_zones.json -> climate_baseline (NASA POWER, public domain)",
+    "interpretation_literal_mm_per_month": {
+      "description": "按字段名 monthly_precip_mm 的字面含义解读（mm/月，直接求和为年降水）",
+      "agreement": {
+        "n": 8,
+        "primary_agree": 2,
+        "primary_agree_rate": 0.25,
+        "full_agree": 1,
+        "full_agree_rate": 0.125
+      },
+      "per_zone": [
+        {
+          "zone_id": "tropical_rainforest",
+          "declared": "Af",
+          "declared_primary_letters": [
+            "A"
+          ],
+          "derived": "BSh",
+          "derived_primary": "B",
+          "rule": "125<=P<250",
+          "diag": {
+            "T1": 25.12,
+            "T2": 24.09,
+            "P_annual_mm": 134.4
+          },
+          "primary_agree": false,
+          "full_agree": false
+        },
+        {
+          "zone_id": "subtropical_wet",
+          "declared": "Cfa/Cwa",
+          "declared_primary_letters": [
+            "C",
+            "C"
+          ],
+          "derived": "BWh",
+          "derived_primary": "B",
+          "rule": "P<125",
+          "diag": {
+            "T1": 28.7,
+            "T2": 4.44,
+            "P_annual_mm": 55.4
+          },
+          "primary_agree": false,
+          "full_agree": false
+        },
+        {
+          "zone_id": "temperate_continental",
+          "declared": "Dfa/Dfb",
+          "declared_primary_letters": [
+            "D",
+            "D"
+          ],
+          "derived": "BWh",
+          "derived_primary": "B",
+          "rule": "P<125",
+          "diag": {
+            "T1": 26.71,
+            "T2": -4.66,
+            "P_annual_mm": 21.2
+          },
+          "primary_agree": false,
+          "full_agree": false
+        },
+        {
+          "zone_id": "mediterranean",
+          "declared": "Csa/Csb",
+          "declared_primary_letters": [
+            "C",
+            "C"
+          ],
+          "derived": "BWh",
+          "derived_primary": "B",
+          "rule": "P<125",
+          "diag": {
+            "T1": 27.99,
+            "T2": 9.48,
+            "P_annual_mm": 17.1
+          },
+          "primary_agree": false,
+          "full_agree": false
+        },
+        {
+          "zone_id": "arid",
+          "declared": "BWk/BSk",
+          "declared_primary_letters": [
+            "B",
+            "B"
+          ],
+          "derived": "BWh",
+          "derived_primary": "B",
+          "rule": "P<125",
+          "diag": {
+            "T1": 28.71,
+            "T2": -8.98,
+            "P_annual_mm": 6.3
+          },
+          "primary_agree": true,
+          "full_agree": false
+        },
+        {
+          "zone_id": "subarctic",
+          "declared": "Dfc/Dwc",
+          "declared_primary_letters": [
+            "D",
+            "D"
+          ],
+          "derived": "BWk",
+          "derived_primary": "B",
+          "rule": "P<125",
+          "diag": {
+            "T1": 17.04,
+            "T2": -8.76,
+            "P_annual_mm": 28.4
+          },
+          "primary_agree": false,
+          "full_agree": false
+        },
+        {
+          "zone_id": "hot_arid",
+          "declared": "BWh",
+          "declared_primary_letters": [
+            "B"
+          ],
+          "derived": "BWh",
+          "derived_primary": "B",
+          "rule": "P<125",
+          "diag": {
+            "T1": 36.96,
+            "T2": 14.34,
+            "P_annual_mm": 2.5
+          },
+          "primary_agree": true,
+          "full_agree": true
+        },
+        {
+          "zone_id": "highland",
+          "declared": "H",
+          "declared_primary_letters": [
+            "H"
+          ],
+          "derived": "BWk",
+          "derived_primary": "B",
+          "rule": "P<125",
+          "diag": {
+            "T1": 9.87,
+            "T2": 6.06,
+            "P_annual_mm": 20.6
+          },
+          "primary_agree": false,
+          "full_agree": false
+        }
+      ]
+    },
+    "interpretation_corrected_mm_per_day": {
+      "description": "按 NASA POWER PRECTOT 实际单位 mm/日，年化因子 30.44 天/月",
+      "agreement": {
+        "n": 8,
+        "primary_agree": 8,
+        "primary_agree_rate": 1.0,
+        "full_agree": 6,
+        "full_agree_rate": 0.75
+      },
+      "per_zone": [
+        {
+          "zone_id": "tropical_rainforest",
+          "declared": "Af",
+          "declared_primary_letters": [
+            "A"
+          ],
+          "derived": "Af",
+          "derived_primary": "A",
+          "rule": "coldest>=18C",
+          "diag": {
+            "T1": 25.12,
+            "T2": 24.09,
+            "P_annual_mm": 4089.9
+          },
+          "primary_agree": true,
+          "full_agree": true
+        },
+        {
+          "zone_id": "subtropical_wet",
+          "declared": "Cfa/Cwa",
+          "declared_primary_letters": [
+            "C",
+            "C"
+          ],
+          "derived": "Cfa",
+          "derived_primary": "C",
+          "rule": "humid temperate",
+          "diag": {
+            "T1": 28.7,
+            "T2": 4.44,
+            "P_annual_mm": 1684.7
+          },
+          "primary_agree": true,
+          "full_agree": true
+        },
+        {
+          "zone_id": "temperate_continental",
+          "declared": "Dfa/Dfb",
+          "declared_primary_letters": [
+            "D",
+            "D"
+          ],
+          "derived": "Dfa",
+          "derived_primary": "D",
+          "rule": "coldest<0C",
+          "diag": {
+            "T1": 26.71,
+            "T2": -4.66,
+            "P_annual_mm": 644.7
+          },
+          "primary_agree": true,
+          "full_agree": true
+        },
+        {
+          "zone_id": "mediterranean",
+          "declared": "Csa/Csb",
+          "declared_primary_letters": [
+            "C",
+            "C"
+          ],
+          "derived": "Cfa",
+          "derived_primary": "C",
+          "rule": "humid temperate",
+          "diag": {
+            "T1": 27.99,
+            "T2": 9.48,
+            "P_annual_mm": 522.0
+          },
+          "primary_agree": true,
+          "full_agree": false
+        },
+        {
+          "zone_id": "arid",
+          "declared": "BWk/BSk",
+          "declared_primary_letters": [
+            "B",
+            "B"
+          ],
+          "derived": "BSh",
+          "derived_primary": "B",
+          "rule": "125<=P<250",
+          "diag": {
+            "T1": 28.71,
+            "T2": -8.98,
+            "P_annual_mm": 193.3
+          },
+          "primary_agree": true,
+          "full_agree": false
+        },
+        {
+          "zone_id": "subarctic",
+          "declared": "Dfc/Dwc",
+          "declared_primary_letters": [
+            "D",
+            "D"
+          ],
+          "derived": "Dfc",
+          "derived_primary": "D",
+          "rule": "coldest<0C",
+          "diag": {
+            "T1": 17.04,
+            "T2": -8.76,
+            "P_annual_mm": 863.2
+          },
+          "primary_agree": true,
+          "full_agree": true
+        },
+        {
+          "zone_id": "hot_arid",
+          "declared": "BWh",
+          "declared_primary_letters": [
+            "B"
+          ],
+          "derived": "BWh",
+          "derived_primary": "B",
+          "rule": "P<125",
+          "diag": {
+            "T1": 36.96,
+            "T2": 14.34,
+            "P_annual_mm": 75.2
+          },
+          "primary_agree": true,
+          "full_agree": true
+        },
+        {
+          "zone_id": "highland",
+          "declared": "H",
+          "declared_primary_letters": [
+            "H"
+          ],
+          "derived": "H",
+          "derived_primary": "H",
+          "rule": "warmest<18C & coldest>=0C (Peel 2007 H)",
+          "diag": {
+            "T1": 9.87,
+            "T2": 6.06,
+            "P_annual_mm": 626.4
+          },
+          "primary_agree": true,
+          "full_agree": true
+        }
+      ]
+    },
+    "finding": "按字段名 monthly_precip_mm 的字面含义（mm/月）解读，8 个分区年降水全部落在 2.5–134 mm，全部被判定为 B（干旱）类，主字母一致率仅 2/8。按 NASA POWER PRECTOT 的实际单位（mm/日）年化后，主字母一致率升至 8/8，全部分区的年降水也落回各自声明的降水区间内。结论：这是**字段命名缺陷**（unit mislabeling），不是数据错误——底层 NASA POWER 数据本身与分区声明自洽。论文中应如实披露该缺陷，并在修订 global_zones.json 时把字段改名为 monthly_precip_mm_per_day 或补出真正的月累计值。"
+  },
+  "part2_recipe_temperature": {
+    "name": "Part 2 — 配方级温度包络对比",
+    "pairing": "配方隐含日均温 (day_c+night_c)/2  vs  所属分区最暖月均温（NASA POWER 月温取 max）",
+    "rationale": "配方是生长季环境规格，故与分区最暖月对比；不引入主观昼夜温差假设。",
+    "n": 152,
+    "n_skipped": 0,
+    "skipped_examples": [],
+    "mean_deviation_c": -3.899,
+    "std_deviation_c": 5.993,
+    "rmse_c": 7.133,
+    "ccc": 0.6581,
+    "by_zone": {
+      "arid": {
+        "n": 18,
+        "mean": -4.404,
+        "std": 2.829,
+        "min": -9.71,
+        "max": 0.29
+      },
+      "highland": {
+        "n": 21,
+        "mean": 5.559,
+        "std": 1.452,
+        "min": 2.63,
+        "max": 8.63
+      },
+      "hot_arid": {
+        "n": 21,
+        "mean": -10.912,
+        "std": 2.474,
+        "min": -14.96,
+        "max": -6.96
+      },
+      "mediterranean": {
+        "n": 18,
+        "mean": -6.851,
+        "std": 3.425,
+        "min": -12.99,
+        "max": -1.99
+      },
+      "subarctic": {
+        "n": 18,
+        "mean": -1.429,
+        "std": 2.18,
+        "min": -4.54,
+        "max": 2.96
+      },
+      "subtropical_wet": {
+        "n": 19,
+        "mean": -7.068,
+        "std": 3.651,
+        "min": -13.7,
+        "max": -1.7
+      },
+      "temperate_continental": {
+        "n": 19,
+        "mean": -7.973,
+        "std": 3.698,
+        "min": -13.21,
+        "max": -1.71
+      },
+      "tropical_rainforest": {
+        "n": 18,
+        "mean": 1.88,
+        "std": 1.97,
+        "min": -2.12,
+        "max": 4.88
+      }
+    },
+    "interpretation": "rmse/ccc 衡量配方声明温度与外部气候基线的贴近程度；本指标**不含**对配方物理合理性的判断（那是 A2-α 与 S1.4 的职责）。"
+  },
+  "part3_provenance": {
+    "name": "Part 3 — 溯源声明审计",
+    "claimed_data_sources": [
+      "NASA POWER"
+    ],
+    "actual_climate_baseline_sources": [
+      "NASA POWER",
+      "fetch_monthly_climate (NASA POWER / Open-Meteo)"
+    ],
+    "claimed_but_unverified": [],
+    "used_but_unclaimed": [
+      "fetch_monthly_climate (NASA POWER / Open-Meteo)"
+    ],
+    "all_zones_have_reproducible_url": false,
+    "per_zone": [
+      {
+        "zone_id": "tropical_rainforest",
+        "declared_in_meta": [
+          "NASA POWER"
+        ],
+        "actual_source": "NASA POWER",
+        "has_url": true,
+        "has_accessed_at": true
+      },
+      {
+        "zone_id": "subtropical_wet",
+        "declared_in_meta": [
+          "NASA POWER"
+        ],
+        "actual_source": "NASA POWER",
+        "has_url": true,
+        "has_accessed_at": true
+      },
+      {
+        "zone_id": "temperate_continental",
+        "declared_in_meta": [
+          "NASA POWER"
+        ],
+        "actual_source": "NASA POWER",
+        "has_url": true,
+        "has_accessed_at": true
+      },
+      {
+        "zone_id": "mediterranean",
+        "declared_in_meta": [
+          "NASA POWER"
+        ],
+        "actual_source": "NASA POWER",
+        "has_url": true,
+        "has_accessed_at": true
+      },
+      {
+        "zone_id": "arid",
+        "declared_in_meta": [
+          "NASA POWER"
+        ],
+        "actual_source": "NASA POWER",
+        "has_url": true,
+        "has_accessed_at": true
+      },
+      {
+        "zone_id": "subarctic",
+        "declared_in_meta": [
+          "NASA POWER"
+        ],
+        "actual_source": "NASA POWER",
+        "has_url": true,
+        "has_accessed_at": true
+      },
+      {
+        "zone_id": "hot_arid",
+        "declared_in_meta": [
+          "NASA POWER"
+        ],
+        "actual_source": "fetch_monthly_climate (NASA POWER / Open-Meteo)",
+        "has_url": false,
+        "has_accessed_at": false
+      },
+      {
+        "zone_id": "highland",
+        "declared_in_meta": [
+          "NASA POWER"
+        ],
+        "actual_source": "fetch_monthly_climate (NASA POWER / Open-Meteo)",
+        "has_url": false,
+        "has_accessed_at": false
+      }
+    ]
+  },
+  "honesty_notes": [
+    "本脚本的 Köppen 决策树是**简化实现**，不是 Beck et al. (2018) 1km 真实栅格；与后者的逐像元差异不在本脚本范围内，论文须声明。",
+    "Part 1 的两种单位解释是**诊断性实验**：literal 版保留是为了记录缺陷存在的证据，corrected 版才是对数据真实质量的判断。二者都必须出现在论文里。",
+    "Part 2 的 rmse/ccc 衡量的是**配方声明温度与外部气候基线的贴近程度**，不衡量配方本身的物理合理性（后者由 S1.4 的 34 项边界契约负责）。",
+    "n=8（分区）与 n=152（配方）的统计功效不同：分区级结论是逐条枚举而非抽样推断，配方级均值/标准差是小样本描述统计，不能直接外推为总体参数。",
+    "年化因子取 30.4375 天/月；改为 30 不改变任何分区的判定结果。"
+  ]
+}

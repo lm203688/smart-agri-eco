@@ -1,0 +1,22 @@
+{
+  "id": "neg_D2",
+  "axis": "negative_trust_breakage",
+  "case_type": "negative",
+  "description": "移除 source 后血缘断裂：删掉 sources[0] 后 data_lineage 必须检测到断链",
+  "input": {
+    "recipe_ref": "lineage_test_001",
+    "tamper": {
+      "remove_source_index": 0
+    }
+  },
+  "expect_failure": true,
+  "expect_failure_type": "raise",
+  "expect_failure_detail": "LineageBreakError",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

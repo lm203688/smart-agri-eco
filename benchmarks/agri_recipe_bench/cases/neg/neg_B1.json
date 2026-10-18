@@ -1,0 +1,21 @@
+{
+  "id": "neg_B1",
+  "axis": "negative_honest_degradation",
+  "case_type": "negative",
+  "description": "完全无观测输入：应降级且 confidence=low，不得给出高置信推荐",
+  "input": {
+    "crop": "番茄",
+    "zone_id": "mediterranean",
+    "observations": null
+  },
+  "expect_failure": true,
+  "expect_failure_type": "degrade",
+  "expect_failure_detail": "confidence=low & model=rule_based",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

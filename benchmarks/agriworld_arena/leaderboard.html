@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriWorld-Arena 排行榜</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+       margin: 0; padding: 20px; background: #f5f5f5; color: #333; }
+h1 { color: #2c3e50; }
+h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+.card { background: white; border-radius: 8px; padding: 20px;
+         margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+table { border-collapse: collapse; width: 100%; }
+th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+th { background: #3498db; color: white; }
+tr:nth-child(even) { background: #f9f9f9; }
+tr:hover { background: #e3f2fd; }
+.gold { color: #f39c12; font-weight: bold; }
+.silver { color: #95a5a6; font-weight: bold; }
+.bronze { color: #cd7f32; font-weight: bold; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px;
+          font-size: 12px; font-weight: bold; }
+.badge-high { background: #27ae60; color: white; }
+.badge-mid { background: #f39c12; color: white; }
+.badge-low { background: #e74c3c; color: white; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px; margin: 20px 0; }
+.metric { background: white; padding: 15px; border-radius: 8px;
+           text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.metric .value { font-size: 24px; font-weight: bold; color: #3498db; }
+.metric .label { font-size: 14px; color: #666; margin-top: 5px; }
+</style>
+</head>
+<body>
+<h1>🏆 AgriWorld-Arena 多智能体竞赛排行榜</h1>
+<div class="summary">
+<div class="metric">
+<div class="value">5</div>
+<div class="label">作物数</div>
+</div>
+<div class="metric">
+<div class="value">7</div>
+<div class="label">策略数</div>
+</div>
+<div class="metric">
+<div class="value">high_light</div>
+<div class="label">最佳策略</div>
+</div>
+<div class="metric">
+<div class="value">85.77</div>
+<div class="label">最佳产量 (g/m²)</div>
+</div>
+<div class="metric">
+<div class="value">162.8%</div>
+<div class="label">vs baseline</div>
+</div>
+<div class="metric">
+<div class="value">0.1s</div>
+<div class="label">耗时</div>
+</div>
+</div>
+<h2>全局排行榜（按产量）</h2>
+<div class="card">
+<table>
+<tr><th>排名</th><th>策略</th><th>作物</th><th>产量 (g/m²)</th>
+<th>光合效率</th><th>水分利用效率</th><th>置信度</th></tr>
+<tr>
+<td class="gold">#1</td>
+<td><b>high_light</b><br><small>高光照高水肥（补光4h/天）</small></td>
+<td>wheat</td>
+<td><b>85.77</b></td>
+<td>0.6345</td>
+<td>0.5446</td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="silver">#2</td>
+<td><b>high_co2</b><br><small>高 CO2 环境（600 ppm）</small></td>
+<td>wheat</td>
+<td><b>79.80</b></td>
+<td>0.6856</td>
+<td>0.5911</td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="bronze">#3</td>
+<td><b>high_light</b><br><small>高光照高水肥（补光4h/天）</small></td>
+<td>soybean</td>
+<td><b>61.31</b></td>
+<td>0.4444</td>
+<td>0.3892</td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="">#4</td>
+<td><b>mpc</b><br><small>MPC 闭环控制（模拟器近似）</small></td>
+<td>wheat</td>
+<td><b>59.26</b></td>
+<td>0.5047</td>
+<td>0.4389</td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#5</td>
+<td><b>high_co2</b><br><small>高 CO2 环境（600 ppm）</small></td>
+<td>soybean</td>
+<td><b>58.28</b></td>
+<td>0.4920</td>
+<td>0.4317</td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#6</td>
+<td><b>dual_track</b><br><small>双轨推荐（机理+启发式折中）</small></td>
+<td>wheat</td>
+<td><b>56.75</b></td>
+<td>0.4797</td>
+<td>0.4204</td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#7</td>
+<td><b>high_light</b><br><small>高光照高水肥（补光4h/天）</small></td>
+<td>potato</td>
+<td><b>46.60</b></td>
+<td>0.3361</td>
+<td>0.2959</td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="">#8</td>
+<td><b>baseline</b><br><small>标准条件（对照组）</small></td>
+<td>wheat</td>
+<td><b>45.70</b></td>
+<td>0.5853</td>
+<td>0.5077</td>
+<td><span class="badge badge-high">100%</span></td>
+</tr>
+<tr>
+<td class="">#9</td>
+<td><b>high_light</b><br><small>高光照高水肥（补光4h/天）</small></td>
+<td>rice</td>
+<td><b>45.13</b></td>
+<td>0.3228</td>
+<td>0.2865</td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="">#10</td>
+<td><b>mpc</b><br><small>MPC 闭环控制（模拟器近似）</small></td>
+<td>soybean</td>
+<td><b>44.63</b></td>
+<td>0.3743</td>
+<td>0.3306</td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#11</td>
+<td><b>high_co2</b><br><small>高 CO2 环境（600 ppm）</small></td>
+<td>potato</td>
+<td><b>43.87</b></td>
+<td>0.3688</td>
+<td>0.3250</td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#12</td>
+<td><b>dual_track</b><br><small>双轨推荐（机理+启发式折中）</small></td>
+<td>soybean</td>
+<td><b>43.48</b></td>
+<td>0.3625</td>
+<td>0.3221</td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#13</td>
+<td><b>high_light</b><br><small>高光照高水肥（补光4h/天）</small></td>
+<td>sweetpotato</td>
+<td><b>43.46</b></td>
+<td>0.3089</td>
+<td>0.2760</td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="">#14</td>
+<td><b>high_co2</b><br><small>高 CO2 环境（600 ppm）</small></td>
+<td>rice</td>
+<td><b>42.65</b></td>
+<td>0.3559</td>
+<td>0.3159</td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#15</td>
+<td><b>high_co2</b><br><small>高 CO2 环境（600 ppm）</small></td>
+<td>sweetpotato</td>
+<td><b>41.17</b></td>
+<td>0.3416</td>
+<td>0.3050</td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#16</td>
+<td><b>mpc</b><br><small>MPC 闭环控制（模拟器近似）</small></td>
+<td>rice</td>
+<td><b>34.30</b></td>
+<td>0.2847</td>
+<td>0.2541</td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#17</td>
+<td><b>baseline</b><br><small>标准条件（对照组）</small></td>
+<td>soybean</td>
+<td><b>33.98</b></td>
+<td>0.4274</td>
+<td>0.3776</td>
+<td><span class="badge badge-high">100%</span></td>
+</tr>
+<tr>
+<td class="">#18</td>
+<td><b>dual_track</b><br><small>双轨推荐（机理+启发式折中）</small></td>
+<td>rice</td>
+<td><b>33.72</b></td>
+<td>0.2785</td>
+<td>0.2498</td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#19</td>
+<td><b>mpc</b><br><small>MPC 闭环控制（模拟器近似）</small></td>
+<td>sweetpotato</td>
+<td><b>33.44</b></td>
+<td>0.2761</td>
+<td>0.2477</td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#20</td>
+<td><b>dual_track</b><br><small>双轨推荐（机理+启发式折中）</small></td>
+<td>sweetpotato</td>
+<td><b>32.75</b></td>
+<td>0.2692</td>
+<td>0.2426</td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+</table></div><h2>potato 排行榜</h2>
+<div class="card">
+<table>
+<tr><th>排名</th><th>策略</th><th>产量 (g/m²)</th><th>置信度</th></tr>
+<tr>
+<td class="gold">#1</td>
+<td>high_light</td>
+<td><b>46.60</b></td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="silver">#2</td>
+<td>high_co2</td>
+<td><b>43.87</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="bronze">#3</td>
+<td>mpc</td>
+<td><b>29.20</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#4</td>
+<td>baseline</td>
+<td><b>28.45</b></td>
+<td><span class="badge badge-high">100%</span></td>
+</tr>
+<tr>
+<td class="">#5</td>
+<td>dual_track</td>
+<td><b>24.62</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#6</td>
+<td>water_stress</td>
+<td><b>21.00</b></td>
+<td><span class="badge badge-high">90%</span></td>
+</tr>
+<tr>
+<td class="">#7</td>
+<td>high_temp</td>
+<td><b>0.00</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+</table></div><h2>wheat 排行榜</h2>
+<div class="card">
+<table>
+<tr><th>排名</th><th>策略</th><th>产量 (g/m²)</th><th>置信度</th></tr>
+<tr>
+<td class="gold">#1</td>
+<td>high_light</td>
+<td><b>85.77</b></td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="silver">#2</td>
+<td>high_co2</td>
+<td><b>79.80</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="bronze">#3</td>
+<td>mpc</td>
+<td><b>59.26</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#4</td>
+<td>dual_track</td>
+<td><b>56.75</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#5</td>
+<td>baseline</td>
+<td><b>45.70</b></td>
+<td><span class="badge badge-high">100%</span></td>
+</tr>
+<tr>
+<td class="">#6</td>
+<td>water_stress</td>
+<td><b>28.77</b></td>
+<td><span class="badge badge-high">90%</span></td>
+</tr>
+<tr>
+<td class="">#7</td>
+<td>high_temp</td>
+<td><b>28.16</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+</table></div><h2>soybean 排行榜</h2>
+<div class="card">
+<table>
+<tr><th>排名</th><th>策略</th><th>产量 (g/m²)</th><th>置信度</th></tr>
+<tr>
+<td class="gold">#1</td>
+<td>high_light</td>
+<td><b>61.31</b></td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="silver">#2</td>
+<td>high_co2</td>
+<td><b>58.28</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="bronze">#3</td>
+<td>mpc</td>
+<td><b>44.63</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#4</td>
+<td>dual_track</td>
+<td><b>43.48</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#5</td>
+<td>baseline</td>
+<td><b>33.98</b></td>
+<td><span class="badge badge-high">100%</span></td>
+</tr>
+<tr>
+<td class="">#6</td>
+<td>high_temp</td>
+<td><b>32.05</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#7</td>
+<td>water_stress</td>
+<td><b>24.39</b></td>
+<td><span class="badge badge-high">90%</span></td>
+</tr>
+</table></div><h2>rice 排行榜</h2>
+<div class="card">
+<table>
+<tr><th>排名</th><th>策略</th><th>产量 (g/m²)</th><th>置信度</th></tr>
+<tr>
+<td class="gold">#1</td>
+<td>high_light</td>
+<td><b>45.13</b></td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="silver">#2</td>
+<td>high_co2</td>
+<td><b>42.65</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="bronze">#3</td>
+<td>mpc</td>
+<td><b>34.30</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#4</td>
+<td>dual_track</td>
+<td><b>33.72</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#5</td>
+<td>baseline</td>
+<td><b>27.30</b></td>
+<td><span class="badge badge-high">100%</span></td>
+</tr>
+<tr>
+<td class="">#6</td>
+<td>high_temp</td>
+<td><b>26.56</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#7</td>
+<td>water_stress</td>
+<td><b>21.57</b></td>
+<td><span class="badge badge-high">90%</span></td>
+</tr>
+</table></div><h2>sweetpotato 排行榜</h2>
+<div class="card">
+<table>
+<tr><th>排名</th><th>策略</th><th>产量 (g/m²)</th><th>置信度</th></tr>
+<tr>
+<td class="gold">#1</td>
+<td>high_light</td>
+<td><b>43.46</b></td>
+<td><span class="badge badge-mid">80%</span></td>
+</tr>
+<tr>
+<td class="silver">#2</td>
+<td>high_co2</td>
+<td><b>41.17</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="bronze">#3</td>
+<td>mpc</td>
+<td><b>33.44</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#4</td>
+<td>dual_track</td>
+<td><b>32.75</b></td>
+<td><span class="badge badge-high">85%</span></td>
+</tr>
+<tr>
+<td class="">#5</td>
+<td>baseline</td>
+<td><b>27.73</b></td>
+<td><span class="badge badge-high">100%</span></td>
+</tr>
+<tr>
+<td class="">#6</td>
+<td>high_temp</td>
+<td><b>26.65</b></td>
+<td><span class="badge badge-mid">70%</span></td>
+</tr>
+<tr>
+<td class="">#7</td>
+<td>water_stress</td>
+<td><b>22.04</b></td>
+<td><span class="badge badge-high">90%</span></td>
+</tr>
+</table></div>
+<div style="margin-top:30px; text-align:center; color:#666; font-size:12px;">
+生成时间: 2026-10-18T09:38:14Z | 
+种子: 42 | 
+天数: 45 |
+耗时: 0.1s
+</div>
+</body>
+</html>

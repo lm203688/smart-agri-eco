@@ -1,0 +1,618 @@
+{
+  "calibration_summary": {
+    "avg_improved_pct": 29.33,
+    "elapsed_sec": 55.94,
+    "generated_at": "2026-10-18T09:39:09Z",
+    "n_bootstraps": 10,
+    "n_crops": 5,
+    "n_samples_per_crop": 3,
+    "success_count": 3
+  },
+  "causal_attributions": {
+    "potato": {
+      "baseline": {
+        "co2_ppm": 420.0,
+        "dli_mj_m2_d": 10.0,
+        "fert_n_mg_l": 30.0,
+        "irrigation_l_m2": 2.0,
+        "temp_mean_c": 22.0
+      },
+      "scenarios": {
+        "高氮": {
+          "dominant_factor": "fert_n_mg_l",
+          "total_delta": 5.8341
+        },
+        "高水": {
+          "dominant_factor": "irrigation_l_m2",
+          "total_delta": 14.7882
+        },
+        "高温": {
+          "dominant_factor": "temp_mean_c",
+          "total_delta": -28.4452
+        }
+      }
+    },
+    "rice": {
+      "baseline": {
+        "co2_ppm": 420.0,
+        "dli_mj_m2_d": 10.0,
+        "fert_n_mg_l": 30.0,
+        "irrigation_l_m2": 2.0,
+        "temp_mean_c": 22.0
+      },
+      "scenarios": {
+        "scenario": {
+          "dominant_factor": "fert_n_mg_l",
+          "total_delta": 5.5974
+        }
+      }
+    },
+    "soybean": {
+      "baseline": {
+        "co2_ppm": 420.0,
+        "dli_mj_m2_d": 10.0,
+        "fert_n_mg_l": 30.0,
+        "irrigation_l_m2": 2.0,
+        "temp_mean_c": 22.0
+      },
+      "scenarios": {
+        "scenario": {
+          "dominant_factor": "fert_n_mg_l",
+          "total_delta": 8.2296
+        }
+      }
+    },
+    "sweetpotato": {
+      "baseline": {
+        "co2_ppm": 420.0,
+        "dli_mj_m2_d": 10.0,
+        "fert_n_mg_l": 30.0,
+        "irrigation_l_m2": 2.0,
+        "temp_mean_c": 22.0
+      },
+      "scenarios": {
+        "scenario": {
+          "dominant_factor": "fert_n_mg_l",
+          "total_delta": 4.9781
+        }
+      }
+    },
+    "wheat": {
+      "baseline": {
+        "co2_ppm": 420.0,
+        "dli_mj_m2_d": 10.0,
+        "fert_n_mg_l": 30.0,
+        "irrigation_l_m2": 2.0,
+        "temp_mean_c": 22.0
+      },
+      "scenarios": {
+        "scenario": {
+          "dominant_factor": "fert_n_mg_l",
+          "total_delta": 11.7971
+        }
+      }
+    }
+  },
+  "experiment_recommendations": {
+    "potato": {
+      "best_strategy": "高光照",
+      "top_scored": [
+        {
+          "action": {
+            "dli_mj_m2_d": 15.0,
+            "fert_n_mg_l": 40.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 51.5863,
+          "info_gain": 53.199534,
+          "info_gain_pct": 63.65,
+          "name": "高光照",
+          "utility": 1.0,
+          "yield_std": 10.0556
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 2.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 33.0524,
+          "info_gain": 17.383103,
+          "info_gain_pct": 78.29,
+          "name": "标准",
+          "utility": 0.4837,
+          "yield_std": 5.0063
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.55,
+            "temp_mean_c": 28.0
+          },
+          "expected_yield": 0.0,
+          "info_gain": 0.0,
+          "info_gain_pct": 0.0,
+          "name": "高温",
+          "utility": 0.0,
+          "yield_std": 0.0
+        }
+      ]
+    },
+    "rice": {
+      "best_strategy": "高光照",
+      "top_scored": [
+        {
+          "action": {
+            "dli_mj_m2_d": 15.0,
+            "fert_n_mg_l": 40.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 49.5052,
+          "info_gain": 45.497826,
+          "info_gain_pct": 62.9,
+          "name": "高光照",
+          "utility": 1.0,
+          "yield_std": 9.1973
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.55,
+            "temp_mean_c": 28.0
+          },
+          "expected_yield": 31.5005,
+          "info_gain": 16.243595,
+          "info_gain_pct": 61.15,
+          "name": "高温",
+          "utility": 0.4967,
+          "yield_std": 5.4709
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 2.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 31.6649,
+          "info_gain": 15.114613,
+          "info_gain_pct": 75.17,
+          "name": "标准",
+          "utility": 0.4859,
+          "yield_std": 4.7811
+        }
+      ]
+    },
+    "soybean": {
+      "best_strategy": "高光照",
+      "top_scored": [
+        {
+          "action": {
+            "dli_mj_m2_d": 15.0,
+            "fert_n_mg_l": 40.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 67.4067,
+          "info_gain": 94.385278,
+          "info_gain_pct": 60.82,
+          "name": "高光照",
+          "utility": 1.0,
+          "yield_std": 13.6722
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.55,
+            "temp_mean_c": 28.0
+          },
+          "expected_yield": 38.4275,
+          "info_gain": 29.870215,
+          "info_gain_pct": 60.16,
+          "name": "高温",
+          "utility": 0.4433,
+          "yield_std": 7.5159
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 2.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 39.9272,
+          "info_gain": 27.072521,
+          "info_gain_pct": 68.65,
+          "name": "标准",
+          "utility": 0.4396,
+          "yield_std": 6.864
+        }
+      ]
+    },
+    "sweetpotato": {
+      "best_strategy": "高光照",
+      "top_scored": [
+        {
+          "action": {
+            "dli_mj_m2_d": 15.0,
+            "fert_n_mg_l": 40.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 47.7492,
+          "info_gain": 41.425013,
+          "info_gain_pct": 64.45,
+          "name": "高光照",
+          "utility": 1.0,
+          "yield_std": 8.6667
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 2.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 31.9532,
+          "info_gain": 14.762272,
+          "info_gain_pct": 77.78,
+          "name": "标准",
+          "utility": 0.5128,
+          "yield_std": 4.5866
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.55,
+            "temp_mean_c": 28.0
+          },
+          "expected_yield": 31.2126,
+          "info_gain": 14.324098,
+          "info_gain_pct": 61.57,
+          "name": "高温",
+          "utility": 0.4997,
+          "yield_std": 5.0844
+        }
+      ]
+    },
+    "wheat": {
+      "best_strategy": "高光照",
+      "top_scored": [
+        {
+          "action": {
+            "dli_mj_m2_d": 15.0,
+            "fert_n_mg_l": 40.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 95.0174,
+          "info_gain": 210.982781,
+          "info_gain_pct": 59.22,
+          "name": "高光照",
+          "utility": 1.0,
+          "yield_std": 20.9019
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 2.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.6,
+            "temp_mean_c": 22.0
+          },
+          "expected_yield": 54.7694,
+          "info_gain": 62.041752,
+          "info_gain_pct": 63.37,
+          "name": "标准",
+          "utility": 0.4352,
+          "yield_std": 10.9478
+        },
+        {
+          "action": {
+            "dli_mj_m2_d": 10.0,
+            "fert_n_mg_l": 30.0,
+            "irrigation_l_m2": 3.0,
+            "light_ext_hours": 0.0,
+            "rh": 0.55,
+            "temp_mean_c": 28.0
+          },
+          "expected_yield": 34.1733,
+          "info_gain": 26.342617,
+          "info_gain_pct": 59.86,
+          "name": "高温",
+          "utility": 0.2423,
+          "yield_std": 7.1596
+        }
+      ]
+    }
+  },
+  "generated_at": "2026-10-18T09:39:14Z",
+  "known_biases": [
+    {
+      "affected_crops": [
+        "potato"
+      ],
+      "bias": "温度响应在 t_opt_c=17 (potato) 时高估产量",
+      "mitigation": "降低 t_opt_c 或使用条件保形区间"
+    },
+    {
+      "affected_crops": [
+        "all"
+      ],
+      "bias": "氮素响应在超充足时边际递减",
+      "mitigation": "限制 fert_n_mg_l ≤ 50"
+    },
+    {
+      "affected_crops": [
+        "all"
+      ],
+      "bias": "DLI 饱和阈值 10 MJ 以上递减",
+      "mitigation": "补光控制在 10 MJ 以内"
+    }
+  ],
+  "n_crops": 5,
+  "parameter_recommendations": {
+    "potato": {
+      "alpha_max": {
+        "ci_lower": 18.579425,
+        "ci_upper": 28.73841,
+        "current": 24.0,
+        "improvement_pct": 41.95,
+        "recommended": 21.948198,
+        "source": "bayesian_MAP"
+      },
+      "k_ext": {
+        "ci_lower": 0.15,
+        "ci_upper": 1.15,
+        "current": 0.62,
+        "improvement_pct": 41.95,
+        "recommended": 0.6,
+        "source": "bayesian_MAP"
+      },
+      "rho_gr": {
+        "ci_lower": -0.05,
+        "ci_upper": 0.25,
+        "current": 0.12,
+        "improvement_pct": 41.95,
+        "recommended": 0.01,
+        "source": "bayesian_MAP"
+      },
+      "rho_lv": {
+        "ci_lower": 0.018,
+        "ci_upper": 0.018,
+        "current": 0.02,
+        "improvement_pct": 41.95,
+        "recommended": 0.018,
+        "source": "bayesian_MAP"
+      },
+      "sla_m2_g": {
+        "ci_lower": 2.5,
+        "ci_upper": 2.5,
+        "current": 3.0,
+        "improvement_pct": 41.95,
+        "recommended": 2.5,
+        "source": "bayesian_MAP"
+      }
+    },
+    "rice": {
+      "alpha_max": {
+        "ci_lower": 24.0,
+        "ci_upper": 24.0,
+        "current": 23.0,
+        "improvement_pct": -14.39,
+        "recommended": 24.0,
+        "source": "bayesian_MAP"
+      },
+      "k_ext": {
+        "ci_lower": 0.65,
+        "ci_upper": 1.15,
+        "current": 0.62,
+        "improvement_pct": -14.39,
+        "recommended": 0.95,
+        "source": "bayesian_MAP"
+      },
+      "rho_gr": {
+        "ci_lower": -0.05,
+        "ci_upper": 0.25,
+        "current": 0.11,
+        "improvement_pct": -14.39,
+        "recommended": 0.07,
+        "source": "bayesian_MAP"
+      },
+      "rho_lv": {
+        "ci_lower": -0.012,
+        "ci_upper": 0.048,
+        "current": 0.016,
+        "improvement_pct": -14.39,
+        "recommended": 0.021,
+        "source": "bayesian_MAP"
+      },
+      "sla_m2_g": {
+        "ci_lower": 2.5,
+        "ci_upper": 6.0,
+        "current": 3.0,
+        "improvement_pct": -14.39,
+        "recommended": 3.2,
+        "source": "bayesian_MAP"
+      }
+    },
+    "soybean": {
+      "alpha_max": {
+        "ci_lower": 24.0,
+        "ci_upper": 24.0,
+        "current": 26.0,
+        "improvement_pct": -29.53,
+        "recommended": 24.0,
+        "source": "bayesian_MAP"
+      },
+      "k_ext": {
+        "ci_lower": 1.15,
+        "ci_upper": 1.15,
+        "current": 0.58,
+        "improvement_pct": -29.53,
+        "recommended": 1.15,
+        "source": "bayesian_MAP"
+      },
+      "rho_gr": {
+        "ci_lower": -0.05,
+        "ci_upper": -0.05,
+        "current": 0.11,
+        "improvement_pct": -29.53,
+        "recommended": -0.05,
+        "source": "bayesian_MAP"
+      },
+      "rho_lv": {
+        "ci_lower": 0.018,
+        "ci_upper": 0.018,
+        "current": 0.017,
+        "improvement_pct": -29.53,
+        "recommended": 0.018,
+        "source": "bayesian_MAP"
+      },
+      "sla_m2_g": {
+        "ci_lower": 2.5,
+        "ci_upper": 2.5,
+        "current": 2.5,
+        "improvement_pct": -29.53,
+        "recommended": 2.5,
+        "source": "bayesian_MAP"
+      }
+    },
+    "sweetpotato": {
+      "alpha_max": {
+        "ci_lower": 24.0,
+        "ci_upper": 24.0,
+        "current": 25.0,
+        "improvement_pct": 63.21,
+        "recommended": 24.0,
+        "source": "bayesian_MAP"
+      },
+      "k_ext": {
+        "ci_lower": 1.15,
+        "ci_upper": 1.15,
+        "current": 0.55,
+        "improvement_pct": 63.21,
+        "recommended": 1.15,
+        "source": "bayesian_MAP"
+      },
+      "rho_gr": {
+        "ci_lower": -0.05,
+        "ci_upper": 0.1,
+        "current": 0.12,
+        "improvement_pct": 63.21,
+        "recommended": -0.005,
+        "source": "bayesian_MAP"
+      },
+      "rho_lv": {
+        "ci_lower": 0.018,
+        "ci_upper": 0.018,
+        "current": 0.018,
+        "improvement_pct": 63.21,
+        "recommended": 0.018,
+        "source": "bayesian_MAP"
+      },
+      "sla_m2_g": {
+        "ci_lower": 2.5,
+        "ci_upper": 2.5,
+        "current": 3.5,
+        "improvement_pct": 63.21,
+        "recommended": 2.5,
+        "source": "bayesian_MAP"
+      }
+    },
+    "wheat": {
+      "alpha_max": {
+        "ci_lower": 24.0,
+        "ci_upper": 24.0,
+        "current": 22.0,
+        "improvement_pct": 85.42,
+        "recommended": 24.0,
+        "source": "bayesian_MAP"
+      },
+      "k_ext": {
+        "ci_lower": 0.15,
+        "ci_upper": 1.15,
+        "current": 0.68,
+        "improvement_pct": 85.42,
+        "recommended": 0.75,
+        "source": "bayesian_MAP"
+      },
+      "rho_gr": {
+        "ci_lower": -0.05,
+        "ci_upper": 0.25,
+        "current": 0.1,
+        "improvement_pct": 85.42,
+        "recommended": -0.02,
+        "source": "bayesian_MAP"
+      },
+      "rho_lv": {
+        "ci_lower": 0.018,
+        "ci_upper": 0.048,
+        "current": 0.018,
+        "improvement_pct": 85.42,
+        "recommended": 0.045,
+        "source": "bayesian_MAP"
+      },
+      "sla_m2_g": {
+        "ci_lower": 2.5,
+        "ci_upper": 2.5,
+        "current": 2.0,
+        "improvement_pct": 85.42,
+        "recommended": 2.5,
+        "source": "bayesian_MAP"
+      }
+    }
+  },
+  "pipeline_elapsed_sec": 60.22,
+  "strategy_rankings": [
+    {
+      "note": "baseline 策略可用",
+      "status": "validated",
+      "strategy": "baseline"
+    },
+    {
+      "note": "MPC 已在模拟器验证（+10.08% vs baseline），真机验证需用户配合",
+      "status": "simulator_only",
+      "strategy": "MPC"
+    },
+    {
+      "note": "dual_track 策略可用",
+      "status": "validated",
+      "strategy": "dual_track"
+    }
+  ]
+}

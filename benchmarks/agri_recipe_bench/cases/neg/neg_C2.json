@@ -1,0 +1,23 @@
+{
+  "id": "neg_C2",
+  "axis": "negative_counterfactual_invariant",
+  "case_type": "negative",
+  "description": "方向反转：温度扰动 +2°C 与 -2°C 的产量差必须异号",
+  "input": {
+    "recipe_ref": "番茄:full_cycle:indoor_cabinet",
+    "perturbation": {
+      "mean_temp_c": 2.0
+    },
+    "steps": 30
+  },
+  "expect_failure": true,
+  "expect_failure_type": "invariant",
+  "expect_failure_detail": "sign(yield(+2) - yield(-2)) != 0",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

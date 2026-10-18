@@ -1,0 +1,24 @@
+{
+  "id": "neg_C4",
+  "axis": "negative_counterfactual_invariant",
+  "case_type": "negative",
+  "description": "复合扰动可加性检验：ΔT 与 ΔD 同时施加 vs 分别施加之差应在容差内",
+  "input": {
+    "recipe_ref": "番茄:full_cycle:indoor_cabinet",
+    "perturbation": {
+      "mean_temp_c": 2.0,
+      "dli": 1.0
+    },
+    "steps": 30
+  },
+  "expect_failure": true,
+  "expect_failure_type": "invariant",
+  "expect_failure_detail": "|joint - (t1 + t2)| <= tolerance",
+  "expected": null,
+  "provenance": {
+    "generated_by": "scripts/gen_negative_cases.py",
+    "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
+    "roadmap_task": "S1.2",
+    "reference_required": true
+  }
+}

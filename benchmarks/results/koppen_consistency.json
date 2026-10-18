@@ -1,0 +1,400 @@
+{
+  "generated_by": "scripts/s2_a2_koppen_consistency.py",
+  "roadmap_task": "S2-A2",
+  "scope": "11946 grid cells × 12 classes ↔ 8 zones × 13 declared classes",
+  "honesty_notes": [
+    "本脚本做**内部一致性**，不是外部真值。栅格 provenance 已自述'启发式分区投影，非 Beck et al. 1km 真实栅格'（脚本会校验此声明在位）。审稿人若问'与真实 1km 栅格差多少'，本脚本给不出答案——须走 Beck et al. (2018) 1km 数据升级路径，届时接口不变、只换数据文件。",
+    "本脚本报告'声明 vs 存在'差异是**发现**，不是失败：分区声明的复合类（如 Cfa/Cwa）与栅格 12 类的实际覆盖之间存在预期缺口，论文须逐条列出并解释成因。",
+    "orphan_classes（栅格有但分区未声明，如 Aw）表示数据冗余，可能来自 generate_koppen_grid.py 的启发式分支，不代表错误，但论文须提及。"
+  ],
+  "class_set_reconciliation": {
+    "declared_by_zones_union": [
+      "Af",
+      "BSk",
+      "BWh",
+      "BWk",
+      "Cfa",
+      "Csa",
+      "Csb",
+      "Cwa",
+      "Dfa",
+      "Dfb",
+      "Dfc",
+      "Dwc",
+      "H"
+    ],
+    "grid_classes": [
+      "Af",
+      "Aw",
+      "BWh",
+      "BWk",
+      "Cfa",
+      "Csa",
+      "Csb",
+      "Cwa",
+      "Dfa",
+      "Dfc",
+      "EF",
+      "H"
+    ],
+    "declared_and_covered": [
+      "Af",
+      "BWh",
+      "BWk",
+      "Cfa",
+      "Csa",
+      "Csb",
+      "Cwa",
+      "Dfa",
+      "Dfc",
+      "H"
+    ],
+    "declared_but_missing_from_grid": [
+      "BSk",
+      "Dfb",
+      "Dwc"
+    ],
+    "grid_but_no_zone_declares": [
+      "Aw",
+      "EF"
+    ],
+    "per_zone_coverage": [
+      {
+        "zone_id": "tropical_rainforest",
+        "declared": [
+          "Af"
+        ],
+        "covered_by_grid": [
+          "Af"
+        ],
+        "missing_from_grid": [],
+        "fully_covered": true
+      },
+      {
+        "zone_id": "subtropical_wet",
+        "declared": [
+          "Cfa",
+          "Cwa"
+        ],
+        "covered_by_grid": [
+          "Cfa",
+          "Cwa"
+        ],
+        "missing_from_grid": [],
+        "fully_covered": true
+      },
+      {
+        "zone_id": "temperate_continental",
+        "declared": [
+          "Dfa",
+          "Dfb"
+        ],
+        "covered_by_grid": [
+          "Dfa"
+        ],
+        "missing_from_grid": [
+          "Dfb"
+        ],
+        "fully_covered": false
+      },
+      {
+        "zone_id": "mediterranean",
+        "declared": [
+          "Csa",
+          "Csb"
+        ],
+        "covered_by_grid": [
+          "Csa",
+          "Csb"
+        ],
+        "missing_from_grid": [],
+        "fully_covered": true
+      },
+      {
+        "zone_id": "arid",
+        "declared": [
+          "BWk",
+          "BSk"
+        ],
+        "covered_by_grid": [
+          "BWk"
+        ],
+        "missing_from_grid": [
+          "BSk"
+        ],
+        "fully_covered": false
+      },
+      {
+        "zone_id": "subarctic",
+        "declared": [
+          "Dfc",
+          "Dwc"
+        ],
+        "covered_by_grid": [
+          "Dfc"
+        ],
+        "missing_from_grid": [
+          "Dwc"
+        ],
+        "fully_covered": false
+      },
+      {
+        "zone_id": "hot_arid",
+        "declared": [
+          "BWh"
+        ],
+        "covered_by_grid": [
+          "BWh"
+        ],
+        "missing_from_grid": [],
+        "fully_covered": true
+      },
+      {
+        "zone_id": "highland",
+        "declared": [
+          "H"
+        ],
+        "covered_by_grid": [
+          "H"
+        ],
+        "missing_from_grid": [],
+        "fully_covered": true
+      }
+    ]
+  },
+  "grid_distribution": {
+    "total_cells": 11946,
+    "classes": [
+      {
+        "class": "Af",
+        "cells": 2358,
+        "share": 0.1974,
+        "declared_by_zones": [
+          "tropical_rainforest"
+        ],
+        "orphan_class": false
+      },
+      {
+        "class": "Aw",
+        "cells": 300,
+        "share": 0.0251,
+        "declared_by_zones": [],
+        "orphan_class": true
+      },
+      {
+        "class": "BWh",
+        "cells": 476,
+        "share": 0.0398,
+        "declared_by_zones": [
+          "hot_arid"
+        ],
+        "orphan_class": false
+      },
+      {
+        "class": "BWk",
+        "cells": 144,
+        "share": 0.0121,
+        "declared_by_zones": [
+          "arid"
+        ],
+        "orphan_class": false
+      },
+      {
+        "class": "Cfa",
+        "cells": 2896,
+        "share": 0.2424,
+        "declared_by_zones": [
+          "subtropical_wet"
+        ],
+        "orphan_class": false
+      },
+      {
+        "class": "Csa",
+        "cells": 294,
+        "share": 0.0246,
+        "declared_by_zones": [
+          "mediterranean"
+        ],
+        "orphan_class": false
+      },
+      {
+        "class": "Csb",
+        "cells": 78,
+        "share": 0.0065,
+        "declared_by_zones": [
+          "mediterranean"
+        ],
+        "orphan_class": false
+      },
+      {
+        "class": "Cwa",
+        "cells": 1369,
+        "share": 0.1146,
+        "declared_by_zones": [
+          "subtropical_wet"
+        ],
+        "orphan_class": false
+      },
+      {
+        "class": "Dfa",
+        "cells": 846,
+        "share": 0.0708,
+        "declared_by_zones": [
+          "temperate_continental"
+        ],
+        "orphan_class": false
+      },
+      {
+        "class": "Dfc",
+        "cells": 1874,
+        "share": 0.1569,
+        "declared_by_zones": [
+          "subarctic"
+        ],
+        "orphan_class": false
+      },
+      {
+        "class": "EF",
+        "cells": 1167,
+        "share": 0.0977,
+        "declared_by_zones": [],
+        "orphan_class": true
+      },
+      {
+        "class": "H",
+        "cells": 144,
+        "share": 0.0121,
+        "declared_by_zones": [
+          "highland"
+        ],
+        "orphan_class": false
+      }
+    ],
+    "orphan_classes": [
+      "Aw",
+      "EF"
+    ],
+    "orphan_cells": 1467
+  },
+  "zone_share_in_grid": [
+    {
+      "zone_id": "tropical_rainforest",
+      "declared": [
+        "Af"
+      ],
+      "cells_in_grid": 2358,
+      "share": 0.1974
+    },
+    {
+      "zone_id": "subtropical_wet",
+      "declared": [
+        "Cfa",
+        "Cwa"
+      ],
+      "cells_in_grid": 4265,
+      "share": 0.357
+    },
+    {
+      "zone_id": "temperate_continental",
+      "declared": [
+        "Dfa",
+        "Dfb"
+      ],
+      "cells_in_grid": 846,
+      "share": 0.0708
+    },
+    {
+      "zone_id": "mediterranean",
+      "declared": [
+        "Csa",
+        "Csb"
+      ],
+      "cells_in_grid": 372,
+      "share": 0.0311
+    },
+    {
+      "zone_id": "arid",
+      "declared": [
+        "BWk",
+        "BSk"
+      ],
+      "cells_in_grid": 144,
+      "share": 0.0121
+    },
+    {
+      "zone_id": "subarctic",
+      "declared": [
+        "Dfc",
+        "Dwc"
+      ],
+      "cells_in_grid": 1874,
+      "share": 0.1569
+    },
+    {
+      "zone_id": "hot_arid",
+      "declared": [
+        "BWh"
+      ],
+      "cells_in_grid": 476,
+      "share": 0.0398
+    },
+    {
+      "zone_id": "highland",
+      "declared": [
+        "H"
+      ],
+      "cells_in_grid": 144,
+      "share": 0.0121
+    }
+  ],
+  "recipe_zone_coverage": {
+    "recipes_by_zone": {
+      "arid": 18,
+      "highland": 21,
+      "hot_arid": 21,
+      "mediterranean": 18,
+      "subarctic": 18,
+      "subtropical_wet": 19,
+      "temperate_continental": 19,
+      "tropical_rainforest": 18
+    },
+    "zero_coverage_zones_with_recipes": []
+  },
+  "provenance": {
+    "reference_chain_check": [
+      {
+        "key": "peel2007",
+        "present": true
+      },
+      {
+        "key": "kottek2006",
+        "present": true
+      },
+      {
+        "key": "beck2018",
+        "present": true
+      }
+    ],
+    "prov_note_excerpt": "启发式分区投影，非 Beck et al. 1km 真实栅格。基于 Köppen-Geiger 经典纬度/经度经验规律 + 项目 8 分区锚点，2° 分辨率（≈222km），用于「同城不同坐标返回不同概率分布」与「跨分区边界识别」。真实 Beck 数据到位后可直接替换本文件，KoppenGrid 接口不变。",
+    "prov_honest_disclosure_present": true,
+    "prov_reference_count": 3
+  },
+  "acceptance": {
+    "grid_total_cells": 11946,
+    "grid_total_classes": 12,
+    "declared_covered_count": 10,
+    "declared_missing_count": 3,
+    "grid_unused_count": 2,
+    "all_zones_fully_covered": false,
+    "zero_coverage_zones_with_recipes": [],
+    "orphan_classes": [
+      "Aw",
+      "EF"
+    ],
+    "orphan_cells": 1467,
+    "all_refs_present": true,
+    "prov_honest_disclosure_present": true,
+    "prov_reference_count_ge_3": true,
+    "all_pass": true
+  }
+}
