@@ -11,7 +11,7 @@
     "third_party_dependencies": "none (stdlib only)"
   },
   "dependency_audit": {
-    "total_files_scanned": 220,
+    "total_files_scanned": 226,
     "module_level_violations": [],
     "n_module_level_violations": 0,
     "lazy_optional_imports": [
@@ -265,7 +265,7 @@
   ],
   "honesty_notes": [
     "本项目的零依赖约束是硬约束（见 CORE_OBJECTIVE.md）：核心代码只允许使用Python 标准库。本脚本用 ast 静态扫描所有 .py 文件的 import，**模块顶层**出现第三方包即判失败——这是防漂移门禁。",
-    "扫描到 220 个 .py 文件，模块顶层第三方依赖违反 0 处，函数体内 lazy import（可选依赖）8 处。",
+    "扫描到 226 个 .py 文件，模块顶层第三方依赖违反 0 处，函数体内 lazy import（可选依赖）8 处。",
     "函数体内 lazy import 不违反零依赖约束：bp_screen/parser.py 的 openpyxl/pdfplumber、bp_screen/web.py 的 fastapi 均为可选功能，未装依赖时对应功能静默降级、核心逻辑照常。论文 §Reproducibility 应如实区分'核心零依赖'与'可选功能依赖'。",
     "本脚本不实际执行 reproduction_commands；论文复现步骤须逐条执行并与 CI 结果比对。命令序列已列入 manifest，供论文 §Reproducibility 引用。",
     "stat_summary.json 完备性只查 mean/std/n 三件套齐备，不验证数值与CI 历史一致——那是 CI 本身的职责（每次运行 bench 都会重算）。"
