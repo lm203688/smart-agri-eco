@@ -319,6 +319,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     cur = sub.add_parser("current", help="打印当前信任标记 JSON（等价 core.trust_layer.get_trust_mark）")
     cur.add_argument("--certificate", action="store_true", help="输出完整证书而非紧凑标记")
     cur.add_argument("--compact", action="store_true", help="单行 JSON")
+    # --json 是 no-op（current 默认即 JSON 输出），仅接受以保持与其他子命令一致的调用面
+    cur.add_argument("--json", action="store_true", help=argparse.SUPPRESS)
     cur.set_defaults(func=cmd_current)
 
     # --from-certificate <file>
