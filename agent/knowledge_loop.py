@@ -31,6 +31,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from core.atomic_io import atomic_write_json  # noqa: E402
+from core.clock import CLOCK  # noqa: E402
 
 # 模块路径
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -56,7 +57,7 @@ def run_all_pipeline(
     if crops is None:
         crops = ["potato", "wheat", "soybean", "rice", "sweetpotato"]
 
-    t0 = time.time()
+    t0 = CLOCK.time()
     insights: Dict[str, Any] = {}
 
     # Step 1: 贝叶斯反演
@@ -190,8 +191,8 @@ def run_all_pipeline(
         },
     ]
 
-    insights["generated_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    insights["pipeline_elapsed_sec"] = round(time.time() - t0, 2)
+    insights["generated_at"] = CLOCK.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    insights["pipeline_elapsed_sec"] = round(CLOCK.time() - t0, 2)
     insights["n_crops"] = len(crops)
 
     return insights

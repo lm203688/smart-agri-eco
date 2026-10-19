@@ -21,6 +21,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
+from core.clock import CLOCK
 from engine.agriworld_lite import (
     CropMechanisticParams,
     DailyInput,
@@ -394,7 +395,7 @@ def batch_calibrate(
     """
     rng = random.Random(seed)
     results: Dict[str, Any] = {}
-    t0 = time.time()
+    t0 = CLOCK.time()
 
     for crop in crop_names:
         if verbose:
@@ -415,7 +416,7 @@ def batch_calibrate(
         if verbose:
             print(f"  [{crop}] MAP 改善={map_r['improved_pct']}%, CI 成功={ci_r['n_success']}/{n_bootstraps}")
 
-    elapsed = time.time() - t0
+    elapsed = CLOCK.time() - t0
     success_count = sum(1 for r in results.values() if r["map"]["verdict"] == "success")
     total_improvement = sum(r["map"]["improved_pct"] for r in results.values()) / max(len(results), 1)
 
