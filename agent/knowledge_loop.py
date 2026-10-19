@@ -22,8 +22,15 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 from typing import Any, Dict, List, Optional
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+from core.atomic_io import atomic_write_json  # noqa: E402
 
 # 模块路径
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -191,11 +198,10 @@ def run_all_pipeline(
 
 
 def save_insights(insights: Dict[str, Any], path: Optional[str] = None) -> str:
-    """保存 insights 到 JSON 文件。"""
+    """保存 insights 到 JSON 文件（走 core.atomic_io.atomic_write_json，防半写状态）。"""
     path = path or _INSIGHTS_PATH
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(insights, f, ensure_ascii=False, indent=2, sort_keys=True)
+    atomic_write_json(path, insights, indent=2, sort_keys=True, ensure_ascii=False)
     return path
 
 
