@@ -166,7 +166,10 @@ jobs:
         run: python scripts/check_mcp_namespace.py
 
       - name: 全量单测回归（发现 CI 未单独覆盖的模块）
-        run: python -S -P -m unittest discover scripts/
+        # 只保留 -S（跳过 site-packages）；-P 是 Python 3.11+ 才有的 flag，
+        # 而本 workflow 同时跑 3.10 / 3.11 / 3.12，`-P` 会让 3.10 直接
+        # exit 2（"Unknown option: -P"）。sys.path 保护改用 PYTHONPATH 隔离。
+        run: python -S -m unittest discover scripts/
 
       - name: AgriRecipeBench（P1 壁垒：Env Recipe 可复现评测基准）
         run: |
