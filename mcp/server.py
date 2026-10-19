@@ -784,6 +784,12 @@ def _tool_search(args: dict) -> dict:
     if mode not in ("exact", "keyword", "vector", "hybrid"):
         return {"error": f"非法 mode='{mode}'，合法值: exact/keyword/vector/hybrid"}
     try:
+        # 惰性构建：新 runner / 首次调用时索引未落盘。rebuild() 幂等（~0.8s，
+        # stdlib sqlite3 FTS5），保证 evidence/index_built=True 与 results 稳定
+        # 可查——否则空索引会让 count=0 静默通过但结果无用。
+        st0 = local_search.stats()
+        if not st0.get("built"):
+            local_search.rebuild()
         results = local_search.search(query=query, corpus=corpus, k=k, mode=mode)
         st = local_search.stats()
         return {
