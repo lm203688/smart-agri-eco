@@ -4,28 +4,28 @@
   "history": {
     "enabled": true,
     "file": "benchmarks\\agri_recipe_bench\\results_history.json",
-    "entries": 656,
+    "entries": 669,
     "date_span": {
       "first": "2026-10-15T07:09:02",
-      "last": "2026-10-18T12:55:06"
+      "last": "2026-10-19T08:45:37"
     },
     "pass_rate": {
       "mean": 1.0,
       "std": 0.0,
-      "n": 656
+      "n": 669
     },
     "conformal_coverage": {
       "mean": 0.92,
       "std": 0.0,
-      "n": 503
+      "n": 514
     },
     "by_total": {
       "20": {
-        "n": 3,
+        "n": 5,
         "pass_rate": {
           "mean": 1.0,
           "std": 0.0,
-          "n": 3
+          "n": 5
         },
         "conformal_coverage": {
           "mean": null,
@@ -47,16 +47,16 @@
         }
       },
       "89": {
-        "n": 5,
+        "n": 16,
         "pass_rate": {
           "mean": 1.0,
           "std": 0.0,
-          "n": 5
+          "n": 16
         },
         "conformal_coverage": {
           "mean": 0.92,
           "std": 0.0,
-          "n": 5
+          "n": 16
         }
       }
     },
@@ -64,42 +64,42 @@
       "counterfactual": {
         "mean": 1.0,
         "std": 0.0,
-        "n": 653
+        "n": 664
       },
       "generalization": {
         "mean": 1.0,
         "std": 0.0,
-        "n": 653
+        "n": 664
       },
       "negative_counterfactual_invariant": {
         "mean": 1.0,
         "std": 0.0,
-        "n": 8
+        "n": 21
       },
       "negative_honest_degradation": {
         "mean": 1.0,
         "std": 0.0,
-        "n": 8
+        "n": 21
       },
       "negative_input_bounds": {
         "mean": 1.0,
         "std": 0.0,
-        "n": 8
+        "n": 21
       },
       "negative_trust_breakage": {
         "mean": 1.0,
         "std": 0.0,
-        "n": 8
+        "n": 21
       },
       "state_rolling": {
         "mean": 1.0,
         "std": 0.0,
-        "n": 653
+        "n": 664
       },
       "target_prediction": {
         "mean": 1.0,
         "std": 0.0,
-        "n": 653
+        "n": 664
       }
     },
     "trend": {
@@ -202,5 +202,383 @@
     "conformal_coverage_varies": true,
     "mean_abs_dev_varies": true,
     "statement": "pass_rate 为回归判定（全用例通过即 1.0），在测试集固定时为确定性指标，无方差是事实而非缺陷；论文不得把 pass_rate=1.0 表述为预测精度。应引用 mean_abs_dev（预测相对偏差均值）与 conformal_coverage（保形覆盖率）的 mean±std 作为带不确定度的效果指标。"
+  },
+  "wofost_crossval": {
+    "generated_by": "scripts/run_wofost_crossval.py",
+    "roadmap_task": "S2-A1 / SCI_G2",
+    "source_script": "scripts/s2_a1_phenology_consistency.py",
+    "grid": {
+      "crops": 7,
+      "temperatures_c": [
+        10.0,
+        15.0,
+        20.0,
+        25.0,
+        30.0
+      ],
+      "n_combinations": 35
+    },
+    "overall": {
+      "n_combinations": 35,
+      "rmse_days": 0.0,
+      "mae_days": 0.0,
+      "ccc": 1.0,
+      "stages_covered": [
+        "emergence",
+        "anthesis",
+        "maturity"
+      ]
+    },
+    "per_stage": {
+      "emergence": {
+        "rmse_days": 0.0,
+        "mae_days": 0.0,
+        "ccc": 1.0,
+        "n_points": null
+      },
+      "anthesis": {
+        "rmse_days": 0.0,
+        "mae_days": 0.0,
+        "ccc": 1.0,
+        "n_points": null
+      },
+      "maturity": {
+        "rmse_days": 0.0,
+        "mae_days": 0.0,
+        "ccc": 1.0,
+        "n_points": null
+      }
+    },
+    "acceptance": {
+      "rmse_days_le_1": true,
+      "overall_rmse_days": 0.0,
+      "zero_negative_days": true,
+      "stall_contract_ok": true,
+      "monotonicity_ok": true,
+      "tsum_drift_ok": true,
+      "wheat_below_tbase_stalled": true,
+      "all_pass": true
+    },
+    "tbase_boundary": {
+      "cases": [
+        {
+          "crop": "potato",
+          "tag": "below",
+          "T_c": 1.0,
+          "tbase_c": 2.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "potato",
+          "tag": "at",
+          "T_c": 2.0,
+          "tbase_c": 2.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "potato",
+          "tag": "above",
+          "T_c": 2.5,
+          "tbase_c": 2.0,
+          "expected_stall": false,
+          "got_stalled": false,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "wheat",
+          "tag": "below",
+          "T_c": -1.0,
+          "tbase_c": 0.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "wheat",
+          "tag": "at",
+          "T_c": 0.0,
+          "tbase_c": 0.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "wheat",
+          "tag": "above",
+          "T_c": 0.5,
+          "tbase_c": 0.0,
+          "expected_stall": false,
+          "got_stalled": false,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "soybean",
+          "tag": "below",
+          "T_c": 6.0,
+          "tbase_c": 7.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "soybean",
+          "tag": "at",
+          "T_c": 7.0,
+          "tbase_c": 7.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "soybean",
+          "tag": "above",
+          "T_c": 7.5,
+          "tbase_c": 7.0,
+          "expected_stall": false,
+          "got_stalled": false,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "sunflower",
+          "tag": "below",
+          "T_c": 2.0,
+          "tbase_c": 3.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "sunflower",
+          "tag": "at",
+          "T_c": 3.0,
+          "tbase_c": 3.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "sunflower",
+          "tag": "above",
+          "T_c": 3.5,
+          "tbase_c": 3.0,
+          "expected_stall": false,
+          "got_stalled": false,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "rice",
+          "tag": "below",
+          "T_c": 9.0,
+          "tbase_c": 10.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "rice",
+          "tag": "at",
+          "T_c": 10.0,
+          "tbase_c": 10.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "rice",
+          "tag": "above",
+          "T_c": 10.5,
+          "tbase_c": 10.0,
+          "expected_stall": false,
+          "got_stalled": false,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "sweetpotato",
+          "tag": "below",
+          "T_c": 9.0,
+          "tbase_c": 10.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "sweetpotato",
+          "tag": "at",
+          "T_c": 10.0,
+          "tbase_c": 10.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "sweetpotato",
+          "tag": "above",
+          "T_c": 10.5,
+          "tbase_c": 10.0,
+          "expected_stall": false,
+          "got_stalled": false,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "mungbean",
+          "tag": "below",
+          "T_c": 9.0,
+          "tbase_c": 10.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "mungbean",
+          "tag": "at",
+          "T_c": 10.0,
+          "tbase_c": 10.0,
+          "expected_stall": true,
+          "got_stalled": true,
+          "got_negative_days": false,
+          "verdict": "pass"
+        },
+        {
+          "crop": "mungbean",
+          "tag": "above",
+          "T_c": 10.5,
+          "tbase_c": 10.0,
+          "expected_stall": false,
+          "got_stalled": false,
+          "got_negative_days": false,
+          "verdict": "pass"
+        }
+      ],
+      "wheat_below_tbase_stalled": {
+        "crop": "wheat",
+        "T_c": -5.0,
+        "tbase_c": 0.0,
+        "got_emergence_days": null,
+        "got_note": "日均温 -5.0℃ ≤ 基温 0.0℃，发育停滞，无法按积温推进。",
+        "expected": "停滞（None）",
+        "verdict": "pass"
+      }
+    },
+    "monotonicity_violations": [],
+    "counts": {
+      "normal_combinations": 32,
+      "stall_expected": 3,
+      "stall_correct": 3,
+      "stall_wrong": 0,
+      "mismatched_stage_values": 0,
+      "negative_days": 0,
+      "monotonicity_violations": 0
+    },
+    "honesty": {
+      "same_source": true,
+      "note": "本项目 estimate_stage_days 与 WOFOST 参数表同源（TSUM/(T-TBASE)），RMSE≈0/CCC=1 是代码正确性验证，非外部田间对比；外部交叉验证见 S1.5（NASA POWER + Köppen-Geiger），真实田间差异见 S2-B（物理采集，agent 无法代劳）。"
+    },
+    "grid_rows_sample": [
+      {
+        "crop": "potato",
+        "T_c": 10.0,
+        "tbase_c": 2.0,
+        "eff_c": 8.0,
+        "expected_stall": false,
+        "got": {
+          "emergence_days": {
+            "got": 21.2,
+            "expected": 21.2,
+            "abs_err": 0.0,
+            "verdict": "match"
+          },
+          "anthesis_days_from_sow": {
+            "got": 40.0,
+            "expected": 40.0,
+            "abs_err": 0.0,
+            "verdict": "match"
+          },
+          "maturity_days_from_sow": {
+            "got": 233.8,
+            "expected": 233.8,
+            "abs_err": 0.0,
+            "verdict": "match"
+          }
+        }
+      },
+      {
+        "crop": "potato",
+        "T_c": 15.0,
+        "tbase_c": 2.0,
+        "eff_c": 13.0,
+        "expected_stall": false,
+        "got": {
+          "emergence_days": {
+            "got": 13.1,
+            "expected": 13.1,
+            "abs_err": 0.0,
+            "verdict": "match"
+          },
+          "anthesis_days_from_sow": {
+            "got": 24.6,
+            "expected": 24.6,
+            "abs_err": 0.0,
+            "verdict": "match"
+          },
+          "maturity_days_from_sow": {
+            "got": 143.8,
+            "expected": 143.8,
+            "abs_err": 0.0,
+            "verdict": "match"
+          }
+        }
+      },
+      {
+        "crop": "potato",
+        "T_c": 20.0,
+        "tbase_c": 2.0,
+        "eff_c": 18.0,
+        "expected_stall": false,
+        "got": {
+          "emergence_days": {
+            "got": 9.4,
+            "expected": 9.4,
+            "abs_err": 0.0,
+            "verdict": "match"
+          },
+          "anthesis_days_from_sow": {
+            "got": 17.8,
+            "expected": 17.8,
+            "abs_err": 0.0,
+            "verdict": "match"
+          },
+          "maturity_days_from_sow": {
+            "got": 103.9,
+            "expected": 103.9,
+            "abs_err": 0.0,
+            "verdict": "match"
+          }
+        }
+      }
+    ],
+    "n_grid_rows_total": 35
   }
 }

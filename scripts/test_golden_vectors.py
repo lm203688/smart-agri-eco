@@ -25,13 +25,15 @@ class GoldenVectorsRunnerTests(unittest.TestCase):
             self.assertIn(f"{name}.json", files,
                           f"缺 golden vector: {name}.json")
 
-    def test_all_schemas_v1(self):
+    def test_all_schemas_v1_or_v2(self):
+        """Golden vectors 允许 v1（历史）或 v2（带 references）；只锁「末位是 /vN」契约。"""
         for name in ("forecast", "phenology", "nutrition"):
             with open(os.path.join(GOLDEN_DIR, f"{name}.json"),
                       encoding="utf-8") as f:
                 spec = json.load(f)
-            self.assertTrue(spec["schema"].endswith("/v1"),
-                            f"{name} schema 非 v1: {spec['schema']}")
+            schema = spec["schema"]
+            self.assertRegex(schema, r"/v[12]$",
+                             f"{name} schema 版本不合法（需 /v1 或 /v2）: {schema}")
             self.assertIn("target_module", spec)
             self.assertIn("cases", spec)
             self.assertGreaterEqual(len(spec["cases"]), 3,

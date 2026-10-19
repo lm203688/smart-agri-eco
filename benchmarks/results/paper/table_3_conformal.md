@@ -7,7 +7,7 @@
 |---|---|
 | mean coverage | 0.920 |
 | std | 0.000 |
-| n | 503 |
+| n | 514 |
 | min | — |
 | max | — |
 | nominal alpha | 0.10（90% 目标） |
