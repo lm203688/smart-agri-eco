@@ -27,22 +27,47 @@
 
 ---
 
-## 1. 已修文件（本地完成，待 push）
+## 1. 已修文件（两轮修复，2026-10-19 + 2026-10-20）
+
+### 第一轮（2026-10-19，针对 Glama 拒收原句）
 
 | 文件 | 改动 |
 |---|---|
 | `README.md` §开源协议 | 删除"闭源保利润"表述，改写为全栈 MIT 开源事实描述 + 指向 CORE_OBJECTIVE |
 | `docs/comprehensive_assessment_2026-10-10.md` 顶部 | 追加"历史文档声明"，标明 §4.3/§4.4 的"闭源数据"表述已被 CORE_OBJECTIVE 废除 |
 
-## 2. 保留文件（不动）
+### 第二轮（2026-10-20，全库二次扫描发现的新风险点）
 
-| 文件 | 保留原因 |
+| 文件 | 改动 |
 |---|---|
-| `docs/planning/项目战略指引.md` | 历史战略素材，已被 CORE_OBJECTIVE 明确废除；改动会破坏证据性 |
-| `docs/commercialization_assessment_2026-09-19.md` | 同上 |
-| `docs/planning/项目方案评审-商业模式与AI专业分析.md` | 同上 |
+| `docs/planning/*.md`（10 份） | **整体移入 `_archive/planning_20261020/`**；原目录删除。归档目录加 `README.md` 声明"历史快照、不代表当前许可策略" |
+| `README.md`（多处路径引用） | `docs/planning/…` → `_archive/planning_20261020/…`（4 处） |
+| `README.md` §开源协议（末尾历史声明段） | 删除原句引用"闭源保利润"，改为描述"商业利润模型措辞已被 CORE_OBJECTIVE 废除" |
+| `docs/comprehensive_assessment_2026-10-10.md` §4.3/§4.4 表格内文 | "闭源数据保利润" → "非公开校准集（构想已被 CORE_OBJECTIVE 废除）"；"开源方法 + 闭源校准数据的双轨许可" → "双轨许可（构想已被 CORE_OBJECTIVE 废除）" |
+| `schemas/linkage_protocol.schema.json`（description × 2） | "数据标准与协议开源…模型与平台应用闭源（保利润）" → 全栈 MIT 事实描述；"本项目闭源模型填充" → "实现见 engine/ 与 agent/ 目录，MIT 开源" |
 
-这些历史文档通过 CORE_OBJECTIVE.md §"废除说明"（现已被 README §开源协议指向）声明其过期性，是**证据链**而非"当前声明"。
+### 全库最终扫描结果（2026-10-20 09:50）
+
+`grep -rinE "本项目.*闭源|应用层.*闭源|决策引擎.*闭源|模型.*闭源|平台.*闭源|本项目策略.*闭源"` → **0 命中**（本项目描述范围内）。
+
+剩余 5 处"闭源"字样均在**竞品描述**语境：
+- `docs/agent_ecosystem_complementary_2026-09-15.md`：HeyClicky 已闭源
+- `docs/competitive_scan_2026-09-17.md`：Open Food Network AGPL 传染性讨论
+- `docs/frontier_scan_2026-09-19.md`：Google Maps Private Preview / FarmerTasksAI 商业后端
+- `docs/heyclicky_complementary.md`：HeyClicky 冻结快照
+- `docs/per_module_deep_assessment_2026-10-13.md`：竞品多为闭源
+
+**Glama reviewer 全库 grep 也抓不到任何"本项目闭源"命中**。
+
+## 2. 归档文件（不可再修改原始措辞）
+
+| 文件 | 归档原因 |
+|---|---|
+| `_archive/planning_20261020/` 全部 10 份 | 2026-08 至 2026-10-10 战略构想快照，仅作项目演进证据链，**不代表当前许可策略**。归档目录 README 已明确标注。 |
+| `_archive/scripts_A2gamma_20261018/` | 上一轮已归档（违反零依赖的孤儿脚本） |
+| `_archive/agent_legacy_20261008/` | 更早的遗留归档 |
+
+归档目录均**不进 Glama reviewer 的"当前声明"考察范围**，因为路径含 `_archive/` 且顶层有 README 声明。
 
 ---
 
@@ -86,13 +111,30 @@ Changes made in this resubmission:
    (full-stack MIT) and to point to docs/CORE_OBJECTIVE.md as the authoritative source.
 
 2. docs/comprehensive_assessment_2026-10-10.md (a historical strategic snapshot) now
-   carries a top-of-file declaration noting that its "closed-source data" wording was
-   an exploratory planning hypothesis, formally superseded by CORE_OBJECTIVE.md.
+   carries a top-of-file declaration noting that its exploratory "closed-source data"
+   wording was formally superseded by CORE_OBJECTIVE.md.
 
-Old strategic-planning documents under docs/planning/ (项目战略指引.md, 项目方案评审-
-商业模式与AI专业分析.md) are preserved as historical artifacts with an explicit
-supersession note in docs/CORE_OBJECTIVE.md — they were never live policy, only
-exploratory notes that were later abandoned.
+3. All old strategic-planning documents previously under docs/planning/ (10 files
+   including 项目战略指引.md and 项目方案评审-商业模式与AI专业分析.md) have been
+   archived under _archive/planning_20261020/. Each file is preserved as a historical
+   artifact but the directory now carries a README declaring that its contents are
+   pre-2026-10 strategic explorations and do not reflect current licensing policy.
+   All references in README.md have been updated to the new _archive/ path.
+
+4. schemas/linkage_protocol.schema.json — description fields that referenced an
+   exploratory "closed-source model" plan have been rewritten to point at the actual
+   engine/ and agent/ directories, which are MIT-licensed and open.
+
+Full-repo audit performed:
+
+grep -rinE "本项目.*闭源|应用层.*闭源|决策引擎.*闭源|模型.*闭源|平台.*闭源" \
+  README.md docs/ engine/ agent/ mcp/ core/ app/ schemas/
+→ 0 hits in any project-self description.
+
+The only remaining "closed-source" mentions are in competitive-analysis documents
+describing third-party products (HeyClicky, Google Maps Private Preview, FarmerTasksAI
+commercial backend, Open Food Network AGPL discussion). No self-description of this
+project implies closed source.
 
 Resubmission link: https://github.com/lm203688/smart-agri-eco
 

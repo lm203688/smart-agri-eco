@@ -229,9 +229,9 @@ python scripts/verify_trust_mark.py from-certificate cert.json --verify-artifact
 | Skill 注册表 | `skills/registry/` | 可复用农业 AI 能力 |
 | 可信输出契约 | `docs/agent_output_contract.md` | 每条建议的证据/置信度/适用条件 |
 | 项目评估 | `docs/project_evaluation.md` | 评审维度逐项自评 |
-| 战略指引 | `docs/planning/项目战略指引.md` | 七层架构与商业设计 |
-| 执行方案 | `docs/planning/项目执行方案.md` | 分阶段路线图 |
-| 规划/战略/GOAI 合集 | `docs/planning/` | 10 份早期规划、战略与 GOAI 竞品分析（已归档归类，便于溯源） |
+| 战略指引（历史归档） | `_archive/planning_20261020/项目战略指引.md` | 2026-08 战略构想快照（**不含当前许可策略**） |
+| 执行方案（历史归档） | `_archive/planning_20261020/项目执行方案.md` | 2026-09 分阶段路线图（历史归档） |
+| 规划/战略/GOAI 合集 | `_archive/planning_20261020/` | 10 份 2026-08~10 早期规划（已归档，仅供项目演进追溯，**不代表当前事实**） |
 | 开源生态对接 | `docs/OPEN_SOURCE_INTEGRATION.md` | 七层架构生态位补全映射（扫描→对接）+ 用户分步操作指引（启用 cropgraph MCP / 配置视觉后端 / 提供 PAT 推送） |
 | 反馈闭环引擎 | `engine/flywheel.py` | 种植结果回流 → 适配评分校准（主动学习） |
 | 交互式 Demo | `app/` | 零依赖 http.server 站点：坐标 → 四 Agent 方案 + AgriTrust 证书 |
@@ -290,8 +290,8 @@ for f in skills/registry/*.json; do python -c "import json; s=json.load(open('$f
 
 ## v2.1 提升项落地（Agent-native 分发 + 配置协议 + 评测）
 
-> 依据 `docs/planning/项目方案评审-商业模式与AI专业分析.md`：商业主线重排为「免费资产 → 免费入口换数据 → 产业端收钱」；
-> 模块⑤生成箱降级为「配方大脑授权硬件厂/存量设备」；Env Recipe 协议与 MCP 分发为近期最高优先。
+> 依据 `_archive/planning_20261020/项目方案评审-商业模式与AI专业分析.md`（2026-09 战略构想快照，商业措辞已被 CORE_OBJECTIVE 废除）：v2.1 落地聚焦 Agent-native 分发 + Env Recipe 协议 + MCP 分发；
+> 商业主线相关表述仅供历史追溯，当前实现以 `docs/CORE_OBJECTIVE.md` 为准。
 
 | 提升项 | 交付物 | 验证 |
 |---|---|---|
@@ -468,7 +468,7 @@ python scripts/submit_feedback.py --zone subtropical_wet --crop 生菜 \
 
 MCP server 的完整实现位于 `mcp/server.py`（含 `TOOLS` 注册表 + stdio/SSE 双模式 + server card + ETags + 渐进式发现 `kind=search` / `mode=brief|full`），与 CLI 共用同一批 Python 函数，无云端副本、无独立后端。
 
-`docs/planning/` 目录下的历史战略文档（如 `项目战略指引.md`、`项目方案评审-商业模式与AI专业分析.md`）中的商业模式构想（含"闭源保利润"表述）已被 `docs/CORE_OBJECTIVE.md` 明确废除，仅作历史素材保留，**不代表当前许可策略**。
+`_archive/planning_20261020/` 目录下的历史战略文档（2026-08 至 2026-10-10 项目构想快照）中的**商业利润模型措辞**已被 `docs/CORE_OBJECTIVE.md` 明确废除，仅作项目演进证据链保留，**不代表当前许可策略或实现事实**。当前事实以本节 + `LICENSE` + `docs/CORE_OBJECTIVE.md` 为准。
 
 <!-- GEN_TOOL_TABLE:BEGIN -->
 

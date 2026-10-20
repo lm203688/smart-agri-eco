@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/lm203688/smart-agri-eco/main/data/linkage_protocol.schema.json",
   "title": "Linkage Data Protocol (链路数据协议) v1",
-  "description": "智慧农业生态 · L4 业务支撑层开源标准。定义「环境 × 操作 × 结果」三元组在链接全链路（生产→初加工→封装→运输→存储→深加工→消费）的统一数据结构，含鲜度衰减 / 损耗 / 货架期 / 认证溯源字段。本项目策略：数据标准与协议开源（抢生态话语权），模型与平台应用闭源（保利润）。本 schema 即对外开源的链路数据标准，任何生鲜/种植系统均可按此结构回流链路数据，接入鲜度中枢。",
+  "description": "智慧农业生态 · L4 业务支撑层开源标准（MIT 全栈开源）。定义「环境 × 操作 × 结果」三元组在链接全链路（生产→初加工→封装→运输→存储→深加工→消费）的统一数据结构，含鲜度衰减 / 损耗 / 货架期 / 认证溯源字段。本仓库全栈 MIT 开源（见仓库根 LICENSE 与 README.md §开源协议），schema、实现、数据均在仓库内。本 schema 即对外的链路数据标准，任何生鲜/种植系统均可按此结构回流链路数据，接入鲜度中枢。",
   "type": "object",
   "required": ["protocol", "protocol_version", "batch_id", "product", "chain"],
   "additionalProperties": false,
@@ -94,7 +94,7 @@
     },
     "freshness_model": {
       "type": "object",
-      "description": "鲜度中枢输出（由链路数据 + 鲜度/损耗模型计算得，本项目闭源模型填充，此处仅定义结构）。",
+      "description": "鲜度中枢输出（由链路数据 + 鲜度/损耗模型计算得，实现见仓库 engine/ 与 agent/ 目录，MIT 开源。此处仅定义结构）。",
       "additionalProperties": false,
       "properties": {
         "shelf_life_days": { "type": "number", "minimum": 0, "description": "总货架期（天）。" },
