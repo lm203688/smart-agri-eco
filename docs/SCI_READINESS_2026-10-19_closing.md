@@ -59,3 +59,42 @@ sync_check.py                      ⚠️ 17 处差异（远端未同步，需 p
 - 用真 PAT 走 `scripts/gh_push.py`（Contents API，因本机 `github.com:443` 被封）推送 649 文件同步。
 - 若走 SoftwareX 投稿，`docs/paper_draft_softwarex.md` 已是 v0.9，可直接投，无需等 S2-B。
 - 若走 Agric. Systems 方法类论文，必须先完成 S2-B。
+
+---
+
+## 2026-10-19 13:43 追补 · 零费用路径调整
+
+**用户新约束**：投稿费用必须为 0，包括版面费/APC。
+
+**核实事实**（web 检索 2026-10-19）：
+
+| 期刊 | APC | 索引 | 结论 |
+|---|---|---|---|
+| SoftwareX | $1,200-1,560 | SCIE Q2 | ❌ 有 APC |
+| Data in Brief | $1,330-1,600 | Scopus Q2 | ❌ 有 APC |
+| **JOSS** | **$0**（diamond OA） | ESCI+Scopus+DOAJ | ✅ **唯一 0 费用路径** |
+| Field Crops Research / Agric. Systems | $0（subscription） | SCIE Q1 | ❌ 需田间数据（S2-B 阻塞） |
+
+**采用路径**：**JOSS 直投**（用户拍板）。
+
+**新增交付**：
+- `docs/paper_draft_joss.md`：Markdown + YAML，8 章节齐全，1600 词（JOSS 750-1750 舒适区）
+  - 章节：Summary / Statement of need / State of the field / Software design / Research impact statement / AI usage disclosure / Acknowledgements / References
+- `docs/paper.bib`：BibTeX 参考文献（16 条）
+- `docs/JOURNAL_TARGET_ZERO_APC_2026-10-19.md`：决策依据 + 5 个 reviewer 追问预判 + fallback 优先级
+
+**AI 披露策略**：诚实写「substantial AI assistance」，明确分区：
+- AI 辅助：boilerplate / 文档 / 论文初稿
+- AI 未参与：架构决策 / `@bounded` 语义 / WOFOST 公式选择 / SplitConformal α=0.10 / 3 条诚实缺口 / 47-step CI
+- 验证方式：47-step CI + machine-checked gaps + 数字全部来自 `stat_report.py`
+
+**风险提示**（诚实告知用户）：
+- Repo 公开历史仅 49 天（2026-08-31 至 2026-10-19），短于 JOSS 2026 政策 6 个月门槛
+- 估计被 editor 打回概率 30-50%
+- 干净解法：等 2027-02-28 前满 6 个月后提交
+- 备选：SoftwareX + Elsevier LMIC 100% waiver（中国属 LMIC，但要申请且可能不批）
+
+**用户下一步**（agent 无法代劳）：
+1. 把 `docs/paper_draft_joss.md` 复制为仓库根 `paper.md`
+2. 用真 PAT 走 `scripts/gh_push.py` 推 `docs/paper_draft_joss.md` / `docs/paper.bib` / `docs/JOURNAL_TARGET_ZERO_APC_2026-10-19.md` / 本 closing.md
+3. 在 GitHub 开 issue `@whedon submit`（含 ORCID + 49 天公开历史披露）

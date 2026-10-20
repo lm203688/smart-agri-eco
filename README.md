@@ -464,7 +464,11 @@ python scripts/submit_feedback.py --zone subtropical_wet --crop 生菜 \
 
 ## 开源协议
 
-待确定。核心数据标准与协议倾向开源（抢生态话语权），应用层与决策引擎闭源（保利润）。
+本仓库**全栈 MIT 开源**：`engine/`（机理内核，含 AgriWorld-Lite 状态机、`@bounded` 装饰器、WOFOST 物候）、`agent/`（forecast / conformal / causal attribution / bayesian calibration / knowledge loop）、`core/`（numeric domain / trust layer / crop registry）、`mcp/`（21 工具适配器）、`benchmarks/`（AgriRecipeBench 89 用例 + 20 负例 + AgriWorld-Arena 35 entries）、`scripts/`、`data/`、`schemas/`、`.well-known/`（含 JWS 签名）、`docs/` 均随仓库发布。
+
+MCP server 的完整实现位于 `mcp/server.py`（含 `TOOLS` 注册表 + stdio/SSE 双模式 + server card + ETags + 渐进式发现 `kind=search` / `mode=brief|full`），与 CLI 共用同一批 Python 函数，无云端副本、无独立后端。
+
+`docs/planning/` 目录下的历史战略文档（如 `项目战略指引.md`、`项目方案评审-商业模式与AI专业分析.md`）中的商业模式构想（含"闭源保利润"表述）已被 `docs/CORE_OBJECTIVE.md` 明确废除，仅作历史素材保留，**不代表当前许可策略**。
 
 <!-- GEN_TOOL_TABLE:BEGIN -->
 
