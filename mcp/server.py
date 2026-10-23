@@ -36,6 +36,11 @@ mcp/server.py —— 智慧农业生态 · 零依赖 MCP Server（Agent-native �
 
 也可用本项目脚本自测：
     python scripts/test_mcp_server.py
+
+详细工具契约（何时用 / 输入 / 返回示例）见：
+    docs/TOOLS_REFERENCE.md         # 23 工具三段式手册
+    docs/QUICKSTART.md              # 15 分钟上手指南
+    examples/                       # 5 个可运行示例脚本
 """
 from __future__ import annotations
 
