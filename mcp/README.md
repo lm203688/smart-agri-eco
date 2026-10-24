@@ -41,7 +41,7 @@ MCP 客户端以 stdio 子进程方式拉起本文件即可。
 
 也可直接用 Agent Plugins 清单（`plugin/mcp.json`），支持 Agent Plugins 1.0.0 的客户端会自动读取。
 
-## 暴露的工具（23 个）
+## 暴露的工具（25 个）
 
 | 工具 | 说明 |
 |---|---|
@@ -95,7 +95,7 @@ Hi <项目维护者>,
 我们在做「智慧农业生态」——一个把全球农业知识（气候分区/作物适配/病虫害/Env Recipe 配方）
 做成 Agent 可调用工具的项目。已发布零依赖 MCP server（协议 2024-11-05）：
 
-  - 23 个工具：分区匹配 / 作物推荐 / 种植计划 / 病虫害诊断 / 养分管理 / Env Recipe 配方 / 物候播期 / 土壤剖面 / BP 投资初筛 / 多源气候调和（带偏差校正）/ 地理编码→配方 / 数据血缘查询 / 预设城市清单 / 生态对接清单 / 知识检索 agri_search / 知识图谱 agri_knowledge_query / 可信标记公共复算 agri_verify_trust / Server Card agri_server_card（M13-P3 ETags 缓存）/ 决策路径报告 agri_decision_path_report（M16-B2 可视化导出）
+  - 25 个工具：分区匹配 / 作物推荐 / 种植计划 / 病虫害诊断 / 养分管理 / Env Recipe 配方 / 物候播期 / 土壤剖面 / BP 投资初筛 / 多源气候调和（带偏差校正）/ 地理编码→配方 / 数据血缘查询 / 预设城市清单 / 生态对接清单 / 知识检索 agri_search / 知识图谱 agri_knowledge_query / 可信标记公共复算 agri_verify_trust / Server Card agri_server_card（M13-P3 ETags 缓存）/ 决策路径报告 agri_decision_path_report（M16-B2 可视化导出）
   - 覆盖 8 个气候分区（新增 hot_arid 高温沙漠 / highland 高原）与 116 份可执行 Env Recipe
   - 纯标准库，stdio 拉起，可直接接 Claude Desktop / Cursor / 自研 Agent
   - 仓库：https://github.com/lm203688/smart-agri-eco  （mcp/ 目录）

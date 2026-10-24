@@ -36,7 +36,7 @@ import os
 import sys
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EXPECTED_TOOL_COUNT = 23  # 与 mcp/server.py::TOOLS 保持一致；23 个含 agri_counterfactual_trajectory（Phase N+1 #6）+ agri_verify_recommendation（Phase N+3 #14）
+EXPECTED_TOOL_COUNT = 25  # 与 mcp/server.py::TOOLS 保持一致；25 个含 agri_counterfactual_trajectory + agri_verify_recommendation + agri_economics + agri_postharvest
 
 
 def main() -> int:

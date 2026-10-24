@@ -14,7 +14,7 @@
     "agent_plugins": "1.0.0"
   },
   "mcp": {
-    "tool_count": 23,
+    "tool_count": 25,
     "tools": [
       "agri_bp_screen",
       "agri_counterfactual_trajectory",

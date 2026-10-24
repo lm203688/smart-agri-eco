@@ -473,6 +473,15 @@
             "type": "string",
             "format": "date",
             "description": "该来源的 license 从 unknown 被占位替换的日期（GAP_AUDIT §B3 新增，v1.2.1）。格式 YYYY-MM-DD。此字段存在即说明原始许可未核实、经保守处理。法务审计时可用于识别哪些来源仍待核实。"
+          },
+          "url_unverified": {
+            "type": "boolean",
+            "description": "Stage 2.1（2026-10-24）：该来源的 URL 是否为不可核验的占位（true 表示 url 为空或无法 200 访问）。用于诚实标注'无公开 URL'而非编造链接。",
+            "default": false
+          },
+          "url_unverified_reason": {
+            "type": "string",
+            "description": "Stage 2.1（2026-10-24）：url_unverified=true 时的原因说明。例：'该来源无公开可核验 URL；配方数据本身仍基于该数据集，但用户无法自行访问原始数据点。'"
           }
         }
       }
