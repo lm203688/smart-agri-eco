@@ -458,6 +458,38 @@
       "outputModes": [
         "application/json"
       ]
+    },
+    {
+      "id": "agri_economics",
+      "name": "农业经济测算",
+      "description": "（Stage 2.3 · 2026-10-24 新增）农业经济测算：输入 crop / zone / area_sqm / 投入参数，输出投入成本 CNY / 预期产量 kg / 收益区间 / ROI / 回本周期。诚实边界：成本随地区/年份/规模差异大，输出区间而非单点；数据年份 2024-2025 全国均价，不含人工；标注 data_quality=modeled（非实测）。支持主粮 5 作物 + 蔬果。",
+      "tags": [
+        "business",
+        "economics",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_postharvest",
+      "name": "采后处理储藏",
+      "description": "（Stage 2.6 · 2026-10-24 新增）采后处理/储藏：输入 crop，返回最佳储藏温湿度 / 损耗率 / 保鲜期 / 采后病害风险。诚实边界：数据来自 FAO Codex Alimentarius 通用值，非本地验证；标 data_quality=modeled；不含冷藏能耗成本。支持 8 类常见果蔬。",
+      "tags": [
+        "nutrition",
+        "postharvest",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
     }
   ],
   "x-agri-registry-skills": [
@@ -554,7 +586,7 @@
     "skills_semantics": "A2A v1.0 skill = 外部 Agent 可发现并调用的能力。本项目把每个 MCP 工具（mcp/server.py 的 TOOLS 注册表）映射为一个 skill，skill.id 与 MCP tool name 完全一致（如 'agri_env_recipe'）。外部 Agent 按此 skills[] 调 tools/call 会命中同名 MCP 工具。",
     "registry_skills_semantics": "x-agri-registry-skills[] 是 skills/registry/ 目录下的 AgriSkill 定义（用于人读的分工说明：谁负责什么、输入输出是什么、数据来源、安全边界）。这些 id（如 'climate_match'）不是 MCP 工具名，不能被外部 Agent 直接调用；它们是内部技能目录，用于工程治理和审计。",
     "counts": {
-      "skills": 23,
+      "skills": 25,
       "x-agri-registry-skills": 11
     },
     "authority": "本 Card 由 scripts/gen_agent_card.py 程序化生成，禁止手改。"

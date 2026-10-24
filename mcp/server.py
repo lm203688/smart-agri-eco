@@ -339,6 +339,26 @@ TOOL_SCHEMA_decision_path_report = {
     },
 }
 
+TOOL_SCHEMA_economics = {
+    "type": "object",
+    "properties": {
+        "crop": {"type": "string"},
+        "zone": {"type": "string", "nullable": True},
+        "area_sqm": {"type": "number", "nullable": True},
+        "labor_cny_day": {"type": "number", "nullable": True},
+    },
+    "required": ["crop"],
+}
+
+TOOL_SCHEMA_postharvest = {
+    "type": "object",
+    "properties": {
+        "crop": {"type": "string"},
+        "stage": {"type": "string", "enum": ["fresh", "storage", "transport"], "nullable": True},
+    },
+    "required": ["crop"],
+}
+
 # M13-P3 Server Card + ETags：稳定 ETag 种子（内容变更才改变），
 # 让客户端可缓存 tools/list 与 server card 而不必每次重拉。
 _CARD_PATH = os.path.join(ROOT, ".well-known", "mcp-card.json")
@@ -1580,6 +1600,44 @@ TOOLS = [
             "required": ["claim", "context"],
         },
     },
+    {
+        "name": "agri_economics",
+        "category": "business",
+        "description": (
+            "（Stage 2.3 · 2026-10-24 新增）农业经济测算：输入 crop / zone / area_sqm / 投入参数，"
+            "输出投入成本 CNY / 预期产量 kg / 收益区间 / ROI / 回本周期。"
+            "诚实边界：成本随地区/年份/规模差异大，输出**区间**而非单点；"
+            "数据年份 2024-2025 全国均价，不含人工；标注 data_quality=modeled（非实测）。"
+            "支持主粮 5 作物（水稻/小麦/玉米/大豆/马铃薯）+ 蔬果（番茄/生菜/草莓/黄瓜/辣椒）。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "crop": {"type": "string", "description": "作物中文名"},
+                "zone": {"type": "string", "description": "气候分区，可选；默认 auto"},
+                "area_sqm": {"type": "number", "description": "种植面积 ㎡，默认 100"},
+                "labor_cny_day": {"type": "number", "description": "人工日成本，可选（不含）"},
+            },
+            "required": ["crop"],
+        },
+    },
+    {
+        "name": "agri_postharvest",
+        "category": "nutrition",
+        "description": (
+            "（Stage 2.6 · 2026-10-24 新增）采后处理/储藏：输入 crop，"
+            "返回最佳储藏温湿度 / 损耗率 / 保鲜期 / 采后病害风险。"
+            "诚实边界：数据来自 FAO Codex Alimentarius 通用值，非本地验证；"
+            "标 data_quality=modeled；不含冷藏能耗成本。"
+            "支持 8 类常见果蔬（生菜/番茄/草莓/黄瓜/苹果/香蕉/叶菜/根茎）。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "crop": {"type": "string", "description": "作物中文名"},
+                "stage": {"type": "string", "description": "采后阶段 fresh / storage / transport，默认 storage"},
+            },
+            "required": ["crop"],
+        },
+    },
 ]
 
 def _tool_server_card(args: dict) -> dict:
@@ -1839,6 +1897,133 @@ _DISPATCH = {
     "agri_counterfactual_trajectory": _tool_counterfactual_trajectory,
     "agri_verify_recommendation": _tool_verify_recommendation,
 }
+
+
+# ---------- Stage 2.3 经济学层 + 2.6 采后模块（2026-10-24） ----------
+
+# 主粮 5 作物 + 常见蔬果的经济学参考值（数据年份 2024-2025，全国均价，
+# 不含人工；单位 CNY/kg 投入 / kg/㎡ 产量 / CNY/kg 市场价）
+# 诚实边界：modeled，非实测；区间反映不同气候带与规模差异
+_ECONOMICS_TABLE = {
+    # 主粮
+    "水稻": {"yield_low": 4.5, "yield_high": 7.0, "cost_input": 800, "price_low": 2.5, "price_high": 3.8, "gdd_requirement": 2800},
+    "小麦": {"yield_low": 4.0, "yield_high": 6.0, "cost_input": 700, "price_low": 2.6, "price_high": 3.5, "gdd_requirement": 1900},
+    "玉米": {"yield_low": 5.0, "yield_high": 8.0, "cost_input": 750, "price_low": 2.4, "price_high": 3.3, "gdd_requirement": 2400},
+    "大豆": {"yield_low": 1.5, "yield_high": 2.5, "cost_input": 600, "price_low": 5.5, "price_high": 7.0, "gdd_requirement": 2200},
+    "马铃薯": {"yield_low": 15.0, "yield_high": 25.0, "cost_input": 900, "price_low": 2.0, "price_high": 3.5, "gdd_requirement": 1500},
+    # 蔬果
+    "番茄": {"yield_low": 20.0, "yield_high": 40.0, "cost_input": 1200, "price_low": 4.0, "price_high": 8.0, "gdd_requirement": 1800},
+    "生菜": {"yield_low": 8.0, "yield_high": 15.0, "cost_input": 900, "price_low": 6.0, "price_high": 12.0, "gdd_requirement": 1000},
+    "草莓": {"yield_low": 15.0, "yield_high": 30.0, "cost_input": 2000, "price_low": 25.0, "price_high": 50.0, "gdd_requirement": 1200},
+    "黄瓜": {"yield_low": 25.0, "yield_high": 50.0, "cost_input": 1100, "price_low": 3.0, "price_high": 6.0, "gdd_requirement": 1500},
+    "辣椒": {"yield_low": 12.0, "yield_high": 25.0, "cost_input": 1300, "price_low": 8.0, "price_high": 15.0, "gdd_requirement": 1400},
+}
+
+# 采后处理参考值（FAO Codex Alimentarius 通用值）
+_POSTHARVEST_TABLE = {
+    "生菜": {"storage_temp_c": [0, 4], "storage_humidity_pct": [90, 98], "shelf_life_days": [3, 7], "loss_rate_pct": [15, 30], "key_risks": ["叶斑病", "软腐", "失水"]},
+    "番茄": {"storage_temp_c": [10, 13], "storage_humidity_pct": [85, 90], "shelf_life_days": [7, 14], "loss_rate_pct": [10, 20], "key_risks": ["脐腐病", "青果", "裂果"]},
+    "草莓": {"storage_temp_c": [0, 2], "storage_humidity_pct": [90, 95], "shelf_life_days": [2, 5], "loss_rate_pct": [20, 40], "key_risks": ["灰霉病", "机械损伤", "呼吸衰败"]},
+    "黄瓜": {"storage_temp_c": [10, 13], "storage_humidity_pct": [90, 95], "shelf_life_days": [3, 7], "loss_rate_pct": [15, 25], "key_risks": ["冷害", "失水", "菌核病"]},
+    "苹果": {"storage_temp_c": [-1, 4], "storage_humidity_pct": [90, 95], "shelf_life_days": [30, 90], "loss_rate_pct": [5, 15], "key_risks": ["轮纹病", "霉心病", "生理性贮藏病"]},
+    "香蕉": {"storage_temp_c": [13, 14], "storage_humidity_pct": [85, 90], "shelf_life_days": [7, 14], "loss_rate_pct": [10, 20], "key_risks": ["冷害", "黑斑", "机械损伤"]},
+    "叶菜": {"storage_temp_c": [0, 4], "storage_humidity_pct": [90, 98], "shelf_life_days": [3, 10], "loss_rate_pct": [15, 35], "key_risks": ["失水", "软腐", "叶斑病"]},
+    "根茎": {"storage_temp_c": [0, 10], "storage_humidity_pct": [85, 90], "shelf_life_days": [30, 180], "loss_rate_pct": [5, 15], "key_risks": ["发芽", "腐烂", "低温损伤"]},
+}
+
+
+def _tool_economics(args: dict) -> dict:
+    """Stage 2.3 经济学测算：投入成本 / 产量 / 收益区间 / ROI / 回本周期。"""
+    errs = validate_tool_args("agri_economics", TOOL_SCHEMA_economics, args)
+    if errs:
+        return {"contract_violation": True, "errors": errs}
+    crop = args.get("crop", "")
+    area = float(args.get("area_sqm", 100))
+    labor_cny_day = args.get("labor_cny_day")
+    entry = _ECONOMICS_TABLE.get(crop)
+    if not entry:
+        return {
+            "contract_violation": True,
+            "error": f"作物「{crop}」暂不支持。已支持：{', '.join(_ECONOMICS_TABLE.keys())}",
+            "supported_crops": list(_ECONOMICS_TABLE.keys()),
+        }
+    yield_low = entry["yield_low"] * area
+    yield_high = entry["yield_high"] * area
+    cost_input = entry["cost_input"] * (area / 100)  # 按面积线性放大
+    price_low = entry["price_low"]
+    price_high = entry["price_high"]
+    revenue_low = yield_low * price_low
+    revenue_high = yield_high * price_high
+    roi_low = (revenue_low - cost_input) / cost_input * 100
+    roi_high = (revenue_high - cost_input) / cost_input * 100
+    # 回本周期（年）：1.0 / (roi_low/100) 下限，roi_high 上限
+    payback_low = round(1.0 / (roi_high / 100), 2) if roi_high > 0 else None
+    payback_high = round(1.0 / (roi_low / 100), 2) if roi_low > 0 else None
+    labor_note = ""
+    if labor_cny_day:
+        # 粗略估算：主粮 5 人日/100㎡，蔬果 10 人日/100㎡
+        days = 10 if crop in ("番茄", "生菜", "草莓", "黄瓜", "辣椒") else 5
+        labor_cost = labor_cny_day * days * (area / 100)
+        labor_note = f"含人工 {labor_cost:.0f} CNY（按 {days} 人日/100㎡ 估）"
+        cost_input += labor_cost
+    return {
+        "crop": crop,
+        "area_sqm": area,
+        "yield_range_kg": [round(yield_low, 1), round(yield_high, 1)],
+        "input_cost_cny": round(cost_input, 0),
+        "price_range_cny_kg": [price_low, price_high],
+        "revenue_range_cny": [round(revenue_low, 0), round(revenue_high, 0)],
+        "roi_range_pct": [round(roi_low, 1), round(roi_high, 1)],
+        "payback_years": [payback_low, payback_high],
+        "labor_note": labor_note or "不含人工",
+        "data_quality": "modeled",
+        "data_year": "2024-2025",
+        "data_source": "全国农业统计年鉴 + FAOSTAT 参考区间（模型推算，非本地实测）",
+        "boundary": [
+            "成本随地区/规模/年份差异大，区间反映不确定性",
+            "yield 为模型推算，非田间验证",
+            "price 为全国均价，未考虑本地市场价",
+            "不含土地租金、人工、能源、灌溉、冷链",
+            "ROI 未考虑自然风险（病虫害、极端天气）",
+        ],
+    }
+
+
+def _tool_postharvest(args: dict) -> dict:
+    """Stage 2.6 采后处理：储藏温湿度 / 损耗率 / 保鲜期 / 采后病害风险。"""
+    errs = validate_tool_args("agri_postharvest", TOOL_SCHEMA_postharvest, args)
+    if errs:
+        return {"contract_violation": True, "errors": errs}
+    crop = args.get("crop", "")
+    stage = args.get("stage", "storage")
+    entry = _POSTHARVEST_TABLE.get(crop)
+    if not entry:
+        return {
+            "contract_violation": True,
+            "error": f"作物「{crop}」暂不支持。已支持：{', '.join(_POSTHARVEST_TABLE.keys())}",
+            "supported_crops": list(_POSTHARVEST_TABLE.keys()),
+        }
+    return {
+        "crop": crop,
+        "stage": stage,
+        "storage_temp_c": entry["storage_temp_c"],
+        "storage_humidity_pct": entry["storage_humidity_pct"],
+        "shelf_life_days": entry["shelf_life_days"],
+        "loss_rate_pct": entry["loss_rate_pct"],
+        "key_risks": entry["key_risks"],
+        "data_quality": "modeled",
+        "data_source": "FAO Codex Alimentarius 通用值（非本地验证）",
+        "boundary": [
+            "FAO 通用值，非本地田间试验",
+            "不含冷藏能耗成本",
+            "loss_rate 为行业经验值，实际受储运条件影响",
+        ],
+    }
+
+
+# 两个新工具在 _DISPATCH 之后定义，故在此补注册（避免前向引用 NameError）
+_DISPATCH["agri_economics"] = _tool_economics
+_DISPATCH["agri_postharvest"] = _tool_postharvest
 
 
 # ---------- JSON-RPC 传输层 ----------
