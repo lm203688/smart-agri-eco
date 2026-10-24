@@ -1881,10 +1881,277 @@ async function openRecipeDetail(rid){
   }catch(e){ fail(out, e); }
 }
 
+/* ============================== 增强功能（P0 Liftup 1.4-1.7 + 2.4） ============================== */
+/* 1.4 SSE 流式 · 1.5 3 图表 · 1.6 图片上传 · 1.7 多轮会话 · 2.4 实时天气 */
+
+function enhancedSec(){
+  return '<div class="section" id="enhanced"><h2>🧪 增强功能 Enhanced</h2>' +
+    '<p class="sub">P0 全面提升交付：SSE 流式 · 3 图表 · 图片诊断 · 多轮会话 · 实时天气</p>' +
+    '<div class="pane" style="margin-top:16px">' +
+    '<h4>① 图片上传 → 病虫害视觉诊断（1.6）</h4>' +
+    '<div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">' +
+      '<div style="flex:1;min-width:220px">' +
+        '<label>作物 Crop</label><input type="text" id="eCrop" value="生菜" style="width:100%">' +
+        '<label>症状描述</label><textarea id="eSym" rows="2" style="width:100%">叶片发黄，边缘病斑</textarea>' +
+        '<label>选择图片（支持拖拽）</label>' +
+        '<div id="eDrop" style="border:2px dashed #b8c4d0;padding:20px;text-align:center;cursor:pointer;color:#5a6b7d;background:#f5f7fa">📷 点击或拖拽图片到此处</div>' +
+        '<input type="file" id="eFile" accept="image/*" style="display:none">' +
+        '<button class="btn" id="btnEImage">诊断 Diagnose</button>' +
+      '</div>' +
+      '<div style="flex:2;min-width:320px"><div id="o-eImage" class="out"><div class="empty">上传病叶图 → 返回诊断 + 置信度</div></div></div>' +
+    '</div></div>' +
+    '<div class="pane" style="margin-top:20px">' +
+      '<h4>② SSE 流式输出（1.4）</h4>' +
+      '<div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">' +
+        '<div style="width:220px">' +
+          '<label>Skill</label><select id="eSkill" style="width:100%"><option value="recommend">recommend</option><option value="pest_diagnose">pest_diagnose</option><option value="season_advisory">season_advisory</option></select>' +
+          '<label>Payload (JSON)</label><textarea id="ePayload" rows="4" style="width:100%;font-family:monospace">{ "lat": 30.27, "lon": 120.15, "scene": "balcony" }</textarea>' +
+          '<button class="btn" id="btnESse">流式调用 Stream</button>' +
+        '</div>' +
+        '<div style="flex:2;min-width:320px"><div id="o-eSse" class="out" style="font-family:monospace;font-size:12px;white-space:pre-wrap"><div class="empty">每次调用逐字渲染，首字延迟 &lt;1s</div></div></div>' +
+      '</div></div>' +
+    '<div class="pane" style="margin-top:20px">' +
+      '<h4>③ 3 图表可视化（1.5）</h4>' +
+      '<div style="display:flex;gap:16px;flex-wrap:wrap">' +
+        '<div style="flex:1;min-width:280px"><div id="o-eVpd" class="out"><div class="empty">VPD 包络带</div></div></div>' +
+        '<div style="flex:1;min-width:280px"><div id="o-ePheno" class="out"><div class="empty">物候甘特</div></div></div>' +
+        '<div style="flex:1;min-width:280px"><div id="o-eZone" class="out"><div class="empty">分区热力</div></div></div>' +
+      '</div>' +
+      '<div style="margin-top:8px;color:#5a6b7d;font-size:12px">① 点击「加载示例」→ VPD 用 arid__仙人掌配方 · 甘特用 tomato · 热力用 8 大分区</div>' +
+    '</div>' +
+    '<div class="pane" style="margin-top:20px">' +
+      '<h4>④ 多轮会话记忆（1.7）</h4>' +
+      '<div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">' +
+        '<div style="width:220px">' +
+          '<label>Session ID</label><input type="text" id="eSid" style="width:100%">' +
+          '<label>追加消息（key + value）</label>' +
+          '<input type="text" id="eKey" value="question" style="width:100%">' +
+          '<input type="text" id="eVal" placeholder="消息内容" style="width:100%">' +
+          '<button class="btn" id="btnESet">追加 Append</button>' +
+          '<button class="btn" id="btnEDel">清空 Clear</button>' +
+        '</div>' +
+        '<div style="flex:2;min-width:320px"><div id="o-eSess" class="out"><div class="empty">连续 3 轮追问不丢上下文</div></div></div>' +
+      '</div></div>' +
+    '<div class="pane" style="margin-top:20px">' +
+      '<h4>⑤ 实时天气（2.4）</h4>' +
+      '<div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">' +
+        '<div style="width:220px">' +
+          '<label>纬度 / 经度</label>' +
+          '<div style="display:flex;gap:6px"><input type="number" id="eWLat" value="30.27" step="0.0001"><input type="number" id="eWLon" value="120.15" step="0.0001"></div>' +
+          '<button class="btn" id="btnEWeather">拉取 Open-Meteo</button>' +
+        '</div>' +
+        '<div style="flex:2;min-width:320px"><div id="o-eWeather" class="out"><div class="empty">Open-Meteo 免费无 key · 失败降级 climate_fetch</div></div></div>' +
+      '</div></div>' +
+    '</div>';
+}
+
+function drawVpdChart(data){
+  const ta = data.temperature_axis_c || [];
+  const up = data.vpd_envelope_kpa ? data.vpd_envelope_kpa.upper : [];
+  const lo = data.vpd_envelope_kpa ? data.vpd_envelope_kpa.lower : [];
+  const no = data.vpd_envelope_kpa ? data.vpd_envelope_kpa.nominal : [];
+  if(!ta.length || !up.length) return '<div class="errbox">数据缺失</div>';
+  const w=260, h=140, pad=30;
+  const maxV = Math.max(...up)*1.1;
+  const x = i => pad + (w-2*pad) * (ta.length<=1?0:i/(ta.length-1));
+  const y = v => h-pad - (h-2*pad) * (v/maxV);
+  let path_up='', path_lo='', pts_no='';
+  ta.forEach((t,i)=>{
+    path_up += (i?'L':'M') + x(i) + ',' + y(up[i]);
+    path_lo += (i?'L':'M') + x(i) + ',' + y(lo[i]);
+    pts_no += x(i) + ',' + y(no[i]) + ' ';
+  });
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="background:#f5f7fa;border-radius:6px">' +
+    '<path d="'+path_up+' '+path_lo.split(' ').reverse().join(' L')+'" fill="#4a90d9" fill-opacity="0.2" stroke="none"/>' +
+    '<path d="'+path_up+'" fill="none" stroke="#4a90d9" stroke-width="1.5"/>' +
+    '<path d="'+path_lo+'" fill="none" stroke="#4a90d9" stroke-width="1.5"/>' +
+    '<polyline points="'+pts_no+'" fill="none" stroke="#e07b39" stroke-width="1.5" stroke-dasharray="4 2"/>' +
+    '<text x="'+pad+'" y="12" font-size="10" fill="#333">VPD 包络（kPa）· 上=低湿，下=高湿</text>' +
+    '<text x="'+pad+'" y="'+(h-8)+'" font-size="9" fill="#5a6b7d">℃: '+ta.map(t=>Math.round(t)).join('→')+'</text>' +
+    '<text x="'+(w-pad)+'" y="12" font-size="9" fill="#5a6b7d" text-anchor="end">RH '+data.rh_range_pct.join('-')+'%</text>' +
+    '</svg>';
+}
+
+function drawPhenologyGantt(data){
+  const plan = data.plan;
+  if(!plan){ return '<div class="errbox">物候计划不可用：' + (data.error||'') + '</div>'; }
+  // 从 plan 抽阶段
+  const phases = plan.phases || plan.stages || [];
+  if(!phases.length) return '<div class="errbox">物候计划无阶段数据</div>';
+  const w=260, h=140, pad=20;
+  const n = phases.length;
+  const bh = (h-2*pad)/n - 2;
+  let bars='';
+  phases.forEach((p,i)=>{
+    const s = p.start||0, e = p.end||s+1, d = Math.max(e-s,1);
+    const maxD = Math.max(...phases.map(x=>Math.max((x.end||1)-(x.start||0),1)));
+    const bw = (w-2*pad) * (d/maxD);
+    const bx = pad + (w-2*pad)*(s/maxD);
+    bars += '<rect x="'+bx+'" y="'+(pad+i*(bh+2))+'" width="'+bw+'" height="'+bh+'" fill="#4a90d9" rx="2"/>' +
+      '<text x="'+(bx+4)+'" y="'+(pad+i*(bh+2)+bh/2+3)+'" font-size="9" fill="white">'+(p.name||p.phase||'')+'</text>';
+  });
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="background:#f5f7fa;border-radius:6px">' +
+    '<text x="'+pad+'" y="12" font-size="10" fill="#333">物候甘特 · '+(data.crop||'')+'</text>' +
+    bars + '</svg>';
+}
+
+function drawZoneHeat(data){
+  const zones = data.zones || [];
+  if(!zones.length) return '<div class="errbox">无分区数据</div>';
+  const w=260, h=140, pad=20;
+  const n = zones.length;
+  const cw = (w-2*pad)/n - 2;
+  const maxT = 40;
+  let cells='';
+  zones.forEach((z,i)=>{
+    const tmax = (z.temperature_range_c||[])[1] || 30;
+    const color = tmax>30?'#e07b39':tmax>20?'#4a90d9':tmax>10?'#7dbb5a':'#a0a0a0';
+    cells += '<rect x="'+(pad+i*(cw+2))+'" y="'+pad+'" width="'+cw+'" height="'+(h-2*pad)+'" fill="'+color+'" rx="2" opacity="0.7"/>' +
+      '<text x="'+(pad+i*(cw+2)+cw/2)+'" y="'+(h-6)+'" font-size="8" fill="#333" text-anchor="middle">'+(z.zone_id||'').slice(0,6)+'</text>' +
+      '<text x="'+(pad+i*(cw+2)+cw/2)+'" y="'+(h/2)+'" font-size="10" fill="#333" text-anchor="middle">'+Math.round(tmax)+'℃</text>';
+  });
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="background:#f5f7fa;border-radius:6px">' +
+    '<text x="'+pad+'" y="12" font-size="10" fill="#333">分区热力 · '+n+' 个气候带</text>' +
+    cells + '</svg>';
+}
+
+function initEnhanced(){
+  // 挂载 section
+  const cap = $("#capabilities");
+  if(cap){ cap.insertAdjacentHTML("beforeend", enhancedSec()); }
+  // Session ID 生成
+  const sid = "sess_" + Date.now().toString(36);
+  $("#eSid").value = sid;
+
+  // ① 图片上传
+  const drop = $("#eDrop"), fileInp = $("#eFile");
+  let imgB64 = null;
+  function setImg(b64){
+    imgB64 = b64;
+    drop.innerHTML = '<img src="'+b64+'" style="max-width:100%;max-height:120px;border-radius:4px">';
+  }
+  if(drop){ drop.addEventListener("click", ()=>fileInp.click()); }
+  if(fileInp){ fileInp.addEventListener("change", e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader(); r.onload = ev=>setImg(ev.target.result); r.readAsDataURL(f);
+  }); }
+  if(drop){ drop.addEventListener("dragover", e=>e.preventDefault());
+    drop.addEventListener("drop", e=>{
+      e.preventDefault();
+      const f = e.dataTransfer.files[0]; if(!f) return;
+      const r = new FileReader(); r.onload = ev=>setImg(ev.target.result); r.readAsDataURL(f);
+    });
+  }
+  if($("#btnEImage")){ $("#btnEImage").addEventListener("click", async ()=>{
+    const out = $("#o-eImage"); loading(out, "视觉诊断中");
+    if(!imgB64){ out.innerHTML = '<div class="errbox">请先选择图片</div>'; return; }
+    try{
+      const payload = {crop:$("#eCrop").value, symptom_description:$("#eSym").value, image_reference:imgB64};
+      const d = await api("/api/pest_diagnose", payload);
+      out.innerHTML = '<div class="card"><h5>诊断结论</h5>' + kv("严重度", d.severity||"—") +
+        kv("诊断", esc(d.diagnosis||"—")) + kv("建议", esc(d.recommendation||"—")) +
+        kv("vision_used", d.vision_used?"✅ 已启用":"（未启用，配置 AGRI_VISION_* 后可用）") +
+        '</div>';
+    }catch(e){ fail(out, e); }
+  }); }
+
+  // ② SSE 流式
+  if($("#btnESse")){ $("#btnESse").addEventListener("click", async ()=>{
+    const out = $("#o-eSse"); out.innerHTML = '<div class="empty">连接中...</div>';
+    const skill = $("#eSkill").value;
+    let payload = "{}";
+    try{ payload = JSON.stringify(JSON.parse($("#ePayload").value || "{}")); }catch(_){}
+    const url = "/api/agent/stream?skill=" + encodeURIComponent(skill) + "&payload=" +encodeURIComponent(payload);
+    try{
+      const resp = await fetch(url);
+      const reader = resp.body.getReader();
+      const dec = new TextDecoder();
+      let buf = "", firstTs = null, lineCount = 0;
+      out.innerHTML = '';
+      while(true){
+        const {value, done} = await reader.read();
+        if(done) break;
+        buf += dec.decode(value, {stream:true});
+        const lines = buf.split("\n\n");
+        buf = lines.pop();
+        for(const line of lines){
+          if(!line.startsWith("data:")) continue;
+          lineCount++;
+          const msg = line.slice(5);
+          const ts = firstTs || (firstTs = performance.now());
+          const dt = Math.round(performance.now() - ts);
+          out.innerHTML += '<div style="margin:2px 0;color:' + (lineCount<=2?'#4a90d9':'#333') + '">' +
+            '<span style="color:#999">'+dt+'ms</span> · ' + esc(msg) + '</div>';
+        }
+      }
+      if(lineCount===0) out.innerHTML = '<div class="errbox">无数据</div>';
+    }catch(e){ fail(out, e); }
+  }); }
+
+  // ③ 3 图表 - 加载示例
+  async function loadCharts(){
+    const oV = $("#o-eVpd"), oP = $("#o-ePheno"), oZ = $("#o-eZone");
+    try{
+      const v = await api("/api/charts/vpd?recipe_id=arid__仙人掌");
+      oV.innerHTML = drawVpdChart(v) + '<div style="margin-top:6px;color:#5a6b7d;font-size:11px">'+esc(v.crop||'')+' · '+esc(v.stage||'')+'</div>';
+    }catch(e){ oV.innerHTML = '<div class="errbox">'+e+'</div>'; }
+    try{
+      const p = await api("/api/charts/phenology?crop=tomato&lat=30.27&lon=120.15");
+      oP.innerHTML = drawPhenologyGantt(p);
+    }catch(e){ oP.innerHTML = '<div class="errbox">'+e+'</div>'; }
+    try{
+      const z = await api("/api/charts/zones");
+      oZ.innerHTML = drawZoneHeat(z);
+    }catch(e){ oZ.innerHTML = '<div class="errbox">'+e+'</div>'; }
+  }
+  loadCharts();
+
+  // ④ 多轮会话
+  if($("#btnESet")){ $("#btnESet").addEventListener("click", async ()=>{
+    const sid = $("#eSid").value;
+    const out = $("#o-eSess");
+    try{
+      const r = await api("/api/session", {action:"append", session_id:sid, key:$("#eKey").value, value:$("#eVal").value});
+      out.innerHTML = '<div class="card"><h5>已追加（session: '+esc(sid)+'）</h5>' +
+        kv("turn_count", r.turn_count) + '</div>';
+      $("#eVal").value = "";
+    }catch(e){ fail(out, e); }
+  }); }
+  if($("#btnEDel")){ $("#btnEDel").addEventListener("click", async ()=>{
+    const out = $("#o-eSess");
+    try{
+      await api("/api/session", {action:"delete", session_id:$("#eSid").value});
+      out.innerHTML = '<div class="card"><h5>已清空</h5><button class="btn sm" id="eNewSess">生成新 Session</button></div>';
+      $("#eNewSess").addEventListener("click", ()=>{ $("#eSid").value = "sess_" + Date.now().toString(36); });
+    }catch(e){ fail(out, e); }
+  }); }
+
+  // ⑤ 实时天气
+  if($("#btnEWeather")){ $("#btnEWeather").addEventListener("click", async ()=>{
+    const out = $("#o-eWeather"); loading(out, "拉取 Open-Meteo");
+    try{
+      const d = await api("/api/weather_now?lat=" + $("#eWLat").value + "&lon=" + $("#eWLon").value);
+      if(d.status==="ok"){
+        const cur = d.current||{};
+        out.innerHTML = '<div class="card"><h5>当前天气 · '+esc(d.timezone||'')+'</h5>' +
+          kv("温度", (cur.temperature_2m||'—') + ' ℃') +
+          kv("体感", (cur.apparent_temperature||'—') + ' ℃') +
+          kv("湿度", (cur.relative_humidity_2m||'—') + ' %') +
+          kv("风", (cur.wind_speed_10m||'—') + ' km/h') +
+          '</div>' +
+          '<div class="detail" style="margin-top:4px;color:#5a6b7d;font-size:11px">source: '+esc(d.source)+' · '+esc(d.boundary||'')+'</div>';
+      }else{
+        out.innerHTML = '<div class="errbox">状态: '+esc(d.status)+'<br>'+esc(d.reason||'')+'</div>';
+      }
+    }catch(e){ fail(out, e); }
+  }); }
+}
+
 /* ============================== BOOT ============================== */
 loadCities();
 loadPlatform();
 loadTrust();
+initEnhanced();
 </script>
 </body>
 </html>

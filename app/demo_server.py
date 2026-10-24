@@ -31,6 +31,12 @@
     POST /api/memory_recall      {"query","skill","crop","zone","k","expand"} -> 跨会话长期记忆召回
     POST /api/work_item          {"title","actor"} -> 工作项状态机全链路演示（含追加审计）
     POST /api/schedule           {"crop","zone","observations","symptom_text"} -> Env Recipe 条件锚定调度
+    GET  /api/agent/stream       ?skill=&payload=  -> SSE 流式返回（text/event-stream；每步 data:JSON\n\n）
+    POST /api/session             {"action":"set|get|delete|append","session_id","key","value","ttl_s"} -> 多轮会话记忆
+    GET  /api/weather_now         ?lat=&lon=       -> Open-Meteo 实时天气 + 7 天预报（免费无 key；失败降级 climate_fetch）
+    GET  /api/charts/vpd          ?recipe_id=      -> VPD 包络带数据（envelope 上下界 + 温度轴）
+    GET  /api/charts/phenology    ?crop=&lat=&lon= -> 物候甘特数据（阶段 + 起止日 + 积温）
+    GET  /api/charts/zones        -> 分区热力数据（8 大分区 × 温度/降水双维）
 
 所有建议遵循 docs/agent_output_contract.md 输出契约（evidence/confidence/constraints/recommendation）。
 """
@@ -93,6 +99,177 @@ os.environ.setdefault("AGRI_BP_DB",
 # 唯一数据源：data/preset_cities.json（2026-09-23 收敛，此前本文件与 mcp/server.py
 # 各持一份硬编码副本 → 漂移风险源）。两侧均经 agent/preset_cities.py 读取。
 PRESET_CITIES = load_preset_cities()
+
+# ---------------------------------------------------------------------------
+# 多轮会话记忆（1.7）：进程内 KV 存储。demo 隔离——重启即清空，不写盘。
+# 结构：_SESSIONS[session_id] = {key: entry | [entry, ...]}
+# 结构：_SESSION_SEQ[session_id] = 递增序号
+# ---------------------------------------------------------------------------
+_SESSIONS: dict = {}
+_SESSION_SEQ: dict = {}
+
+
+# ---------------------------------------------------------------------------
+# 2.4 实时天气：Open-Meteo（免费无 key）→ 当前 + 7 天预报
+# 失败降级到 climate_fetch（NASA POWER / Open-Meteo 兜底）
+# ---------------------------------------------------------------------------
+def _weather_now(lat: float, lon: float) -> dict:
+    import urllib.request
+    url = ("https://api.open-meteo.com/v1/forecast"
+           f"?latitude={lat}&longitude={lon}"
+           "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,wind_speed_10m"
+           "&forecast_days=7"
+           "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum"
+           "&timezone=auto")
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "smart-agri-eco/1.0"})
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        return {
+            "source": "open_meteo",
+            "status": "ok",
+            "lat": lat, "lon": lon,
+            "timezone": data.get("timezone"),
+            "current": data.get("current"),
+            "daily": data.get("daily"),
+            "retrieved_at": CLOCK.now().isoformat(timespec="seconds"),
+            "boundary": "Open-Meteo 无 key 免费服务，可能限流；数据不用于生产决策。",
+        }
+    except Exception as e:
+        # 降级：走 climate_fetch（NASA POWER + Open-Meteo 兜底）
+        try:
+            from agent.climate_data import fetch_monthly_climate
+            cl = fetch_monthly_climate(lat, lon, years=1, force_refresh=False)
+            return {
+                "source": "climate_fetch_fallback",
+                "status": "degraded",
+                "reason": f"open-meteo failed: {str(e)[:120]}",
+                "lat": lat, "lon": lon,
+                "monthly_climate": cl,
+                "retrieved_at": CLOCK.now().isoformat(timespec="seconds"),
+                "boundary": "降级到气候基线（月粒度），无实时预报。",
+            }
+        except Exception as e2:
+            return {"source": "none", "status": "error",
+                    "reason": str(e)[:120] + " | fallback: " + str(e2)[:120],
+                    "lat": lat, "lon": lon}
+
+
+# ---------------------------------------------------------------------------
+# 1.5 图表数据端点
+# ---------------------------------------------------------------------------
+def _charts_vpd(recipe_id: str) -> dict:
+    """VPD 包络带：从 env_recipe 读 temperature/humidity → 反算 VPD 上下界。
+    数据源：data/env_recipes/<recipe_id>.json 的 environment.vpd / temperature / humidity 字段。
+    """
+    if not recipe_id:
+        return {"error": "recipe_id 为空"}
+    fp = os.path.join(ROOT, "data", "env_recipes", recipe_id + ".json")
+    if not os.path.exists(fp):
+        return {"error": "未找到配方: " + recipe_id}
+    try:
+        with open(fp, "r", encoding="utf-8") as f:
+            r = json.load(f)
+    except Exception as e:
+        return {"error": f"解析失败: {str(e)[:120]}"}
+
+    env = r.get("environment") or {}
+    # 尝试读 vpd 字段（可能直接给 envelope）
+    vpd_direct = env.get("vpd") or r.get("vpd") or {}
+    temp = env.get("temperature") or r.get("temperature") or {}
+    hum = env.get("humidity") or r.get("humidity") or {}
+
+    # 计算 VPD envelope：VPD = 0.6108 * exp(17.27*T/(T+237.3)) * (1 - RH/100)
+    import math
+    def vpd(t_c: float, rh_pct: float) -> float:
+        es = 0.6108 * math.exp(17.27 * t_c / (t_c + 237.3))
+        return es * (1 - rh_pct / 100.0)
+
+    # 构造温度轴（每天 day_c / night_c，若无则用温度包络）
+    temps = []
+    if isinstance(temp, dict):
+        for k in ("day_c", "night_c", "min_c", "max_c", "nominal_c"):
+            if k in temp and isinstance(temp[k], (int, float)):
+                temps.append(temp[k])
+    elif isinstance(temp, list) and temp:
+        for x in temp:
+            if isinstance(x, (int, float)):
+                temps.append(float(x))
+    if not temps:
+        temps = [15, 20, 25, 30]
+
+    rh_min = 100.0; rh_max = 0.0
+    if isinstance(hum, dict):
+        for k in ("min_pct", "range"):
+            v = hum.get(k)
+            if isinstance(v, (int, float)):
+                rh_min = min(rh_min, float(v)); rh_max = max(rh_max, float(v))
+        if isinstance(hum.get("range"), list):
+            for x in hum["range"]:
+                if isinstance(x, (int, float)):
+                    rh_min = min(rh_min, float(x)); rh_max = max(rh_max, float(x))
+        if isinstance(hum.get("nominal_pct"), (int, float)):
+            pass  # nominal 用作中心
+    if rh_min >= rh_max:
+        rh_min, rh_max = 40.0, 80.0
+
+    # 生成网格
+    temps_axis = [round(t, 1) for t in temps]
+    vpd_upper = [round(vpd(t, rh_min), 3) for t in temps_axis]
+    vpd_lower = [round(vpd(t, rh_max), 3) for t in temps_axis]
+    vpd_nominal = [round(vpd(t, (rh_min + rh_max) / 2.0), 3) for t in temps_axis]
+
+    return {
+        "recipe_id": recipe_id,
+        "crop": r.get("crop"),
+        "zone": r.get("zone"),
+        "stage": r.get("stage"),
+        "vpd_direct_from_recipe": vpd_direct,
+        "temperature_axis_c": temps_axis,
+        "vpd_envelope_kpa": {
+            "upper": vpd_upper,
+            "lower": vpd_lower,
+            "nominal": vpd_nominal,
+        },
+        "rh_range_pct": [rh_min, rh_max],
+        "formula": "VPD = 0.6108 * exp(17.27*T/(T+237.3)) * (1 - RH/100)",
+        "retrieved_at": CLOCK.now().isoformat(timespec="seconds"),
+    }
+
+
+def _charts_phenology(crop: str, lat, lon) -> dict:
+    """物候甘特：crop + 起点日期 → 阶段起止 + 积温。
+    数据源：agent.phenology 模块；失败降级到 season_advisory。
+    """
+    if not crop:
+        return {"error": "crop 为空"}
+    out = {"crop": crop, "lat": lat, "lon": lon}
+    try:
+        from agent.phenology import phenology_plan
+        plan = phenology_plan(crop, lat=lat, lon=lon)
+        out.update({"source": "agent.phenology", "plan": plan})
+    except Exception:
+        try:
+            from agent.phenology import covered_crops, stage_days_for
+            out["source"] = "agent.phenology.fallback"
+            out["covered"] = crop in covered_crops()
+            if hasattr(sys.modules[__name__], "stage_days_for"):
+                out["stage_days"] = stage_days_for(crop)
+        except Exception as e2:
+            out["error"] = f"phenology 不可用: {str(e2)[:120]}"
+    out["retrieved_at"] = CLOCK.now().isoformat(timespec="seconds")
+    return out
+
+
+def _charts_zones() -> dict:
+    """分区热力：6 个分区 × 温度/降水双维。数据源：data/zone_meta/global_zones.json"""
+    gz = _read_json_safe("data/zone_meta/global_zones.json") or {}
+    zones = gz.get("zones", []) if isinstance(gz, dict) else []
+    return {
+        "total": len(zones),
+        "zones": zones,
+        "retrieved_at": CLOCK.now().isoformat(timespec="seconds"),
+    }
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -171,6 +348,59 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(_recipe_detail((qs.get("recipe_id") or [""])[0]))
         elif path == "/api/stats":
             self._send_json(_platform_stats())
+        elif path == "/api/agent/stream":
+            # 1.4 SSE 流式：把 call_skill 拆成多步事件流，让前端逐字渲染
+            # 协议：Content-Type: text/event-stream，每条 data:JSON\n\n，结束 data:{"step":"end"}
+            qs = parse_qs(urlparse(self.path).query)
+            skill = (qs.get("skill") or ["recommend"])[0]
+            payload = (qs.get("payload") or ["{}"])[0]
+            try:
+                payload = json.loads(payload) if payload else {}
+            except Exception:
+                payload = {}
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "keep-alive")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+
+            def _sse(obj: dict):
+                try:
+                    self.wfile.write(("data:" + json.dumps(obj, ensure_ascii=False) + "\n\n").encode("utf-8"))
+                    self.wfile.flush()
+                except Exception:
+                    return False
+                return True
+
+            _sse({"step": "start", "skill": skill, "ts": CLOCK.now().isoformat(timespec="seconds")})
+            _sse({"step": "progress", "stage": "invoke", "msg": "正在调用 " + skill + "..."})
+            try:
+                orch = AgriOrchestrator()
+                res = orch.call_skill(skill, payload)
+                _sse({"step": "progress", "stage": "done", "msg": "结果已生成"})
+                _sse({"step": "result", "data": res})
+            except Exception as e:
+                _sse({"step": "error", "error": str(e)[:200]})
+            _sse({"step": "end"})
+        elif path == "/api/weather_now":
+            # 2.4 实时天气：Open-Meteo（免费无 key）→ 7 天预报；失败降级 climate_fetch
+            qs = parse_qs(urlparse(self.path).query)
+            lat = float((qs.get("lat") or ["0"])[0])
+            lon = float((qs.get("lon") or ["0"])[0])
+            self._send_json(_weather_now(lat, lon))
+        elif path == "/api/charts/vpd":
+            qs = parse_qs(urlparse(self.path).query)
+            rid = (qs.get("recipe_id") or [""])[0]
+            self._send_json(_charts_vpd(rid))
+        elif path == "/api/charts/phenology":
+            qs = parse_qs(urlparse(self.path).query)
+            crop = (qs.get("crop") or [""])[0]
+            lat = float((qs.get("lat") or ["0"])[0]) if (qs.get("lat") or [""])[0] else None
+            lon = float((qs.get("lon") or ["0"])[0]) if (qs.get("lon") or [""])[0] else None
+            self._send_json(_charts_phenology(crop, lat, lon))
+        elif path == "/api/charts/zones":
+            self._send_json(_charts_zones())
         else:
             self._send_json({"error": "not found", "path": path}, status=404)
 
@@ -368,6 +598,57 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json({"recipe": keep, "anchors": anchors, "actions": actions})
             except Exception as e:
                 self._send_json({"error": f"schedule 失败: {e}"}, status=500)
+        elif path == "/api/session":
+            # 1.7 多轮会话记忆：进程内 KV（demo 隔离，重启清空）。
+            # 前端约定：localStorage["agri_session_id"] 存 UUID；每轮调用后端把
+            # 当前 turn 写入 session[key]，读旧 turn 时按 seq 排序合并上下文。
+            try:
+                action = payload.get("action", "set")
+                sid = payload.get("session_id", "")
+                if not sid:
+                    sid = str(uuid.uuid4())
+                if action == "set":
+                    entry = {
+                        "session_id": sid, "key": payload.get("key", ""),
+                        "value": payload.get("value"),
+                        "ts": CLOCK.now().isoformat(timespec="seconds"),
+                        "seq": _SESSION_SEQ.pop(sid, 0) + 1,
+                    }
+                    _SESSION_SEQ[sid] = entry["seq"]
+                    _SESSIONS.setdefault(sid, {})
+                    _SESSIONS[sid][entry["key"]] = entry
+                elif action == "append":
+                    sid = payload.get("session_id", "")
+                    entry = {
+                        "session_id": sid, "key": payload.get("key", "message"),
+                        "value": payload.get("value"),
+                        "ts": CLOCK.now().isoformat(timespec="seconds"),
+                        "seq": _SESSION_SEQ.pop(sid, 0) + 1,
+                    }
+                    _SESSION_SEQ[sid] = entry["seq"]
+                    _SESSIONS.setdefault(sid, {})
+                    _SESSIONS[sid].setdefault(entry["key"], []).append(entry)
+                elif action == "get":
+                    self._send_json({
+                        "session_id": sid,
+                        "exists": sid in _SESSIONS,
+                        "data": _SESSIONS.get(sid, {}),
+                        "turn_count": len(_SESSIONS.get(sid, {})),
+                    })
+                    return
+                elif action == "delete":
+                    _SESSIONS.pop(sid, None)
+                    _SESSION_SEQ.pop(sid, None)
+                elif action == "list":
+                    self._send_json({"sessions": list(_SESSIONS.keys())[:50], "count": len(_SESSIONS)})
+                    return
+                else:
+                    self._send_json({"error": f"unknown action: {action}"}, status=400)
+                    return
+                self._send_json({"ok": True, "session_id": sid,
+                                 "turn_count": len(_SESSIONS.get(sid, {}))})
+            except Exception as e:
+                self._send_json({"error": f"session 失败: {e}"}, status=500)
         elif path == "/api/bp_screen":
             # BP 投资初筛：文本 → 完备性 + 风险三档结论（不产出 ROI 数字）
             try:
