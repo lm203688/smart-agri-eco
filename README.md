@@ -472,9 +472,9 @@ MCP server 的完整实现位于 `mcp/server.py`（含 `TOOLS` 注册表 + stdio
 
 <!-- GEN_TOOL_TABLE:BEGIN -->
 
-### MCP 工具全表（25 个）
+### MCP 工具全表（23 个）
 
-> 本表由 `scripts/gen_tool_table.py` 从 `mcp/server.py` 的 TOOLS 注册表**程序化生成**，禁止手写。工具总数 23。
+> 本表由 `scripts/gen_tool_table.py` 从 `mcp/server.py` 的 TOOLS 注册表**程序化生成**，禁止手写。工具总数 25。
 
 | # | 工具名 | 分类 | 一句话说明 | 必填参数 | 返回类型 |
 |---|---|---|---|---|---|
@@ -501,6 +501,8 @@ MCP server 的完整实现位于 `mcp/server.py`（含 `TOOLS` 注册表 + stdio
 | 21 | `agri_decision_path_report` | bp_screen | （决策路径可视化报告 M16-B2）将 bp_screen 评分引擎的 decision_path 归因数据导出为可视化报告。返回结构化 JSON：每个案例含 verdict/de… | 见参数详情 | `DecisionPathReport` JSON |
 | 22 | `agri_counterfactual_trajectory` | counterfactual | （反事实轨迹 API · Phase N+1 #6）给定作物与基线动作序列，用 AgriWorld-Lite 机理内核（光截获 Beer-Lambert + CO2 同化 + Q1… | `crop` — 作物名，如 potato/番茄/生菜 | `Trajectory` JSON（数组 + CI） |
 | 23 | `agri_verify_recommendation` | verify | （Verify-as-a-Service · Phase N+3 #14 · 支柱五）作为「农业 Agent 的裁判」验证第三方（另一个 Agent、大模型、BP、农艺师）给出的农… | `claim` — 被验证主张，如 {crop, yield_g_m<br>`context` — 上下文，如 {dli_mj_m2_d, days | `Verdict` JSON（含 trust_mark） |
+| 24 | `agri_economics` | business | （Stage 2.3 · 2026-10-24 新增）农业经济测算：输入 crop / zone / area_sqm / 投入参数，输出投入成本 CNY / 预期产量 kg / … | `crop` — 作物中文名 | `JSON` |
+| 25 | `agri_postharvest` | nutrition | （Stage 2.6 · 2026-10-24 新增）采后处理/储藏：输入 crop，返回最佳储藏温湿度 / 损耗率 / 保鲜期 / 采后病害风险。诚实边界：数据来自 FAO Co… | `crop` — 作物中文名 | `JSON` |
 
 > 每个工具的详细参数说明见 `mcp/README.md` 对应章节。
 

@@ -27723,5 +27723,1930 @@
     "axis": "all",
     "case": "all",
     "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:30:17",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:31:08",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:31:10",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:31:13",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:31:15",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:31:18",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:31:20",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:31:40",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:32:29",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:32:32",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:32:34",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:32:36",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:32:39",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:32:41",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:34:36",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:35:26",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:35:28",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:35:31",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:35:33",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:35:35",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:35:37",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:36:06",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:36:53",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:36:55",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:36:57",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:37:00",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:37:02",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:37:05",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:40:15",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:41:00",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:41:02",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:41:05",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:41:07",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:41:09",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
+  },
+  {
+    "timestamp": "2026-10-24T08:41:11",
+    "commit": "unknown",
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "by_axis": {
+      "counterfactual": {
+        "total": 17,
+        "passed": 17,
+        "pass_rate": 1.0
+      },
+      "generalization": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_counterfactual_invariant": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "negative_honest_degradation": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "negative_input_bounds": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "negative_trust_breakage": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "state_rolling": {
+        "total": 21,
+        "passed": 21,
+        "pass_rate": 1.0
+      },
+      "target_prediction": {
+        "total": 25,
+        "passed": 25,
+        "pass_rate": 1.0
+      }
+    },
+    "conformal_coverage": 0.92,
+    "conformal_guarantee": 0.9,
+    "axis": "all",
+    "case": "all",
+    "failed_cases": []
   }
 ]
