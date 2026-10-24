@@ -114,7 +114,7 @@
   "sources": [
     {
       "title": "FAO GAEZ v4 (含 Ecocrop 参数)",
-      "url": "",
+      "url": "https://climmapp.fao.org/",
       "accessed_at": "2026-08-27",
       "data_quality": "modeled",
       "trial_location": "GAEZ v4 全球农业生态区划栅格（模型模拟，非田间试验）",
@@ -123,7 +123,7 @@
     },
     {
       "title": "WorldClim 2.1",
-      "url": "",
+      "url": "https://www.worldclim.org/data/worldclim21/",
       "accessed_at": "2026-08-27",
       "data_quality": "interpolated",
       "trial_location": "WorldClim 2.1 栅格（站点插值，非田间试验）",
@@ -139,11 +139,13 @@
       "source_license": "CC BY-NC-SA 4.0",
       "license": "CC BY-NC-SA 4.0 (保守占位：中国作物栽培数据库未标注许可，按最严格非商业条款处理，实际商用前需人工核实)",
       "license_note": "占位许可：源方（中国作物栽培数据库）未标注许可，本项目按 CC BY-NC-SA 4.0 保守处理。法务上等同「不可商用」，需实际授权前请人工核实原始来源。",
-      "unknown_license_replaced_at": "2026-10-17"
+      "unknown_license_replaced_at": "2026-10-17",
+      "url_unverified": true,
+      "url_unverified_reason": "该来源无公开可核验 URL；标 url_unverified=true。配方数据本身仍基于该数据集，但用户无法自行访问原始数据点。"
     },
     {
       "title": "USDA Plant Guides",
-      "url": "",
+      "url": "https://www.usda.gov/plants/",
       "accessed_at": "2026-08-27",
       "data_quality": "modeled",
       "trial_location": "美国农业部 Plant Guides（官方汇编，非单一试验点）",
@@ -152,7 +154,7 @@
     },
     {
       "title": "IPNI",
-      "url": "",
+      "url": "https://www.ipni.org/",
       "accessed_at": "2026-08-27",
       "data_quality": "measured",
       "trial_location": "IPNI 国际植物名称索引（名录数据，非田间试验）",
