@@ -105,16 +105,31 @@ def _load_json(path: str) -> Any:
 
 
 def _mcp_tools() -> List[str]:
-    """从 mcp/server.py 反算真实工具名（不手写，避免文档漂移）。"""
+    """从 mcp/server.py 反算真实工具名（不手写，避免文档漂移）。
+
+    检测两类模式：
+    1) _DISPATCH 字典字面量内的 `"agri_xxx": _tool_xxx,`
+    2) 字典之后 `__setitem__` 补注册：`_DISPATCH["agri_xxx"] = _tool_xxx`
+       （用于解决「函数定义在字典之后」的次序问题——如 agri_economics /
+       agri_postharvest 的表与函数在字典之后才出现）
+    """
     server_path = os.path.join(ROOT, "mcp", "server.py")
     src = open(server_path, "r", encoding="utf-8").read()
     tools: List[str] = []
+
+    def _add(name: str):
+        if name.startswith("agri_") and name not in tools:
+            tools.append(name)
+
     for line in src.splitlines():
-        line = line.strip()
-        if line.startswith('"agri_') and '":' in line:
-            name = line.split('"')[1]
-            if name not in tools:
-                tools.append(name)
+        s = line.strip()
+        # 模式 1：字典字面量条目
+        if s.startswith('"agri_') and '":' in s:
+            _add(s.split('"')[1])
+        # 模式 2：__setitem__ 补注册
+        elif s.startswith('_DISPATCH["') or s.startswith("_DISPATCH['"):
+            first = s.split('"')[1] if '"' in s else s.split("'")[1]
+            _add(first)
     return sorted(tools)
 
 
