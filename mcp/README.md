@@ -24,22 +24,114 @@ python mcp/server.py
 
 MCP 客户端以 stdio 子进程方式拉起本文件即可。
 
-## 注册到 Claude Desktop（示例）
+## 客户端接入（5 个主流 MCP 客户端 · 复制即跑）
 
-`claude_desktop_config.json`：
+Server 通过 **stdio 子进程** 拉起：`python <绝对路径>/mcp/server.py`。以下是各家客户端的配置路径与 JSON 片段。首次使用前把 `<ABS_PATH>` 替换为你的仓库绝对路径（Windows: `C:/Users/xing/Desktop/智慧农业生态`；macOS/Linux: `~/smart-agri-eco`）。
+
+### 1. Claude Desktop
+
+**配置路径**：
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
     "agri-eco": {
       "command": "python",
-      "args": ["/绝对路径/智慧农业生态/mcp/server.py"]
+      "args": ["<ABS_PATH>/mcp/server.py"]
     }
   }
 }
 ```
 
-也可直接用 Agent Plugins 清单（`plugin/mcp.json`），支持 Agent Plugins 1.0.0 的客户端会自动读取。
+保存后重启 Claude Desktop；对话侧边栏出现 🌱 图标即可见 25 个 `agri_*` 工具。
+
+### 2. Cursor
+
+**配置路径**：项目根下 `.cursor/mcp.json`（项目级，推荐）或 Cursor → Settings → MCP（全局）。
+
+```json
+{
+  "mcpServers": {
+    "agri-eco": {
+      "command": "python",
+      "args": ["<ABS_PATH>/mcp/server.py"]
+    }
+  }
+}
+```
+
+在 Cursor 对话里按 `@` 可调用；首次调用会在顶部触发授权确认（stdio 本地无需凭据）。
+
+### 3. Windsurf
+
+**配置路径**：项目根 `.windsurf/mcp.json` 或用户全局 `%USERPROFILE%/.windsurf/mcp.json`。
+
+```json
+{
+  "mcpServers": {
+    "agri-eco": {
+      "command": "python",
+      "args": ["<ABS_PATH>/mcp/server.py"]
+    }
+  }
+}
+```
+
+Windsurf Cascade 面板 → MCP Servers → Refresh 即可识别。
+
+### 4. Cline
+
+**配置路径**：Cline 面板 → Settings → MCP Servers（右上角 +）→ 选择 "Add Server" 并粘贴下面的 JSON，或写入 `.cline/mcp_settings.json`：
+
+```json
+{
+  "mcpServers": {
+    "agri-eco": {
+      "command": "python",
+      "args": ["<ABS_PATH>/mcp/server.py"],
+      "alwaysAllow": [],
+      "disabled": false
+    }
+  }
+}
+```
+
+Cline 会在任务开始前调用 `tools/list` 拉取工具清单，工具结果在对话里以 markdown 展开。
+
+### 5. 自研 Agent（Python stdlib，零依赖）
+
+若你写自己的 Agent，用 stdlib JSON-RPC 2.0 over stdio 即可：
+
+```python
+import json, subprocess, sys
+
+proc = subprocess.Popen(
+    [sys.executable, "/abs/path/to/mcp/server.py"],
+    stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True,
+)
+
+def rpc(method, params=None):
+    req = {"jsonrpc": "2.0", "id": 1, "method": method}
+    if params is not None:
+        req["params"] = params
+    proc.stdin.write(json.dumps(req) + "\n")
+    proc.stdin.flush()
+    return json.loads(proc.stdout.readline())
+
+print(rpc("tools/list")["result"]["tools"][0]["name"])  # → agri_list_cities
+print(rpc("tools/call", {"name": "agri_list_cities", "arguments": {}})["result"])
+```
+
+协议契约：MCP 2026-07-28 无状态（`initialize` 可选、无 `Mcp-Session-Id`）；请求体用 newline-delimited JSON；响应在同一条 stdout 行返回。
+
+### 通用提示
+
+- **Windows 用户**：把 `"command": "python"` 换成 `python.exe` 绝对路径（如 `"C:/Python314/python.exe"`）可避免 PATHEXT 解析歧义。
+- **Agent Plugins 客户端**：若你的客户端支持 Agent Plugins 1.0.0 协议，可直接读取仓库根 `plugin/mcp.json` 自动接入，无需手工编辑。
+- **协议版本**：本 server 完全兼容 2024-11-05 / 2025-06-18 / 2026-07-28；老客户端按 `initialize` 老流程亦可正常工作。
+- **健康自检**：接入前可本地跑 `python scripts/check_demo_endpoints.py` 或 `python scripts/test_mcp_server.py` 确认 server 正常响应。
 
 ## 暴露的工具（25 个）
 
