@@ -60,6 +60,7 @@ from core.atomic_io import atomic_append_jsonl, atomic_write_json
 
 from agent import AgriOrchestrator  # noqa: E402
 from agent.preset_cities import load_preset_cities  # noqa: E402
+from agent.grow_batch_store import GrowBatchStore, get_store as get_grow_batch_store, GrowBatchError  # noqa: E402
 from core.trust_layer import get_trust_mark  # noqa: E402
 from core.tool_schema import validate_tool_args  # noqa: E402
 
@@ -357,6 +358,100 @@ TOOL_SCHEMA_postharvest = {
         "stage": {"type": "string", "enum": ["fresh", "storage", "transport"], "nullable": True},
     },
     "required": ["crop"],
+}
+
+# ---------- Stage 批次对象 MVP（2026-10-27，报告 §9.1 P0 工作包） ----------
+# 5 个工具：create/observe/action/status/replay，围绕 grow_batch.schema.json
+# 五类对象协作。MVP 阶段动作默认 shadow/dry_run，不真实执行。
+
+TOOL_SCHEMA_grow_batch_create = {
+    "type": "object",
+    "properties": {
+        "plot": {
+            "type": "object",
+            "description": "Plot 对象（见 schemas/grow_batch.schema.json）。plot_id/location_type 必填。",
+            "properties": {
+                "plot_id": {"type": "string", "minLength": 1},
+                "location_type": {"type": "string",
+                                   "enum": ["balcony", "indoor", "greenhouse", "field", "teaching"]},
+            },
+            "required": ["plot_id", "location_type"],
+        },
+        "batch": {
+            "type": "object",
+            "description": "GrowBatch 对象（见 schemas/grow_batch.schema.json）。batch_id/crop/plot_id/recipe_version/started_at 必填。",
+            "properties": {
+                "batch_id": {"type": "string", "minLength": 1},
+                "crop": {"type": "string", "minLength": 1},
+                "plot_id": {"type": "string", "minLength": 1},
+                "recipe_version": {"type": "string"},
+                "recipe_id": {"type": "string"},
+                "started_at": {"type": "string"},
+            },
+            "required": ["batch_id", "crop", "plot_id", "recipe_version", "started_at"],
+        },
+    },
+    "required": ["plot", "batch"],
+}
+
+TOOL_SCHEMA_grow_batch_observe = {
+    "type": "object",
+    "properties": {
+        "observation": {
+            "type": "object",
+            "description": "Observation 对象。observation_id/batch_id/ts/metric/source 必填。",
+            "properties": {
+                "observation_id": {"type": "string", "minLength": 1},
+                "batch_id": {"type": "string", "minLength": 1},
+                "ts": {"type": "string"},
+                "metric": {"type": "string", "minLength": 1},
+                "value": {"type": "object"},
+                "text": {"type": "string"},
+                "source": {"type": "object"},
+                "quality": {"type": "string",
+                            "enum": ["high", "medium", "low", "uncertain", "missing"]},
+            },
+            "required": ["observation_id", "batch_id", "ts", "metric", "source"],
+        },
+    },
+    "required": ["observation"],
+}
+
+TOOL_SCHEMA_grow_batch_action = {
+    "type": "object",
+    "properties": {
+        "action": {
+            "type": "object",
+            "description": "Action 对象。action_id/batch_id/ts/recommendation 必填。MVP 默认 shadow/dry_run。",
+            "properties": {
+                "action_id": {"type": "string", "minLength": 1},
+                "batch_id": {"type": "string", "minLength": 1},
+                "ts": {"type": "string"},
+                "recommendation": {"type": "string", "minLength": 1},
+                "parameters": {"type": "object"},
+                "dry_run": {"type": "boolean"},
+            },
+            "required": ["action_id", "batch_id", "ts", "recommendation"],
+        },
+    },
+    "required": ["action"],
+}
+
+TOOL_SCHEMA_grow_batch_status = {
+    "type": "object",
+    "properties": {
+        "batch_id": {"type": "string"},
+        "include_events": {"type": "boolean", "nullable": True},
+    },
+    "required": ["batch_id"],
+}
+
+TOOL_SCHEMA_grow_batch_replay = {
+    "type": "object",
+    "properties": {
+        "batch_id": {"type": "string"},
+    },
+    "required": ["batch_id"],
 }
 
 # M13-P3 Server Card + ETags：稳定 ETag 种子（内容变更才改变），
@@ -1638,6 +1733,81 @@ TOOLS = [
             "required": ["crop"],
         },
     },
+    {
+        "name": "agri_grow_batch_create",
+        "category": "batch",
+        "description": (
+            "（批次对象 MVP · 2026-10-27 新增）建立 Plot + GrowBatch：把 MCP/UI/校准/审计"
+            "的局部上下文收束到批次对象链。MVP 阶段可建立并回放一个模拟批次，"
+            "动作默认 shadow/dry_run，不写真实 outcome（P1 才人工确认执行）。"
+            "输入 plot（plot_id/location_type）+ batch（batch_id/crop/plot_id/recipe_version/started_at）。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "plot": {"type": "object", "description": "Plot 对象（grow_batch.schema.json）"},
+                "batch": {"type": "object", "description": "GrowBatch 对象（grow_batch.schema.json）"},
+            },
+            "required": ["plot", "batch"],
+        },
+    },
+    {
+        "name": "agri_grow_batch_observe",
+        "category": "batch",
+        "description": (
+            "（批次对象 MVP · 2026-10-27 新增）追加 Observation：批次生命周期内的一次观察"
+            "（传感自动或人工/图像补充）。输入 observation（observation_id/batch_id/ts/metric/source）。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "observation": {"type": "object", "description": "Observation 对象（grow_batch.schema.json）"},
+            },
+            "required": ["observation"],
+        },
+    },
+    {
+        "name": "agri_grow_batch_action",
+        "category": "batch",
+        "description": (
+            "（批次对象 MVP · 2026-10-27 新增）记录 Action：一次建议→审批→执行→确认的动作链。"
+            "MVP 默认 shadow/dry_run，不真实执行；真实执行（executed）需人工确认且 dry_run=False。"
+            "输入 action（action_id/batch_id/ts/recommendation）。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "object", "description": "Action 对象（grow_batch.schema.json）"},
+            },
+            "required": ["action"],
+        },
+    },
+    {
+        "name": "agri_grow_batch_status",
+        "category": "batch",
+        "description": (
+            "（批次对象 MVP · 2026-10-27 新增）查询批次状态 + 关联对象（Plot/Observation/Action/Outcome）。"
+            "可选 include_events=true 附带 append-only 事件日志。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "batch_id": {"type": "string", "description": "批次唯一 ID"},
+                "include_events": {"type": "boolean", "description": "是否附带事件日志，默认 false"},
+            },
+            "required": ["batch_id"],
+        },
+    },
+    {
+        "name": "agri_grow_batch_replay",
+        "category": "batch",
+        "description": (
+            "（批次对象 MVP · 2026-10-27 新增）按时间线回放批次事件：重建事件序列，"
+            "不触发任何真实执行或副作用（诚实标注）。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "batch_id": {"type": "string", "description": "批次唯一 ID"},
+            },
+            "required": ["batch_id"],
+        },
+    },
 ]
 
 def _tool_server_card(args: dict) -> dict:
@@ -2021,9 +2191,93 @@ def _tool_postharvest(args: dict) -> dict:
     }
 
 
+# ---------- Stage 批次对象 MVP（2026-10-27） ----------
+
+def _tool_grow_batch_create(args: dict) -> dict:
+    """建立 Plot + GrowBatch（MVP：可建立并回放一个模拟批次，不写真实 outcome）。"""
+    errs = validate_tool_args("agri_grow_batch_create", TOOL_SCHEMA_grow_batch_create, args)
+    if errs:
+        return {"contract_violation": True, "errors": errs}
+    store = get_grow_batch_store()
+    try:
+        plot = args.get("plot", {})
+        batch = args.get("batch", {})
+        store.create_plot(plot)
+        r = store.create_batch(batch)
+        return {"ok": True, "batch_id": r["batch_id"], "plot_id": plot["plot_id"],
+                "status": r["status"],
+                "honest_note": "MVP：模拟批次已建立，动作默认 shadow/dry_run，真实执行需人工确认"}
+    except GrowBatchError as e:
+        return {"contract_violation": True, "error": str(e)}
+
+
+def _tool_grow_batch_observe(args: dict) -> dict:
+    """追加 Observation（批次生命周期内的观察记录）。"""
+    errs = validate_tool_args("agri_grow_batch_observe", TOOL_SCHEMA_grow_batch_observe, args)
+    if errs:
+        return {"contract_violation": True, "errors": errs}
+    store = get_grow_batch_store()
+    try:
+        r = store.add_observation(args.get("observation", {}))
+        return {"ok": True, "observation_id": r["observation_id"], "count": r["count"]}
+    except GrowBatchError as e:
+        return {"contract_violation": True, "error": str(e)}
+
+
+def _tool_grow_batch_action(args: dict) -> dict:
+    """记录 Action（MVP 默认 shadow/dry_run，不真实执行；executed 需人工确认）。"""
+    errs = validate_tool_args("agri_grow_batch_action", TOOL_SCHEMA_grow_batch_action, args)
+    if errs:
+        return {"contract_violation": True, "errors": errs}
+    store = get_grow_batch_store()
+    try:
+        r = store.add_action(args.get("action", {}))
+        return {"ok": True, "action_id": r["action_id"], "status": r["status"], "dry_run": r["dry_run"]}
+    except GrowBatchError as e:
+        return {"contract_violation": True, "error": str(e)}
+
+
+def _tool_grow_batch_status(args: dict) -> dict:
+    """查询批次状态 + 关联对象（可选含事件日志）。"""
+    errs = validate_tool_args("agri_grow_batch_status", TOOL_SCHEMA_grow_batch_status, args)
+    if errs:
+        return {"contract_violation": True, "errors": errs}
+    store = get_grow_batch_store()
+    try:
+        b = store.get_batch(args["batch_id"], include_events=bool(args.get("include_events")))
+        return {"ok": True, "batch": b["batch"], "plot": b["plot"],
+                "n_observations": len(b["observations"]), "n_actions": len(b["actions"]),
+                "n_outcomes": len(b["outcomes"]),
+                "observations": b["observations"][-10:],  # 最近 10 条
+                "actions": b["actions"][-10:],
+                "events": b.get("events")}
+    except GrowBatchError as e:
+        return {"contract_violation": True, "error": str(e)}
+
+
+def _tool_grow_batch_replay(args: dict) -> dict:
+    """按时间线回放批次事件（不触发任何真实执行或副作用）。"""
+    errs = validate_tool_args("agri_grow_batch_replay", TOOL_SCHEMA_grow_batch_replay, args)
+    if errs:
+        return {"contract_violation": True, "errors": errs}
+    store = get_grow_batch_store()
+    try:
+        r = store.replay(args["batch_id"])
+        return {"ok": True, "batch_id": r["batch_id"], "n_events": r["n_events"],
+                "timeline": r["timeline"], "honest_note": r["honest_note"]}
+    except GrowBatchError as e:
+        return {"contract_violation": True, "error": str(e)}
+
+
 # 两个新工具在 _DISPATCH 之后定义，故在此补注册（避免前向引用 NameError）
 _DISPATCH["agri_economics"] = _tool_economics
 _DISPATCH["agri_postharvest"] = _tool_postharvest
+# 批次对象 MVP 工具补注册（同前向引用原因）
+_DISPATCH["agri_grow_batch_create"] = _tool_grow_batch_create
+_DISPATCH["agri_grow_batch_observe"] = _tool_grow_batch_observe
+_DISPATCH["agri_grow_batch_action"] = _tool_grow_batch_action
+_DISPATCH["agri_grow_batch_status"] = _tool_grow_batch_status
+_DISPATCH["agri_grow_batch_replay"] = _tool_grow_batch_replay
 
 
 # ---------- JSON-RPC 传输层 ----------

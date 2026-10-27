@@ -825,7 +825,7 @@ class TestMCPIntegration(unittest.TestCase):
         for new_tool in ("agri_reconcile_climate", "agri_resolve_recipe", "agri_query_lineage",
                           "agri_list_ecosystem"):
             self.assertIn(new_tool, names, f"新增工具未注册：{new_tool}")
-        self.assertEqual(len(names), 25, f"应为 25 个工具，实测 {len(names)}（含 agri_search + agri_knowledge_query + agri_verify_trust + agri_server_card + agri_decision_path_report + agri_counterfactual_trajectory + agri_verify_recommendation + agri_economics + agri_postharvest）")
+        self.assertEqual(len(names), 30, f"应为 30 个工具，实测 {len(names)}（含 agri_search + agri_knowledge_query + agri_verify_trust + agri_server_card + agri_decision_path_report + agri_counterfactual_trajectory + agri_verify_recommendation + agri_economics + agri_postharvest + agri_grow_batch_* 5 工具）")
 
     def test_tools_and_dispatch_consistent(self):
         self.assertEqual(set(t["name"] for t in self.m.TOOLS), set(self.m._DISPATCH),
@@ -979,7 +979,7 @@ class TestDocCapabilityNumbersInSync(unittest.TestCase):
         import importlib
         mcp_server = importlib.import_module("mcp.server")
         n = len(mcp_server.TOOLS)
-        self.assertEqual(n, 25, "MCP 工具数变了，本测试的文档期望值需同步更新")
+        self.assertEqual(n, 30, "MCP 工具数变了，本测试的文档期望值需同步更新")
 
         readme = self._read("README.md")
         self.assertIn("**%d 个** agri 工具" % n, readme,
@@ -992,7 +992,7 @@ class TestDocCapabilityNumbersInSync(unittest.TestCase):
                       "mcp/README.md 投递模板的工具数不符")
 
         html = self._read("app/index.html")
-        self.assertIn("提供二十一个工具", html,
+        self.assertIn("提供三十个工具", html,
                       "app/index.html 的 MCP 工具数中文表述不符")
 
     def test_recipe_and_zone_count_matches_docs(self):

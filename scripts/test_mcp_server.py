@@ -91,10 +91,13 @@ def main() -> int:
         # 3) tools/list
         resp = _rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
         tools = (resp or {}).get("result", {}).get("tools", [])
-        check(len(tools) == 25, f"tools/list 返回 25 个工具（实际 {len(tools)}）")
+        check(len(tools) == 30, f"tools/list 返回 30 个工具（实际 {len(tools)}）")
         names = {t["name"] for t in tools}
         check("agri_env_recipe" in names, "包含 agri_env_recipe 工具")
         check("agri_season_advisory" in names, "包含 agri_season_advisory 工具")
+        # 批次对象 MVP 工具（2026-10-27，报告 §9.1 P0 工作包）
+        check("agri_grow_batch_create" in names, "包含 agri_grow_batch_create 工具")
+        check("agri_grow_batch_replay" in names, "包含 agri_grow_batch_replay 工具")
         check("agri_soil_profile" in names, "包含 agri_soil_profile 工具")
         check("agri_bp_screen" in names, "包含 agri_bp_screen 工具（BP 投资初筛）")
         check("agri_reconcile_climate" in names, "包含 agri_reconcile_climate 工具（多源气候校准）")

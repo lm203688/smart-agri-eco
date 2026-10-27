@@ -43,7 +43,7 @@ from mcp.server import (  # noqa: E402
 
 # M13-P2 声明的允许分类集合（与 mcp/server.py TOOLS 定义对齐）
 ALLOWED_CATEGORIES = frozenset({
-    "bp_screen", "business", "climate", "counterfactual", "crop",
+    "batch", "bp_screen", "business", "climate", "counterfactual", "crop",
     "forecast", "knowledge", "meta", "nutrition", "pest", "phenology",
     "recipe", "soil", "verify",
 })
@@ -92,7 +92,7 @@ class TestSelectToolsByCategory(unittest.TestCase):
         """不传 params 返回全量（向后兼容，旧客户端行为不变）。"""
         r = _select_tools_by_category({})
         self.assertEqual(len(r["tools"]), len(TOOLS))
-        self.assertEqual(len(r["categories"]), 14)
+        self.assertEqual(len(r["categories"]), 15)
 
     def test_single_category_filter(self):
         """params.category='climate' 返回 climate 类工具。"""
@@ -103,7 +103,7 @@ class TestSelectToolsByCategory(unittest.TestCase):
         # 非 climate 工具不应出现
         self.assertNotIn("agri_diagnose_pest", names)
         # categories 始终返回完整列表
-        self.assertEqual(len(r["categories"]), 14)
+        self.assertEqual(len(r["categories"]), 15)
 
     def test_multiple_categories_filter(self):
         """params.categories=['recipe','meta'] 返回并集。"""
@@ -125,7 +125,7 @@ class TestSelectToolsByCategory(unittest.TestCase):
         r = _select_tools_by_category({"category": "nonexistent"})
         self.assertEqual(len(r["tools"]), 0)
         # categories 提示仍完整，让客户端知道有哪些可用分类
-        self.assertEqual(len(r["categories"]), 14)
+        self.assertEqual(len(r["categories"]), 15)
 
     def test_mixed_known_and_unknown(self):
         """多分类中部分存在、部分不存在：存在的生效，不存在的忽略。"""
