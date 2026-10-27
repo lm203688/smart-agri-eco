@@ -111,6 +111,13 @@ class ConditionalConformal:
             # 完全未校准 → 返回点估计三度重复，诚实标注
             return {
                 "p10": float(point_est), "p50": float(point_est), "p90": float(point_est),
+                # P0-2 语义字段：中央覆盖区间，非分位数
+                "point": float(point_est),
+                "coverage_lower": float(point_est),
+                "coverage_upper": float(point_est),
+                "target_coverage": 0.0,
+                "calibration_set_id": getattr(self, "calibration_set_id", "unknown"),
+                "interval_semantics": "central_coverage_interval",
                 "interval_method": "conditional_conformal",
                 "group_key": self._key_str(group_key),
                 "q": None,
@@ -129,6 +136,13 @@ class ConditionalConformal:
             "p10": round(p10, 6),
             "p50": round(float(point_est), 6),
             "p90": round(p90, 6),
+            # P0-2 语义字段：中央覆盖区间，非分位数
+            "point": round(float(point_est), 6),
+            "coverage_lower": round(p10, 6),
+            "coverage_upper": round(p90, 6),
+            "target_coverage": round(1.0 - self.alpha, 4),
+            "calibration_set_id": getattr(self, "calibration_set_id", "unknown"),
+            "interval_semantics": "central_coverage_interval",
             "interval_method": "conditional_conformal",
             "group_key": self._key_str(group_key),
             "q": round(q, 6),

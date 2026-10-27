@@ -47,6 +47,9 @@ class SplitConformal:
 
     calibration_scores: List[float] = field(default_factory=list)
     alpha: float = DEFAULT_ALPHA
+    # P0-2 诚实标注：校准集来源标识（默认 unknown，由构建方显式设置）。
+    # 下游消费者读 calibration_set_id 可审计区间校准的出处，避免"匿名校准"。
+    calibration_set_id: str = "unknown"
 
     def __post_init__(self) -> None:
         # 分数必须非负
@@ -236,16 +239,35 @@ def split_conformal_interval(calibrator: SplitConformal,
                              point_est: float,
                              alpha: Optional[float] = None,
                              ) -> Dict[str, Any]:
-    """便捷接口：给点估计 + 校准器 → 返回 p10/p50/p90 + 方法说明。"""
+    """便捷接口：给点估计 + 校准器 → 返回区间 + 方法说明。
+
+    P0-2 整改：新增语义正确字段（point/coverage_lower/coverage_upper/
+    target_coverage/calibration_set_id/interval_semantics），保留旧字段
+    p10/p50/p90 向后兼容。旧字段 p10/p90 实为**中央覆盖区间的下/上界**，
+    不是 10%/90% 分位数——输出加 interval_semantics=central_coverage_interval
+    诚实标注，避免下游误读为分位数。
+    """
     p10, p50, p90 = calibrator.predict_interval(point_est, alpha=alpha)
+    q = calibrator.quantile()
+    guarantee = calibrator.coverage_guarantee()
     return {
+        # ---- P0-2 语义正确字段 ----
+        "point": p50,
+        "coverage_lower": p10,
+        "coverage_upper": p90,
+        "target_coverage": guarantee,
+        "calibration_n": calibrator.n,
+        "calibration_set_id": calibrator.calibration_set_id,
+        "interval_semantics": "central_coverage_interval",
+        # ---- 旧字段（向后兼容，保留）----
         "p50": p50,
         "p10": p10,
         "p90": p90,
         "interval_method": "split_conformal",
-        "coverage_guarantee": calibrator.coverage_guarantee(),
-        "calibration_n": calibrator.n,
-        "quantile_q": calibrator.quantile(),
+        "coverage_guarantee": guarantee,
+        "quantile_q": q,
+        "note": ("中央覆盖区间（coverage_lower..coverage_upper），非 P10/P90 分位数；"
+                 "split conformal 有限样本覆盖率 ≥ 1-α；n<20 时 q 保守（偏宽）。"),
     }
 
 
@@ -269,7 +291,10 @@ def get_default_calibrator(alpha: float = DEFAULT_ALPHA) -> SplitConformal:
         (466.0, 500.0),    # 胡萝卜@mediterranean
         (273.0, 280.0),    # 生菜@subtropical_wet
     ]
-    return build_calibrator_from_pairs(snapshot, alpha=alpha)
+    calib = build_calibrator_from_pairs(snapshot, alpha=alpha)
+    # P0-2：诚实标注校准集来源，供下游审计区间出处
+    calib.calibration_set_id = "agri_recipe_bench_target_prediction_v1"
+    return calib
 
 
 if __name__ == "__main__":

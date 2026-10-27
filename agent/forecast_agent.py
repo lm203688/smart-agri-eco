@@ -117,16 +117,26 @@ def _conformal_interval_of(point_est_yield: float,
         return {
             "yield_estimate_g": {
                 "p50": point_est_yield, "p10": point_est_yield, "p90": point_est_yield,
+                "point": point_est_yield,
+                "coverage_lower": point_est_yield, "coverage_upper": point_est_yield,
+                "target_coverage": 0.0,
+                "calibration_n": 0,
+                "calibration_set_id": "unknown",
+                "interval_semantics": "central_coverage_interval",
                 "interval_method": "split_conformal_unavailable",
                 "coverage_guarantee": 0.0,
-                "calibration_n": 0,
                 "error": f"conformal 降级: {e}",
             },
             "adjusted_duration_days": {
                 "p50": point_est_days, "p10": point_est_days, "p90": point_est_days,
+                "point": point_est_days,
+                "coverage_lower": point_est_days, "coverage_upper": point_est_days,
+                "target_coverage": 0.0,
+                "calibration_n": 0,
+                "calibration_set_id": "unknown",
+                "interval_semantics": "central_coverage_interval",
                 "interval_method": "split_conformal_unavailable",
                 "coverage_guarantee": 0.0,
-                "calibration_n": 0,
             },
         }
 

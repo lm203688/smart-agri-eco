@@ -158,6 +158,24 @@ class TestSplitConformalIntervalHelper(unittest.TestCase):
         self.assertGreater(result["calibration_n"], 0)
         self.assertIsNotNone(result["quantile_q"])
 
+    def test_split_conformal_interval_p0_2_semantics(self):
+        """P0-2：输出含语义正确字段（point/coverage_lower/coverage_upper），
+        且 interval_semantics 诚实标注为中央覆盖区间（非分位数）。"""
+        c = get_default_calibrator()
+        result = split_conformal_interval(c, point_est=1500.0)
+        # 语义正确字段存在且与旧字段一致（向后兼容）
+        self.assertEqual(result["point"], result["p50"])
+        self.assertEqual(result["coverage_lower"], result["p10"])
+        self.assertEqual(result["coverage_upper"], result["p90"])
+        # 中央覆盖区间语义：非分位数
+        self.assertEqual(result["interval_semantics"], "central_coverage_interval")
+        # 目标覆盖率 = 1 - alpha
+        self.assertAlmostEqual(result["target_coverage"], 0.90, places=4)
+        # 校准集来源可审计（P0-2 要求 calibration_set_id）
+        self.assertEqual(result["calibration_set_id"],
+                         "agri_recipe_bench_target_prediction_v1")
+        self.assertEqual(result["calibration_n"], c.n)
+
 
 class TestSplitConformalCoverageBound(unittest.TestCase):
     """覆盖率下界的数学验证（split conformal 保证）。"""
