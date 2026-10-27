@@ -65,6 +65,79 @@ from core.clock import CLOCK
 PORT = int(os.environ.get("AGRI_DEMO_PORT", "8000"))
 HOST = os.environ.get("AGRI_DEMO_HOST", "127.0.0.1")
 
+# ---------------------------------------------------------------------------
+# 安全默认（P0-8 公网部署前必须整改，见 docs/REPORT_IMPLEMENTATION_2026-10-27.md）
+#
+# CORS 白名单
+#   默认仅允许本机回环源（本地开发），生产部署必须显式设置 AGRI_ALLOWED_ORIGINS
+#   为真实域名，逗号分隔。未配置的跨域源一律拒绝。
+#   本地 Demo 用 AGRI_DEMO_CORS_WILDCARD=1 恢复旧行为（仅应急/测试用）。
+#
+# 请求/上传体量限制
+#   所有 JSON POST 请求体上限 1 MiB（AGRI_MAX_BODY_BYTES 覆盖）。
+#   /api/bp_screen_file 每个文件 5 MiB、总上传 20 MiB 上限（可配）。
+#   超限返回 413 Request Entity Too Large。
+#
+# 路径规范化
+#   recipe_id 等入参不允许包含路径分隔符或 .. 穿越。见 _safe_recipe_id()。
+# ---------------------------------------------------------------------------
+
+def _parse_allowed_origins() -> list[str]:
+    """解析 AGRI_ALLOWED_ORIGINS 环境变量（逗号分隔）。默认允许本机回环。"""
+    raw = os.environ.get("AGRI_ALLOWED_ORIGINS", "").strip()
+    if raw:
+        return [o.strip() for o in raw.split(",") if o.strip()]
+    # 未配置时的默认：仅本机回环
+    return ["http://127.0.0.1", "http://localhost", "http://[::1]"]
+
+
+ALLOWED_ORIGINS = _parse_allowed_origins()
+# 生产默认严格；仅当 AGRI_DEMO_CORS_WILDCARD=1 显式声明时开 *（用于离线调试）
+CORS_WILDCARD = os.environ.get("AGRI_DEMO_CORS_WILDCARD", "0") == "1"
+
+MAX_BODY_BYTES = int(os.environ.get("AGRI_MAX_BODY_BYTES", str(1024 * 1024)))
+MAX_UPLOAD_PER_FILE = int(os.environ.get("AGRI_MAX_UPLOAD_PER_FILE", str(5 * 1024 * 1024)))
+MAX_UPLOAD_TOTAL = int(os.environ.get("AGRI_MAX_UPLOAD_TOTAL", str(20 * 1024 * 1024)))
+
+# 允许上传的文件扩展名白名单（bp_screen 上传解析用）
+UPLOAD_ALLOWED_EXT = {
+    ".pdf", ".docx", ".xlsx", ".csv", ".txt", ".md", ".doc", ".xls",
+    ".png", ".jpg", ".jpeg", ".webp", ".bmp",
+}
+
+
+def _safe_recipe_id(recipe_id: str) -> str | None:
+    """拒绝路径穿越：允许小写字母/数字/连字符/下划线/点/中文，其余返回 None。"""
+    if not recipe_id:
+        return None
+    # 明确拒绝路径分隔符
+    if "/" in recipe_id or "\\" in recipe_id or "\x00" in recipe_id:
+        return None
+    # 拒绝 .. 穿越
+    if ".." in recipe_id:
+        return None
+    # 白名单校验：允许常见 recipe_id 字符（含中文）
+    # 使用 ASCII 白名单 + 中文区段（U+4E00-U+9FFF）
+    if not all(
+        (c.isalnum() and ord(c) < 128)
+        or c in "_-."
+        or (0x4E00 <= ord(c) <= 0x9FFF)
+        for c in recipe_id
+    ):
+        return None
+    return recipe_id
+
+
+def _normalize_upload_filename(fn: str) -> str:
+    """清洗上传文件名：去路径分隔符，仅保留 basename。"""
+    if not fn:
+        return "upload.bin"
+    # 剥掉可能的路径部分
+    fn = fn.replace("\\", "/").rsplit("/", 1)[-1]
+    fn = fn.replace("\x00", "").strip()
+    return fn or "upload.bin"
+
+
 INDEX_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
 
 # ---------------------------------------------------------------------------
@@ -164,9 +237,12 @@ def _charts_vpd(recipe_id: str) -> dict:
     """
     if not recipe_id:
         return {"error": "recipe_id 为空"}
-    fp = os.path.join(ROOT, "data", "env_recipes", recipe_id + ".json")
+    safe_id = _safe_recipe_id(recipe_id)
+    if safe_id is None:
+        return {"error": "recipe_id 含非法字符（拒绝路径穿越）"}
+    fp = os.path.join(ROOT, "data", "env_recipes", safe_id + ".json")
     if not os.path.exists(fp):
-        return {"error": "未找到配方: " + recipe_id}
+        return {"error": "未找到配方: " + safe_id}
     try:
         with open(fp, "r", encoding="utf-8") as f:
             r = json.load(f)
@@ -273,12 +349,30 @@ def _charts_zones() -> dict:
 
 
 class Handler(BaseHTTPRequestHandler):
+    def _apply_cors_headers(self) -> None:
+        """根据请求 Origin 决定 CORS 响应头。
+        - 匹配白名单：允许该 Origin + 常用头/方法
+        - CORS_WILDCARD=1：允许 *（仅离线调试）
+        - 其他：不返回 CORS 头（浏览器会阻断跨域）
+        """
+        origin = (self.headers.get("Origin") or "").strip()
+        if CORS_WILDCARD:
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+            return
+        if origin and origin in ALLOWED_ORIGINS:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+
     def _send_json(self, obj: dict, status: int = 200):
         body = json.dumps(obj, ensure_ascii=False, indent=2).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self._apply_cors_headers()
         self.end_headers()
         self.wfile.write(body)
 
@@ -287,8 +381,49 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
+        self._apply_cors_headers()
         self.end_headers()
         self.wfile.write(body)
+
+    def do_OPTIONS(self):
+        """CORS preflight。仅对匹配白名单的 Origin 返回 204。"""
+        origin = (self.headers.get("Origin") or "").strip()
+        if CORS_WILDCARD:
+            self.send_response(204)
+            self._apply_cors_headers()
+            self.send_header("Access-Control-Max-Age", "600")
+            self.end_headers()
+            return
+        if origin and origin in ALLOWED_ORIGINS:
+            self.send_response(204)
+            self._apply_cors_headers()
+            self.send_header("Access-Control-Max-Age", "600")
+            self.end_headers()
+            return
+        self.send_response(403)
+        self.end_headers()
+
+    def _read_json_body(self) -> tuple[dict | None, str | None]:
+        """读 POST body 并校验大小与 JSON 语法。
+        返回 (payload, error_message)。payload=None 表示读失败。
+        """
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except (ValueError, TypeError):
+            return None, "Content-Length 非法"
+        if length < 0:
+            return None, "Content-Length 为负"
+        if length > MAX_BODY_BYTES:
+            return None, (
+                f"请求体 {length} B 超过上限 {MAX_BODY_BYTES} B"
+            )
+        raw = self.rfile.read(length) if length else b"{}"
+        if not raw:
+            return {}, None
+        try:
+            return json.loads(raw.decode("utf-8")), None
+        except Exception:
+            return {}, None
 
     def do_GET(self):
         path = urlparse(self.path).path
@@ -362,7 +497,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
             self.send_header("Cache-Control", "no-cache")
             self.send_header("Connection", "keep-alive")
-            self.send_header("Access-Control-Allow-Origin", "*")
+            self._apply_cors_headers()
             self.end_headers()
 
             def _sse(obj: dict):
@@ -406,11 +541,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = urlparse(self.path).path
-        length = int(self.headers.get("Content-Length", 0))
-        raw = self.rfile.read(length) if length else b"{}"
-        try:
-            payload = json.loads(raw.decode("utf-8")) if raw else {}
-        except Exception:
+        payload, err = self._read_json_body()
+        if err is not None:
+            self._send_json({"error": f"请求体过大或非法: {err}"}, status=413 if "过大" in err else 400)
+            return
+        # 若 body 是 JSON 解析失败，_read_json_body 返回 ({}, None)——保持向后兼容
+        if payload is None:
             payload = {}
 
         if path == "/api/recommend":
@@ -681,9 +817,19 @@ class Handler(BaseHTTPRequestHandler):
                 os.makedirs(up_dir, exist_ok=True)
                 saved = []
                 parse_notes = []
+                total_uploaded = 0
                 for f in files:
-                    fn = (f.get("filename") or "upload.bin").replace("/", "_").replace("\\", "_")
+                    # 文件名清洗：仅保留 basename，去路径分隔符
+                    fn = _normalize_upload_filename(f.get("filename") or "upload.bin")
+                    # 扩展名白名单校验
+                    ext = os.path.splitext(fn)[1].lower()
+                    if ext not in UPLOAD_ALLOWED_EXT:
+                        parse_notes.append(f"{fn}: 扩展名 {ext or '(空)'} 不在白名单")
+                        continue
                     content = f.get("content_base64") or ""
+                    if not content:
+                        parse_notes.append(f"{fn}: 内容为空")
+                        continue
                     try:
                         raw = base64.b64decode(content)
                     except Exception:
@@ -692,6 +838,19 @@ class Handler(BaseHTTPRequestHandler):
                     if not raw:
                         parse_notes.append(f"{fn}: 内容为空")
                         continue
+                    # 单文件大小限制
+                    if len(raw) > MAX_UPLOAD_PER_FILE:
+                        parse_notes.append(
+                            f"{fn}: 大小 {len(raw)} B 超过单文件上限 {MAX_UPLOAD_PER_FILE} B"
+                        )
+                        continue
+                    # 总上传量限制
+                    if total_uploaded + len(raw) > MAX_UPLOAD_TOTAL:
+                        parse_notes.append(
+                            f"{fn}: 累计上传将超过总上限 {MAX_UPLOAD_TOTAL} B"
+                        )
+                        continue
+                    total_uploaded += len(raw)
                     fp = os.path.join(up_dir, f"{uuid.uuid4().hex[:6]}_{fn}")
                     with open(fp, "wb") as wf:
                         wf.write(raw)
@@ -978,12 +1137,15 @@ def _recipe_detail(rid: str) -> dict:
     """知识底座·配方库：按 recipe_id（zone__crop）读取一份完整 Env Recipe。"""
     if not rid:
         return {"error": "recipe_id 为空"}
-    fp = os.path.join(ROOT, "data", "env_recipes", rid + ".json")
+    safe_id = _safe_recipe_id(rid)
+    if safe_id is None:
+        return {"error": "recipe_id 含非法字符（拒绝路径穿越）"}
+    fp = os.path.join(ROOT, "data", "env_recipes", safe_id + ".json")
     if not os.path.exists(fp):
-        return {"error": "未找到配方: " + rid}
+        return {"error": "未找到配方: " + safe_id}
     try:
         with open(fp, "r", encoding="utf-8") as f:
-            return {"recipe_id": rid, "data": json.load(f)}
+            return {"recipe_id": safe_id, "data": json.load(f)}
     except Exception as e:
         return {"error": str(e)[:160]}
 

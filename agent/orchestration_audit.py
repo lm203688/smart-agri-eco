@@ -123,7 +123,17 @@ class TraceRecord:
         })
 
     def finish(self) -> None:
-        self.ended_at = CLOCK.time()
+        # ended_at 取 wall-clock 与最后一个 step 结束时间的较大值——
+        # 避免 wall-clock 精度问题（Windows/沙箱下可能 < 1ms 差异导致
+        # total_ms 被 round 到 0，进而让 add_step 之后立即 finish 的
+        # 测试脆弱）。数学语义不变：finish 之后 total_ms 至少覆盖所有
+        # 已记录的 step 时段。
+        now = CLOCK.time()
+        if self.steps:
+            last_end = self.steps[-1]["ended_at"]
+            if last_end is not None and last_end > now:
+                now = last_end
+        self.ended_at = now
 
     def total_ms(self) -> float:
         end = self.ended_at if self.ended_at is not None else CLOCK.time()

@@ -191,6 +191,10 @@
     "derived_at": "2026-10-14T09:34:40Z",
     "method": "growth_days_over_200",
     "note": "复用 agent/growth_agent.py 公式 round(growth_days/200, 1)。缺 growth_days 时值为 null（不编造）。",
-    "growth_days": 1095
+    "growth_days": 1095,
+    "estimated_unsafe_for_execution": true,
+    "safety_note": "sowing_depth_cm.value 由 `growth_days/200` 派生，是启发式近似，不是作物/品种级权威农艺依据。真实依据应为种子大小、覆土要求、基质类型和湿度条件。该字段进入设备执行层前必须经 E1 农艺专家审核；未通过审核时只允许在建议层展示（标注『待确认』），不得作为自动化控制参数。",
+    "deprecation_marker_version": "1.0",
+    "deprecation_marker_at": "2026-10-26T22:10:58Z"
   }
 }

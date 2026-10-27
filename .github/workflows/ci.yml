@@ -158,9 +158,11 @@ jobs:
           python scripts/gate_tool_schema.py
           echo "▶ gate_mechanism_gigo"
           python scripts/gate_mechanism_gigo.py
+          echo "▶ gate_utf8_encoding"
+          python scripts/gate_utf8_encoding.py
           echo "▶ check_immutable_zone_paths"
           python scripts/check_immutable_zone_paths.py
-          echo "✅ 8 门禁全部通过"
+          echo "✅ 9 门禁全部通过"
 
       - name: MCP 命名空间守卫（防 pip mcp 包遮蔽项目 mcp/ 目录）
         run: python scripts/check_mcp_namespace.py

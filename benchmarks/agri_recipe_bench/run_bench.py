@@ -710,6 +710,9 @@ def summarize(results: List[Dict[str, Any]]) -> Dict[str, Any]:
     neg_total = sum(v["total"] for k, v in by_axis.items() if k.startswith("negative_"))
     neg_passed = sum(v["passed"] for k, v in by_axis.items() if k.startswith("negative_"))
 
+    # P0-1 三层证据分类（2026-10-27）：当前 89 用例全部是 L0 工程回归
+    # （自回归基准，无独立农艺真值）。L1/L2 需外部数据，当前 0 用例。
+    # 附加字段，不改变任何现有判据（--strict 只看 pass_rate）。
     return {
         "total": total,
         "passed": passed,
@@ -719,6 +722,20 @@ def summarize(results: List[Dict[str, Any]]) -> Dict[str, Any]:
         "by_axis": {a: dict(v, pass_rate=round(v["passed"] / v["total"], 3) if v["total"] else 0)
                     for a, v in sorted(by_axis.items())},
         "generated_at": CLOCK.now().isoformat(timespec="seconds"),
+        "evidence_layers": {
+            "L0_engineering_regression": {
+                "total": total, "passed": passed,
+                "note": "自回归基准，验证行为不变，非农艺准确率",
+            },
+            "L1_agronomic_reference": {
+                "total": 0, "passed": 0,
+                "note": "需外部文献/专家标注/WOFOST 机理真值，当前 0 用例",
+            },
+            "L2_field_holdout": {
+                "total": 0, "passed": 0,
+                "note": "需真实种植批次按站点/时间隔离留出，当前 0 用例",
+            },
+        },
     }
 
 

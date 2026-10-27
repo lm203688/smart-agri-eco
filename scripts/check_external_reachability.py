@@ -41,6 +41,10 @@ import urllib.request
 from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 巡检历史记录（与 check_g1_signals 的 github_signals_history 同模式）。
+# .workbuddy/ 已入 .gitignore，历史是本地观察资产，不推送。
+HISTORY_PATH = os.path.join(ROOT, ".workbuddy", "reachability_history.json")
+HISTORY_MAX_ENTRIES = 200
 
 # 让本地脚本对 github / registry 等走直连，避免 IDE 的 HTTP_PROXY 污染。
 # 与 check_demo_endpoints.py 同款处理，理由见那里的注释。
@@ -186,6 +190,40 @@ def check_one(item: dict[str, Any], verbose: bool = False) -> tuple[str, str]:
     return PASS, f"HTTP {status} {len(body)}B ({dt:.1f}s)"
 
 
+def _record_history(results: list, summary: dict) -> None:
+    """把本次巡检追加到本地历史（.workbuddy/reachability_history.json）。
+
+    纯观察层：只写本地 .workbuddy（已 gitignore），不修改任何公网资产。
+    保留最近 HISTORY_MAX_ENTRIES 条，避免无限增长。写入失败不阻断主流程。
+    """
+    try:
+        entry = {
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "summary": summary,
+            "results": [
+                {"key": r["key"], "status": r["status"], "detail": r["detail"][:80]}
+                for r in results
+            ],
+        }
+        existing = []
+        if os.path.exists(HISTORY_PATH):
+            try:
+                with open(HISTORY_PATH, "r", encoding="utf-8") as f:
+                    existing = json.load(f).get("entries", [])
+            except Exception:
+                existing = []
+        existing.append(entry)
+        existing = existing[-HISTORY_MAX_ENTRIES:]
+        os.makedirs(os.path.dirname(HISTORY_PATH), exist_ok=True)
+        # 原子写：先写临时再替换
+        tmp = HISTORY_PATH + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump({"entries": existing}, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, HISTORY_PATH)
+    except Exception:
+        pass  # 历史记录是增强项，失败不阻断巡检主流程
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--full", action="store_true", help="打印详细响应")
@@ -208,14 +246,15 @@ def main() -> int:
     n_warn = sum(1 for r in results if r["status"] == WARN)
     n_fail = sum(1 for r in results if r["status"] == FAIL)
     n_skip = sum(1 for r in results if r["status"] == SKIP)
+    summary = {"total": len(results), "pass": n_pass, "warn": n_warn,
+               "fail": n_fail, "skip": n_skip}
+    # 记录本次巡检历史（纯本地观察资产）
+    _record_history(results, summary)
 
     if args.json:
         print(json.dumps({
             "results": results,
-            "summary": {
-                "total": len(results),
-                "pass": n_pass, "warn": n_warn, "fail": n_fail, "skip": n_skip,
-            },
+            "summary": summary,
         }, ensure_ascii=False, indent=2))
         return 1 if args.ci and n_fail else 0
 
