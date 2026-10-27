@@ -23867,5 +23867,417 @@
     },
     "source": "shadow",
     "started_at": "2026-10-14T00:00:00Z"
+  },
+  {
+    "actions_taken": [],
+    "actual_params": {},
+    "deviations": [],
+    "device_id": "balcony",
+    "expected_actions": [
+      {
+        "actuator": "irrigation",
+        "command": "set_daily_volume",
+        "schedule": "daily",
+        "unit": "ml/day",
+        "value": 20.0
+      },
+      {
+        "actuator": "fertigation",
+        "command": "set_ph",
+        "schedule": "per_reservoir_change",
+        "unit": "pH",
+        "value": 6.4
+      },
+      {
+        "actuator": "climate",
+        "command": "set_day_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 28
+      },
+      {
+        "actuator": "climate",
+        "command": "set_night_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 15
+      },
+      {
+        "actuator": "climate",
+        "command": "set_humidity_range",
+        "schedule": "continuous",
+        "unit": "pct",
+        "value": [
+          50,
+          80
+        ]
+      },
+      {
+        "actuator": "fan",
+        "command": "set_level",
+        "schedule": "continuous",
+        "unit": "level",
+        "value": "medium"
+      },
+      {
+        "actuator": "irrigation",
+        "command": "set_daily_volume",
+        "schedule": "daily",
+        "unit": "ml/day",
+        "value": 300
+      },
+      {
+        "actuator": "fertigation",
+        "command": "set_ph",
+        "schedule": "per_reservoir_change",
+        "unit": "pH",
+        "value": 6.4
+      },
+      {
+        "actuator": "climate",
+        "command": "set_day_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 28
+      },
+      {
+        "actuator": "climate",
+        "command": "set_night_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 15
+      },
+      {
+        "actuator": "climate",
+        "command": "set_humidity_range",
+        "schedule": "continuous",
+        "unit": "pct",
+        "value": [
+          50,
+          80
+        ]
+      },
+      {
+        "actuator": "fan",
+        "command": "set_level",
+        "schedule": "continuous",
+        "unit": "level",
+        "value": "medium"
+      },
+      {
+        "actuator": "irrigation",
+        "command": "set_daily_volume",
+        "schedule": "daily",
+        "unit": "ml/day",
+        "value": 300
+      },
+      {
+        "actuator": "fertigation",
+        "command": "set_ph",
+        "schedule": "per_reservoir_change",
+        "unit": "pH",
+        "value": 6.4
+      },
+      {
+        "actuator": "climate",
+        "command": "set_day_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 28
+      },
+      {
+        "actuator": "climate",
+        "command": "set_night_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 15
+      },
+      {
+        "actuator": "climate",
+        "command": "set_humidity_range",
+        "schedule": "continuous",
+        "unit": "pct",
+        "value": [
+          50,
+          80
+        ]
+      },
+      {
+        "actuator": "fan",
+        "command": "set_level",
+        "schedule": "continuous",
+        "unit": "level",
+        "value": "medium"
+      },
+      {
+        "actuator": "irrigation",
+        "command": "set_daily_volume",
+        "schedule": "daily",
+        "unit": "ml/day",
+        "value": 300
+      },
+      {
+        "actuator": "fertigation",
+        "command": "set_ph",
+        "schedule": "per_reservoir_change",
+        "unit": "pH",
+        "value": 6.4
+      },
+      {
+        "actuator": "climate",
+        "command": "set_day_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 28
+      },
+      {
+        "actuator": "climate",
+        "command": "set_night_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 15
+      },
+      {
+        "actuator": "climate",
+        "command": "set_humidity_range",
+        "schedule": "continuous",
+        "unit": "pct",
+        "value": [
+          50,
+          80
+        ]
+      },
+      {
+        "actuator": "fan",
+        "command": "set_level",
+        "schedule": "continuous",
+        "unit": "level",
+        "value": "medium"
+      }
+    ],
+    "mode": "shadow",
+    "observations": "影子运行：记录控制计划建议，未实际执行",
+    "outcome_ref": null,
+    "params_unknown": true,
+    "recipe_ref": "番茄:full_cycle:temperate_continental",
+    "run_id": "shadow_temperate_continental_番茄",
+    "shadow_context": {
+      "crop": "番茄",
+      "device_id": "balcony",
+      "expected_actions_count": 24,
+      "mode": "shadow",
+      "not_executed": true,
+      "phase": "full_cycle",
+      "reference": "docs/per_module_deep_assessment_2026-10-13.md §M9-X1",
+      "zone_id": "temperate_continental"
+    },
+    "source": "shadow",
+    "started_at": "2026-10-14T00:00:00Z"
+  },
+  {
+    "actions_taken": [],
+    "actual_params": {},
+    "deviations": [],
+    "device_id": "balcony",
+    "expected_actions": [
+      {
+        "actuator": "irrigation",
+        "command": "set_daily_volume",
+        "schedule": "daily",
+        "unit": "ml/day",
+        "value": 20.0
+      },
+      {
+        "actuator": "fertigation",
+        "command": "set_ph",
+        "schedule": "per_reservoir_change",
+        "unit": "pH",
+        "value": 6.4
+      },
+      {
+        "actuator": "climate",
+        "command": "set_day_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 28
+      },
+      {
+        "actuator": "climate",
+        "command": "set_night_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 15
+      },
+      {
+        "actuator": "climate",
+        "command": "set_humidity_range",
+        "schedule": "continuous",
+        "unit": "pct",
+        "value": [
+          50,
+          80
+        ]
+      },
+      {
+        "actuator": "fan",
+        "command": "set_level",
+        "schedule": "continuous",
+        "unit": "level",
+        "value": "medium"
+      },
+      {
+        "actuator": "irrigation",
+        "command": "set_daily_volume",
+        "schedule": "daily",
+        "unit": "ml/day",
+        "value": 300
+      },
+      {
+        "actuator": "fertigation",
+        "command": "set_ph",
+        "schedule": "per_reservoir_change",
+        "unit": "pH",
+        "value": 6.4
+      },
+      {
+        "actuator": "climate",
+        "command": "set_day_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 28
+      },
+      {
+        "actuator": "climate",
+        "command": "set_night_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 15
+      },
+      {
+        "actuator": "climate",
+        "command": "set_humidity_range",
+        "schedule": "continuous",
+        "unit": "pct",
+        "value": [
+          50,
+          80
+        ]
+      },
+      {
+        "actuator": "fan",
+        "command": "set_level",
+        "schedule": "continuous",
+        "unit": "level",
+        "value": "medium"
+      },
+      {
+        "actuator": "irrigation",
+        "command": "set_daily_volume",
+        "schedule": "daily",
+        "unit": "ml/day",
+        "value": 300
+      },
+      {
+        "actuator": "fertigation",
+        "command": "set_ph",
+        "schedule": "per_reservoir_change",
+        "unit": "pH",
+        "value": 6.4
+      },
+      {
+        "actuator": "climate",
+        "command": "set_day_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 28
+      },
+      {
+        "actuator": "climate",
+        "command": "set_night_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 15
+      },
+      {
+        "actuator": "climate",
+        "command": "set_humidity_range",
+        "schedule": "continuous",
+        "unit": "pct",
+        "value": [
+          50,
+          80
+        ]
+      },
+      {
+        "actuator": "fan",
+        "command": "set_level",
+        "schedule": "continuous",
+        "unit": "level",
+        "value": "medium"
+      },
+      {
+        "actuator": "irrigation",
+        "command": "set_daily_volume",
+        "schedule": "daily",
+        "unit": "ml/day",
+        "value": 300
+      },
+      {
+        "actuator": "fertigation",
+        "command": "set_ph",
+        "schedule": "per_reservoir_change",
+        "unit": "pH",
+        "value": 6.4
+      },
+      {
+        "actuator": "climate",
+        "command": "set_day_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 28
+      },
+      {
+        "actuator": "climate",
+        "command": "set_night_temp",
+        "schedule": "daily",
+        "unit": "C",
+        "value": 15
+      },
+      {
+        "actuator": "climate",
+        "command": "set_humidity_range",
+        "schedule": "continuous",
+        "unit": "pct",
+        "value": [
+          50,
+          80
+        ]
+      },
+      {
+        "actuator": "fan",
+        "command": "set_level",
+        "schedule": "continuous",
+        "unit": "level",
+        "value": "medium"
+      }
+    ],
+    "mode": "shadow",
+    "observations": "影子运行：记录控制计划建议，未实际执行",
+    "outcome_ref": null,
+    "params_unknown": true,
+    "recipe_ref": "番茄:full_cycle:temperate_continental",
+    "run_id": "shadow_temperate_continental_番茄",
+    "shadow_context": {
+      "crop": "番茄",
+      "device_id": "balcony",
+      "expected_actions_count": 24,
+      "mode": "shadow",
+      "not_executed": true,
+      "phase": "full_cycle",
+      "reference": "docs/per_module_deep_assessment_2026-10-13.md §M9-X1",
+      "zone_id": "temperate_continental"
+    },
+    "source": "shadow",
+    "started_at": "2026-10-14T00:00:00Z"
   }
 ]
