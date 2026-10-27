@@ -25,7 +25,7 @@ python --version            # 需要 3.10 / 3.11 / 3.12
 python scripts/test_mcp_server.py
 ```
 
-看到 `OK` / exit code 0 即代表 server 可拉起、23 个工具全部可解析。
+看到 `OK` / exit code 0 即代表 server 可拉起、30 个工具全部可解析。
 
 ---
 
@@ -39,7 +39,7 @@ printf '%s\n' \
   | python mcp/server.py
 ```
 
-会返回 23 个工具的 JSON 列表。要**调一个工具**（以 `agri_match_zone` 为例，杭州）：
+会返回 30 个工具的 JSON 列表。要**调一个工具**（以 `agri_match_zone` 为例，杭州）：
 
 ```bash
 printf '%s\n' \
@@ -84,7 +84,7 @@ python examples/05_counterfactual.py    # 反事实轨迹（机理内核仿真�
 }
 ```
 
-macOS / Linux 把路径改成 `/home/user/.../mcp/server.py`。重启客户端，就能在对话中让 LLM 自主调用这 23 个工具。
+macOS / Linux 把路径改成 `/home/user/.../mcp/server.py`。重启客户端，就能在对话中让 LLM 自主调用这 30 个工具。
 
 ---
 

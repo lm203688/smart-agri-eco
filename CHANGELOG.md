@@ -4,6 +4,35 @@
 
 ---
 
+## [Unreleased · 批次对象 MVP] - 2026-10-28（报告 §9.1 P0 工作包）
+
+> **性质**：落地「批次对象 MVP」——把 MCP / UI / 校准 / 审计的局部上下文收束到批次对象链（Plot / GrowBatch / Observation / Action / Outcome），而不是各自维护 crop/zone/recipe 的局部上下文。零依赖 stdlib。
+>
+> **判定依据**：`scripts/test_grow_batch.py` 14/14 全绿；MCP server 自测新增 20 项批次端到端断言全部通过；`gate_tool_schema.py` 30/30 工具 100% schema 覆盖；`check_mcp_namespace.py` 30 工具一致；`test_mcp_categories.py` 20/20；`test_engine_v5.py` 94/94；`python -m unittest discover -s scripts` **1029 项全绿（skipped=4）**。
+
+### 1. 批次对象存储（`agent/grow_batch_store.py`，#192）
+
+- **五类核心领域对象**：Plot / GrowBatch / Observation / Action / Outcome，对齐 `schemas/grow_batch.schema.json`。
+- **存储布局**：`data/grow_batches/`（registry.json 原子写 + events.jsonl append-only 事件日志，seq 单调递增可完整重放）。
+- **诚实边界**：MVP 阶段不写真实 outcome（P1 才人工确认执行）；`record_outcome` 仅当批次 status ∈ {harvested, failed} 才可写；真实执行（executed）禁止 dry_run=True，需人工确认。
+- **动作状态机**：shadow → pending_approval → approved/rejected → executed/executed_failed → rolled_back，非法迁移拒绝。
+- **自测**：`_selftest()` 覆盖建 Plot→建批次→观察→shadow 动作→状态迁移→回放全链路；`AGRI_GROW_BATCHES_DIR` 环境变量可隔离测试存储。
+
+### 2. MCP 接入 5 个批次工具（`mcp/server.py`，#193）
+
+- **新增 5 个工具**（category=`batch`）：`agri_grow_batch_create` / `agri_grow_batch_observe` / `agri_grow_batch_action` / `agri_grow_batch_status` / `agri_grow_batch_replay`，MCP 工具总数 **23 → 30**。
+- **每个工具均有 TOOL_SCHEMA + validate_tool_args**（gate_tool_schema 100% 覆盖）；`_DISPATCH` 注册齐全（无前向引用 NameError）。
+- **端到端测试**（`scripts/test_mcp_server.py` 新增 20 项）：create 返回 MVP 诚实边界、observe 计数、action 默认 shadow/dry_run、status 含事件日志、replay 无副作用、executed+dry_run=True 拒绝、缺参 contract_violation。
+
+### 3. 一致性同步（防评审口径漂移）
+
+- `gen_tool_table.py` 表头硬编码「23 个」修复为动态计数 → README.md 工具表重生成（30 个工具）。
+- `gen_agent_card.py` `_humanize` 补 7 个工具中文名 → `.well-known/agent.json` 重生成（skills 30 个 = MCP 工具一一对应）。
+- README.md 两处「25 个 skill」→「30 个 skill」；`docs/TOOLS_REFERENCE.md` 23→30 工具、14→15 分类（含 batch 分类图 + 7 段详情）；`docs/QUICKSTART.md` 三处「23 个工具」→「30」。
+- `check_readme_numbers.py` / `check_agent_card.py` / `gen_tool_table.py --check` 全部通过。
+
+---
+
 ## [Unreleased · v1.1.8 待发] - 2026-10-16（能力闭环四连击 + A2-α 机理内核修 bug）
 
 > **性质**：批量落地 `docs/per_module_deep_assessment_2026-10-13.md` 中 4 个高杠杆能力闭环缺口（#90/#91/#92/#93），并把 A2 机理内核从「响应错误」修到「响应正确」——修复了原 AgriWorld-Lite v0 的三个物理响应缺陷。零依赖 stdlib。

@@ -30,7 +30,7 @@ for t in tools:
 # 对应性分析
 print("\n=== 对应关系 ===")
 print(f"README/CORE 声称: A2A 14 skill ↔ MCP 14 tool (CORE_OBJECTIVE P0-2)")
-print(f"README 第242行声称: MCP 暴露 23 个 agri 工具")
+print(f"README 声称: MCP 暴露 30 个 agri 工具")
 print(f"实际: A2A {len(skills)} skill vs MCP {len(tools)} tool")
 print(f"差异: {len(tools) - len(skills)} 个 MCP 工具无对应 A2A skill 声明")
 print(f"  若 A2A 必须 1:1 对应 MCP（README 第243行要求），则 A2A 缺 {len(tools)-len(skills)} 个 skill")

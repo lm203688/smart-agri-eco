@@ -204,6 +204,13 @@ def _humanize(tool_name: str) -> str:
         "agri_decision_path_report": "决策路径报告",
         "agri_counterfactual_trajectory": "反事实轨迹",
         "agri_verify_recommendation": "主张验证服务",
+        "agri_economics": "经济学测算",
+        "agri_postharvest": "采后管理",
+        "agri_grow_batch_create": "批次建立",
+        "agri_grow_batch_observe": "批次观察",
+        "agri_grow_batch_action": "批次动作",
+        "agri_grow_batch_status": "批次状态",
+        "agri_grow_batch_replay": "批次回放",
     }
     return mapping.get(tool_name, tool_name)
 

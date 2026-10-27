@@ -136,7 +136,7 @@ def build_table() -> str:
     lines: list[str] = []
     lines.append(BEGIN)
     lines.append("")
-    lines.append("### MCP 工具全表（23 个）")
+    lines.append(f"### MCP 工具全表（{len(tools)} 个）")
     lines.append("")
     lines.append(f"> 本表由 `scripts/gen_tool_table.py` 从 `mcp/server.py` 的 TOOLS 注册表**程序化生成**，禁止手写。工具总数 {len(tools)}。")
     lines.append("")

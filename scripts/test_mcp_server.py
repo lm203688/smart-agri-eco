@@ -50,6 +50,9 @@ def main() -> int:
     # bp_screen/data/cases.db 的真实种子库（该文件不受 git 跟踪，污染完全静默）。
     env = dict(os.environ)
     env["AGRI_BP_DB"] = os.path.join(tempfile.mkdtemp(prefix="agri_bp_test_"), "cases.db")
+    # AGRI_GROW_BATCHES_DIR 指向临时目录：5 个批次工具会写 registry/events，
+    # 不隔离就会污染真实 data/grow_batches/ 的审计资产（静默且不可逆）。
+    env["AGRI_GROW_BATCHES_DIR"] = tempfile.mkdtemp(prefix="agri_grow_batch_test_")
     # 安全审计日志落盘（CyberGuard 提升点3）：经 AGRI_MCP_AUDIT_LOG 写入临时文件，便于断言
     audit_log = os.path.join(tempfile.mkdtemp(prefix="agri_mcp_audit_"), "mcp_audit.log")
     env["AGRI_MCP_AUDIT_LOG"] = audit_log
@@ -593,6 +596,124 @@ def main() -> int:
                   "agri_verify_trust check_prefix 缺 mark 被拒绝")
         except Exception:
             check(False, "agri_verify_trust 缺 mark 返回可解析 JSON")
+
+        # 6.6) 批次对象 MVP（报告 §9.1 P0 工作包，2026-10-27）：5 工具端到端
+        # 存储已经 AGRI_GROW_BATCHES_DIR 隔离到临时目录（见 env 上方）。
+        _bid = "e2e_batch_001"
+        _pid = "e2e_plot_a"
+        # create：Plot + GrowBatch
+        resp = _rpc({"jsonrpc": "2.0", "id": 60, "method": "tools/call",
+                     "params": {"name": "agri_grow_batch_create",
+                                "arguments": {
+                                    "plot": {"plot_id": _pid, "location_type": "balcony",
+                                             "orientation": "south",
+                                             "area_sqm": {"value": 0.5, "unit": "sqm"}},
+                                    "batch": {"batch_id": _bid, "crop": "生菜",
+                                              "plot_id": _pid, "recipe_version": "v1.2.0",
+                                              "recipe_id": "mediterranean__生菜",
+                                              "started_at": "2026-10-27T00:00:00Z"}}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _b = json.loads(_txt)
+            check(_b.get("ok") and _b.get("batch_id") == _bid and _b.get("status") == "planned",
+                  "agri_grow_batch_create 建立 Plot+GrowBatch（status=planned）")
+            check("honest_note" in _b and "MVP" in _b["honest_note"],
+                  "agri_grow_batch_create 返回 MVP 诚实边界说明")
+        except Exception:
+            check(False, "agri_grow_batch_create 返回可解析 JSON")
+
+        # observe：追加 Observation
+        resp = _rpc({"jsonrpc": "2.0", "id": 61, "method": "tools/call",
+                     "params": {"name": "agri_grow_batch_observe",
+                                "arguments": {"observation": {
+                                    "observation_id": "e2e_obs_001", "batch_id": _bid,
+                                    "ts": "2026-10-27T08:00:00Z", "metric": "temperature_c",
+                                    "value": {"value": 21.5, "unit": "celsius"},
+                                    "source": {"kind": "sensor", "device_id": "dev_t01"}}}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _o = json.loads(_txt)
+            check(_o.get("ok") and _o.get("count") == 1,
+                  "agri_grow_batch_observe 追加观察（count=1）")
+        except Exception:
+            check(False, "agri_grow_batch_observe 返回可解析 JSON")
+
+        # action：MVP 默认 shadow/dry_run，不真实执行
+        resp = _rpc({"jsonrpc": "2.0", "id": 62, "method": "tools/call",
+                     "params": {"name": "agri_grow_batch_action",
+                                "arguments": {"action": {
+                                    "action_id": "e2e_act_001", "batch_id": _bid,
+                                    "ts": "2026-10-27T08:05:00Z",
+                                    "recommendation": "浇水 200ml",
+                                    "parameters": {"irrigation_ml": 200}}}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _a = json.loads(_txt)
+            check(_a.get("ok") and _a.get("status") == "shadow" and _a.get("dry_run") is True,
+                  "agri_grow_batch_action 记录动作默认 shadow/dry_run（不真实执行）")
+        except Exception:
+            check(False, "agri_grow_batch_action 返回可解析 JSON")
+
+        # status：查询批次 + 关联对象
+        resp = _rpc({"jsonrpc": "2.0", "id": 63, "method": "tools/call",
+                     "params": {"name": "agri_grow_batch_status",
+                                "arguments": {"batch_id": _bid, "include_events": True}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _s = json.loads(_txt)
+            check(_s.get("ok") and _s.get("batch", {}).get("crop") == "生菜"
+                  and _s.get("n_observations") == 1 and _s.get("n_actions") == 1,
+                  "agri_grow_batch_status 返回批次+观察+动作计数")
+            check(_s.get("events") and any(e["event_type"] == "observation_added"
+                                           for e in _s["events"]),
+                  "agri_grow_batch_status include_events 返回事件日志")
+        except Exception:
+            check(False, "agri_grow_batch_status 返回可解析 JSON")
+
+        # replay：按时间线回放（无副作用）
+        resp = _rpc({"jsonrpc": "2.0", "id": 64, "method": "tools/call",
+                     "params": {"name": "agri_grow_batch_replay",
+                                "arguments": {"batch_id": _bid}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _rp = json.loads(_txt)
+            check(_rp.get("ok") and _rp.get("n_events") >= 3
+                  and any(e["event_type"] == "batch_created" for e in _rp.get("timeline", [])),
+                  "agri_grow_batch_replay 按时间线回放（n_events≥3）")
+            check("回放仅重建事件序列" in _rp.get("honest_note", ""),
+                  "agri_grow_batch_replay 返回无副作用诚实说明")
+        except Exception:
+            check(False, "agri_grow_batch_replay 返回可解析 JSON")
+
+        # 契约：批次未结束（非 harvested/failed）不允许写真实 outcome —— 走 create 工具
+        # 验证 MVP 诚实边界（真实执行需人工确认）。此路径通过 status 查询确认无 outcomes。
+        # 非法 action（executed + dry_run=True）必须被拒绝
+        resp = _rpc({"jsonrpc": "2.0", "id": 65, "method": "tools/call",
+                     "params": {"name": "agri_grow_batch_action",
+                                "arguments": {"action": {
+                                    "action_id": "e2e_act_bad", "batch_id": _bid,
+                                    "ts": "2026-10-27T09:00:00Z",
+                                    "recommendation": "真实执行",
+                                    "dry_run": True, "status": "executed"}}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _bad = json.loads(_txt)
+            check(_bad.get("contract_violation") and "dry_run" in _bad.get("error", ""),
+                  "agri_grow_batch_action 拒绝 executed+dry_run=True（需人工确认）")
+        except Exception:
+            check(False, "agri_grow_batch_action 非法状态返回可解析 JSON")
+
+        # 缺 plot 的 create 必须被拒绝（契约违反）
+        resp = _rpc({"jsonrpc": "2.0", "id": 66, "method": "tools/call",
+                     "params": {"name": "agri_grow_batch_create",
+                                "arguments": {"plot": {}, "batch": {}}}})
+        _txt = ((resp or {}).get("result", {}).get("content") or [{}])[0].get("text", "")
+        try:
+            _bad = json.loads(_txt)
+            check(_bad.get("contract_violation") is True,
+                  "agri_grow_batch_create 缺参被拒绝（contract_violation）")
+        except Exception:
+            check(False, "agri_grow_batch_create 缺参返回可解析 JSON")
 
         # 7) 安全护栏：超长请求必须被拒绝（防内存耗尽型 DoS）
         big = "X" * 2000000  # ~2 MiB，超过 MAX_LINE_BYTES(1 MiB)

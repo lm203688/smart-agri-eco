@@ -461,11 +461,10 @@
     },
     {
       "id": "agri_economics",
-      "name": "农业经济测算",
-      "description": "（Stage 2.3 · 2026-10-24 新增）农业经济测算：输入 crop / zone / area_sqm / 投入参数，输出投入成本 CNY / 预期产量 kg / 收益区间 / ROI / 回本周期。诚实边界：成本随地区/年份/规模差异大，输出区间而非单点；数据年份 2024-2025 全国均价，不含人工；标注 data_quality=modeled（非实测）。支持主粮 5 作物 + 蔬果。",
+      "name": "经济学测算",
+      "description": "（Stage 2.3 · 2026-10-24 新增）农业经济测算：输入 crop / zone / area_sqm / 投入参数，输出投入成本 CNY / 预期产量 kg / 收益区间 / ROI / 回本周期。诚实边界：成本随地区/年份/规模差异大，输出**区间**而非单点；数据年份 2024-2025 全国均价，不含人工；标注 data_quality=modeled（非实测）。支持主粮 5 作物（水稻/小麦/玉米/大豆/马铃薯）+ 蔬果（番茄/生菜/草莓/黄瓜/辣椒）。",
       "tags": [
         "business",
-        "economics",
         "mcp-tool"
       ],
       "inputModes": [
@@ -477,11 +476,85 @@
     },
     {
       "id": "agri_postharvest",
-      "name": "采后处理储藏",
-      "description": "（Stage 2.6 · 2026-10-24 新增）采后处理/储藏：输入 crop，返回最佳储藏温湿度 / 损耗率 / 保鲜期 / 采后病害风险。诚实边界：数据来自 FAO Codex Alimentarius 通用值，非本地验证；标 data_quality=modeled；不含冷藏能耗成本。支持 8 类常见果蔬。",
+      "name": "采后管理",
+      "description": "（Stage 2.6 · 2026-10-24 新增）采后处理/储藏：输入 crop，返回最佳储藏温湿度 / 损耗率 / 保鲜期 / 采后病害风险。诚实边界：数据来自 FAO Codex Alimentarius 通用值，非本地验证；标 data_quality=modeled；不含冷藏能耗成本。支持 8 类常见果蔬（生菜/番茄/草莓/黄瓜/苹果/香蕉/叶菜/根茎）。",
       "tags": [
         "nutrition",
-        "postharvest",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_grow_batch_create",
+      "name": "批次建立",
+      "description": "（批次对象 MVP · 2026-10-27 新增）建立 Plot + GrowBatch：把 MCP/UI/校准/审计的局部上下文收束到批次对象链。MVP 阶段可建立并回放一个模拟批次，动作默认 shadow/dry_run，不写真实 outcome（P1 才人工确认执行）。输入 plot（plot_id/location_type）+ batch（batch_id/crop/plot_id/recipe_version/started_at）。",
+      "tags": [
+        "batch",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_grow_batch_observe",
+      "name": "批次观察",
+      "description": "（批次对象 MVP · 2026-10-27 新增）追加 Observation：批次生命周期内的一次观察（传感自动或人工/图像补充）。输入 observation（observation_id/batch_id/ts/metric/source）。",
+      "tags": [
+        "batch",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_grow_batch_action",
+      "name": "批次动作",
+      "description": "（批次对象 MVP · 2026-10-27 新增）记录 Action：一次建议→审批→执行→确认的动作链。MVP 默认 shadow/dry_run，不真实执行；真实执行（executed）需人工确认且 dry_run=False。输入 action（action_id/batch_id/ts/recommendation）。",
+      "tags": [
+        "batch",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_grow_batch_status",
+      "name": "批次状态",
+      "description": "（批次对象 MVP · 2026-10-27 新增）查询批次状态 + 关联对象（Plot/Observation/Action/Outcome）。可选 include_events=true 附带 append-only 事件日志。",
+      "tags": [
+        "batch",
+        "mcp-tool"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "agri_grow_batch_replay",
+      "name": "批次回放",
+      "description": "（批次对象 MVP · 2026-10-27 新增）按时间线回放批次事件：重建事件序列，不触发任何真实执行或副作用（诚实标注）。",
+      "tags": [
+        "batch",
         "mcp-tool"
       ],
       "inputModes": [
@@ -586,7 +659,7 @@
     "skills_semantics": "A2A v1.0 skill = 外部 Agent 可发现并调用的能力。本项目把每个 MCP 工具（mcp/server.py 的 TOOLS 注册表）映射为一个 skill，skill.id 与 MCP tool name 完全一致（如 'agri_env_recipe'）。外部 Agent 按此 skills[] 调 tools/call 会命中同名 MCP 工具。",
     "registry_skills_semantics": "x-agri-registry-skills[] 是 skills/registry/ 目录下的 AgriSkill 定义（用于人读的分工说明：谁负责什么、输入输出是什么、数据来源、安全边界）。这些 id（如 'climate_match'）不是 MCP 工具名，不能被外部 Agent 直接调用；它们是内部技能目录，用于工程治理和审计。",
     "counts": {
-      "skills": 25,
+      "skills": 30,
       "x-agri-registry-skills": 11
     },
     "authority": "本 Card 由 scripts/gen_agent_card.py 程序化生成，禁止手改。"

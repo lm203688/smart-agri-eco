@@ -1,9 +1,9 @@
-# TOOLS REFERENCE · 23 个 MCP 工具契约手册
+# TOOLS REFERENCE · 30 个 MCP 工具契约手册
 
 > **目标读者**：外部 Agent 开发者，需要在自己的系统里调用 `agri-eco` 的 MCP 工具。
 > **权威源**：`mcp/server.py` 中的 `TOOLS` 注册表（本文件是文档视图，**禁止手改**——工具增删后请 rerun `scripts/gen_tool_table.py`；本文件仅补充 LLM 选工具时所需的人类语义上下文）。
 > **结构**：每个工具三段式——「**何时用** / **输入** / **返回示例**」。
-> **总工具数**：23 · **总分类数**：14
+> **总工具数**：30 · **总分类数**：15
 >
 > **⚠️ 返回示例诚实边界**：下方各工具的「返回示例」为**结构示意**（说明返回了什么类别的信息），**字段名与真实调用可能不完全一致**。真实字段名以 `_tool_*` 函数实际返回为准——最快的验证方式是跑 `examples/*.py`（5 个可运行示例）或 `python scripts/test_mcp_server.py`。字段名可能随版本演进；本文件仅承诺「返回结构类别稳定」。
 
@@ -36,32 +36,41 @@
 | 21 | `agri_server_card` | meta | 服务元数据 + ETag 缓存 |
 | 22 | `agri_bp_screen` | business | 农业项目投资初筛（六分类+五闸+一票否决） |
 | 23 | `agri_decision_path_report` | bp_screen | 批量导出决策路径归因 |
+| 24 | `agri_economics` | business | 单位经济模型 / 成本收益测算 |
+| 25 | `agri_postharvest` | nutrition | 采后阶段（fresh/storage/transport）管理建议 |
+| 26 | `agri_grow_batch_create` | batch | 建立 Plot + GrowBatch 批次对象 |
+| 27 | `agri_grow_batch_observe` | batch | 批次生命周期内追加观察记录 |
+| 28 | `agri_grow_batch_action` | batch | 记录动作（默认 shadow/dry_run，不真实执行） |
+| 29 | `agri_grow_batch_status` | batch | 查询批次状态 + 关联对象（可选含事件日志） |
+| 30 | `agri_grow_batch_replay` | batch | 按时间线回放批次事件（无副作用） |
 
 ---
 
-## 分类图（14 类）
+## 分类图（15 类）
 
 ```
 climate        3   agri_list_cities / agri_match_zone / agri_reconcile_climate
 crop           1   agri_recommend_crops
 phenology      1   agri_growth_plan
 pest           1   agri_diagnose_pest
-nutrition      1   agri_nutrition_plan
+nutrition      2   agri_nutrition_plan / agri_postharvest
 recipe         3   agri_env_recipe / agri_resolve_recipe / agri_recipe_profile
 meta           5   agri_season_advisory / agri_query_lineage / agri_list_ecosystem
                                        / agri_verify_trust / agri_server_card
 soil           1   agri_soil_profile
-business       1   agri_bp_screen
+business       2   agri_bp_screen / agri_economics
 knowledge      2   agri_search / agri_knowledge_query
 forecast       1   agri_forecast
 bp_screen      1   agri_decision_path_report
 counterfactual 1   agri_counterfactual_trajectory
 verify         1   agri_verify_recommendation
+batch          5   agri_grow_batch_create / agri_grow_batch_observe / agri_grow_batch_action
+                                       / agri_grow_batch_status / agri_grow_batch_replay
 ```
 
 ---
 
-# 详细契约（23 段）
+# 详细契约（30 段）
 
 ## 1. `agri_match_zone` — 经纬度 → 气候分区
 
@@ -588,6 +597,129 @@ verify         1   agri_verify_recommendation
 
 ---
 
+## 24. `agri_economics` — 单位经济模型 / 成本收益测算
+
+**何时用**
+- 已有作物 + 场景 + 分区，想算亩产成本、收入、毛利率与盈亏平衡点
+- 输入：`crop`（必填）+ 可选 `zone_id` / `scenario` / `plot_area_sqm` / `market_price`
+
+**返回示例（结构示意）**
+```json
+{
+  "crop": "番茄",
+  "unit_economics": {
+    "revenue": {"value": 8.4, "unit": "yuan/sqm"},
+    "cost": {"value": 5.2, "unit": "yuan/sqm"},
+    "gross_margin": 0.38,
+    "breakeven_price": {"value": 3.1, "unit": "yuan/kg"}
+  },
+  "assumptions": ["本地均价", "种子/肥/水电/人工分摊"]
+}
+```
+
+---
+
+## 25. `agri_postharvest` — 采后阶段管理建议
+
+**何时用**
+- 作物已采收，需要 fresh / storage / transport 阶段的温湿度、预冷、包装建议
+- 输入：`crop`（必填）+ 可选 `stage`（fresh/storage/transport，默认 storage）
+
+**返回示例（结构示意）**
+```json
+{
+  "crop": "生菜",
+  "stage": "storage",
+  "recommendations": [
+    {"phase": "storage", "temp_c": {"min": 0, "max": 4}, "rh_pct": 90,
+     "advice": "冷链 0-4℃，高湿防萎蔫"}
+  ]
+}
+```
+
+---
+
+## 26. `agri_grow_batch_create` — 建立 Plot + GrowBatch 批次对象
+
+**何时用**
+- 把 MCP / UI / 校准 / 审计的局部上下文收束到批次对象链，而非各自维护 crop/zone/recipe
+- 输入：`plot`（plot_id/location_type）+ `batch`（batch_id/crop/plot_id/recipe_version/started_at）
+- **MVP 诚实边界**：动作默认 shadow/dry_run，不写真实 outcome（P1 才人工确认执行）
+
+**返回示例（结构示意）**
+```json
+{
+  "ok": true, "batch_id": "demo_batch_001", "plot_id": "demo_balcony_a",
+  "status": "planned",
+  "honest_note": "MVP：模拟批次已建立，动作默认 shadow/dry_run，真实执行需人工确认"
+}
+```
+
+---
+
+## 27. `agri_grow_batch_observe` — 批次生命周期内追加观察
+
+**何时用**
+- 批次已建立，追加一次观察（传感器自动或人工/图像补充）
+- 输入：`observation`（observation_id/batch_id/ts/metric/source，value 可选）
+
+**返回示例（结构示意）**
+```json
+{"ok": true, "observation_id": "obs_001", "count": 1}
+```
+
+---
+
+## 28. `agri_grow_batch_action` — 记录动作（默认 shadow/dry_run）
+
+**何时用**
+- 记录一次建议→审批→执行→确认的动作链起点
+- 输入：`action`（action_id/batch_id/ts/recommendation，parameters/dry_run 可选）
+- **契约**：真实执行（executed）禁止 dry_run=True，需人工确认后置 dry_run=False
+
+**返回示例（结构示意）**
+```json
+{"ok": true, "action_id": "act_001", "status": "shadow", "dry_run": true}
+```
+
+---
+
+## 29. `agri_grow_batch_status` — 查询批次状态 + 关联对象
+
+**何时用**
+- 想看某批次当前状态、累计观察/动作/结果，或附带 append-only 事件日志
+- 输入：`batch_id`（必填）+ 可选 `include_events`（默认 false）
+
+**返回示例（结构示意）**
+```json
+{
+  "ok": true, "batch": {"batch_id": "demo_batch_001", "crop": "生菜", "status": "planned"},
+  "plot": {"plot_id": "demo_balcony_a"},
+  "n_observations": 1, "n_actions": 1, "n_outcomes": 0,
+  "observations": ["…最近 10 条…"], "actions": ["…最近 10 条…"],
+  "events": null
+}
+```
+
+---
+
+## 30. `agri_grow_batch_replay` — 按时间线回放批次事件
+
+**何时用**
+- 审计 / 复现一个批次的完整事件序列；只重建事件，不触发任何真实执行
+- 输入：`batch_id`（必填）
+
+**返回示例（结构示意）**
+```json
+{
+  "ok": true, "batch_id": "demo_batch_001", "n_events": 5,
+  "timeline": [{"seq": 1, "event_type": "batch_created", "ts": "…"}, "…"],
+  "honest_note": "回放仅重建事件序列，不触发任何真实执行或副作用"
+}
+```
+
+---
+
 ## 全局约定
 
 ### 所有工具都会返回 `_trust_mark`（除 meta 类元工具本身）
@@ -632,4 +764,4 @@ python scripts/verify_trust_mark.py --cert-id AGRI-2026-10-19-001
 
 ---
 
-*文档版本：2026-10-23 · 工具总数：23 · 分类数：14 · 权威源：`mcp/server.py:TOOLS`*
+*文档版本：2026-10-28 · 工具总数：30 · 分类数：15 · 权威源：`mcp/server.py:TOOLS`*
