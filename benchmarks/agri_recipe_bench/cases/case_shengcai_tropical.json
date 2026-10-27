@@ -10,10 +10,34 @@
     "growth_plan": {
       "recommendation": {
         "phases": [
-          {"name": "育苗", "day_range": [1, 15]},
-          {"name": "莲座叶", "day_range": [16, 30]},
-          {"name": "结球", "day_range": [31, 40]},
-          {"name": "采收", "day_range": [41, 45]}
+          {
+            "name": "育苗",
+            "day_range": [
+              1,
+              15
+            ]
+          },
+          {
+            "name": "莲座叶",
+            "day_range": [
+              16,
+              30
+            ]
+          },
+          {
+            "name": "结球",
+            "day_range": [
+              31,
+              40
+            ]
+          },
+          {
+            "name": "采收",
+            "day_range": [
+              41,
+              45
+            ]
+          }
         ]
       }
     },
@@ -36,5 +60,6 @@
   "provenance": {
     "yield_basis": "生菜单株 100-400g，结球品种 300-500g",
     "duration_basis": "生菜 30-60 天，本用例 phases 到 D45"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

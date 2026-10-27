@@ -31,5 +31,6 @@
   "provenance": {
     "note": "验证 phases 到 D1 时 adjusted_duration_days 至少为 1",
     "generator": "scripts/expand_bench_cases.py (M15-B1)"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

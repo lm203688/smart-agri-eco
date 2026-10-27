@@ -10,10 +10,34 @@
     "growth_plan": {
       "recommendation": {
         "phases": [
-          {"name": "育苗", "day_range": [1, 30]},
-          {"name": "开花前", "day_range": [31, 60]},
-          {"name": "开花坐果", "day_range": [61, 95]},
-          {"name": "采收", "day_range": [96, 130]}
+          {
+            "name": "育苗",
+            "day_range": [
+              1,
+              30
+            ]
+          },
+          {
+            "name": "开花前",
+            "day_range": [
+              31,
+              60
+            ]
+          },
+          {
+            "name": "开花坐果",
+            "day_range": [
+              61,
+              95
+            ]
+          },
+          {
+            "name": "采收",
+            "day_range": [
+              96,
+              130
+            ]
+          }
         ]
       }
     }
@@ -35,5 +59,6 @@
   },
   "provenance": {
     "note": "这是 M3 反事实评估的'发现型用例'——它揭示的不是 bug 而是设计选择：当前引擎的分区影响通过 adapt_score 间接体现，而非通过 zone_id 直接计算气候因子。这是评估体系的正确用法：用例不只是验证已实现的功能，也标记未实现的预期功能"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

@@ -145,5 +145,6 @@
   "provenance": {
     "note": "光照是 yield 的直接乘子（light_factor）",
     "generator": "scripts/expand_bench_cases.py (M15-B1)"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

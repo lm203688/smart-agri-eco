@@ -9,41 +9,129 @@
         "zone_id": "subtropical_wet",
         "start_date": "2026-03-20",
         "adapt_score": 0.85,
-        "growth_plan": {"recommendation": {"phases": [
-          {"name": "播种", "day_range": [1, 7]},
-          {"name": "生长", "day_range": [8, 30]},
-          {"name": "采收", "day_range": [31, 45]}
-        ]}}
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "播种",
+                "day_range": [
+                  1,
+                  7
+                ]
+              },
+              {
+                "name": "生长",
+                "day_range": [
+                  8,
+                  30
+                ]
+              },
+              {
+                "name": "采收",
+                "day_range": [
+                  31,
+                  45
+                ]
+              }
+            ]
+          }
+        }
       },
       {
         "zone_id": "temperate_continental",
         "start_date": "2026-04-15",
         "adapt_score": 0.75,
-        "growth_plan": {"recommendation": {"phases": [
-          {"name": "播种", "day_range": [1, 7]},
-          {"name": "生长", "day_range": [8, 35]},
-          {"name": "采收", "day_range": [36, 55]}
-        ]}}
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "播种",
+                "day_range": [
+                  1,
+                  7
+                ]
+              },
+              {
+                "name": "生长",
+                "day_range": [
+                  8,
+                  35
+                ]
+              },
+              {
+                "name": "采收",
+                "day_range": [
+                  36,
+                  55
+                ]
+              }
+            ]
+          }
+        }
       },
       {
         "zone_id": "mediterranean",
         "start_date": "2026-03-01",
         "adapt_score": 0.8,
-        "growth_plan": {"recommendation": {"phases": [
-          {"name": "播种", "day_range": [1, 7]},
-          {"name": "生长", "day_range": [8, 28]},
-          {"name": "采收", "day_range": [29, 42]}
-        ]}}
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "播种",
+                "day_range": [
+                  1,
+                  7
+                ]
+              },
+              {
+                "name": "生长",
+                "day_range": [
+                  8,
+                  28
+                ]
+              },
+              {
+                "name": "采收",
+                "day_range": [
+                  29,
+                  42
+                ]
+              }
+            ]
+          }
+        }
       },
       {
         "zone_id": "subarctic",
         "start_date": "2026-05-01",
         "adapt_score": 0.5,
-        "growth_plan": {"recommendation": {"phases": [
-          {"name": "播种", "day_range": [1, 10]},
-          {"name": "生长", "day_range": [11, 45]},
-          {"name": "采收", "day_range": [46, 65]}
-        ]}}
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "播种",
+                "day_range": [
+                  1,
+                  10
+                ]
+              },
+              {
+                "name": "生长",
+                "day_range": [
+                  11,
+                  45
+                ]
+              },
+              {
+                "name": "采收",
+                "day_range": [
+                  46,
+                  65
+                ]
+              }
+            ]
+          }
+        }
       }
     ]
   },
@@ -67,5 +155,6 @@
   },
   "provenance": {
     "note": "生菜是最短的叶菜类作物之一，跨气候带部署时周期和产量会有差异但都应在合理范围内"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

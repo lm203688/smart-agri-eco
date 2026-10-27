@@ -40,5 +40,6 @@
     "yield_basis": "木瓜单株 300-2000g",
     "duration_basis": "phases 到 D90，climate_factor 由 zone 决定",
     "generator": "scripts/expand_bench_cases.py (M15-B1)"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

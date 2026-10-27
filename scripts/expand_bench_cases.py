@@ -75,7 +75,13 @@ def _run_estimate(
 
 
 def _emit(case: Dict[str, Any], dry: bool) -> str:
-    """写出用例 JSON（幂等覆盖）。"""
+    """写出用例 JSON（幂等覆盖）。
+
+    P0-1：统一在此给用例加 evidence_layer 默认字段（L0 工程回归）。
+    当前全部用例的 expected 来自被测模型自生成（engine ±30%），属
+    工程回归/边界验证，**非独立农艺真值**——故默认 L0，不得声称产量准确率。
+    """
+    case.setdefault("evidence_layer", "L0_engineering_regression")
     filename = f"{case['id']}.json"
     out_path = CASES_DIR / filename
     text = json.dumps(case, ensure_ascii=False, indent=2) + "\n"

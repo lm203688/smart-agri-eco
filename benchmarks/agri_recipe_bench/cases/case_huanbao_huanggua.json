@@ -10,9 +10,27 @@
     "growth_plan": {
       "recommendation": {
         "phases": [
-          {"name": "育苗", "day_range": [1, 25]},
-          {"name": "开花", "day_range": [26, 60]},
-          {"name": "盛果采收", "day_range": [61, 100]}
+          {
+            "name": "育苗",
+            "day_range": [
+              1,
+              25
+            ]
+          },
+          {
+            "name": "开花",
+            "day_range": [
+              26,
+              60
+            ]
+          },
+          {
+            "name": "盛果采收",
+            "day_range": [
+              61,
+              100
+            ]
+          }
         ]
       }
     },
@@ -27,5 +45,6 @@
   },
   "provenance": {
     "note": "M2 轴只验证数学边界（不是精度），真值来自守恒性质而非农艺基准"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

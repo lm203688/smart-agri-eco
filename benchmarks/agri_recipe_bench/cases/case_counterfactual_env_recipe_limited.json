@@ -10,16 +10,43 @@
     "growth_plan": {
       "recommendation": {
         "phases": [
-          {"name": "育苗", "day_range": [1, 30]},
-          {"name": "开花前", "day_range": [31, 60]},
-          {"name": "开花坐果", "day_range": [61, 95]},
-          {"name": "采收", "day_range": [96, 130]}
+          {
+            "name": "育苗",
+            "day_range": [
+              1,
+              30
+            ]
+          },
+          {
+            "name": "开花前",
+            "day_range": [
+              31,
+              60
+            ]
+          },
+          {
+            "name": "开花坐果",
+            "day_range": [
+              61,
+              95
+            ]
+          },
+          {
+            "name": "采收",
+            "day_range": [
+              96,
+              130
+            ]
+          }
         ]
       }
     },
     "env_recipe": {
       "environment": {
-        "temperature": {"day_c": 32, "night_c": 18}
+        "temperature": {
+          "day_c": 32,
+          "night_c": 18
+        }
       }
     }
   },
@@ -27,7 +54,10 @@
     "env_recipe": {
       "after": {
         "environment": {
-          "temperature": {"day_c": 18, "night_c": 10}
+          "temperature": {
+            "day_c": 18,
+            "night_c": 10
+          }
         }
       }
     }
@@ -43,5 +73,6 @@
   },
   "provenance": {
     "note": "诚实性原则：此用例记录的是当前引擎的真实行为（无温度响应），而非期望行为。当引擎升级后此用例应更新为 direction='decrease'。这是 SNWM M3 反事实评估的'发现型用例'——它发现的不是 bug，而是设计选择"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

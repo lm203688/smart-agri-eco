@@ -16,5 +16,6 @@
   },
   "provenance": {
     "note": "验证 ForecastAgent 的降级路径不会产生负数或倒挂日期"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

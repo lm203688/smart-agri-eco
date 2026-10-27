@@ -10,10 +10,34 @@
     "growth_plan": {
       "recommendation": {
         "phases": [
-          {"name": "育苗", "day_range": [1, 30]},
-          {"name": "定植·开花前", "day_range": [31, 60]},
-          {"name": "开花·坐果", "day_range": [61, 95]},
-          {"name": "成熟采收", "day_range": [96, 130]}
+          {
+            "name": "育苗",
+            "day_range": [
+              1,
+              30
+            ]
+          },
+          {
+            "name": "定植·开花前",
+            "day_range": [
+              31,
+              60
+            ]
+          },
+          {
+            "name": "开花·坐果",
+            "day_range": [
+              61,
+              95
+            ]
+          },
+          {
+            "name": "成熟采收",
+            "day_range": [
+              96,
+              130
+            ]
+          }
         ]
       }
     },
@@ -36,5 +60,6 @@
   "provenance": {
     "yield_basis": "番茄单株 800-2000g；地中海暖气候 + 32℃ 白天 → 累积 GDD 快",
     "duration_basis": "番茄 80-180 天，本用例 phases 到 D130，气候因子放大"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

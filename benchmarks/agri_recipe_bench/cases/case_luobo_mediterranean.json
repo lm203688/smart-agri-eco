@@ -10,10 +10,34 @@
     "growth_plan": {
       "recommendation": {
         "phases": [
-          {"name": "育苗", "day_range": [1, 25]},
-          {"name": "抽芽", "day_range": [26, 55]},
-          {"name": "膨大", "day_range": [56, 75]},
-          {"name": "采收", "day_range": [76, 90]}
+          {
+            "name": "育苗",
+            "day_range": [
+              1,
+              25
+            ]
+          },
+          {
+            "name": "抽芽",
+            "day_range": [
+              26,
+              55
+            ]
+          },
+          {
+            "name": "膨大",
+            "day_range": [
+              56,
+              75
+            ]
+          },
+          {
+            "name": "采收",
+            "day_range": [
+              76,
+              90
+            ]
+          }
         ]
       }
     },
@@ -36,5 +60,6 @@
   "provenance": {
     "yield_basis": "胡萝卜单株产量公开基准 200-800g；引擎 _BASE_YIELD_G 胡萝卜走 fallback=500",
     "duration_basis": "胡萝卜典型 60-110 天，本用例按 D1-D90 分段"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

@@ -55,5 +55,6 @@
   "provenance": {
     "note": "验证 黄瓜 的跨分区泛化能力",
     "generator": "scripts/expand_bench_cases.py (M15-B1)"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

@@ -9,45 +9,157 @@
         "zone_id": "mediterranean",
         "start_date": "2026-02-15",
         "adapt_score": 0.9,
-        "growth_plan": {"recommendation": {"phases": [
-          {"name": "育苗", "day_range": [1, 30]},
-          {"name": "开花前", "day_range": [31, 60]},
-          {"name": "开花坐果", "day_range": [61, 95]},
-          {"name": "采收", "day_range": [96, 130]}
-        ]}}
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "育苗",
+                "day_range": [
+                  1,
+                  30
+                ]
+              },
+              {
+                "name": "开花前",
+                "day_range": [
+                  31,
+                  60
+                ]
+              },
+              {
+                "name": "开花坐果",
+                "day_range": [
+                  61,
+                  95
+                ]
+              },
+              {
+                "name": "采收",
+                "day_range": [
+                  96,
+                  130
+                ]
+              }
+            ]
+          }
+        }
       },
       {
         "zone_id": "subtropical_wet",
         "start_date": "2026-03-01",
         "adapt_score": 0.85,
-        "growth_plan": {"recommendation": {"phases": [
-          {"name": "育苗", "day_range": [1, 25]},
-          {"name": "开花前", "day_range": [26, 55]},
-          {"name": "开花坐果", "day_range": [56, 90]},
-          {"name": "采收", "day_range": [91, 120]}
-        ]}}
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "育苗",
+                "day_range": [
+                  1,
+                  25
+                ]
+              },
+              {
+                "name": "开花前",
+                "day_range": [
+                  26,
+                  55
+                ]
+              },
+              {
+                "name": "开花坐果",
+                "day_range": [
+                  56,
+                  90
+                ]
+              },
+              {
+                "name": "采收",
+                "day_range": [
+                  91,
+                  120
+                ]
+              }
+            ]
+          }
+        }
       },
       {
         "zone_id": "temperate_continental",
         "start_date": "2026-04-15",
         "adapt_score": 0.7,
-        "growth_plan": {"recommendation": {"phases": [
-          {"name": "育苗", "day_range": [1, 30]},
-          {"name": "开花前", "day_range": [31, 65]},
-          {"name": "开花坐果", "day_range": [66, 100]},
-          {"name": "采收", "day_range": [101, 140]}
-        ]}}
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "育苗",
+                "day_range": [
+                  1,
+                  30
+                ]
+              },
+              {
+                "name": "开花前",
+                "day_range": [
+                  31,
+                  65
+                ]
+              },
+              {
+                "name": "开花坐果",
+                "day_range": [
+                  66,
+                  100
+                ]
+              },
+              {
+                "name": "采收",
+                "day_range": [
+                  101,
+                  140
+                ]
+              }
+            ]
+          }
+        }
       },
       {
         "zone_id": "tropical_rainforest",
         "start_date": "2026-01-15",
         "adapt_score": 0.8,
-        "growth_plan": {"recommendation": {"phases": [
-          {"name": "育苗", "day_range": [1, 25]},
-          {"name": "开花前", "day_range": [26, 50]},
-          {"name": "开花坐果", "day_range": [51, 85]},
-          {"name": "采收", "day_range": [86, 120]}
-        ]}}
+        "growth_plan": {
+          "recommendation": {
+            "phases": [
+              {
+                "name": "育苗",
+                "day_range": [
+                  1,
+                  25
+                ]
+              },
+              {
+                "name": "开花前",
+                "day_range": [
+                  26,
+                  50
+                ]
+              },
+              {
+                "name": "开花坐果",
+                "day_range": [
+                  51,
+                  85
+                ]
+              },
+              {
+                "name": "采收",
+                "day_range": [
+                  86,
+                  120
+                ]
+              }
+            ]
+          }
+        }
       }
     ]
   },
@@ -71,5 +183,6 @@
   },
   "provenance": {
     "note": "SNWM M4 跨情境泛化维度：同一作物在跨气候带部署时，模型应产出合理且非退化的差异化结果。完全相同的输出说明模型无视分区上下文（退化），所有输出都在合理范围内说明模型有气候敏感性"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

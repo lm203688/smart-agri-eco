@@ -19,5 +19,6 @@
     "purpose": "SCI Rigor 补齐（negative control / abstention / invariant）",
     "roadmap_task": "S1.2",
     "reference_required": true
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }

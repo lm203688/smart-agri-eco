@@ -691,6 +691,9 @@ def run_case(case: Dict[str, Any]) -> Dict[str, Any]:
     out = runner(case)
     out["case_id"] = case["id"]
     out["axis"] = axis
+    # P0-1：透传用例证据层级（默认 L0 工程回归），供 summarize 按层聚合。
+    # 当前全部用例为自生成真值 → L0；L1 农艺参考 / L2 田留出需外部数据。
+    out["evidence_layer"] = case.get("evidence_layer", "L0_engineering_regression")
     return out
 
 
@@ -710,9 +713,33 @@ def summarize(results: List[Dict[str, Any]]) -> Dict[str, Any]:
     neg_total = sum(v["total"] for k, v in by_axis.items() if k.startswith("negative_"))
     neg_passed = sum(v["passed"] for k, v in by_axis.items() if k.startswith("negative_"))
 
-    # P0-1 三层证据分类（2026-10-27）：当前 89 用例全部是 L0 工程回归
-    # （自回归基准，无独立农艺真值）。L1/L2 需外部数据，当前 0 用例。
-    # 附加字段，不改变任何现有判据（--strict 只看 pass_rate）。
+    # P0-1 三层证据分类（2026-10-27）：从用例 evidence_layer 字段聚合。
+    # 当前 89 用例全部是 L0 工程回归（自回归基准，无独立农艺真值）；
+    # L1 农艺参考 / L2 田留出需外部数据，当前 0 用例。附加字段，不改变
+    # 任何现有判据（--strict 只看 pass_rate）。
+    layer_order = ["L0_engineering_regression", "L1_agronomic_reference", "L2_field_holdout"]
+    layer_note = {
+        "L0_engineering_regression": "自回归基准，验证行为不变，非农艺准确率",
+        "L1_agronomic_reference": "需外部文献/专家标注/WOFOST 机理真值",
+        "L2_field_holdout": "需真实种植批次按站点/时间隔离留出",
+    }
+    evidence_layers: Dict[str, Dict[str, Any]] = {}
+    for layer in layer_order:
+        layer_total = sum(1 for r in results if r.get("evidence_layer") == layer)
+        layer_passed = sum(1 for r in results
+                           if r.get("evidence_layer") == layer and r.get("ok"))
+        evidence_layers[layer] = {
+            "total": layer_total, "passed": layer_passed,
+            "note": layer_note[layer],
+        }
+    # 未标层级（默认 L0 已在 run_case 兜底，此处防御未知值）
+    unknown_layer = sum(1 for r in results if r.get("evidence_layer") not in layer_order)
+    if unknown_layer:
+        evidence_layers["L0_engineering_regression"]["total"] += unknown_layer
+        evidence_layers["L0_engineering_regression"]["passed"] += sum(
+            1 for r in results
+            if r.get("evidence_layer") not in layer_order and r.get("ok"))
+
     return {
         "total": total,
         "passed": passed,
@@ -722,20 +749,7 @@ def summarize(results: List[Dict[str, Any]]) -> Dict[str, Any]:
         "by_axis": {a: dict(v, pass_rate=round(v["passed"] / v["total"], 3) if v["total"] else 0)
                     for a, v in sorted(by_axis.items())},
         "generated_at": CLOCK.now().isoformat(timespec="seconds"),
-        "evidence_layers": {
-            "L0_engineering_regression": {
-                "total": total, "passed": passed,
-                "note": "自回归基准，验证行为不变，非农艺准确率",
-            },
-            "L1_agronomic_reference": {
-                "total": 0, "passed": 0,
-                "note": "需外部文献/专家标注/WOFOST 机理真值，当前 0 用例",
-            },
-            "L2_field_holdout": {
-                "total": 0, "passed": 0,
-                "note": "需真实种植批次按站点/时间隔离留出，当前 0 用例",
-            },
-        },
+        "evidence_layers": evidence_layers,
     }
 
 

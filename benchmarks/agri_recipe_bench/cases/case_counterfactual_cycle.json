@@ -10,15 +10,36 @@
     "growth_plan": {
       "recommendation": {
         "phases": [
-          {"name": "育苗", "day_range": [1, 25]},
-          {"name": "开花", "day_range": [26, 60]},
-          {"name": "盛果采收", "day_range": [61, 100]}
+          {
+            "name": "育苗",
+            "day_range": [
+              1,
+              25
+            ]
+          },
+          {
+            "name": "开花",
+            "day_range": [
+              26,
+              60
+            ]
+          },
+          {
+            "name": "盛果采收",
+            "day_range": [
+              61,
+              100
+            ]
+          }
         ]
       }
     },
     "env_recipe": {
       "environment": {
-        "temperature": {"day_c": 26, "night_c": 16}
+        "temperature": {
+          "day_c": 26,
+          "night_c": 16
+        }
       }
     }
   },
@@ -27,9 +48,27 @@
       "after": {
         "recommendation": {
           "phases": [
-            {"name": "育苗", "day_range": [1, 25]},
-            {"name": "开花", "day_range": [26, 60]},
-            {"name": "盛果采收", "day_range": [61, 150]}
+            {
+              "name": "育苗",
+              "day_range": [
+                1,
+                25
+              ]
+            },
+            {
+              "name": "开花",
+              "day_range": [
+                26,
+                60
+              ]
+            },
+            {
+              "name": "盛果采收",
+              "day_range": [
+                61,
+                150
+              ]
+            }
           ]
         }
       }
@@ -46,5 +85,6 @@
   },
   "provenance": {
     "note": "adjusted_duration_days 直接受 phases 总天数影响，延长 phases 必然延长周期——这是最简单但最关键的响应方向验证"
-  }
+  },
+  "evidence_layer": "L0_engineering_regression"
 }
