@@ -245,5 +245,49 @@
     "safety_note": "sowing_depth_cm.value 由 `growth_days/200` 派生，是启发式近似，不是作物/品种级权威农艺依据。真实依据应为种子大小、覆土要求、基质类型和湿度条件。该字段进入设备执行层前必须经 E1 农艺专家审核；未通过审核时只允许在建议层展示（标注『待确认』），不得作为自动化控制参数。",
     "deprecation_marker_version": "1.0",
     "deprecation_marker_at": "2026-10-26T22:10:56Z"
+  },
+  "source_spans": {
+    "sowing_depth_cm": {
+      "derivation": "growth_days_over_200",
+      "source": "crop_adapt_db",
+      "inference": "复用 agent/growth_agent.py 公式 round(growth_days/200, 1)。缺 growth_days 时值为 null（不编造）。",
+      "evidence_grade": "E0",
+      "unsafe_for_execution": true,
+      "recipe_source_indices": [
+        0,
+        2,
+        3,
+        4
+      ]
+    },
+    "environment.shortwave_photon_equivalent": {
+      "derivation": "climate_baseline_annual_mean",
+      "source": "NASA POWER ALLSKY_SFC_SW_DWN",
+      "inference": "全谱短波辐射光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（项目内无实测），专业应用请自行乘 PAR 比例。 单位从 mol 换算为 umol（HA 惯例）。",
+      "evidence_grade": "E0",
+      "external_source": true,
+      "license": "NASA POWER public domain"
+    },
+    "environment.dli_umol_m2_day": {
+      "derivation": "climate_baseline_annual_mean",
+      "source": "NASA POWER ALLSKY_SFC_SW_DWN",
+      "inference": "字段名 `dli_umol_m2_day` 易被自动消费者误读为标准 PAR DLI，实际是全年气候基线的全谱短波辐射光子当量（非标准 PAR）。已拆分为 `shortwave_photon_equivalent`（全谱短波当量）与 `par_dli`（标准 PAR DLI，项目内无实测时为 null）。",
+      "evidence_grade": "E0",
+      "deprecated": true,
+      "replaced_by": [
+        "shortwave_photon_equivalent",
+        "par_dli"
+      ]
+    },
+    "_field_level_not_established": {
+      "fields": [
+        "environment.temperature",
+        "environment.humidity",
+        "environment.water_nutrient",
+        "environment.airflow"
+      ],
+      "field_level_provenance": "not_established",
+      "note": "这些字段当前仅有配方级 sources 分区气候来源，未逐字段映射到具体来源条目；不猜测 source_indices。"
+    }
   }
 }

@@ -562,6 +562,11 @@
         "derived_at": {"type": "string", "format": "date-time"},
         "reason": {"type": "string"}
       }
+    },
+    "source_spans": {
+      "type": "object",
+      "description": "字段级血缘（P0-5）：标注每个高危派生字段的来源、转换方法与推论。键为字段路径（如 sowing_depth_cm / environment.shortwave_photon_equivalent），值为来源声明（derivation / source / inference / evidence_grade / unsafe_for_execution 等）。键动态，值用 additionalProperties 松散校验。",
+      "additionalProperties": true
     }
   },
   "schema_version": "1.2.1"

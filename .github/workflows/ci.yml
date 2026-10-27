@@ -162,7 +162,9 @@ jobs:
           python scripts/gate_utf8_encoding.py
           echo "▶ check_immutable_zone_paths"
           python scripts/check_immutable_zone_paths.py
-          echo "✅ 9 门禁全部通过"
+          echo "▶ gate_license_conflict"
+          python scripts/gate_license_conflict.py
+          echo "✅ 10 门禁全部通过"
 
       - name: MCP 命名空间守卫（防 pip mcp 包遮蔽项目 mcp/ 目录）
         run: python scripts/check_mcp_namespace.py
