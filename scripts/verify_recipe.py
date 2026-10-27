@@ -50,7 +50,10 @@ RANGES = {
     ("environment", "water_nutrient", "ph"): (3.5, 9.5),
     ("environment", "water_nutrient", "ec_mscm"): (0.0, 6.0),
     ("environment", "light", "ppfd_umol_m2s"): (0.0, 2000.0),
-    ("environment", "light", "dli_umol_m2_day"): (0.0, 20000.0),
+    # P0-4 拆分后：全谱短波光子当量（上界放宽，因全谱含 IR，数值可达 ~10^5）
+    ("environment", "shortwave_photon_equivalent", "value"): (0.0, 120000.0),
+    # 标准 PAR DLI：value 为 null（无实测）时 _dig 返回 None，自动跳过
+    ("environment", "par_dli", "value"): (0.0, 20000.0),
 }
 
 # reproducibility_score 打分维度：key → (path, weight)

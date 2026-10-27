@@ -84,7 +84,51 @@
       },
       "method": "climate_baseline_annual_mean",
       "derived_at": "2026-10-14T09:34:40Z",
-      "note": "全谱短波辐射光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（项目内无实测），专业应用请自行乘 PAR 比例。 单位从 mol 换算为 umol（HA 惯例）。"
+      "note": "全谱短波辐射光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（项目内无实测），专业应用请自行乘 PAR 比例。 单位从 mol 换算为 umol（HA 惯例）。",
+      "deprecated": true,
+      "deprecated_reason": "字段名 `dli_umol_m2_day` 易被自动消费者误读为标准 PAR DLI，实际是全年气候基线的全谱短波辐射光子当量（非标准 PAR）。已拆分为 `shortwave_photon_equivalent`（全谱短波当量）与 `par_dli`（标准 PAR DLI，项目内无实测时为 null）。",
+      "replaced_by": [
+        "shortwave_photon_equivalent",
+        "par_dli"
+      ]
+    },
+    "shortwave_photon_equivalent": {
+      "value": 58270.0,
+      "unit": "umol_m2_day",
+      "zone_id": "subtropical_wet",
+      "source": "derived_from_zone",
+      "source_file": {
+        "provider": "NASA POWER ALLSKY_SFC_SW_DWN",
+        "zone": "subtropical_wet",
+        "coord": [
+          30.27,
+          120.16
+        ],
+        "conversion": "kWh/m2/day * 16.45 (全谱短波辐射光子当量，非标准 PAR DLI)",
+        "note": "全谱短波辐射的光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（纬度/云量/季节依赖，项目内无实测数据），专业应用请自行乘 PAR 比例或改用专用辐照度传感器。",
+        "license": "NASA POWER public domain",
+        "years_used": [
+          2015,
+          2024
+        ]
+      },
+      "method": "climate_baseline_annual_mean",
+      "derived_at": "2026-10-14T09:34:40Z",
+      "note": "全谱短波辐射光子当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（项目内无实测），专业应用请自行乘 PAR 比例。 单位从 mol 换算为 umol（HA 惯例）。",
+      "spectral_definition": "full_spectrum_shortwave",
+      "temporal_resolution": "annual_mean",
+      "latitude_deg": 30.27,
+      "uncertainty": {
+        "has_estimate": false,
+        "note": "NASA POWER 全谱短波辐射无逐像素不确定度；PAR 占全谱比例随纬度/云量/季节变化，项目内无实测，无法量化。"
+      }
+    },
+    "par_dli": {
+      "value": null,
+      "unit": "umol_m2_day",
+      "status": "unavailable_pending_measurement",
+      "reason": "项目内无 PAR 实测或可信转换：PAR 占全谱约 45%-50%，且随纬度/云量/季节变化。禁止用于精准补光控制；待接入 PAR 专用辐照度传感器或经 E1 农艺专家审核的可信转换后再回填。",
+      "derived_at": "2026-10-27T08:57:26Z"
     }
   },
   "exception_handling": [

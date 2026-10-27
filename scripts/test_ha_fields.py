@@ -5,7 +5,7 @@
 1. **152 配方全部含 6 项 HA/OpenFarm 字段**（无缺字段的配方）
 2. **VPD 数值合理性**：nominal 落在 [-5, 10] kPa 物理范围内
 3. **VPD 与 mold_risk 一致性**：标称 VPD < 0.5 → mold_risk.level 必为 medium 或 high
-4. **DLI 非空**：所有配方的 dli_umol_m2_day 应有数值（除非 zone 无 DLI 基线）
+4. **DLI 拆分一致性**（P0-4）：shortwave_photon_equivalent + par_dli 存在，旧 dli_umol_m2_day 标 deprecated 且 replaced_by 正确；par_dli 无实测时 value=null + status + reason
 5. **伴生植物排除自身**：companion_plants.items 中不含配方自身作物
 6. **溯源元数据完整**：每个派生字段带 source + derived_at + method
 7. **不编造**：null 派生字段必须有 reason
@@ -194,6 +194,42 @@ class TestRecipeHaFields(unittest.TestCase):
                 if k not in env:
                     bad.append("%s: environment 缺 %s" % (fname, k))
         self.assertEqual(bad, [], "原有 environment 字段被删除: %s" % bad[:5])
+
+    def test_14_dli_split_consistency(self):
+        """P0-4 拆分：shortwave_photon_equivalent + par_dli 存在且旧字段标 deprecated。"""
+        bad = []
+        for fname, r in self.recipes:
+            env = r.get("environment", {}) or {}
+            sw = env.get("shortwave_photon_equivalent")
+            par = env.get("par_dli")
+            old = env.get("dli_umol_m2_day")
+            # 1. 两新字段存在
+            if not isinstance(sw, dict):
+                bad.append("%s: 缺 shortwave_photon_equivalent" % fname)
+                continue
+            if not isinstance(par, dict):
+                bad.append("%s: 缺 par_dli" % fname)
+                continue
+            # 2. 旧字段必须标 deprecated + replaced_by
+            if not isinstance(old, dict) or old.get("deprecated") is not True:
+                bad.append("%s: 旧 dli_umol_m2_day 未标 deprecated" % fname)
+                continue
+            if old.get("replaced_by") != ["shortwave_photon_equivalent", "par_dli"]:
+                bad.append("%s: replaced_by 不一致" % fname)
+                continue
+            # 3. shortwave 必须带 value + spectral_definition
+            if sw.get("value") is None:
+                bad.append("%s: shortwave.value 为 null" % fname)
+            if sw.get("spectral_definition") != "full_spectrum_shortwave":
+                bad.append("%s: spectral_definition 不一致" % fname)
+            # 4. par_dli 无实测 → value=null + status + reason（不编造）
+            if par.get("value") is not None:
+                bad.append("%s: par_dli 无实测却非 null" % fname)
+            if par.get("status") != "unavailable_pending_measurement":
+                bad.append("%s: par_dli status 不一致" % fname)
+            if not par.get("reason"):
+                bad.append("%s: par_dli 缺 reason" % fname)
+        self.assertEqual(bad, [], "DLI 拆分不一致: %s" % bad[:8])
 
 
 if __name__ == "__main__":

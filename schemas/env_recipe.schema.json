@@ -297,7 +297,7 @@
         },
         "dli_umol_m2_day": {
           "type": "object",
-          "description": "HA 事实标准字段（v1.2 新增，optional）。每日光积分 DLI（umol/m²/day），从分区 climate_baseline 派生。单位从 NASA POWER 的 mol 换算为 umol（HA 惯例）。",
+          "description": "【已弃用 · P0-4 拆分】HA 事实标准字段（v1.2 新增，optional，deprecated）。旧字段名易被自动消费者误读为标准 PAR DLI，实际是全年气候基线的全谱短波辐射光子当量（非标准 PAR）。保留只读兼容：读旧字段时应同时检查 deprecated 标记；已由 shortwave_photon_equivalent 与 par_dli 取代。",
           "additionalProperties": true,
           "properties": {
             "value": {"type": "number"},
@@ -305,6 +305,38 @@
             "zone_id": {"type": "string"},
             "source": {"type": "string"},
             "method": {"type": "string"},
+            "derived_at": {"type": "string", "format": "date-time"},
+            "deprecated": {"type": "boolean"},
+            "deprecated_reason": {"type": "string"},
+            "replaced_by": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "shortwave_photon_equivalent": {
+          "type": "object",
+          "description": "HA 事实标准字段（P0-4 拆分后，optional）。全谱短波辐射光子当量（umol/m²/day），从分区 climate_baseline 派生（NASA POWER ALLSKY_SFC_SW_DWN）。注意：这是全谱短波当量，非标准 PAR DLI；PAR 占全谱约 45%-50%（随纬度/云量/季节变化，项目内无实测）。",
+          "additionalProperties": true,
+          "properties": {
+            "value": {"type": "number"},
+            "unit": {"const": "umol_m2_day"},
+            "zone_id": {"type": "string"},
+            "source": {"type": "string"},
+            "method": {"type": "string"},
+            "derived_at": {"type": "string", "format": "date-time"},
+            "spectral_definition": {"const": "full_spectrum_shortwave"},
+            "temporal_resolution": {"const": "annual_mean"},
+            "latitude_deg": {"type": ["number", "null"]},
+            "uncertainty": {"type": "object"}
+          }
+        },
+        "par_dli": {
+          "type": "object",
+          "description": "HA 事实标准字段（P0-4 拆分后，optional）。标准 PAR DLI（umol/m²/day）。项目内无 PAR 实测或可信转换时 value 为 null 且 status=unavailable_pending_measurement；此时禁止用于精准补光控制。",
+          "additionalProperties": true,
+          "properties": {
+            "value": {"type": ["number", "null"]},
+            "unit": {"const": "umol_m2_day"},
+            "status": {"type": "string"},
+            "reason": {"type": "string"},
             "derived_at": {"type": "string", "format": "date-time"}
           }
         }
