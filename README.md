@@ -15,7 +15,9 @@
 > 🎯 **项目目标口径（单一权威）**：见 [`docs/CORE_OBJECTIVE.md`](docs/CORE_OBJECTIVE.md) —— 分布式农业的 **Agent-native 知识基座**。
 > 一句话：把「在哪里种什么、怎么种得好」做成**可被任何 AI Agent 直接调用**的可执行配置（Env Recipe），以**可审计的数据血缘**作为可信度资产。
 > **一级目标**：让 MCP server 被外部 agent 真实调用（≥500 次 / ≥20 独立调用方）。
-> 阶段门禁数字见 [`docs/north_star_and_phase_gates.md`](docs/north_star_and_phase_gates.md)；全面扫描与提升报告见 [`docs/full_liftup_assessment_2026-10-08.md`](docs/full_liftup_assessment_2026-10-08.md)。
+> 阶段门禁数字见 [`docs/north_star_and_phase_gates.md`](docs/north_star_and_phase_gates.md)；全面扫描与提升报告见 [`docs/full_liftup_assessment_2026-10-08.md`](docs/full_liftup_assessment_2026-10-08.md)；2026-10 前沿视角提升评估见 [`docs/DIMENSION_LIFTUP_2026-10-28.md`](docs/DIMENSION_LIFTUP_2026-10-28.md)。
+
+> 🧭 **前沿定位（2026-10-28）**：在农业 AI「大模型 + 机理模型 + 专业小模型」协同体系（农民日报 2026-09-30）中，本项目扮演 **机理模型 + 专业小模型层**——是农业大模型的**机理约束器 + 可执行配方 + 可审计资产**，与神农 4.0 / 农业世界模型 SNWM 1.0 **互补非竞争**（它们提供理解与调度，我们提供科学约束与可复现执行）。护城河五点：可执行配方 / 可审计血缘 / 零依赖可复现 / 保形置信区间 / **MCP 2026-07-28 无状态对齐**。生态位定案见 [`docs/CORE_OBJECTIVE.md`](docs/CORE_OBJECTIVE.md) §十二。
 
 **🚀 已上架官方 MCP Registry**：`io.github.lm203688/agri-eco` v1.1.0（2026-10-08）
 
