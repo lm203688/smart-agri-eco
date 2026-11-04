@@ -12,7 +12,7 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/lm203688/smart-agri-eco/releases/download/v1.2.0/agri-eco-mcp-1.2.0b.mcpb",
+      "identifier": "https://github.com/lm203688/smart-agri-eco/releases/download/v1.2.0/agri-eco-mcp-1.2.0.mcpb",
       "fileSha256": "45857325b9f5118ca351276096255d1b932439be0d29b152f61feb25b7b272c3",
       "transport": {
         "type": "stdio"
