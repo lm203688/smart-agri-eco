@@ -32,7 +32,7 @@
     "url": "https://github.com/lm203688/smart-agri-eco",
     "email": "lm203688@users.noreply.github.com"
   },
-  "version": "1.1.0",
+  "version": "1.2.0",
   "documentationUrl": "https://github.com/lm203688/smart-agri-eco/blob/main/docs/CORE_OBJECTIVE.md",
   "capabilities": {
     "streaming": false,
@@ -691,19 +691,20 @@
     "distribution": {
       "officialRegistry": {
         "name": "io.github.lm203688/agri-eco",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "registryType": "mcpb",
         "publishedAt": "2026-10-08T05:33:32Z",
         "searchUrl": "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.lm203688/agri-eco"
       },
       "smithery": {
         "autoDiscover": "smithery.yaml 已就绪，Smithery 从仓库根目录抓取，无需填表单",
-        "searchUrl": "https://smithery.ai/search?q=agri-eco"
+        "searchUrl": "https://smithery.ai/search?q=agri-eco",
+        "status": "deprecated_404_2026-11-04"
       },
       "mcpbPackage": {
-        "url": "https://github.com/lm203688/smart-agri-eco/releases/download/v1.1.0/agri-eco-mcp-1.1.0.mcpb",
-        "sha256": "390e977940676f856fc6c7fe9b7a4bb087f1abf6388a72ab01c917c10ef57b24",
-        "sizeBytes": 452400
+        "url": "https://github.com/lm203688/smart-agri-eco/releases/download/v1.2.0/agri-eco-mcp-1.2.0.mcpb",
+        "sha256": "97e67a4157f104288cbee91601533b23719a09b569f852a1ca5ae3bed1b44e65",
+        "sizeBytes": 1180000
       }
     }
   },

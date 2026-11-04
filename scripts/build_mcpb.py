@@ -33,7 +33,7 @@ import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SERVER_JSON = os.path.join(ROOT, "server.json")
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 # 文件名必须含 "mcp"（MCPB 校验规则）
 DEFAULT_OUT = os.path.join(ROOT, "dist", "agri-eco-mcp-%s.mcpb" % VERSION)
 
@@ -61,7 +61,6 @@ DATA_INCLUDE = [
     "data/preset_cities.json",
     "data/zone_meta",
     "data/wofost_phenology_reference.json",
-    "schemas/linkage_protocol.schema.json",
 ]
 
 
@@ -72,10 +71,12 @@ def build_manifest() -> dict:
         "display_name": "智慧农业生态 Agri-Eco",
         "version": VERSION,
         "description": (
-            "面向分布式农业的 Agent-native 知识基座。14 个 MCP 工具："
+            "面向分布式农业的 Agent-native 知识基座。30 个 MCP 工具："
             "Env Recipe 环境配方 / 气候分区匹配 / 作物推荐 / 种植计划 / "
             "物候播期 / 多源气候校准 / 土壤剖面 / 病虫害诊断 / 养分管理 / "
-            "地理编码到配方 / 数据血缘 / 生态清单 / 预设城市 / 投资初筛。"
+            "地理编码到配方 / 数据血缘 / 生态清单 / 预设城市 / 投资初筛 / "
+            "批次对象（Plot·GrowBatch·Observation·Action·Outcome）/ "
+            "反事实轨迹 / 置信区间 / 可信标记。"
             "零第三方依赖，可完全离线运行。"
         ),
         "author": {"name": "lm203688", "url": "https://github.com/lm203688"},

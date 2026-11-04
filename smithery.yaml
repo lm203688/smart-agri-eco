@@ -24,7 +24,7 @@ repository:
 author:
   name: lm203688
   url: https://github.com/lm203688
-version: 1.1.0
+version: 1.2.0
 
 # 服务器启动配置（stdio 传输）
 startCommand:
