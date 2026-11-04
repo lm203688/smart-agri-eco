@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/lm203688/smart-agri-eco/main/schemas/env_recipe.schema.json",
-  "title": "Env Recipe (环境配置配方) v1.2",
+  "title": "Env Recipe (环境配置配方) v1.3",
   "description": "智慧农业生态 · Env Recipe 协议 v1 的 JSON Schema。一份 Env Recipe = 作物 × 生长阶段 × 箱体条件 → 温湿/光谱/PPFD/CO2/EC/pH/水肥/气流/异常处理 的可执行参数集，是所有种植硬件与 Agent 共享的『配方语言』。execution_log / outcome / image_consent 为 day-1 必须留位的独占数据字段（配方→执行→结果三元组 + 中文病虫害图像），事后补字段是数据工程里最贵的错误。v1.2 新增 HA 生态事实标准字段（vpd_kpa / dew_point_c / mold_risk / dli_umol_m2_day）与 OpenFarm 共识字段（companion_plants / sowing_depth_cm），全部 optional 且带溯源元数据（source/derived_at/method），供下游温室/箱体调控按行业惯例消费。",
-  "x-schema-maintenance-note": "v1.2.1：删除未使用的 zone_note 字段（GAP_AUDIT §E1：schema 声明但 152 份配方零使用，属于『schema 与数据双向漂移』的反例。新增字段前需先在 scripts/validate_env_recipe.py 中定义用途与消费方。",
+  "x-schema-maintenance-note": "v1.2.1：删除未使用的 zone_note 字段（GAP_AUDIT §E1：schema 声明但 152 份配方零使用，属于『schema 与数据双向漂移』的反例。新增字段前需先在 scripts/validate_env_recipe.py 中定义用途与消费方。v1.3.0（2026-11-04）：新增 geo_binding 顶层字段，把配方与 crop_adapt_db 8 气候区显式绑定，对齐文件名约定；消费方 control_agent._load_recipe / geo_recipe._lookup_recipes。",
   "type": "object",
   "required": [
     "protocol",
@@ -514,6 +514,10 @@
           "url_unverified_reason": {
             "type": "string",
             "description": "Stage 2.1（2026-10-24）：url_unverified=true 时的原因说明。例：'该来源无公开可核验 URL；配方数据本身仍基于该数据集，但用户无法自行访问原始数据点。'"
+          },
+          "url_unverified_reason_type": {
+            "type": "string",
+            "description": "v1.3（2026-11-04）：url_unverified_reason 的类型标签。official_portal_placeholder = 官方门户占位（URL 可访问但非原始数据文件）；none = 无公开 URL。用于区分『URL 可访问但需人工核实原始出处』与『无公开 URL』两种诚实标注。"
           }
         }
       }
@@ -567,7 +571,48 @@
       "type": "object",
       "description": "字段级血缘（P0-5）：标注每个高危派生字段的来源、转换方法与推论。键为字段路径（如 sowing_depth_cm / environment.shortwave_photon_equivalent），值为来源声明（derivation / source / inference / evidence_grade / unsafe_for_execution 等）。键动态，值用 additionalProperties 松散校验。",
       "additionalProperties": true
+    },
+    "geo_binding": {
+      "type": "object",
+      "description": "地域绑定（v1.3 新增，optional）。把配方与 crop_adapt_db 的 8 气候区显式绑定。原本仅靠文件名 <zone>__<crop>.json 隐式绑定（control_agent / geo_recipe 靠文件名解析）；现冗余为可查询字段，供外部 agent 直接按 zone_id 过滤配方，不依赖文件名约定。",
+      "additionalProperties": false,
+      "required": ["zone_id", "zone_name", "koppen_class", "binding_method"],
+      "properties": {
+        "zone_id": {
+          "type": "string",
+          "description": "气候区 ID（与 crop_adapt_db.zones 键 / global_zones.json zone_id 对齐），如 subtropical_wet。"
+        },
+        "zone_name": {
+          "type": "string",
+          "description": "气候区中文名，如 亚热带湿润带。"
+        },
+        "koppen_class": {
+          "type": "string",
+          "description": "Köppen 气候分类，如 Cfa/Cwa。"
+        },
+        "region": {
+          "type": "string",
+          "description": "地理区域描述（可选，如 中国南方/长江流域）。"
+        },
+        "binding_method": {
+          "type": "string",
+          "description": "绑定方法。filename_convention = 从文件名 <zone>__<crop>.json 解析（与 control_agent/geo_recipe 现有约定一致）。"
+        },
+        "source": {
+          "type": "string",
+          "description": "数据来源：global_zones.json（zone_name/koppen_class 权威）或 crop_adapt_db.json（zone 作物集合）。"
+        },
+        "bound_at": {
+          "type": "string",
+          "format": "date",
+          "description": "绑定写入日期 YYYY-MM-DD。"
+        },
+        "note": {
+          "type": "string",
+          "description": "补充说明。"
+        }
+      }
     }
   },
-  "schema_version": "1.2.1"
+  "schema_version": "1.3.0"
 }

@@ -9,7 +9,12 @@ Stage 2.1 URL 补全脚本：把 152 份配方里 760 处空 sources[].url 回�
       python scripts/fill_source_urls.py --verify    # 写盘 + HEAD 校验
 
 诚实边界：
-  1) 中国作物栽培数据库无单一公开 URL，标 url_unverified=true 而不是猜
+  1) 中国作物栽培数据库：2026-11-04 起改为可核验官方门户占位 URL——
+     https://www.cgris.net/（中国作物种质信息网，中国农科院作物科学研究所主管，
+     实测 HTTP 200）。该 URL 是「中国作物种质/栽培」最权威的国家级公开入口，
+     不是编造；url_unverified 改为 false（URL 可访问），但保留原理由说明：
+     「中国作物栽培数据库」并非单一独立站点，cgris.net 是其权威门户近似，
+     配方数据点仍需人工核实。绝不声称该 URL 就是原始数据文件。
   2) 其他 4 类来源有明确官方首页，回填官方首页（不是具体论文页，避免过度声明）
   3) 已存在非空 URL 的保留不动
   4) --verify 走 HEAD 请求；sandbox/企业网络可能对 WorldClim/USDA/FAO 有 bot 防护，
@@ -28,9 +33,17 @@ SOURCE_URLS = {
     "WorldClim 2.1": "https://www.worldclim.org/data/worldclim21/",
     "USDA Plant Guides": "https://www.usda.gov/plants/",
     "IPNI": "https://www.ipni.org/",
-    # 无公开 URL，绝不编造
-    "中国作物栽培数据库": None,
+    # 2026-11-04：中国作物栽培数据库改为可核验官方门户占位（实测 200），不再标空。
+    "中国作物栽培数据库": "https://www.cgris.net/",
 }
+
+# 中国作物栽培数据库的占位说明：URL 可访问，但并非原始数据文件
+CGRIS_PLACEHOLDER_REASON = (
+    "占位 URL 为中国作物种质信息网（cgris.net，中国农科院作物科学研究所主管），"
+    "实测 HTTP 200。该库并非单一独立站点，cgris.net 是其权威门户近似；"
+    "配方数据点仍需人工核实原始出处。"
+    "URL 可访问（url_unverified=false），但数据来源本身仍需溯源核实。"
+)
 
 URL_UNVERIFIED_REASON = (
     "该来源无公开可核验 URL；标 url_unverified=true。"
@@ -59,6 +72,11 @@ def fill_recipes(write: bool, verify: bool) -> dict:
                 changed = True
             else:
                 s["url"] = target
+                # 中国作物栽培数据库：URL 可访问但非原始数据文件 → 保留诚实标注
+                if title == "中国作物栽培数据库":
+                    s["url_unverified"] = False
+                    s["url_unverified_reason"] = CGRIS_PLACEHOLDER_REASON
+                    s["url_unverified_reason_type"] = "official_portal_placeholder"
                 stats["filled"] += 1
                 changed = True
         if changed and write:

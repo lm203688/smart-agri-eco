@@ -1174,16 +1174,18 @@ class TestEnvRecipeSourceLicense(unittest.TestCase):
         self.assertFalse(schema["properties"]["sources"]["items"]["additionalProperties"])
 
     def test_schema_version_is_1_2_1_with_ha_fields(self):
-        """schema v1.2.1 引入 HA/OpenFarm 事实标准字段 + license=unknown 溯源字段。
+        """schema v1.3.0 引入 geo_binding + url_unverified_reason_type 溯源字段。
 
         背景：v1.1.0 引入 zone_note；v1.2.0（M8-R1）引入 HA 生态事实标准字段；
         v1.2.1（2026-10-17 E1）删除未使用的 zone_note 字段，sources 新增
         license_note / unknown_license_replaced_at 用于 license=unknown 溯源。
-        本测试锁死 schema_version 与 HA 字段的存在关系，防止回退。
+        v1.3.0（2026-11-04 配方地域绑定）顶层新增 geo_binding，sources 新增
+        url_unverified_reason_type，用于地域绑定与来源URL可信度标注。
+        本测试锁死 schema_version 与字段存在关系，防止回退。
         """
         schema = json.load(open(os.path.join(ROOT, "schemas", "env_recipe.schema.json"),
                                 encoding="utf-8"))
-        self.assertEqual(schema.get("schema_version"), "1.2.1")
+        self.assertEqual(schema.get("schema_version"), "1.3.0")
         # E1：zone_note 已从 schema 移除（GAP_AUDIT §E1）
         self.assertNotIn("zone_note", schema.get("properties", {}))
         # zone_note 是可选字段（不在 required 中）
@@ -1210,6 +1212,17 @@ class TestEnvRecipeSourceLicense(unittest.TestCase):
         src_required = schema["properties"]["sources"]["items"].get("required", [])
         self.assertNotIn("license_note", src_required)
         self.assertNotIn("unknown_license_replaced_at", src_required)
+        # v1.3.0：geo_binding 顶层字段（地域绑定）
+        self.assertIn("geo_binding", schema["properties"],
+                      "v1.3.0 应声明顶层 geo_binding 字段")
+        gb_required = schema["properties"]["geo_binding"].get("required", [])
+        for f in ("zone_id", "zone_name", "koppen_class", "binding_method"):
+            self.assertIn(f, gb_required,
+                          "geo_binding.required 应含 %s" % f)
+        # v1.3.0：sources 新增 url_unverified_reason_type（可选）
+        self.assertIn("url_unverified_reason_type", src_props,
+                      "v1.3.0 应声明 sources[].url_unverified_reason_type 字段")
+        self.assertNotIn("url_unverified_reason_type", src_required)
 
     def test_all_152_recipes_pass_full_schema_validation(self):
         """全量 152 份配方必须通过完整 schema 校验（含 zone_note）。

@@ -1,0 +1,109 @@
+{
+  "files_scoped": 1588,
+  "python_loc_by_top": {
+    "agent": 10484,
+    "core": 5262,
+    "engine": 6065,
+    "mcp": 2728,
+    "app": 1190,
+    "bp_screen": 2673,
+    "scripts": 35260,
+    "firmware": 0
+  },
+  "recipes": {
+    "count": 152,
+    "unique_crops": 120,
+    "stages": {
+      "full_cycle": 152
+    },
+    "devices": {
+      "other": 152
+    },
+    "top_licenses": {
+      "CC-BY-4.0": 152
+    },
+    "empty_source_urls": 152,
+    "unverified_source_urls": 152,
+    "total_sources": 760,
+    "recipes_with_source_spans": 152,
+    "total_source_spans": 608,
+    "execution_entries": 0,
+    "nonempty_outcomes": 0,
+    "sowing_methods": {
+      "growth_days_over_200": 152
+    },
+    "sowing_marked_unsafe": 152,
+    "dli_deprecated": 152,
+    "shortwave_split": 152,
+    "par_dli_null": 152
+  },
+  "execution_log": {
+    "count": 120,
+    "sources": {
+      "shadow": 120
+    },
+    "not_executed": 120
+  },
+  "feedback_count": 0,
+  "manifest": {
+    "generated_at": "2026-10-27T21:01:25",
+    "tool_count": 30,
+    "skill_count": 11,
+    "eval_pending": [
+      "eval_extraction_accuracy",
+      "eval_pest_diagnosis_topk",
+      "eval_recipe_expert_adoption",
+      "eval_source_traceability"
+    ],
+    "rsi": {
+      "autonomy_level": "B0",
+      "hci": 0.167,
+      "open_gates": [
+        "feedback_inflow",
+        "calibration",
+        "generalization",
+        "skill_generation",
+        "meta_improvement"
+      ]
+    }
+  },
+  "grow_batches": {
+    "registry_exists": false,
+    "batches": 0
+  },
+  "frontend": {
+    "lines": 2157,
+    "fetch_calls": 2,
+    "event_listeners": 32,
+    "canvas": 0,
+    "image_accept": 1,
+    "sse": 0,
+    "grow_batch_mentions": 0
+  },
+  "benchmark": {
+    "cases": 69,
+    "target_cases": 25,
+    "evidence_layers": {
+      "L0_engineering_regression": 69
+    }
+  },
+  "non_stdlib_suspects": [
+    "climate_agent",
+    "climate_data",
+    "control_agent",
+    "crop_agent",
+    "eco_agent",
+    "forecast_agent",
+    "growth_agent",
+    "numpy",
+    "nutrition_agent",
+    "orchestration_audit",
+    "orchestrator",
+    "pest_agent",
+    "phenology",
+    "plant_calendar",
+    "recipe_profile",
+    "season_agent",
+    "vision"
+  ]
+}

@@ -171,7 +171,7 @@
     },
     {
       "title": "中国作物栽培数据库",
-      "url": "",
+      "url": "https://www.cgris.net/",
       "accessed_at": "2026-08-27",
       "data_quality": "modeled",
       "trial_location": "中国，多点作物栽培通识汇编（非单一试验点）",
@@ -179,8 +179,9 @@
       "license": "CC BY-NC-SA 4.0 (保守占位：中国作物栽培数据库未标注许可，按最严格非商业条款处理，实际商用前需人工核实)",
       "license_note": "占位许可：源方（中国作物栽培数据库）未标注许可，本项目按 CC BY-NC-SA 4.0 保守处理。法务上等同「不可商用」，需实际授权前请人工核实原始来源。",
       "unknown_license_replaced_at": "2026-10-17",
-      "url_unverified": true,
-      "url_unverified_reason": "该来源无公开可核验 URL；标 url_unverified=true。配方数据本身仍基于该数据集，但用户无法自行访问原始数据点。"
+      "url_unverified": false,
+      "url_unverified_reason": "占位 URL 为中国作物种质信息网（cgris.net，中国农科院作物科学研究所主管），实测 HTTP 200。该库并非单一独立站点，cgris.net 是其权威门户近似；配方数据点仍需人工核实原始出处。URL 可访问（url_unverified=false），但数据来源本身仍需溯源核实。",
+      "url_unverified_reason_type": "official_portal_placeholder"
     },
     {
       "title": "USDA Plant Guides",
@@ -284,5 +285,13 @@
       "field_level_provenance": "not_established",
       "note": "这些字段当前仅有配方级 sources 分区气候来源，未逐字段映射到具体来源条目；不猜测 source_indices。"
     }
+  },
+  "geo_binding": {
+    "zone_id": "subarctic",
+    "zone_name": "亚寒带",
+    "koppen_class": "Dfc/Dwc",
+    "binding_method": "filename_convention",
+    "source": "global_zones.json (zone_name/koppen_class) + crop_adapt_db.json (zone作物集合)",
+    "bound_at": "2026-11-04"
   }
 }

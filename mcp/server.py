@@ -1235,7 +1235,9 @@ TOOLS = [
     {
         "name": "agri_list_cities",
         "category": "climate",
-        "description": "列出预设城市（经纬度 + 气候带），供 Agent 选点或核对分区。",
+        "description": """【选址规划】列出全部预设城市（中文名 + 经纬度 + 气候带 + 海拔），供 Agent 做选点、分区核对或城市种植生成箱分发。
+输入：无参数；如需过滤可传 region（如 华东）或 zone_id（如 subtropical_wet）。
+返回：[{"city": "杭州", "lat": 30.27, "lon": 120.16, "zone": "subtropical_wet", "elevation_m": 19}, ...]""",
         "inputSchema": {
             "type": "object",
             "properties": {},
@@ -1244,12 +1246,16 @@ TOOLS = [
     {
         "name": "agri_match_zone",
         "category": "climate",
-        "description": "输入经纬度，返回气候分区匹配结果（含证据与限制因子）。",
+        "description": """【选址规划】输入经纬度，返回气候分区匹配结果：Köppen 主字母、亚型、置信度、匹配证据与限制因子（温度/降水/光周期）。用于跨城市选点与分区一致性校验。
+输入：lat（纬度，必填）、lon（经度，必填）；可选 city 便于展示。
+返回：{"zone_id": "temperate_continental", "koppen": "Dfa", "confidence": 0.85, "limiting_factors": ["winter_temperature"], "evidence": {...}}""",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "lat": {"type": "number", "description": "纬度"},
-                "lon": {"type": "number", "description": "经度"},
+                "lat": {"type": "number", "description": "纬度（度，北纬为正）；与 lon 必填"},
+                "lon": {"type": "number", "description": """【分区匹配】经度
+输入：经纬度（如 39.9,116.4）或气候分区（如 subtropical_wet）。
+返回：{"zone_id": "temperate_continental", "confidence": 0.85}"""},
             },
             "required": ["lat", "lon"],
         },
@@ -1257,14 +1263,18 @@ TOOLS = [
     {
         "name": "agri_recommend_crops",
         "category": "crop",
-        "description": "根据分区（lat/lon 或 city）与偏好（用途/空间/难度）推荐作物。",
+        "description": """【分区匹配】根据分区（lat/lon 或 city）与偏好（用途/空间/难度）推荐作物。
+输入：经纬度（如 39.9,116.4）或气候分区（如 subtropical_wet）。
+返回：{"zone_id": "temperate_continental", "confidence": 0.85}""",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "lat": {"type": "number"},
                 "lon": {"type": "number"},
                 "city": {"type": "string"},
-                "purpose": {"type": "string", "description": "食用/观赏/药用"},
+                "purpose": {"type": "string", "description": """【作物推荐】食用/观赏/药用
+输入：作物中文名（如 番茄、水稻、小麦）。
+返回：[{"crop": "番茄", "score": 0.92}, {"crop": "生菜", "score": 0.78}]"""},
                 "space_sqm": {"type": "number"},
                 "difficulty": {"type": "string"},
                 "scene": {"type": "string"},
@@ -1274,11 +1284,13 @@ TOOLS = [
     {
         "name": "agri_growth_plan",
         "category": "phenology",
-        "description": "作物 + 场景 + 分区 → 生成种植计划（含微气候修正）。",
+        "description": """【种植计划】作物 + 场景（室内/露台/垂直农场）+ 气候分区 → 生成阶段化种植计划（播种/营养生长/开花/结果/采收），含微气候修正与 GDD 热积估算。
+输入：crop（必填，如 番茄）、scene、lat、lon、city、floor、orientation、start_date。
+返回：{"crop": "番茄", "phases": [{"stage": "seed", "days": 7}, {"stage": "vegetative", "days": 45}], "total_days": 120, "gdd_estimate_cdd": 1450}""",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "crop": {"type": "string", "description": "作物名，如 番茄"},
+                "crop": {"type": "string", "description": "作物名（如 番茄/生菜）；必填"},
                 "lat": {"type": "number"},
                 "lon": {"type": "number"},
                 "scene": {"type": "string"},
@@ -1293,7 +1305,9 @@ TOOLS = [
     {
         "name": "agri_diagnose_pest",
         "category": "pest",
-        "description": "病虫害与营养缺乏诊断：输入作物、症状描述（可选图像引用、生长阶段、环境）。",
+        "description": """【病虫害诊断】病虫害与营养缺乏诊断：输入作物、症状描述，可选图像引用、生长阶段、环境温湿度；输出诊断结果、置信度、处理建议与防治药剂。
+输入：crop（必填）、symptom_description、image_reference、growth_stage、environment（温度/湿度/光照）。
+返回：{"diagnosis": "白粉病", "confidence": 0.88, "treatment": "喷施硫磺粉", "alternatives": ["枯草芽孢杆菌"], "preventive": "保持通风降湿"}""",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -1309,7 +1323,9 @@ TOOLS = [
     {
         "name": "agri_nutrition_plan",
         "category": "nutrition",
-        "description": "养分管理：作物 + 阶段 → 阶段化施肥方案。",
+        "description": """【养分管理】作物 + 生长阶段 + 容器体积 → 阶段化施肥方案：N/P/K 配比、微量元素、施用频率与用量（g/株），按阶段微调。
+输入：crop（必填）、scene、growth_stage、growth_days、container_volume_l、start_date。
+返回：{"n_p_k": {"n": 150, "p": 50, "k": 200}, "micro": {"fe": 2, "zn": 0.5}, "schedule": "每7天追肥一次", "total_weeks": 14}""",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -1326,11 +1342,15 @@ TOOLS = [
     {
         "name": "agri_env_recipe",
         "category": "recipe",
-        "description": "（P0-G）作物 + 生长阶段 + 设备类别 → 返回一份 Env Recipe v1 合规配方 JSON。",
+        "description": """【环境配方】（P0-G）作物 + 生长阶段 + 设备类别 → 返回一份 Env Recipe v1 合规配方 JSON。
+输入：作物名、生长阶段、设备类别等筛选条件。
+返回：{"recipe_id": "tomato_v1", "light": {"dli_mj_m2_d": 12.5}, "temperature": {"optimal_range": [18, 25]}}""",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "crop": {"type": "string", "description": "作物名"},
+                "crop": {"type": "string", "description": """【环境配方】作物名
+输入：作物名、生长阶段、设备类别等筛选条件。
+返回：{"recipe_id": "tomato_v1", "light": {"dli_mj_m2_d": 12.5}, "temperature": {"optimal_range": [18, 25]}}"""},
                 "stage": {"type": "string", "enum": _STAGES},
                 "device_class": {"type": "string", "enum": _DEVICE_CLASSES},
             },
@@ -1340,12 +1360,16 @@ TOOLS = [
     {
         "name": "agri_season_advisory",
         "category": "meta",
-        "description": "（B1+B2）物候与播期：mode=planting_window 时给 12 个月均温返回无霜期与各作物最早/最晚安全播种日；mode=stage_days 时给作物+日均温返回出苗/开花/成熟天数；mode=calendar 时按 USDA 区+日期查外部日历（需数据到位）。",
+        "description": """（B1+B2）物候与播期查询。
+三种模式：planting_window=给 12 个月均温返回无霜期与各作物最早/最晚安全播种日；
+stage_days=给作物+日均温返回出苗/开花/成熟天数；calendar=按 USDA 区+日期查外部日历（需数据到位）。
+mode=planting_window 必填 monthly_mean_c；stage_days 必填 crop+mean_temp_c；calendar 必填 zone+date。
+返回：{"mode": "...", "result": {...}}""",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "mode": {"type": "string", "enum": ["planting_window", "stage_days", "calendar"],
-                         "description": "默认 planting_window"},
+                         "description": "查询模式；默认 planting_window"},
                 "monthly_mean_c": {"type": "array", "items": {"type": "number"},
                                    "description": "12 个月均温（℃），1 月起；planting_window 必填"},
                 "crops": {"type": "array", "items": {"type": "string"},
@@ -1363,12 +1387,15 @@ TOOLS = [
     {
         "name": "agri_soil_profile",
         "category": "soil",
-        "description": "（土壤降级路径）经纬度或分区 → 土壤剖面。优先查 ISRIC SoilGrids v2.0（在线点数据），不可用时降级为离线分区均值并明确标注 resolution=zone、confidence=low。可选传入 crop 做 pH 适宜性拟合。",
+        "description": """（土壤降级路径）经纬度或分区 → 土壤剖面。
+优先查 ISRIC SoilGrids v2.0 在线点数据；不可用时降级为离线分区均值，明确标注 resolution=zone、confidence=low。可选传入 crop 做 pH 适宜性拟合。
+lat+lon 或 zone_id 二选一必填；online=false 直接走离线分区数据（更快）。
+返回：{"ph": 6.5, "organic_matter": "2.1%", "drainage": "良好", "resolution": "point|zone", "confidence": 0.8}""",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "lat": {"type": "number", "description": "纬度（与 lon 同用；可与 zone_id 二选一）"},
-                "lon": {"type": "number", "description": "经度"},
+                "lat": {"type": "number", "description": "纬度（度）；与 lon 必填，或传 zone_id"},
+                "lon": {"type": "number", "description": "经度（度）；与 lat 必填，或传 zone_id"},
                 "zone_id": {"type": "string",
                             "description": "分区 ID，如 subtropical_wet / temperate_continental / arid"},
                 "crop": {"type": "string", "description": "可选：作物名，用于 pH 适宜性拟合"},
@@ -1421,7 +1448,7 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "lat": {"type": "number", "description": "纬度"},
+                "lat": {"type": "number", "description": "纬度（度，北纬为正）；必填"},
                 "lon": {"type": "number", "description": "经度"},
                 "years": {"type": "integer", "description": "取数年数，默认 5"},
                 "sources": {"type": "array", "items": {"type": "string"},
@@ -1433,15 +1460,14 @@ TOOLS = [
     {
         "name": "agri_resolve_recipe",
         "category": "recipe",
-        "description": (
-            "（地理编码→配方）城市名（中文/英文）或经纬度 → 匹配气候分区 → 检索该分区的 Env Recipe 清单。"
-            "返回 zone_id / zone_name / 坐标 / 匹配配方（作物名+阶段+设备类+路径）。"
-            "核心「城市种植生成箱」分发价值，完全离线。"),
+        "description": """【选址规划】地理编码→配方分发：城市名（中文/英文）或经纬度 → 匹配气候分区 → 检索该分区的 Env Recipe 清单。返回 zone_id / zone_name / 坐标 / 匹配配方（作物名+阶段+设备类+路径）。核心「城市种植生成箱」分发价值，完全离线。
+输入：query（城市名或 lat,lon 串）或 lat+lon 三选一必填。
+返回：{"zone_id": "subtropical_wet", "zone_name": "亚热带湿润", "recipes": [{"crop": "番茄", "path": "env_recipes/..."}]}""",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "query": {"type": "string",
-                          "description": "城市名（如 杭州）或 \"lat,lon\" 坐标串；与 lat/lon 二选一"},
+                          "description": """【选址规划】城市名（如 杭州）或 "lat,lon" 坐标串；与 lat/lon 二选一"""},
                 "lat": {"type": "number", "description": "纬度（与 lon 同用；可与 query 二选一）"},
                 "lon": {"type": "number", "description": "经度"},
             },
@@ -1457,7 +1483,7 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "crop": {"type": "string", "description": "作物名（中文）；与 zone_id 可组合"},
+                "crop": {"type": "string", "description": "作物名（中文，如 番茄）；可与 zone_id 组合"},
                 "zone_id": {"type": "string",
                             "description": "分区 ID，如 subtropical_wet / temperate_continental / arid"},
             },
@@ -1512,7 +1538,7 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "kind": {"type": "string", "description": "查询类型",
+                "kind": {"type": "string", "description": "查询类型：summary/crops_by_zone/crops_by_risk/neighbors/traverse",
                          "enum": ["summary", "crops_by_zone", "crops_by_risk",
                                   "neighbors", "traverse"],
                          "default": "summary"},
@@ -1537,7 +1563,7 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "crop": {"type": "string", "description": "作物中文名（必填）"},
+                "crop": {"type": "string", "description": "作物中文名（如 番茄）；必填"},
                 "zone_id": {"type": "string", "description": "分区 ID（可选，决定气候因子）"},
                 "start_date": {"type": "string", "description": "YYYY-MM-DD（可选，决定采收期）"},
                 "adapt_score": {"type": "number", "description": "分区适配度 0-1（可选）",
@@ -1615,7 +1641,7 @@ TOOLS = [
             "type": "object",
             "properties": {
                 "if_none_match": {"type": "string",
-                                  "description": "客户端缓存的 ETag；命中时返回 not_modified 短路"},
+                                  "description": "客户端缓存的 ETag（来自上次 agri_server_card 的 etag）；命中时返回 not_modified 短路"},
             },
         },
     },
@@ -1727,7 +1753,7 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "crop": {"type": "string", "description": "作物中文名"},
+                "crop": {"type": "string", "description": "作物中文名（如 番茄/生菜）；必填"},
                 "stage": {"type": "string", "description": "采后阶段 fresh / storage / transport，默认 storage"},
             },
             "required": ["crop"],
@@ -1753,13 +1779,13 @@ TOOLS = [
     {
         "name": "agri_grow_batch_observe",
         "category": "batch",
-        "description": (
-            "（批次对象 MVP · 2026-10-27 新增）追加 Observation：批次生命周期内的一次观察"
-            "（传感自动或人工/图像补充）。输入 observation（observation_id/batch_id/ts/metric/source）。"),
+        "description": """【批次对象】追加 Observation：批次生命周期内的一次观察（传感自动或人工/图像补充），写入 append-only 事件日志。
+输入：observation 对象，含 batch_id、ts、metric（如 leaf_area/ph）、source（sensor/manual）。
+返回：{"success": true, "observation_id": "obs_01", "appended": true}""",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "observation": {"type": "object", "description": "Observation 对象（grow_batch.schema.json）"},
+                "observation": {"type": "object", "description": "Observation 对象（grow_batch.schema.json）：含 batch_id、ts、metric（如 leaf_area/ph）、source（sensor/manual）"},
             },
             "required": ["observation"],
         },
@@ -1774,7 +1800,7 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "action": {"type": "object", "description": "Action 对象（grow_batch.schema.json）"},
+                "action": {"type": "object", "description": "Action 对象（grow_batch.schema.json）：含 action_id、batch_id、ts、recommendation；真实执行需 dry_run=false"},
             },
             "required": ["action"],
         },
@@ -1782,14 +1808,14 @@ TOOLS = [
     {
         "name": "agri_grow_batch_status",
         "category": "batch",
-        "description": (
-            "（批次对象 MVP · 2026-10-27 新增）查询批次状态 + 关联对象（Plot/Observation/Action/Outcome）。"
-            "可选 include_events=true 附带 append-only 事件日志。"),
+        "description": """【批次对象】查询批次状态 + 关联对象（Plot/Observation/Action/Outcome）。可选 include_events=true 附带 append-only 事件日志，供审计与回放。
+输入：batch_id（必填）、include_events（可选，默认 false）。
+返回：{"batch_id": "b_01", "status": "active", "current_days": 45, "linked": {"observations": 12, "actions": 3}}""",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "batch_id": {"type": "string", "description": "批次唯一 ID"},
-                "include_events": {"type": "boolean", "description": "是否附带事件日志，默认 false"},
+                "batch_id": {"type": "string", "description": "批次唯一 ID（如 b_01）；必填"},
+                "include_events": {"type": "boolean", "description": "是否附带 append-only 事件日志，默认 false"},
             },
             "required": ["batch_id"],
         },
@@ -1797,13 +1823,13 @@ TOOLS = [
     {
         "name": "agri_grow_batch_replay",
         "category": "batch",
-        "description": (
-            "（批次对象 MVP · 2026-10-27 新增）按时间线回放批次事件：重建事件序列，"
-            "不触发任何真实执行或副作用（诚实标注）。"),
+        "description": """【批次对象】按时间线回放批次事件：重建事件序列（创建→观察→动作→结果），不触发任何真实执行或副作用（诚实标注，dry-run 语义）。
+输入：batch_id（必填）、from_ts / to_ts（可选时间窗）。
+返回：{"batch_id": "b_01", "events": [{"ts": "...", "type": "observation", "data": {}}], "dry_run": true}""",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "batch_id": {"type": "string", "description": "批次唯一 ID"},
+                "batch_id": {"type": "string", "description": "批次唯一 ID（如 b_01）；必填"},
             },
             "required": ["batch_id"],
         },
