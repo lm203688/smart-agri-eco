@@ -68,7 +68,7 @@ PROTOCOL_VERSION = "2026-07-28"
 # 兼容声明的历史版本：新客户端取 PROTOCOL_VERSION，旧客户端接受以下任一。
 SUPPORTED_PROTOCOL_VERSIONS = ("2026-07-28", "2025-06-18", "2024-11-05")
 SERVER_NAME = "agri-eco"
-SERVER_VERSION = "1.1.0"
+SERVER_VERSION = "1.2.0"
 
 
 # ===========================================================================
