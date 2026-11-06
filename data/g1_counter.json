@@ -1,0 +1,11 @@
+{
+  "caller_top": [],
+  "g1_callers_met": false,
+  "g1_total_met": false,
+  "thresholds": {
+    "callers": 20,
+    "total": 500
+  },
+  "total_calls": 0,
+  "unique_callers": 0
+}

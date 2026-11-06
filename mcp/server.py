@@ -500,6 +500,11 @@ TOOLS_LIST_CACHE_SCOPE = "public"
 # 安全护栏：单次请求最大字节数，防止超长载荷导致内存耗尽（MCP 分发通道）
 MAX_LINE_BYTES = 1 << 20  # 1 MiB
 
+# G1 计数机制：审计日志默认持久化路径（原始证据源）。
+# AGRI_MCP_AUDIT_LOG 环境变量可覆盖（向后兼容）；未设时默认落盘到
+# data/mcp_audit.jsonl，使外部调用从"不可测量"变"可测量"（G1 主指标）。
+_DEFAULT_AUDIT_LOG_PATH = os.path.join(ROOT, "data", "mcp_audit.jsonl")
+
 # 预设城市：唯一数据源 data/preset_cities.json（2026-09-23 收敛）。
 # 此前本文件与 app/demo_server.py 各持一份完全相同的硬编码副本 → 必然漂移
 # （改一处忘另一处，两侧给出不同城市集且不报错）。现两侧统一经
@@ -2329,6 +2334,23 @@ def _meta_traceparent(msg: dict) -> str:
     return tp if isinstance(tp, str) else ""
 
 
+def _meta_client_id(msg: dict) -> str:
+    """从 JSON-RPC 请求的 ``_meta.client_id`` 取调用方声明身份（G1 计数）。
+
+    调用方可主动声明 client_id（如 ``_meta: {"client_id": "my-agent-v1"}``）
+    作为独立调用方去重键；未声明时返回空串（回退用 traceparent trace-id）。
+
+    注意：client_id 是**自报身份**，非强认证——诚实边界：计数只反映"记录到
+    的调用"，不虚构调用方。恶意伪造 client_id 刷量属对抗场景，由 audit_analyzer
+    的异常检测（同一 client_id 高频）兜底，不在此处过度设计。
+    """
+    meta = msg.get("_meta")
+    if not isinstance(meta, dict):
+        meta = msg.get("meta") if isinstance(msg.get("meta"), dict) else {}
+    cid = meta.get("client_id") or ""
+    return cid.strip() if isinstance(cid, str) else ""
+
+
 def _valid_traceparent(tp: str) -> bool:
     """轻量校验 W3C traceparent 形态（不引入正则依赖，逐段判长与字符集）。"""
     if not tp:
@@ -2408,15 +2430,18 @@ def _audit(event: dict):
     """安全审计日志（对齐 GOAI CyberGuard 提升点3 安全审计）。
 
     默认写 stderr（JSON 行），绝不写 stdout（stdout 是 JSON-RPC 协议通道，
-    任何写 stdout 的字节都会破坏协议）。若设 ``AGRI_MCP_AUDIT_LOG`` 环境变量，
-    则追加写该路径（落盘由调用方自担；默认不落盘，避免产生未跟踪文件）。
+    任何写 stdout 的字节都会破坏协议）。**默认持久化**到 ``data/mcp_audit.jsonl``
+    （G1 计数机制的原始证据源）；若设 ``AGRI_MCP_AUDIT_LOG`` 环境变量，
+    则改用该路径（向后兼容，调用方可自定义）。
 
-    不记录参数明文：仅记方法/工具名 + 参数指纹 + 时间戳 + 状态。
+    不记录参数明文：仅记方法/工具名 + 参数指纹 + 时间戳 + 状态 + 调用方指纹。
     """
     import datetime
     event.setdefault("ts", CLOCK.now().isoformat(timespec="seconds"))
     line = json.dumps(event, ensure_ascii=False, separators=(",", ":"))
-    log_path = os.environ.get("AGRI_MCP_AUDIT_LOG")
+    # 默认持久化到 data/mcp_audit.jsonl（G1 计数原始证据）；
+    # AGRI_MCP_AUDIT_LOG 已设时用环境变量路径（向后兼容）。
+    log_path = os.environ.get("AGRI_MCP_AUDIT_LOG") or _DEFAULT_AUDIT_LOG_PATH
     if log_path:
         try:
             # H1: 原子追加（读-写-替换），避免半截 JSONL 损坏
@@ -2436,6 +2461,8 @@ def _handle(msg: dict) -> dict | None:
     # SEP-414：把调用方 W3C trace context 串进本次处理，响应原样回写。
     traceparent = _meta_traceparent(msg)
     resp_meta = {"traceparent": traceparent} if _valid_traceparent(traceparent) else {}
+    # G1 计数：调用方声明身份（去重键，回退 traceparent trace-id）
+    client_id = _meta_client_id(msg)
 
     if method == "initialize":
         # SEP-2575 后 initialize 已非必需；仍响应以兼容旧客户端。
@@ -2459,7 +2486,8 @@ def _handle(msg: dict) -> dict | None:
         if resp_meta:
             result["_meta"] = resp_meta
         _audit({"event": "initialize", "client_protocol": client_ver,
-                "negotiated": negotiated, "traceparent": traceparent})
+                "negotiated": negotiated, "traceparent": traceparent,
+                "client_id": client_id})
         return {"jsonrpc": "2.0", "id": mid, "result": result}
 
     if method == "tools/list":
@@ -2509,7 +2537,7 @@ def _handle(msg: dict) -> dict | None:
         if not ok:
             _audit({"event": "tools_call_rejected", "tool": name,
                     "reason": "header_mismatch", "detail": reason,
-                    "traceparent": traceparent})
+                    "traceparent": traceparent, "client_id": client_id})
             return {
                 "jsonrpc": "2.0", "id": mid,
                 "error": {"code": -32600, "message": reason},
@@ -2519,12 +2547,13 @@ def _handle(msg: dict) -> dict | None:
             json.dumps(arguments, ensure_ascii=False, sort_keys=True).encode("utf-8")
         ).hexdigest()[:16]
         _audit({"event": "tools_call_request", "tool": name,
-                "arg_hash": arg_hash, "traceparent": traceparent})
+                "arg_hash": arg_hash, "traceparent": traceparent,
+                "client_id": client_id})
         fn = _DISPATCH.get(name)
         if not fn:
             _audit({"event": "tools_call_rejected", "tool": name,
                     "reason": "unknown_tool", "arg_hash": arg_hash,
-                    "traceparent": traceparent})
+                    "traceparent": traceparent, "client_id": client_id})
             return {
                 "jsonrpc": "2.0", "id": mid,
                 "error": {"code": -32601, "message": f"未知工具: {name}"},
@@ -2534,7 +2563,7 @@ def _handle(msg: dict) -> dict | None:
         except Exception as e:  # noqa: BLE001
             _audit({"event": "tools_call_error", "tool": name,
                     "arg_hash": arg_hash, "error": str(e)[:120],
-                    "traceparent": traceparent})
+                    "traceparent": traceparent, "client_id": client_id})
             result = {"error": f"工具执行失败: {e}"}
 
         # T-1 可信标记产品化：所有工具输出内嵌紧凑 trust_mark，外部消费者可
@@ -2550,7 +2579,7 @@ def _handle(msg: dict) -> dict | None:
         has_err = isinstance(result, dict) and "error" in result
         _audit({"event": "tools_call_done", "tool": name,
                 "arg_hash": arg_hash, "has_error": bool(has_err),
-                "traceparent": traceparent})
+                "traceparent": traceparent, "client_id": client_id})
         payload = {
             "content": [
                 {"type": "text", "text": json.dumps(result, ensure_ascii=False, indent=2)},
