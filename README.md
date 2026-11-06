@@ -12,12 +12,12 @@
 <!-- AgriTrust Verified 徽章由 scripts/generate_trust_badge.py 生成，M11-T1 公共复算 API 产物；
      含 signature_prefix 与 verification_cmd，外部消费者可独立复算校验 signature -->
 
-> 🎯 **项目目标口径（单一权威）**：见 [`docs/CORE_OBJECTIVE.md`](docs/CORE_OBJECTIVE.md) —— 分布式农业的 **Agent-native 知识基座**。
-> 一句话：把「在哪里种什么、怎么种得好」做成**可被任何 AI Agent 直接调用**的可执行配置（Env Recipe），以**可审计的数据血缘**作为可信度资产。
-> **一级目标**：让 MCP server 被外部 agent 真实调用（≥500 次 / ≥20 独立调用方）。
+> 🎯 **项目目标口径（单一权威）**：见 [`docs/CORE_OBJECTIVE.md`](docs/CORE_OBJECTIVE.md) —— **AI + 机器人驱动的农业精准控制基础设施**（v1.1，2026-11-06 用户确认）。
+> 一句话：以「全球水文/土地/气候数据库」为数据底座，做「农村/片区/城市差异化分布」，形成「大规模 vs 建筑内精细化双模式」的 AI 精准控制要素，成为**未来大农业基础设施和产业链的关键生态位**。
+> **一级目标**：让 MCP server 被外部 agent 真实调用（≥500 次 / ≥20 独立调用方）。**诚实边界**：新定位含待建方向（机器人执行/全球水文库/大规模大田），G1 达标前不宣称"被依赖"。
 > 阶段门禁数字见 [`docs/north_star_and_phase_gates.md`](docs/north_star_and_phase_gates.md)；全面扫描与提升报告见 [`docs/full_liftup_assessment_2026-10-08.md`](docs/full_liftup_assessment_2026-10-08.md)；2026-10 前沿视角提升评估见 [`docs/DIMENSION_LIFTUP_2026-10-28.md`](docs/DIMENSION_LIFTUP_2026-10-28.md)。
 
-> 🧭 **前沿定位（2026-10-28）**：在农业 AI「大模型 + 机理模型 + 专业小模型」协同体系（农民日报 2026-09-30）中，本项目扮演 **机理模型 + 专业小模型层**——是农业大模型的**机理约束器 + 可执行配方 + 可审计资产**，与神农 4.0 / 农业世界模型 SNWM 1.0 **互补非竞争**（它们提供理解与调度，我们提供科学约束与可复现执行）。护城河五点：可执行配方 / 可审计血缘 / 零依赖可复现 / 保形置信区间 / **MCP 2026-07-28 无状态对齐**。生态位定案见 [`docs/CORE_OBJECTIVE.md`](docs/CORE_OBJECTIVE.md) §十二。
+> 🧭 **前沿定位（2026-10-28）**：在农业 AI「大模型 + 机理模型 + 专业小模型」协同体系（农民日报 2026-09-30）中，本项目扮演 **机理模型 + 专业小模型层**——是农业大模型的**机理约束器 + 可执行配方 + 可审计资产**，与神农 4.0 / 农业世界模型 SNWM 1.0 **互补非竞争**（它们提供理解与调度，我们提供科学约束与可复现执行）。护城河五点：可执行配方 / 可审计血缘 / 零依赖可复现 / 保形置信区间 / **MCP 2026-07-28 无状态对齐**。生态位定案见 [`docs/CORE_OBJECTIVE.md`](docs/CORE_OBJECTIVE.md) §十二（含 §12.1 2026-11-06 基础设施生态位扩展）。
 
 **🚀 已上架官方 MCP Registry**：`io.github.lm203688/agri-eco` v1.1.0（2026-10-08）
 
@@ -159,7 +159,7 @@ python scripts/verify_trust_mark.py from-certificate cert.json --verify-artifact
 
 ## 项目定位
 
-**一句话**：做分布式农业的 AI 操作系统与数据网络——回答「在哪里种什么、怎么种得好、怎么送到消费者」。
+**一句话**：做 **AI + 机器人驱动的农业精准控制基础设施**——以全球水文/土地/气候数据库为底座，做农村/片区/城市差异化分布，形成大规模 vs 建筑内精细化双模式的 AI 精准控制要素，成为未来大农业基础设施和产业链的关键生态位（**v1.1，2026-11-06 用户确认**；权威口径见 [`docs/CORE_OBJECTIVE.md`](docs/CORE_OBJECTIVE.md) §一）。**诚实边界**：含待建方向（机器人执行/全球水文库/大规模大田），G1 达标前不宣称"被依赖"。
 
 **核心架构（对标 SwarmLabs 科研 Agent Infra 的工程路径）**：
 
