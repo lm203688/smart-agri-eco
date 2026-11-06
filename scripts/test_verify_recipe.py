@@ -230,7 +230,8 @@ class TestVerifyRecipeCLI(unittest.TestCase):
     def _run(self, args, cwd=ROOT):
         return subprocess.run(
             [sys.executable, os.path.join("scripts", "verify_recipe.py"), *args],
-            cwd=cwd, capture_output=True, text=True, timeout=30,
+            cwd=cwd, capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=30,
         )
 
     def test_single_json_mode(self):

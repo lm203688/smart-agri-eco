@@ -41,6 +41,7 @@ def _run(args, cwd=None):
     r = subprocess.run(
         [sys.executable, str(SCRIPT)] + args,
         capture_output=True, text=True, cwd=cwd or REPO, env=env,
+        encoding="utf-8", errors="replace",
     )
     return r.returncode, r.stdout, r.stderr
 

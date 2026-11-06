@@ -61,6 +61,8 @@ def main() -> int:
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         text=True,
+        encoding="utf-8",  # server 输出 UTF-8 中文，必须显式指定（Windows 默认 GBK 会解码失败）
+        errors="replace",
         bufsize=1,
         env=env,
     )
@@ -750,7 +752,8 @@ def main() -> int:
             import subprocess as _sp
             analyzer = os.path.join(ROOT, "mcp", "audit_analyzer.py")
             r = _sp.run([PY, analyzer, "--log", audit_log],
-                        capture_output=True, text=True, timeout=30)
+                        capture_output=True, text=True,
+                        encoding="utf-8", errors="replace", timeout=30)
             out = (r.stdout or "") + (r.stderr or "")
             check("MCP 审计异常行为分析报告" in out,
                   "审计分析器消费真实日志并产出报告")

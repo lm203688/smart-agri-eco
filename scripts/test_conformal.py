@@ -394,7 +394,8 @@ class TestSplitConformalCLI(unittest.TestCase):
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         return subprocess.run(
             [sys.executable, "-m", "agent.conformal", *args],
-            cwd=root, capture_output=True, text=True, timeout=30,
+            cwd=root, capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=30,
         )
 
     def test_check_default_exits_zero(self):
