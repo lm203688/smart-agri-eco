@@ -1,7 +1,7 @@
 {
   "version": "1.2.0",
   "name": "智慧农业生态 Agri-Eco",
-  "description": "面向分布式农业的 Agent-native 知识基座。提供可执行的 Env Recipe 环境配方、多源气候校准、物候与播期推演、土壤剖面、农业分区匹配、病虫害与养分诊断、数据血缘溯源与农业项目投资初筛。",
+  "description": "AI + 机器人驱动的农业精准控制基础设施：全球气候/土壤/水文数据底座 + 农村/片区/城市差异化分布 + 大规模与建筑内精细化双模式 + 精准控制要素（Env Recipe 配方/物候播期/病虫害诊断/批次对象）。",
   "author": "smart-agri-eco",
   "contact": {
     "url": "https://github.com/lm203688/smart-agri-eco",

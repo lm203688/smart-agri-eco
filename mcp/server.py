@@ -1240,7 +1240,7 @@ TOOLS = [
     {
         "name": "agri_list_cities",
         "category": "climate",
-        "description": """【选址规划】列出全部预设城市（中文名 + 经纬度 + 气候带 + 海拔），供 Agent 做选点、分区核对或城市种植生成箱分发。
+        "description": """【选址规划·片区】列出全部预设城市（中文名 + 经纬度 + 气候带 + 海拔），供 Agent 做农村/片区/城市差异化分布选点、分区核对或城市种植生成箱分发。
 输入：无参数；如需过滤可传 region（如 华东）或 zone_id（如 subtropical_wet）。
 返回：[{"city": "杭州", "lat": 30.27, "lon": 120.16, "zone": "subtropical_wet", "elevation_m": 19}, ...]""",
         "inputSchema": {
@@ -1251,7 +1251,7 @@ TOOLS = [
     {
         "name": "agri_match_zone",
         "category": "climate",
-        "description": """【选址规划】输入经纬度，返回气候分区匹配结果：Köppen 主字母、亚型、置信度、匹配证据与限制因子（温度/降水/光周期）。用于跨城市选点与分区一致性校验。
+        "description": """【选址规划·差异化分布】输入经纬度，返回气候分区匹配结果：Köppen 主字母、亚型、置信度、匹配证据与限制因子（温度/降水/光周期）。用于农村/片区/城市差异化分布选点与分区一致性校验。
 输入：lat（纬度，必填）、lon（经度，必填）；可选 city 便于展示。
 返回：{"zone_id": "temperate_continental", "koppen": "Dfa", "confidence": 0.85, "limiting_factors": ["winter_temperature"], "evidence": {...}}""",
         "inputSchema": {
@@ -1268,7 +1268,7 @@ TOOLS = [
     {
         "name": "agri_recommend_crops",
         "category": "crop",
-        "description": """【分区匹配】根据分区（lat/lon 或 city）与偏好（用途/空间/难度）推荐作物。
+        "description": """【分区匹配·双模式】根据分区（lat/lon 或 city）与偏好（用途/空间/难度/场景）推荐作物，支持大规模大田与建筑内精细化双模式（scene: balcony/office/windowsill/indoor/outdoor）。
 输入：经纬度（如 39.9,116.4）或气候分区（如 subtropical_wet）。
 返回：{"zone_id": "temperate_continental", "confidence": 0.85}""",
         "inputSchema": {

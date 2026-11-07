@@ -71,7 +71,7 @@ def build_manifest() -> dict:
         "display_name": "智慧农业生态 Agri-Eco",
         "version": VERSION,
         "description": (
-            "面向分布式农业的 Agent-native 知识基座。30 个 MCP 工具："
+            "AI + 机器人驱动的农业精准控制基础设施。30 个 MCP 工具："
             "Env Recipe 环境配方 / 气候分区匹配 / 作物推荐 / 种植计划 / "
             "物候播期 / 多源气候校准 / 土壤剖面 / 病虫害诊断 / 养分管理 / "
             "地理编码到配方 / 数据血缘 / 生态清单 / 预设城市 / 投资初筛 / "
@@ -87,7 +87,8 @@ def build_manifest() -> dict:
         },
         "license": "MIT",
         "keywords": ["agriculture", "agritech", "mcp", "env-recipe",
-                     "phenology", "climate", "soil", "offline-first"],
+                     "phenology", "climate", "soil", "offline-first",
+                     "precision-agriculture", "robotics", "smart-farming"],
         "server": {
             "type": "python",
             "entry_point": "mcp/server.py",

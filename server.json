@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.lm203688/agri-eco",
   "title": "智慧农业生态 Agri-Eco",
-  "description": "面向分布式农业的 Agent-native 知识基座：Env Recipe 环境配方 + 气候校准 + 物候播期 + 病虫害诊断 + 批次对象。零依赖可离线，30 个 MCP 工具。",
+  "description": "AI + 机器人驱动的农业精准控制基础设施：全球气候/土壤/水文数据底座 + 农村/片区/城市差异化分布 + 大规模与建筑内精细化双模式 + 精准控制（Env Recipe 配方/物候播期/病虫害诊断/批次对象）。零依赖可离线，30 个 MCP 工具。",
   "version": "1.2.0",
   "repository": {
     "url": "https://github.com/lm203688/smart-agri-eco",
@@ -13,10 +13,11 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/lm203688/smart-agri-eco/releases/download/v1.2.0/agri-eco-mcp-1.2.0.mcpb",
-      "fileSha256": "45857325b9f5118ca351276096255d1b932439be0d29b152f61feb25b7b272c3",
+      "fileSha256": "26fa5319da83cc8a052e83a6c7e0eafd8000afc89380bb22950b8e9c33f6e77e",
       "transport": {
         "type": "stdio"
       }
     }
-  ]
+  ],
+  "documentationUrl": "https://github.com/lm203688/smart-agri-eco/blob/main/docs/CORE_OBJECTIVE.md"
 }

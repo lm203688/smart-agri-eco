@@ -1,7 +1,7 @@
 {
   "protocolVersion": "1.0",
   "name": "智慧农业生态 Agri-Eco",
-  "description": "面向分布式农业的 Agent-native 知识基座。提供可执行的 Env Recipe 环境配方（作物 × 生长阶段 × 设备类别 → 可落地环境参数）、多源气候校准、物候与播期推演、土壤剖面、农业分区匹配、病虫害与养分诊断、数据血缘溯源与农业项目投资初筛。零第三方依赖、可离线运行、全量输出带来源与置信度标注。作为 A2A 技能被其他 Agent 调用，不提供 C 端应用与 B 端 SaaS。",
+  "description": "AI + 机器人驱动的农业精准控制基础设施：全球气候/土壤/水文数据底座 + 农村/片区/城市差异化分布 + 大规模与建筑内精细化双模式 + 精准控制要素（Env Recipe 环境配方/物候播期/病虫害诊断/批次对象）。零第三方依赖、可离线运行、全量输出带来源与置信度标注。作为 A2A 技能被其他 Agent 调用。",
   "url": "https://github.com/lm203688/smart-agri-eco",
   "preferredTransport": "JSONRPC",
   "additionalInterfaces": [
@@ -15,10 +15,6 @@
     },
     {
       "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.lm203688/agri-eco",
-      "transport": "REGISTRY"
-    },
-    {
-      "url": "https://smithery.ai/search?q=agri-eco",
       "transport": "REGISTRY"
     },
     {

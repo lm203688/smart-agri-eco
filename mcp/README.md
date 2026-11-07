@@ -1,4 +1,4 @@
-# 智慧农业生态 · MCP Server（Agent-native 分发层）
+# 智慧农业生态 · MCP Server（AI + 机器人驱动的农业精准控制基础设施 · 分发层）
 
 零依赖的 Model Context Protocol Server，把本项目的农业知识引擎（气候分区 / 作物推荐 / 种植计划 / 病虫害诊断 / 养分管理 / Env Recipe 配方 / 物候播期 / 土壤剖面 / BP 投资初筛 / 多源气候调和 / 数据血缘 / 生态清单）以工具形式暴露给任意 MCP 客户端（Claude Desktop、Cursor、Codex、自研 Agent 等）。
 
